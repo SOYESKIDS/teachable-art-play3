@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
+/*
+ * TeachAble Art Play — Warm Premium EdTech 디자인 토큰
+ * 근거: 기획서 27~29. 컬러/타이포/카드 시스템
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf8f1;
+  --foreground: #152e4f;
+
+  /* Brand core */
+  --color-navy: #152e4f;
+  --color-yellow: #f3ba18;
+  --color-trust-blue: #2d70c7;
+  --color-ivory: #fbf8f1;
+
+  /* Secondary (제한적으로만 사용) */
+  --color-light-blue: #a8c5e8; /* 교사 */
+  --color-soft-coral: #f0a98c; /* 학부모 */
+  --color-soft-green: #8fc9a9; /* 아이 · 활동 */
+  --color-pale-yellow: #fce9ae; /* BEST / 추천 */
+
+  --radius-card: 14px;
+  --header-height: 72px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 80px;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-navy: var(--color-navy);
+  --color-yellow: var(--color-yellow);
+  --color-trust-blue: var(--color-trust-blue);
+  --color-ivory: var(--color-ivory);
+  --color-light-blue: var(--color-light-blue);
+  --color-soft-coral: var(--color-soft-coral);
+  --color-soft-green: var(--color-soft-green);
+  --color-pale-yellow: var(--color-pale-yellow);
+
+  --font-sans: var(--font-pretendard);
+  --radius-card: var(--radius-card);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  /* Sticky Header 실제 높이(--header-height) + 여백 16px만큼 앵커 스크롤 여백 확보 */
+  scroll-padding-top: calc(var(--header-height) + 16px);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  /* 한글 단어(음절) 중간 강제 줄바꿈 방지 — 공백 단위로만 줄바꿈 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
