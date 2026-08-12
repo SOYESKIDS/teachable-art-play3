@@ -52,7 +52,7 @@ export function AIPrincipleSection() {
   return (
     <section
       id="growth-record"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-28"
     >
       <Container>
         <SectionHeader
@@ -62,7 +62,7 @@ export function AIPrincipleSection() {
         />
 
         {/* 교사 → AI → 교사 → 전달 : Human-Machine-Human Flow */}
-        <div className="mt-16 rounded-[28px] border border-trust-blue/10 bg-trust-blue/[0.03] p-8 sm:p-12 lg:p-16">
+        <div className="mt-16 rounded-3xl border border-trust-blue/10 bg-trust-blue/[0.03] p-8 sm:p-12 lg:p-16">
           <ol className="relative flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-0">
             {aiFlowSteps.map((step, index) => (
               <li

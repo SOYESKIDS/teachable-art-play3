@@ -11,7 +11,7 @@ export function FinalCTASection() {
   return (
     <section
       id="start"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy py-20 sm:py-24 lg:py-28"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy py-20 sm:py-28 lg:py-32"
     >
       <Container className="flex flex-col items-center text-center">
         <h2 className="max-w-2xl whitespace-pre-line text-3xl font-bold leading-[1.25] text-white sm:text-4xl lg:text-[3rem]">
@@ -27,7 +27,7 @@ export function FinalCTASection() {
             variant="primary"
             data-cta="pilot-final"
             onClick={() => openLeadForm("pilot")}
-            className="px-9 py-4 text-base font-bold shadow-[0_8px_24px_rgba(243,186,24,0.35)] sm:text-lg"
+            className="px-9 py-4 text-base font-bold sm:text-lg"
           >
             {ctaLabels.primary}
           </Button>
@@ -35,7 +35,7 @@ export function FinalCTASection() {
             type="button"
             data-cta="demo-final"
             onClick={() => openLeadForm("demo")}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-transparent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:text-base"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/25 bg-transparent px-7 py-3.5 text-sm font-semibold text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/10 active:scale-[0.98] sm:text-base"
           >
             {ctaLabels.secondary}
           </button>

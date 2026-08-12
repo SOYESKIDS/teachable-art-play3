@@ -12,7 +12,7 @@ export function ParentReportSection() {
   return (
     <section
       id="parent-report"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-28"
     >
       <Container>
         <SectionHeader
@@ -22,7 +22,7 @@ export function ParentReportSection() {
 
         <div className="mt-16 grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-16">
           {/* 스마트폰 Mockup — 화면의 주인공 */}
-          <div className="mx-auto w-full max-w-[420px] overflow-hidden rounded-[40px] border-[7px] border-navy bg-white shadow-[0_24px_48px_rgba(21,46,79,0.18)]">
+          <div className="mx-auto w-full max-w-[420px] overflow-hidden rounded-4xl border-[7px] border-navy bg-white shadow-[var(--shadow-elevated)]">
             <div className="flex items-center justify-between border-b border-navy/10 bg-ivory px-6 py-4">
               <span className="rounded-full bg-navy/[0.06] px-2.5 py-1 text-[11px] font-bold text-navy/50">
                 {parentReportDemo.weekLabel}

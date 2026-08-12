@@ -50,7 +50,7 @@ export function SafeOperationSection() {
           {safeOperationPrinciples.map((principle, index) => (
             <div
               key={principle.order}
-              className="flex flex-col items-start gap-4 rounded-[18px] border border-navy/10 bg-white p-6"
+              className="flex flex-col items-start gap-4 rounded-2xl border border-navy/10 bg-white p-6 shadow-[var(--shadow-soft)]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-navy/[0.06] text-navy">
                 {principleIcons[index]}

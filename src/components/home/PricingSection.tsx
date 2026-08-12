@@ -39,7 +39,7 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <SectionHeader headline={pricingCopy.headline} subCopy={pricingCopy.subCopy} />
@@ -156,7 +156,7 @@ export function PricingSection() {
         {/* 비교표 — Desktop: Table / Mobile: Card */}
         <div className="mt-16">
           <div className="hidden overflow-x-auto sm:block">
-            <table className="w-full border-collapse overflow-hidden rounded-[18px] border border-navy/10 text-sm">
+            <table className="w-full border-collapse overflow-hidden rounded-2xl border border-navy/10 text-sm">
               <thead>
                 <tr className="bg-ivory text-navy">
                   <th className="w-40 px-5 py-4 text-left font-semibold text-navy/50" />
@@ -194,7 +194,7 @@ export function PricingSection() {
 
           <div className="flex flex-col gap-4 sm:hidden">
             {pricingPackages.map((pkg, pkgIndex) => (
-              <div key={pkg.id} className="rounded-[16px] border border-navy/10 bg-white p-5">
+              <div key={pkg.id} className="rounded-xl border border-navy/10 bg-white p-5">
                 <p className="text-sm font-bold text-navy">
                   {pkg.name}
                   {pkg.isBest && (

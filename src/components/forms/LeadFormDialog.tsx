@@ -69,7 +69,7 @@ export function LeadFormDialog() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={TITLE_ID}
-        className="relative flex max-h-[92vh] w-full flex-col overflow-y-auto rounded-t-[28px] bg-ivory p-6 shadow-2xl sm:max-w-lg sm:rounded-[28px] sm:p-8"
+        className="relative flex max-h-[92vh] w-full flex-col overflow-y-auto rounded-t-3xl bg-ivory p-6 shadow-[var(--shadow-elevated)] sm:max-w-lg sm:rounded-3xl sm:p-8"
       >
         <button
           type="button"

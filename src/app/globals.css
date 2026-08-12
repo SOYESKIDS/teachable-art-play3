@@ -2,7 +2,7 @@
 
 /*
  * TeachAble Art Play — Warm Premium EdTech 디자인 토큰
- * 근거: 기획서 27~29. 컬러/타이포/카드 시스템
+ * Premium Kindergarten B2B / Professional SaaS 기준으로 정리한 Global Design System.
  */
 :root {
   --background: #fbf8f1;
@@ -10,7 +10,9 @@
 
   /* Brand core */
   --color-navy: #152e4f;
+  --color-navy-deep: #102744;
   --color-yellow: #f3ba18;
+  --color-yellow-soft: #fff7d9;
   --color-trust-blue: #2d70c7;
   --color-ivory: #fbf8f1;
 
@@ -20,7 +22,24 @@
   --color-soft-green: #8fc9a9; /* 아이 · 활동 */
   --color-pale-yellow: #fce9ae; /* BEST / 추천 */
 
-  --radius-card: 14px;
+  /* Surface / Border (Neutral 체계) */
+  --color-surface: #ffffff;
+  --color-surface-soft: #f6f3ec;
+
+  /* Shadow — 매우 절제된 3단계 + CTA 전용 Glow */
+  --shadow-soft: 0 1px 2px rgba(21, 46, 79, 0.05);
+  --shadow-card: 0 6px 20px rgba(21, 46, 79, 0.08);
+  --shadow-elevated: 0 20px 48px rgba(21, 46, 79, 0.14);
+  --shadow-cta: 0 8px 20px rgba(243, 186, 24, 0.35);
+
+  /* Radius — Small / Card / Large Surface / Pill 4단계 */
+  --radius-card: 20px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 28px;
+  --radius-4xl: 32px;
+
   --header-height: 72px;
 }
 
@@ -35,16 +54,27 @@
   --color-foreground: var(--foreground);
 
   --color-navy: var(--color-navy);
+  --color-navy-deep: var(--color-navy-deep);
   --color-yellow: var(--color-yellow);
+  --color-yellow-soft: var(--color-yellow-soft);
   --color-trust-blue: var(--color-trust-blue);
   --color-ivory: var(--color-ivory);
   --color-light-blue: var(--color-light-blue);
   --color-soft-coral: var(--color-soft-coral);
   --color-soft-green: var(--color-soft-green);
   --color-pale-yellow: var(--color-pale-yellow);
+  --color-surface: var(--color-surface);
+  --color-surface-soft: var(--color-surface-soft);
 
   --font-sans: var(--font-pretendard);
   --radius-card: var(--radius-card);
+
+  /* Tailwind 기본 radius scale을 재정의 — rounded-lg/xl/2xl/3xl/4xl 전체에 즉시 반영된다 */
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-4xl: var(--radius-4xl);
 }
 
 html {
@@ -60,4 +90,26 @@ body {
   /* 한글 단어(음절) 중간 강제 줄바꿈 방지 — 공백 단위로만 줄바꿈 */
   word-break: keep-all;
   overflow-wrap: break-word;
+  /* 한글 Body Typography 최적값 */
+  letter-spacing: -0.01em;
+  line-height: 1.7;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.03em;
+}
+
+/* Premium SaaS 기준 Focus-visible — 장식 때문에 접근성을 희생하지 않는다 */
+:focus-visible {
+  outline: 2px solid var(--color-trust-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Card / Button 등 Micro Interaction 공통 Timing */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

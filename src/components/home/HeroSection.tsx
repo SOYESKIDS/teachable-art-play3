@@ -153,7 +153,7 @@ export function HeroSection() {
                   key={step.order}
                   className="flex shrink-0 items-center gap-2 xl:gap-1.5"
                 >
-                  <div className="flex min-w-[104px] flex-col items-center gap-1.5 rounded-2xl border border-navy/10 bg-white px-4 py-3 text-center shadow-[0_1px_2px_rgba(21,46,79,0.05)] xl:min-w-[88px] xl:gap-1 xl:px-2.5 xl:py-2.5">
+                  <div className="flex min-w-[104px] flex-col items-center gap-1.5 rounded-2xl border border-navy/10 bg-white px-4 py-3 text-center shadow-[var(--shadow-soft)] xl:min-w-[88px] xl:gap-1 xl:px-2.5 xl:py-2.5">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy/[0.06] text-navy xl:h-7 xl:w-7">
                       {flowIcons[index]}
                     </span>
@@ -173,7 +173,7 @@ export function HeroSection() {
               variant="primary"
               data-cta="pilot-hero"
               onClick={() => openLeadForm("pilot")}
-              className="px-8 py-4 text-base font-bold shadow-[0_6px_20px_rgba(243,186,24,0.4)] sm:text-lg"
+              className="px-8 py-4 text-base font-bold sm:text-lg"
             >
               {heroCopy.ctaPrimary}
             </Button>
@@ -189,7 +189,7 @@ export function HeroSection() {
 
         {/* 우측: Visual (실제 이미지 준비 전 Premium Placeholder) + Floating UI */}
         <div className="relative mb-14 lg:mb-0">
-          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[20px] border border-navy/10 bg-navy sm:aspect-[4/3] lg:aspect-[4/5]">
+          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy sm:aspect-[4/3] lg:aspect-[4/5]">
             <div
               aria-hidden="true"
               className="absolute inset-0 opacity-[0.35]"
@@ -236,7 +236,7 @@ export function HeroSection() {
           </div>
 
           {/* 메인 Floating DEMO 카드 — 성장기록 */}
-          <div className="absolute -bottom-10 left-5 right-5 rounded-[18px] border border-navy/10 bg-white p-5 shadow-[0_12px_32px_rgba(21,46,79,0.16)] sm:left-6 sm:right-auto sm:w-80">
+          <div className="absolute -bottom-10 left-5 right-5 rounded-2xl border border-navy/10 bg-white p-5 shadow-[var(--shadow-elevated)] sm:left-6 sm:right-auto sm:w-80">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="text-sm font-bold text-navy">
                 {heroCopy.demoCard.title}

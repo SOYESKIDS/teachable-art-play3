@@ -56,13 +56,13 @@ export function DirectorDashboardSection() {
   return (
     <section
       id="dashboard"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <SectionHeader headline={dashboardCopy.headline} subCopy={dashboardCopy.subCopy} />
 
         {/* Desktop Browser App Mockup */}
-        <div className="mt-14 overflow-hidden rounded-[22px] border border-navy/10 bg-white shadow-[0_24px_48px_rgba(21,46,79,0.12)]">
+        <div className="mt-14 overflow-hidden rounded-3xl border border-navy/10 bg-white shadow-[var(--shadow-elevated)]">
           <div className="flex flex-wrap items-center gap-3 border-b border-navy/10 bg-navy px-5 py-4 text-white sm:px-7">
             <div className="flex items-baseline gap-2">
               <span className="font-serif text-base italic text-white/70">

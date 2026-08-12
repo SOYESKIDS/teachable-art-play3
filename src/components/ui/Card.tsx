@@ -18,7 +18,7 @@ interface CardProps {
 export function Card({ children, variant = "basic", className = "" }: CardProps) {
   return (
     <div
-      className={`rounded-[var(--radius-card)] p-6 shadow-[0_1px_2px_rgba(21,46,79,0.06)] ${variantClasses[variant]} ${className}`}
+      className={`rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-soft)] ${variantClasses[variant]} ${className}`}
     >
       {children}
     </div>

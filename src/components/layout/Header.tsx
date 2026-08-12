@@ -12,7 +12,7 @@ export function Header() {
   const { openLeadForm } = useLeadForm();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-navy/10 bg-ivory/95 shadow-[0_1px_3px_rgba(21,46,79,0.04)] backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-navy/10 bg-ivory/95 shadow-[var(--shadow-soft)] backdrop-blur">
       <Container className="flex h-[72px] items-center justify-between lg:h-20">
         <Link
           href="/"
@@ -57,7 +57,7 @@ export function Header() {
             variant="primary"
             data-cta="pilot-header"
             onClick={() => openLeadForm("pilot")}
-            className="px-6 py-3 text-sm font-semibold shadow-[0_4px_14px_rgba(243,186,24,0.35)] sm:text-[15px]"
+            className="px-6 py-3 text-sm font-semibold sm:text-[15px]"
           >
             {ctaLabels.primary}
           </Button>

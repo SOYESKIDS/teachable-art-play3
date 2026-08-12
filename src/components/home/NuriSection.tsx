@@ -15,7 +15,7 @@ export function NuriSection() {
         />
 
         <div className="mt-16 flex flex-col items-center gap-8 sm:mt-20 sm:gap-9">
-          <div className="rounded-2xl bg-navy px-9 py-5 text-center shadow-[0_1px_2px_rgba(21,46,79,0.08)] sm:px-10 sm:py-6">
+          <div className="rounded-2xl bg-navy px-9 py-5 text-center shadow-[var(--shadow-soft)] sm:px-10 sm:py-6">
             <p className="font-serif text-xl italic text-white sm:text-2xl">
               TeachAble Art Play
             </p>

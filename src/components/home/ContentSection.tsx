@@ -60,7 +60,7 @@ export function ContentSection() {
   return (
     <section
       id="content"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-28"
     >
       <Container>
         <SectionHeader headline={contentCopy.headline} subCopy={contentCopy.subCopy} />
@@ -70,7 +70,7 @@ export function ContentSection() {
           {largeItems.map(({ item, index }) => (
             <div
               key={item.label}
-              className="flex flex-col overflow-hidden rounded-[20px] border border-navy/10 bg-white"
+              className="flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white"
             >
               <div
                 aria-hidden="true"
@@ -95,7 +95,7 @@ export function ContentSection() {
           {smallItems.map(({ item, index }) => (
             <div
               key={item.label}
-              className="flex flex-col overflow-hidden rounded-[18px] border border-navy/10 bg-white"
+              className="flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white"
             >
               <div
                 aria-hidden="true"

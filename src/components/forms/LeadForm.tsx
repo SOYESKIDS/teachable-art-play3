@@ -117,7 +117,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 inline-flex min-h-11 items-center justify-center rounded-full bg-yellow px-8 py-3 text-sm font-bold text-navy transition-colors hover:bg-yellow/90"
+          className="mt-2 inline-flex min-h-12 items-center justify-center rounded-full bg-yellow px-8 py-3 text-sm font-bold text-navy shadow-[var(--shadow-cta)] transition-all duration-200 hover:bg-yellow/90 active:scale-[0.98]"
         >
           닫기
         </button>
@@ -289,7 +289,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex min-h-12 items-center justify-center rounded-full bg-yellow px-8 py-3.5 text-base font-bold text-navy transition-colors hover:bg-yellow/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-12 items-center justify-center rounded-full bg-yellow px-8 py-3.5 text-base font-bold text-navy shadow-[var(--shadow-cta)] transition-all duration-200 hover:bg-yellow/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         {isSubmitting ? "제출 중..." : "신청하기"}
       </button>
@@ -298,7 +298,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
 }
 
 function inputClass(error?: string) {
-  return `w-full rounded-xl border bg-white px-4 py-3 text-base text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-trust-blue/25 ${
+  return `min-h-12 w-full rounded-xl border bg-white px-4 py-3 text-base text-navy transition-colors duration-200 placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-trust-blue/20 ${
     error ? "border-red-300" : "border-navy/15 focus:border-trust-blue"
   }`;
 }

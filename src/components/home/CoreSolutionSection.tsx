@@ -56,7 +56,7 @@ export function CoreSolutionSection() {
   return (
     <section
       id="solution"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <SectionHeader
@@ -64,7 +64,7 @@ export function CoreSolutionSection() {
           subCopy={coreSolutionCopy.subCopy}
         />
 
-        <div className="mt-14 rounded-[28px] border border-trust-blue/10 bg-trust-blue/[0.04] p-8 sm:p-12 lg:p-16">
+        <div className="mt-14 rounded-3xl border border-trust-blue/10 bg-trust-blue/[0.04] p-8 sm:p-12 lg:p-16">
           <ol className="relative flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-0">
             {coreSolutionFlow.map((step, index) => (
               <li

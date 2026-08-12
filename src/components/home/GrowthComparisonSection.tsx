@@ -23,7 +23,7 @@ export function GrowthComparisonSection() {
   return (
     <section
       id="growth"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-28"
     >
       <Container>
         <SectionHeader headline={growthCopy.headline} subCopy={growthCopy.subCopy} />
@@ -31,7 +31,7 @@ export function GrowthComparisonSection() {
         {/* BEFORE / AFTER 비교 */}
         <div className="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-[45fr_auto_55fr] lg:items-stretch lg:gap-6">
           {/* BEFORE — 의도적으로 단순하고 약하게 */}
-          <div className="rounded-[20px] border border-gray-200 bg-gray-50 p-6 sm:p-8">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 sm:p-8">
             <span className="inline-block rounded-full bg-gray-200 px-3 py-1 text-xs font-bold tracking-wide text-gray-500">
               {growthBefore.label}
             </span>
@@ -69,7 +69,7 @@ export function GrowthComparisonSection() {
           </div>
 
           {/* AFTER — Premium UI */}
-          <div className="rounded-[20px] border border-navy/10 bg-white p-6 shadow-[0_4px_20px_rgba(21,46,79,0.06)] sm:p-8">
+          <div className="rounded-2xl border border-navy/10 bg-white p-6 shadow-[var(--shadow-card)] sm:p-8">
             <span className="inline-block rounded-full bg-yellow/20 px-3 py-1 text-xs font-bold tracking-wide text-navy">
               {growthAfter.label}
             </span>

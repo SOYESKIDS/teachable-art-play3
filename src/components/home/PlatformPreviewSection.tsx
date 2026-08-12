@@ -64,7 +64,7 @@ const metricIcons: Record<string, ReactNode> = {
 
 function AIPreview({ tab }: { tab: PlatformTab }) {
   return (
-    <div className="mx-auto w-full max-w-4xl rounded-[28px] border border-navy/10 bg-white p-8 sm:p-14">
+    <div className="mx-auto w-full max-w-4xl rounded-3xl border border-navy/10 bg-white p-8 sm:p-14">
       {tab.demoLabel && (
         <div className="mb-8 flex justify-center">
           <span className="rounded-full bg-navy/[0.06] px-3.5 py-1.5 text-xs font-semibold text-navy/50">
@@ -111,7 +111,7 @@ function AIPreview({ tab }: { tab: PlatformTab }) {
 
 function ParentPreview({ tab }: { tab: PlatformTab }) {
   return (
-    <div className="mx-auto w-full max-w-[420px] overflow-hidden rounded-[36px] border-[6px] border-navy bg-white shadow-[0_20px_40px_rgba(21,46,79,0.15)]">
+    <div className="mx-auto w-full max-w-[420px] overflow-hidden rounded-4xl border-[6px] border-navy bg-white shadow-[var(--shadow-elevated)]">
       <div className="flex items-center justify-between border-b border-navy/10 bg-ivory px-6 py-4">
         <p className="text-sm font-bold text-navy">{tab.headerLabel}</p>
         <DemoBadge />
@@ -165,7 +165,7 @@ function ParentPreview({ tab }: { tab: PlatformTab }) {
 
 function DirectorPreview({ tab }: { tab: PlatformTab }) {
   return (
-    <div className="mx-auto w-full overflow-hidden rounded-[20px] border border-navy/10 bg-white shadow-[0_20px_40px_rgba(21,46,79,0.1)]">
+    <div className="mx-auto w-full overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[var(--shadow-elevated)]">
       <div className="flex flex-wrap items-center gap-2 border-b border-navy/10 bg-ivory px-5 py-3.5">
         <span className="h-2.5 w-2.5 rounded-full bg-navy/15" aria-hidden="true" />
         <span className="h-2.5 w-2.5 rounded-full bg-navy/15" aria-hidden="true" />
@@ -258,7 +258,7 @@ export function PlatformPreviewSection() {
   return (
     <section
       id="platform"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-trust-blue/[0.03] py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-trust-blue/[0.03] py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <SectionHeader headline={platformCopy.headline} subCopy={platformCopy.subCopy} />

@@ -12,10 +12,10 @@ export function PilotSection() {
   return (
     <section
       id="pilot"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-28"
     >
       <Container>
-        <div className="overflow-hidden rounded-[28px] bg-navy px-6 py-12 text-center sm:px-14 sm:py-16">
+        <div className="overflow-hidden rounded-3xl bg-navy px-6 py-12 text-center sm:px-14 sm:py-16">
           <p className="text-xs font-bold tracking-[0.14em] text-yellow sm:text-sm">
             {pilotOffer.eyebrow}
           </p>
@@ -48,7 +48,7 @@ export function PilotSection() {
               variant="primary"
               data-cta="pilot-section"
               onClick={() => openLeadForm("pilot")}
-              className="px-9 py-4 text-base font-bold shadow-[0_8px_24px_rgba(243,186,24,0.35)] sm:text-lg"
+              className="px-9 py-4 text-base font-bold sm:text-lg"
             >
               {ctaLabels.primary}
             </Button>
