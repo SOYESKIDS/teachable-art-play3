@@ -1,5 +1,6 @@
 import type { SubmissionType } from "@/types/leadForm";
 import type { LeadStatus } from "@/types/lead";
+import { sanitizeSearchTerm } from "./search-term";
 
 export const SUBMISSION_TYPES: readonly SubmissionType[] = [
   "pilot",
@@ -51,21 +52,8 @@ function firstValue(value: string | string[] | undefined): string {
   return value ?? "";
 }
 
-/**
- * 검색어 정제.
- *
- * PostgREST의 `or=(...)` 필터 문법은 `,` `(` `)` `.` `"` 등을 구분자로 쓰므로
- * 사용자 입력을 그대로 넣으면 필터 구조가 깨지거나 조작될 수 있다.
- * 구분자와 LIKE 와일드카드를 제거하고 길이도 제한한다.
- */
-export function sanitizeSearchTerm(raw: string): string {
-  return raw
-    .trim()
-    .slice(0, 60)
-    .replace(/[%_\\"(),*]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+/** 검색어 정제는 Organization 관리와 공용이므로 ./search-term.ts로 옮겼다 */
+export { sanitizeSearchTerm };
 
 /** searchParams는 신뢰할 수 없는 입력이므로 허용된 값만 통과시킨다 */
 export function parseLeadFilters(params: RawSearchParams): LeadListFilters {

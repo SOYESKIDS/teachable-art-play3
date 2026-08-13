@@ -1,0 +1,126 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/admin";
+import { fetchOrganization } from "@/lib/admin/organization-queries";
+import {
+  ORGANIZATION_STATUS_BADGE_CLASSES,
+  ORGANIZATION_STATUS_LABELS,
+  formatInstitutionType,
+  formatOrganizationDateTime,
+} from "@/lib/admin/organization-labels";
+import { OrganizationEditForm } from "./OrganizationEditForm";
+
+export const metadata: Metadata = {
+  title: "기관 상세 | SOYESKIDS Admin",
+  robots: { index: false, follow: false },
+};
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+interface OrganizationDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 border-b border-navy/8 py-3 last:border-b-0">
+      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
+      <dd className="text-[14px] text-navy">{value}</dd>
+    </div>
+  );
+}
+
+/**
+ * 기관 상세는 Drawer가 아니라 독립 Route로 만든다.
+ * 앞으로 원장/교사·반·아이·계약 정보가 이 화면에 붙을 예정이라
+ * 자체 데이터 로딩과 URL을 갖는 편이 유지보수에 유리하다.
+ */
+export default async function OrganizationDetailPage({
+  params,
+}: OrganizationDetailPageProps) {
+  const { supabase } = await requireAdmin();
+  const { id } = await params;
+
+  if (!UUID_PATTERN.test(id)) {
+    notFound();
+  }
+
+  const result = await fetchOrganization(supabase, id);
+
+  if (!result.ok) {
+    return (
+      <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
+        <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
+          <p className="text-[15px] font-semibold text-navy">
+            기관 데이터를 불러오지 못했습니다.
+          </p>
+          <p className="mt-1.5 text-[13px] text-navy/50">
+            잠시 후 다시 시도해주세요.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!result.organization) {
+    notFound();
+  }
+
+  const organization = result.organization;
+
+  return (
+    <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
+      <Link
+        href="/admin/organizations"
+        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+      >
+        ← 기관 목록
+      </Link>
+
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <h1 className="text-[22px] font-bold text-navy">{organization.name}</h1>
+        <span
+          className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[organization.status]}`}
+        >
+          {ORGANIZATION_STATUS_LABELS[organization.status]}
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+        <section className="rounded-xl border border-navy/10 bg-white p-5">
+          <h2 className="text-[15px] font-bold text-navy">기관 정보</h2>
+          <dl className="mt-2">
+            <Field label="기관명" value={organization.name} />
+            <Field
+              label="기관 유형"
+              value={formatInstitutionType(organization.institution_type)}
+            />
+            <Field
+              label="상태"
+              value={ORGANIZATION_STATUS_LABELS[organization.status]}
+            />
+            <Field
+              label="등록일"
+              value={formatOrganizationDateTime(organization.created_at)}
+            />
+            <Field
+              label="최근 수정일"
+              value={formatOrganizationDateTime(organization.updated_at)}
+            />
+          </dl>
+        </section>
+
+        <section className="rounded-xl border border-navy/10 bg-white p-5">
+          <h2 className="text-[15px] font-bold text-navy">기관 정보 수정</h2>
+          <p className="mt-1 mb-4 text-[12px] text-navy/50">
+            기관명과 기관 유형만 수정할 수 있습니다. 상태 변경은 후속 단계에서
+            제공됩니다.
+          </p>
+          <OrganizationEditForm organization={organization} />
+        </section>
+      </div>
+    </div>
+  );
+}

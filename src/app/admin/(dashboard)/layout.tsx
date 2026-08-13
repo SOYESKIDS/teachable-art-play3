@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
+import { AdminNav } from "./AdminNav";
 
 /**
  * Admin Dashboard Layout.
@@ -36,14 +36,9 @@ export default async function AdminDashboardLayout({
             </div>
           </div>
 
-          <nav aria-label="관리 메뉴" className="hidden md:block">
-            <Link
-              href="/admin/leads"
-              className="rounded-lg px-3 py-2 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
-            >
-              기관 문의
-            </Link>
-          </nav>
+          <div className="hidden md:block">
+            <AdminNav />
+          </div>
 
           <div className="flex items-center gap-3">
             {email ? (
@@ -61,6 +56,11 @@ export default async function AdminDashboardLayout({
               </button>
             </form>
           </div>
+        </div>
+
+        {/* Mobile: 메뉴를 두 번째 줄로 내린다 */}
+        <div className="overflow-x-auto border-t border-navy/8 px-5 py-2 md:hidden">
+          <AdminNav />
         </div>
       </header>
 
