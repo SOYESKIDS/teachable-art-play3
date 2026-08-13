@@ -160,6 +160,64 @@ export async function fetchOrganizationKpis(
   return { ok: true, kpis: { total, active, suspended } };
 }
 
+export interface OrganizationMemberSummary {
+  userId: string;
+  displayName: string;
+  role: "director" | "teacher";
+  status: "active" | "invited" | "disabled";
+  createdAt: string;
+}
+
+export type OrganizationMemberListResult =
+  | { ok: true; members: OrganizationMemberSummary[] }
+  | { ok: false };
+
+/**
+ * 기관의 원장 목록.
+ *
+ * SOYES 운영자 세션의 Client로 조회하며, RLS
+ * ("members readable by self director and soyes admin")가 접근을 판정한다.
+ * 이메일은 auth.users에만 있으므로 여기서는 다루지 않는다(호출부에서 Auth Admin으로 보강).
+ */
+export async function fetchOrganizationDirectors(
+  supabase: SupabaseClient,
+  organizationId: string,
+): Promise<OrganizationMemberListResult> {
+  const { data, error } = await supabase
+    .from("organization_members")
+    .select("user_id, role, status, created_at, profiles!inner(display_name)")
+    .eq("organization_id", organizationId)
+    .eq("role", "director")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    logQueryFailure("directors", error.message);
+    return { ok: false };
+  }
+
+  type Row = {
+    user_id: string;
+    role: "director" | "teacher";
+    status: "active" | "invited" | "disabled";
+    created_at: string;
+    profiles: { display_name: string } | { display_name: string }[] | null;
+  };
+
+  const members = ((data ?? []) as unknown as Row[]).map((row) => {
+    const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+
+    return {
+      userId: row.user_id,
+      displayName: profile?.display_name ?? "이름 미설정",
+      role: row.role,
+      status: row.status,
+      createdAt: row.created_at,
+    };
+  });
+
+  return { ok: true, members };
+}
+
 export async function fetchOrganization(
   supabase: SupabaseClient,
   id: string,

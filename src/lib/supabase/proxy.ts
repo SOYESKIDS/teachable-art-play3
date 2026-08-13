@@ -2,13 +2,23 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseEnv } from "./env";
 
-/** 로그인 없이 접근 가능한 Admin Route */
-const PUBLIC_ADMIN_PATHS = ["/admin/login"];
+/** 로그인 없이 접근 가능한 보호 영역 내 Route */
+const PUBLIC_PATHS = ["/admin/login"];
 
-function isPublicAdminPath(pathname: string) {
-  return PUBLIC_ADMIN_PATHS.some(
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
+}
+
+/**
+ * 영역별 로그인 화면.
+ *
+ * SOYES 운영자와 기관 사용자는 로그인 화면이 다르므로 리다이렉트 대상도 분리한다.
+ * (/admin → /admin/login, /director → /login)
+ */
+function loginPathFor(pathname: string): string {
+  return pathname.startsWith("/director") ? "/login" : "/admin/login";
 }
 
 /**
@@ -51,9 +61,9 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
 
   // 세션이 없는 상태로 보호 Route에 접근하면 로그인 화면으로 보낸다.
   // (이것은 UX용 1차 게이트일 뿐이고, 최종 권한 판정은 각 페이지의 서버 검사 + DB RLS가 담당한다.)
-  if (!claims && !isPublicAdminPath(pathname)) {
+  if (!claims && !isPublicPath(pathname)) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/admin/login";
+    loginUrl.pathname = loginPathFor(pathname);
     loginUrl.search = "";
 
     const redirectResponse = NextResponse.redirect(loginUrl);

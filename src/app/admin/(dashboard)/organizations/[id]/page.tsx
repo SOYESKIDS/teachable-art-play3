@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
-import { fetchOrganization } from "@/lib/admin/organization-queries";
+import {
+  fetchOrganization,
+  fetchOrganizationDirectors,
+} from "@/lib/admin/organization-queries";
+import { fetchAuthEmailById } from "@/lib/admin/director-invite";
+import { DirectorInviteDialog } from "./DirectorInviteDialog";
 import {
   ORGANIZATION_STATUS_BADGE_CLASSES,
   ORGANIZATION_STATUS_LABELS,
@@ -70,6 +75,19 @@ export default async function OrganizationDetailPage({
 
   const organization = result.organization;
 
+  const directorResult = await fetchOrganizationDirectors(supabase, id);
+
+  // 이메일은 auth.users에만 있어 Auth Admin으로 보강한다(원장 수는 소수).
+  // 실패해도 화면을 막지 않고 "—"로 표시한다.
+  const directors = directorResult.ok
+    ? await Promise.all(
+        directorResult.members.map(async (member) => ({
+          ...member,
+          email: await fetchAuthEmailById(member.userId),
+        })),
+      )
+    : [];
+
   return (
     <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
       <Link
@@ -119,6 +137,69 @@ export default async function OrganizationDetailPage({
             제공됩니다.
           </p>
           <OrganizationEditForm organization={organization} />
+        </section>
+
+        <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-[15px] font-bold text-navy">원장 관리</h2>
+              <p className="mt-1 text-[12px] text-navy/50">
+                초대 메일을 받은 원장이 비밀번호를 설정하면 바로 로그인할 수
+                있습니다.
+              </p>
+            </div>
+            {directors.length > 0 ? (
+              <DirectorInviteDialog
+                organizationId={organization.id}
+                variant="outline"
+              />
+            ) : null}
+          </div>
+
+          {!directorResult.ok ? (
+            <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+              원장 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+            </p>
+          ) : directors.length === 0 ? (
+            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
+              <p className="text-[14px] font-semibold text-navy">
+                등록된 원장이 없습니다.
+              </p>
+              <div className="mt-4 flex justify-center">
+                <DirectorInviteDialog organizationId={organization.id} />
+              </div>
+            </div>
+          ) : (
+            <ul className="mt-4 flex flex-col gap-2">
+              {directors.map((director) => (
+                <li
+                  key={director.userId}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-navy/10 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-semibold text-navy">
+                      {director.displayName}
+                    </p>
+                    <p className="truncate text-[12px] text-navy/50">
+                      {director.email ?? "—"}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[12px] font-semibold text-navy/70">
+                      원장
+                    </span>
+                    <span className="rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[12px] font-semibold text-navy/70">
+                      {director.status === "active"
+                        ? "활성"
+                        : director.status === "invited"
+                          ? "초대됨"
+                          : "비활성"}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </div>
