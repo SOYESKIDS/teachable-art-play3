@@ -4,10 +4,8 @@ import { useState, type ReactNode } from "react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DemoBadge } from "@/components/ui/DemoBadge";
-import { Button } from "@/components/ui/Button";
-import { platformCopy, platformTabs } from "@/data/site-copy";
+import { platformCopy, platformTabs, publicNotice } from "@/data/site-copy";
 import type { PlatformTab } from "@/types/content";
-import { useLeadForm } from "@/components/forms/LeadFormContext";
 
 const arrowIconProps = {
   viewBox: "0 0 24 24",
@@ -253,7 +251,6 @@ function DirectorPreview({ tab }: { tab: PlatformTab }) {
 export function PlatformPreviewSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeTab = platformTabs[activeIndex];
-  const { openLeadForm } = useLeadForm();
 
   return (
     <section
@@ -302,15 +299,9 @@ export function PlatformPreviewSection() {
         </div>
 
         <div className="mt-14 text-center">
-          <Button
-            type="button"
-            variant="tertiary"
-            data-cta="demo-platform"
-            onClick={() => openLeadForm("demo")}
-            className="px-6 py-3.5 text-sm font-medium sm:text-base"
-          >
-            {platformCopy.ctaSecondary}
-          </Button>
+          <p className="mx-auto max-w-xl rounded-2xl border border-navy/10 bg-ivory px-6 py-4 text-sm leading-relaxed text-navy/60 sm:text-base">
+            {publicNotice.demo}
+          </p>
         </div>
       </Container>
     </section>

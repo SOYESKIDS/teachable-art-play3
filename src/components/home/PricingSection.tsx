@@ -1,12 +1,8 @@
-"use client";
-
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Button } from "@/components/ui/Button";
 import { comparisonRows, priceDisclaimerLines, pricingPackages } from "@/data/packages";
-import { ctaLabels, pricingCopy } from "@/data/site-copy";
-import { useLeadForm } from "@/components/forms/LeadFormContext";
+import { pricingCopy, publicNotice } from "@/data/site-copy";
 import type { PricingPackage } from "@/types/content";
 
 const cardVariant: Record<PricingPackage["accentColor"], "basic" | "highlighted" | "premium"> = {
@@ -34,8 +30,6 @@ const CheckIcon = ({ className = "" }: { className?: string }) => (
 );
 
 export function PricingSection() {
-  const { openLeadForm } = useLeadForm();
-
   return (
     <section
       id="pricing"
@@ -134,15 +128,15 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              <Button
-                type="button"
-                variant="primary"
-                data-cta={`select-${pkg.id}`}
-                onClick={() => openLeadForm("purchase_interest", pkg.id)}
-                className="mt-auto w-full px-6 py-3.5 text-sm font-bold sm:text-base"
+              <p
+                className={`mt-auto rounded-xl border px-4 py-3.5 text-center text-xs leading-relaxed sm:text-[13px] ${
+                  pkg.accentColor === "navy-yellow"
+                    ? "border-white/15 bg-white/[0.06] text-white/70"
+                    : "border-navy/10 bg-navy/[0.03] text-navy/60"
+                }`}
               >
-                {ctaLabels.selectProduct}
-              </Button>
+                {publicNotice.pricing}
+              </p>
             </Card>
           ))}
         </div>

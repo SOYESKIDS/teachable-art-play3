@@ -1,14 +1,8 @@
-"use client";
-
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { pilotOffer } from "@/data/packages";
-import { ctaLabels } from "@/data/site-copy";
-import { useLeadForm } from "@/components/forms/LeadFormContext";
+import { publicNotice } from "@/data/site-copy";
 
 export function PilotSection() {
-  const { openLeadForm } = useLeadForm();
-
   return (
     <section
       id="pilot"
@@ -42,17 +36,9 @@ export function PilotSection() {
             ))}
           </div>
 
-          <div className="mt-10">
-            <Button
-              type="button"
-              variant="primary"
-              data-cta="pilot-section"
-              onClick={() => openLeadForm("pilot")}
-              className="px-9 py-4 text-base font-bold sm:text-lg"
-            >
-              {ctaLabels.primary}
-            </Button>
-          </div>
+          <p className="mx-auto mt-10 max-w-xl rounded-2xl border border-white/12 bg-white/[0.04] px-6 py-4 text-sm leading-relaxed text-white/70 sm:text-base">
+            {publicNotice.pilot}
+          </p>
 
           <p className="mx-auto mt-6 max-w-xl text-xs leading-relaxed text-white/40">
             {pilotOffer.note}

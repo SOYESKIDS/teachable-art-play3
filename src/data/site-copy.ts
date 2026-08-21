@@ -335,6 +335,17 @@ export const ctaLabels = {
   selectProduct: "이 상품 선택하기",
   purchase: "구매하기",
   consult: "도입 상담",
+  contact: "도입 상담 문의",
+};
+
+/**
+ * PUBLIC LAUNCH-01: 공개 홈페이지에서는 온라인 구매/결제/공개 신청 폼을 노출하지 않는다.
+ * 기존 CTA 자리에는 클릭 동작이 없는 안내 문구만 표시한다.
+ */
+export const publicNotice = {
+  pricing: "기관별 도입 조건은 담당자 상담을 통해 안내드립니다.",
+  pilot: "파일럿 운영 조건은 담당자 상담을 통해 안내드립니다.",
+  demo: "플랫폼 화면은 담당자 미팅을 통해 직접 안내해드립니다.",
 };
 
 /** 기획서 23번: 헤더 내비게이션 (아직 없는 개별 라우트로 연결하지 않도록 전부 홈페이지 앵커로 구성) */
@@ -345,6 +356,7 @@ export const navigation = [
   { label: "대시보드", href: "#dashboard" },
   { label: "상품·가격", href: "#pricing" },
   { label: "도입안내", href: "#adoption" },
+  { label: "도입문의", href: "#contact" },
 ];
 
 /** VALUE Section 전용 카피 */
@@ -820,6 +832,22 @@ export const contactInfo = {
 };
 
 export const legalLinks = ["개인정보처리방침", "이용약관"];
+
+/**
+ * CONTACT Section 전용 카피.
+ * mailto / 메일 보내기 등 바로가기 동작 없이 연락처를 텍스트로만 표기한다.
+ */
+export const contactSectionCopy = {
+  eyebrow: "CONTACT",
+  headline: "TeachAble Art Play 도입 상담",
+  description:
+    "우리 원의 규모와 운영 목적에 맞는\nTeachAble Art Play 도입 방법을\nSOYESKIDS 담당자가 직접 안내해드립니다.",
+  channels: [
+    { label: "TEL", value: contactInfo.phone },
+    { label: "E-MAIL", value: contactInfo.email },
+  ],
+  note: "상품 도입 및 기관 상담은\n담당자와 사전 미팅을 통해 안내드립니다.",
+};
 
 /** Hero 전용: 5대 핵심상품 Mini Flow (CoreSolution의 상세 6-STEP과는 별개, coreSolutions 5개를 순서대로 재사용) */
 export const heroFlowSteps = coreSolutions.map((solution, index) => ({

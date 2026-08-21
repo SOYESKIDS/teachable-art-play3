@@ -1,10 +1,7 @@
-"use client";
-
 import type { ReactNode } from "react";
 import { Container } from "@/components/ui/Container";
-import { Button, ButtonLink } from "@/components/ui/Button";
-import { heroCopy, heroFlowSteps, heroMicroProof } from "@/data/site-copy";
-import { useLeadForm } from "@/components/forms/LeadFormContext";
+import { ButtonLink } from "@/components/ui/Button";
+import { ctaLabels, heroCopy, heroFlowSteps, heroMicroProof } from "@/data/site-copy";
 
 function CheckIcon() {
   return (
@@ -91,8 +88,6 @@ const flowIcons: ReactNode[] = [
  * 강조 span(놀이/성장 이야기)은 스타일 처리를 위해 JSX에 직접 작성했습니다 — 카피 문구를 바꿀 때는 두 곳을 함께 맞춰주세요.
  */
 export function HeroSection() {
-  const { openLeadForm } = useLeadForm();
-
   return (
     <section
       id="hero"
@@ -168,15 +163,14 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Button
-              type="button"
+            <ButtonLink
+              href="#contact"
               variant="primary"
-              data-cta="pilot-hero"
-              onClick={() => openLeadForm("pilot")}
+              data-cta="contact-hero"
               className="px-8 py-4 text-base font-bold sm:text-lg"
             >
-              {heroCopy.ctaPrimary}
-            </Button>
+              {ctaLabels.contact}
+            </ButtonLink>
             <ButtonLink
               href="#solution"
               variant="tertiary"

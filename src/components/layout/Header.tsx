@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { ctaLabels, navigation } from "@/data/site-copy";
-import { useLeadForm } from "@/components/forms/LeadFormContext";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { openLeadForm } = useLeadForm();
 
   return (
     <header className="sticky top-0 z-50 border-b border-navy/10 bg-ivory/95 shadow-[var(--shadow-soft)] backdrop-blur">
@@ -22,7 +20,7 @@ export function Header() {
           <span className="text-[10px] font-semibold tracking-[0.14em] text-navy/45">
             SOYESKIDS
           </span>
-          <span className="mt-1 font-serif text-xl font-semibold italic text-navy sm:text-2xl">
+          <span className="mt-1 whitespace-nowrap font-serif text-xl font-semibold italic text-navy sm:text-2xl">
             TeachAble Art Play
           </span>
         </Link>
@@ -40,27 +38,21 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            disabled
-            title="로그인은 준비 중입니다"
-            aria-disabled="true"
-            className="hidden cursor-not-allowed items-center gap-1.5 text-sm font-normal text-navy/45 sm:flex"
-          >
-            로그인
-            <span className="rounded-full bg-navy/5 px-1.5 py-0.5 text-[9px] font-medium text-navy/40">
-              준비중
-            </span>
-          </button>
-          <Button
-            type="button"
-            variant="primary"
-            data-cta="pilot-header"
-            onClick={() => openLeadForm("pilot")}
-            className="px-6 py-3 text-sm font-semibold sm:text-[15px]"
-          >
-            {ctaLabels.primary}
-          </Button>
+          {/*
+            모바일(sm 미만)에서는 로고와 CTA가 나란히 들어가지 못해 Header가 가로로 넘치고 아래 섹션을 덮는다.
+            같은 역할의 하단 고정 CTA가 이미 있으므로 sm 이상에서만 노출한다.
+            (숨김 처리는 wrapper에 둔다 — ButtonLink의 base `inline-flex`와 `hidden`이 충돌하기 때문)
+          */}
+          <span className="hidden sm:block">
+            <ButtonLink
+              href="#contact"
+              variant="primary"
+              data-cta="contact-header"
+              className="whitespace-nowrap px-6 py-3 text-sm font-semibold sm:text-[15px]"
+            >
+              {ctaLabels.contact}
+            </ButtonLink>
+          </span>
 
           <button
             type="button"
@@ -108,20 +100,6 @@ export function Header() {
                 </Link>
               </li>
             ))}
-            <li>
-              <button
-                type="button"
-                disabled
-                title="로그인은 준비 중입니다"
-                aria-disabled="true"
-                className="flex w-full cursor-not-allowed items-center gap-1.5 px-2 py-3 text-left text-base font-normal text-navy/45"
-              >
-                로그인
-                <span className="rounded-full bg-navy/5 px-1.5 py-0.5 text-[9px] font-medium text-navy/40">
-                  준비중
-                </span>
-              </button>
-            </li>
           </ul>
         </nav>
       )}

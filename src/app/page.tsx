@@ -18,17 +18,22 @@ import { BenefitsSection } from "@/components/home/BenefitsSection";
 import { SafeOperationSection } from "@/components/home/SafeOperationSection";
 import { PricingSection } from "@/components/home/PricingSection";
 import { PilotSection } from "@/components/home/PilotSection";
-import { PurchaseSection } from "@/components/home/PurchaseSection";
 import { AdoptionSection } from "@/components/home/AdoptionSection";
 import { FinalCTASection } from "@/components/home/FinalCTASection";
-import { LeadFormProvider } from "@/components/forms/LeadFormContext";
-import { LeadFormDialog } from "@/components/forms/LeadFormDialog";
 
+/**
+ * PUBLIC LAUNCH-01 (공개 홈페이지 1차 오픈)
+ *
+ * 이번 공개 버전에서는 온라인 구매/결제 흐름과 공개 신청 폼을 노출하지 않는다.
+ * 관련 코드(PurchaseSection, LeadFormProvider, LeadFormDialog, LeadForm,
+ * lead_submissions 서버 코드/관리자 문의 관리)는 향후 재사용을 위해 그대로 보존하고,
+ * 이 페이지에서 렌더링만 하지 않는다.
+ */
 export default function Home() {
   return (
-    <LeadFormProvider>
+    <>
       <Header />
-      <main className="flex-1 pb-20 lg:pb-0">
+      <main className="flex-1">
         <HeroSection />
         <WhySection />
         <NeedsSection />
@@ -46,13 +51,11 @@ export default function Home() {
         <SafeOperationSection />
         <PricingSection />
         <PilotSection />
-        <PurchaseSection />
         <AdoptionSection />
         <FinalCTASection />
       </main>
       <Footer />
       <MobileStickyCta />
-      <LeadFormDialog />
-    </LeadFormProvider>
+    </>
   );
 }

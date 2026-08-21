@@ -3,8 +3,9 @@ import { Container } from "@/components/ui/Container";
 import { contactInfo, legalLinks, navigation } from "@/data/site-copy";
 
 export function Footer() {
+  // 모바일 하단 고정 CTA(약 72px)에 Footer 내용이 가리지 않도록 아래 여백은 Footer 안에서 확보한다.
   return (
-    <footer className="border-t border-navy/10 bg-navy py-14 text-white/70 sm:py-16">
+    <footer className="border-t border-navy/10 bg-navy pt-14 pb-32 text-white/70 sm:pt-16 lg:pb-16">
       <Container>
         <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
           <div className="flex flex-col gap-2">
@@ -27,9 +28,8 @@ export function Footer() {
           <a href={`tel:${contactInfo.phone}`} className="w-fit hover:text-white">
             {contactInfo.phone}
           </a>
-          <a href={`mailto:${contactInfo.email}`} className="w-fit hover:text-white">
-            {contactInfo.email}
-          </a>
+          {/* 공개 버전: mailto 바로가기 없이 이메일 주소를 텍스트로만 표기한다. */}
+          <span className="w-fit select-all">{contactInfo.email}</span>
           <a
             href={`https://${contactInfo.website}`}
             target="_blank"
