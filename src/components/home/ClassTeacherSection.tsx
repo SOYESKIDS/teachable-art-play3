@@ -65,13 +65,14 @@ export function ClassTeacherSection() {
                       {step.minutes}분
                     </span>
                   </div>
-                  <h4
+                  {/* 섹션 h2 바로 아래 단계이므로 h3 — h4로 두면 heading 단계가 h2 -> h4로 건너뛴다. (글자 크기는 className으로 지정하므로 표시는 동일) */}
+                  <h3
                     className={`mt-2 font-bold text-navy ${
                       step.isCore ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"
                     }`}
                   >
                     {step.title}
-                  </h4>
+                  </h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-navy/60 sm:text-base">
                     {step.description}
                   </p>

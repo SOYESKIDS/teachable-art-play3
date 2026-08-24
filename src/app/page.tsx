@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileStickyCta } from "@/components/layout/MobileStickyCta";
@@ -29,6 +30,10 @@ import { FinalCTASection } from "@/components/home/FinalCTASection";
  * lead_submissions 서버 코드/관리자 문의 관리)는 향후 재사용을 위해 그대로 보존하고,
  * 이 페이지에서 렌더링만 하지 않는다.
  */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function Home() {
   return (
     <>

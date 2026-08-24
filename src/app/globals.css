@@ -116,3 +116,22 @@ h4 {
 * {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/*
+ * 사용자가 OS에서 "동작 줄이기"를 켠 경우 smooth scroll과 애니메이션을 끈다.
+ * 앵커 이동 자체는 그대로 동작하고(즉시 이동), scroll-mt 여백도 그대로 적용된다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
