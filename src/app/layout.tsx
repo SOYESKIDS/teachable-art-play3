@@ -41,8 +41,10 @@ export const metadata: Metadata = {
     title: seoCopy.openGraph.title,
     description: seoCopy.openGraph.description,
   },
+  // opengraph-image(src/app/opengraph-image.tsx) 하나로 og:image와 twitter:image가 함께 생성된다.
+  // twitter-image 파일을 따로 두면 같은 이미지를 두 번 만들게 되므로 만들지 않는다.
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: seoCopy.openGraph.title,
     description: seoCopy.openGraph.description,
   },
