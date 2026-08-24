@@ -15,7 +15,15 @@ import {
   fetchOrganizationChildren,
   fetchOrganizationClasses,
 } from "@/lib/admin/class-child-queries";
+import {
+  buildTeacherAssignments,
+  buildTeacherNamesByClassId,
+  buildTeacherSummary,
+  fetchOrganizationClassTeachers,
+  fetchOrganizationTeachers,
+} from "@/lib/admin/class-teacher-queries";
 import { DirectorInviteDialog } from "./DirectorInviteDialog";
+import { TeacherAssignmentSection } from "./TeacherAssignmentSection";
 import { ClassManagementSection } from "./ClassManagementSection";
 import { ChildManagementSection } from "./ChildManagementSection";
 import {
@@ -98,18 +106,40 @@ export default async function OrganizationDetailPage({
       )
     : [];
 
-  // 반과 원아는 서로 참조하지 않는 독립 질의라 병렬로 가져온다.
-  // 반별 재원 원아 수는 이 원아 배열을 재사용해 메모리에서 집계한다(반마다 count 질의 없음).
-  const [classResult, childResult] = await Promise.all([
-    fetchOrganizationClasses(supabase, id),
-    fetchOrganizationChildren(supabase, id),
-  ]);
+  // 서로 참조하지 않는 독립 질의 4개라 한 번에 병렬로 가져온다.
+  // 이후 집계(반별 재원 원아 수, 교사별 담당 반, 반별 담당 교사)는 전부
+  // 이 배열들을 메모리에서 join해서 만든다 — 행마다 질의를 반복하지 않는다(N+1 없음).
+  const [classResult, childResult, teacherResult, assignmentResult] =
+    await Promise.all([
+      fetchOrganizationClasses(supabase, id),
+      fetchOrganizationChildren(supabase, id),
+      fetchOrganizationTeachers(supabase, id),
+      fetchOrganizationClassTeachers(supabase, id),
+    ]);
 
   const classRows = classResult.ok ? classResult.classes : [];
   const childRows = childResult.ok ? childResult.children : [];
+  const teacherRows = teacherResult.ok ? teacherResult.teachers : [];
+  const assignmentRows = assignmentResult.ok ? assignmentResult.assignments : [];
 
   const classListItems = buildClassListItems(classRows, childRows);
   const childListItems = buildChildListItems(childRows, classRows);
+
+  const teacherAssignments = buildTeacherAssignments(
+    teacherRows,
+    assignmentRows,
+    classRows,
+  );
+
+  // 신규 배정 후보는 운영 중인 반뿐이다(보관된 반에는 새로 배정하지 않는다).
+  const assignableClasses = classListItems.filter(
+    (classRow) => classRow.status === "active",
+  );
+
+  const teacherNamesByClassId = buildTeacherNamesByClassId(
+    assignmentRows,
+    teacherRows,
+  );
 
   // 등록 폼의 학년도 기본값. Client에서 계산하면 Hydration 불일치 위험이 있어 서버에서 정한다.
   const defaultSchoolYear = new Date().getFullYear();
@@ -232,6 +262,7 @@ export default async function OrganizationDetailPage({
           organizationId={organization.id}
           defaultSchoolYear={defaultSchoolYear}
           classes={classListItems}
+          teacherNamesByClassId={teacherNamesByClassId}
           summary={buildClassSummary(classRows)}
           hasError={!classResult.ok}
           reachedLimit={classResult.ok && classResult.reachedLimit}
@@ -244,6 +275,14 @@ export default async function OrganizationDetailPage({
           summary={buildChildSummary(childRows)}
           hasError={!childResult.ok}
           reachedLimit={childResult.ok && childResult.reachedLimit}
+        />
+
+        <TeacherAssignmentSection
+          organizationId={organization.id}
+          teachers={teacherAssignments}
+          assignableClasses={assignableClasses}
+          summary={buildTeacherSummary(teacherAssignments)}
+          hasError={!teacherResult.ok || !assignmentResult.ok}
         />
       </div>
     </div>

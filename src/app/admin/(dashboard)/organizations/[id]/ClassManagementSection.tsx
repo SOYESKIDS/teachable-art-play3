@@ -3,6 +3,7 @@ import {
   CLASS_STATUS_LABELS,
   formatAgeGroup,
 } from "@/lib/admin/class-child";
+import { formatTeacherNames } from "@/lib/admin/class-teacher";
 import type { ClassListItem, ClassSummary } from "@/types/class-child";
 import { ClassFormDialog } from "./ClassFormDialog";
 
@@ -10,6 +11,8 @@ interface ClassManagementSectionProps {
   organizationId: string;
   defaultSchoolYear: number;
   classes: ClassListItem[];
+  /** 반 id → 담당 교사 이름들. 담당 교사 관리 Section과 같은 데이터를 재사용한다. */
+  teacherNamesByClassId: Record<string, string[]>;
   summary: ClassSummary;
   /** 조회 실패 시 목록 대신 안내를 보여준다 */
   hasError: boolean;
@@ -37,6 +40,7 @@ export function ClassManagementSection({
   organizationId,
   defaultSchoolYear,
   classes,
+  teacherNamesByClassId,
   summary,
   hasError,
   reachedLimit,
@@ -114,6 +118,9 @@ export function ClassManagementSection({
                         재원 원아
                       </th>
                       <th className="px-4 py-2.5 text-left font-semibold">
+                        담당 교사
+                      </th>
+                      <th className="px-4 py-2.5 text-left font-semibold">
                         상태
                       </th>
                       <th className="px-4 py-2.5 text-right font-semibold">
@@ -138,6 +145,11 @@ export function ClassManagementSection({
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-navy/70">
                           {classRow.activeChildCount.toLocaleString("ko-KR")}명
+                        </td>
+                        <td className="px-4 py-3 text-navy/70">
+                          {formatTeacherNames(
+                            teacherNamesByClassId[classRow.id] ?? [],
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <span
@@ -176,6 +188,12 @@ export function ClassManagementSection({
                           {formatAgeGroup(classRow.age_group)} ·{" "}
                           {classRow.school_year}학년도 · 재원{" "}
                           {classRow.activeChildCount.toLocaleString("ko-KR")}명
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-navy/50">
+                          담당 교사:{" "}
+                          {formatTeacherNames(
+                            teacherNamesByClassId[classRow.id] ?? [],
+                          )}
                         </p>
                       </div>
                       <span
