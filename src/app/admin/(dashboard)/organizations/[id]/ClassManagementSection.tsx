@@ -13,6 +13,8 @@ interface ClassManagementSectionProps {
   classes: ClassListItem[];
   /** 반 id → 담당 교사 이름들. 담당 교사 관리 Section과 같은 데이터를 재사용한다. */
   teacherNamesByClassId: Record<string, string[]>;
+  /** 반 id → 운영 중인 프로그램 수. 수업 프로그램 운영 Section과 같은 데이터를 재사용한다. */
+  activeProgramCountByClassId: Record<string, number>;
   summary: ClassSummary;
   /** 조회 실패 시 목록 대신 안내를 보여준다 */
   hasError: boolean;
@@ -41,6 +43,7 @@ export function ClassManagementSection({
   defaultSchoolYear,
   classes,
   teacherNamesByClassId,
+  activeProgramCountByClassId,
   summary,
   hasError,
   reachedLimit,
@@ -120,6 +123,9 @@ export function ClassManagementSection({
                       <th className="px-4 py-2.5 text-left font-semibold">
                         담당 교사
                       </th>
+                      <th className="px-4 py-2.5 text-right font-semibold">
+                        운영 프로그램
+                      </th>
                       <th className="px-4 py-2.5 text-left font-semibold">
                         상태
                       </th>
@@ -150,6 +156,12 @@ export function ClassManagementSection({
                           {formatTeacherNames(
                             teacherNamesByClassId[classRow.id] ?? [],
                           )}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums text-navy/70">
+                          {(
+                            activeProgramCountByClassId[classRow.id] ?? 0
+                          ).toLocaleString("ko-KR")}
+                          개
                         </td>
                         <td className="px-4 py-3">
                           <span
@@ -194,6 +206,11 @@ export function ClassManagementSection({
                           {formatTeacherNames(
                             teacherNamesByClassId[classRow.id] ?? [],
                           )}
+                          {" · "}운영 프로그램{" "}
+                          {(
+                            activeProgramCountByClassId[classRow.id] ?? 0
+                          ).toLocaleString("ko-KR")}
+                          개
                         </p>
                       </div>
                       <span

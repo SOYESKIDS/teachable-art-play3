@@ -22,7 +22,17 @@ import {
   fetchOrganizationClassTeachers,
   fetchOrganizationTeachers,
 } from "@/lib/admin/class-teacher-queries";
+import {
+  buildActiveProgramCountByClassId,
+  buildAssignableClasses,
+  buildAssignablePrograms,
+  buildAssignmentItems,
+  buildAssignmentSummary,
+  fetchAllCurriculumPrograms,
+  fetchClassProgramAssignments,
+} from "@/lib/admin/class-program-queries";
 import { DirectorInviteDialog } from "./DirectorInviteDialog";
+import { ClassProgramSection } from "./ClassProgramSection";
 import { TeacherAssignmentSection } from "./TeacherAssignmentSection";
 import { ClassManagementSection } from "./ClassManagementSection";
 import { ChildManagementSection } from "./ChildManagementSection";
@@ -109,13 +119,21 @@ export default async function OrganizationDetailPage({
   // 서로 참조하지 않는 독립 질의 4개라 한 번에 병렬로 가져온다.
   // 이후 집계(반별 재원 원아 수, 교사별 담당 반, 반별 담당 교사)는 전부
   // 이 배열들을 메모리에서 join해서 만든다 — 행마다 질의를 반복하지 않는다(N+1 없음).
-  const [classResult, childResult, teacherResult, assignmentResult] =
-    await Promise.all([
-      fetchOrganizationClasses(supabase, id),
-      fetchOrganizationChildren(supabase, id),
-      fetchOrganizationTeachers(supabase, id),
-      fetchOrganizationClassTeachers(supabase, id),
-    ]);
+  const [
+    classResult,
+    childResult,
+    teacherResult,
+    assignmentResult,
+    programAssignmentResult,
+    curriculumProgramResult,
+  ] = await Promise.all([
+    fetchOrganizationClasses(supabase, id),
+    fetchOrganizationChildren(supabase, id),
+    fetchOrganizationTeachers(supabase, id),
+    fetchOrganizationClassTeachers(supabase, id),
+    fetchClassProgramAssignments(supabase, id),
+    fetchAllCurriculumPrograms(supabase),
+  ]);
 
   const classRows = classResult.ok ? classResult.classes : [];
   const childRows = childResult.ok ? childResult.children : [];
@@ -140,6 +158,27 @@ export default async function OrganizationDetailPage({
     assignmentRows,
     teacherRows,
   );
+
+  // 반-프로그램 배정. 프로그램은 status로 거르지 않고 전부 읽어
+  //   - 기존 배정 표시(배정 후 archived된 프로그램도 이름이 보여야 한다)
+  //   - 신규 배정 후보(published만)
+  // 두 용도를 질의 하나로 처리한다. 나머지는 전부 메모리 join이다.
+  const programAssignmentRows = programAssignmentResult.ok
+    ? programAssignmentResult.assignments
+    : [];
+  const curriculumPrograms = curriculumProgramResult.ok
+    ? curriculumProgramResult.programs
+    : [];
+
+  const programAssignments = buildAssignmentItems(
+    programAssignmentRows,
+    classRows,
+    curriculumPrograms,
+  );
+
+  // 반 관리 표에 곁들일 "운영 중 프로그램 수" — 위 배열을 재사용해 추가 질의가 없다.
+  const activeProgramCountByClassId =
+    buildActiveProgramCountByClassId(programAssignmentRows);
 
   // 등록 폼의 학년도 기본값. Client에서 계산하면 Hydration 불일치 위험이 있어 서버에서 정한다.
   const defaultSchoolYear = new Date().getFullYear();
@@ -263,6 +302,7 @@ export default async function OrganizationDetailPage({
           defaultSchoolYear={defaultSchoolYear}
           classes={classListItems}
           teacherNamesByClassId={teacherNamesByClassId}
+          activeProgramCountByClassId={activeProgramCountByClassId}
           summary={buildClassSummary(classRows)}
           hasError={!classResult.ok}
           reachedLimit={classResult.ok && classResult.reachedLimit}
@@ -283,6 +323,18 @@ export default async function OrganizationDetailPage({
           assignableClasses={assignableClasses}
           summary={buildTeacherSummary(teacherAssignments)}
           hasError={!teacherResult.ok || !assignmentResult.ok}
+        />
+
+        <ClassProgramSection
+          organizationId={organization.id}
+          assignments={programAssignments}
+          assignableClasses={buildAssignableClasses(
+            classRows,
+            programAssignmentRows,
+          )}
+          assignablePrograms={buildAssignablePrograms(curriculumPrograms)}
+          summary={buildAssignmentSummary(programAssignmentRows, classRows)}
+          hasError={!programAssignmentResult.ok || !curriculumProgramResult.ok}
         />
       </div>
     </div>
