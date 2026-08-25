@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { ctaLabels, heroCopy, heroFlowSteps, heroMicroProof } from "@/data/site-copy";
@@ -181,49 +182,27 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* 우측: Visual (실제 이미지 준비 전 Premium Placeholder) + Floating UI */}
+        {/* 우측: 실제 수업 현장 사진 + Floating UI */}
         <div className="relative mb-14 lg:mb-0">
-          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy sm:aspect-[4/3] lg:aspect-[4/5]">
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 opacity-[0.35]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)",
-                backgroundSize: "22px 22px",
-              }}
+          {/*
+            비율을 breakpoint별로 나누지 않고 5:4 하나로 통일했다.
+            사진 파일 자체를 5:4로 내보냈기 때문에, 어느 화면에서도 추가 crop이 일어나지 않는다
+            (= 아이가 잘리거나 구도가 바뀌는 일이 없다). 세로 4:5였던 이전 비율은
+            가로 구도의 교실 사진을 좌우로 크게 잘라내서 쓰지 않았다.
+          */}
+          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy">
+            <Image
+              src="/images/site/hero/hero-kindergarten-class.webp"
+              alt="유치원 강당에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 동작을 따라 하는 실제 수업 장면"
+              fill
+              priority
+              sizes="(min-width: 1024px) 47vw, 100vw"
+              className="object-cover"
             />
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-gradient-to-br from-navy via-navy/95 to-trust-blue/70"
-            />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
-                <svg
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  className="text-yellow"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="4" width="18" height="16" rx="2.5" />
-                  <circle cx="9" cy="10" r="1.75" />
-                  <path d="M21 16.5l-5.2-5.2a1.5 1.5 0 0 0-2.12 0L3 21" />
-                </svg>
-              </div>
-              <p className="text-base font-semibold text-white">
-                {heroCopy.visualHeading}
-              </p>
-              <p className="text-xs font-medium text-white/50">
-                {heroCopy.visualPlaceholderNote}
-              </p>
-            </div>
 
             {/* 보조 Floating Layer — 플랫폼 연동 느낌 */}
-            <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:right-5 sm:top-5">
+            {/* 사진 위로 올라오므로 반투명 흰색 대신 Navy 배경을 써서 대비를 확보한다. */}
+            <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/70 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:right-5 sm:top-5">
               <span className="h-1.5 w-1.5 rounded-full bg-yellow" aria-hidden="true" />
               {heroCopy.visualBadge}
             </div>

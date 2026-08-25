@@ -69,9 +69,18 @@ export interface ValueItem {
 
 export interface ContentItem {
   label: string;
+  /**
+   * large = 아이가 수업에서 직접 만나는 핵심 콘텐츠,
+   * small = 그 수업을 지원하는 자료. 카드 크기는 동일하고 아이콘 강조만 달라진다.
+   */
   size: "large" | "small";
-  imagePath: string;
-  placeholderCaption: string;
+}
+
+/** ContentSection 하단 "실제 콘텐츠 예시" 스트립에 쓰는 실제 제작물 이미지. */
+export interface ContentExample {
+  src: string;
+  alt: string;
+  label: string;
 }
 
 export interface DirectorKpi {

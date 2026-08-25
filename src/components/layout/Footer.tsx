@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { contactInfo, legalLinks, navigation } from "@/data/site-copy";
@@ -8,10 +9,18 @@ export function Footer() {
     <footer className="border-t border-navy/10 bg-navy pt-14 pb-32 text-white/70 sm:pt-16 lg:pb-16">
       <Container>
         <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold tracking-[0.14em] text-white/45">
-              SOYESKIDS
-            </span>
+          <div className="flex flex-col items-start gap-2.5">
+            {/*
+              워드마크에 흰색 외곽선이 들어가 있어 Navy 배경에서도 대비가 확보된다.
+              (Ivory Header보다 오히려 또렷하다 — 별도 배경 카드를 두지 않는 이유다)
+            */}
+            <Image
+              src="/images/site/brand/soyeskids-logo-primary.png"
+              alt="SOYESKIDS"
+              width={440}
+              height={77}
+              className="h-[22px] w-auto"
+            />
             <span className="font-serif text-xl italic text-white">TeachAble Art Play</span>
           </div>
 

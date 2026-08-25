@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -14,13 +15,26 @@ export function Header() {
       <Container className="flex h-[72px] items-center justify-between lg:h-20">
         <Link
           href="/"
-          className="flex flex-col leading-none"
+          className="flex flex-col items-start leading-none"
           onClick={() => setIsMenuOpen(false)}
         >
-          <span className="text-[10px] font-semibold tracking-[0.14em] text-navy/45">
-            SOYESKIDS
-          </span>
-          <span className="mt-1 whitespace-nowrap font-serif text-xl font-semibold italic text-navy sm:text-2xl">
+          {/*
+            공식 SOYESKIDS 워드마크. 원본(01_logo_2.png)은 625x625 안에 잉크가 587x103만
+            들어 있어 여백을 잘라낸 사본을 쓴다 — 그래야 지정한 높이가 곧 글자 높이가 된다.
+            높이로만 제어하는 이유는 Header 높이(72/80px)를 넘기지 않기 위해서다.
+            items-start가 없으면 flex column의 기본 stretch 때문에 로고가
+            아래 "TeachAble Art Play" 폭(약 198px)까지 늘어난다 — w-auto로는 막지 못한다.
+            (h-[19px] ≈ 109px, h-[23px] ≈ 131px 폭)
+          */}
+          <Image
+            src="/images/site/brand/soyeskids-logo-primary.png"
+            alt="SOYESKIDS"
+            width={440}
+            height={77}
+            priority
+            className="h-[19px] w-auto lg:h-[23px]"
+          />
+          <span className="mt-1.5 whitespace-nowrap font-serif text-xl font-semibold italic text-navy sm:text-2xl">
             TeachAble Art Play
           </span>
         </Link>

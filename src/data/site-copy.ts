@@ -4,6 +4,7 @@ import type {
   AIPrincipleItem,
   BenefitItem,
   ClassStep,
+  ContentExample,
   ContentItem,
   CoreSolution,
   CoreSolutionFlowStep,
@@ -402,46 +403,42 @@ export const contentCopy = {
 };
 
 /**
- * CONTENT Section 전용: 실제 제공 콘텐츠 6종 (상단 3개를 크게, 하단 3개를 작게)
- * imagePath는 실제 제품 이미지 확보 시 해당 경로에 파일만 넣으면 되도록 미리 분리해둔 경로입니다.
- * 지금은 파일이 없으므로 컴포넌트에서 이 경로 대신 placeholderCaption을 보여줍니다.
+ * 수업에 포함되는 콘텐츠 6종.
+ *
+ * 이 카드들은 "무엇이 들어 있는가"를 보여주는 목록이라 아이콘으로 통일한다.
+ * 실제 제작물 사진은 아래 contentExamples(별도 스트립)에서 따로 보여준다
+ * — 일부 카드에만 사진을 넣으면 나머지가 "아직 준비 중"으로 읽히기 때문이다.
  */
 export const contentItems: ContentItem[] = [
+  { label: "마음동화 + EBOOK", size: "large" },
+  { label: "VOD 애니메이션", size: "large" },
+  { label: "워크북", size: "large" },
+  { label: "활동 음원", size: "small" },
+  { label: "미술·창의활동 키트", size: "small" },
+  { label: "교사용 수업 가이드", size: "small" },
+];
+
+/**
+ * "실제로 제작되어 있는 콘텐츠"라는 증거용 이미지.
+ * label은 이미지 안에 실제로 인쇄되어 있는 콘텐츠명을 그대로 옮긴 것이다
+ * — 새 상품명이나 설명을 만들지 않는다. VOD 두 편이 서로 다른 콘텐츠임을
+ * 라벨만 보고도 구분할 수 있어야 해서 공통 명칭 대신 각 편의 제목을 쓴다.
+ */
+export const contentExamples: ContentExample[] = [
   {
-    label: "마음동화 + EBOOK",
-    size: "large",
-    imagePath: "/images/products/storybook.jpg",
-    placeholderCaption: "마음동화 제품 이미지",
+    src: "/images/site/content/vod-bukgeuki-ballet.webp",
+    alt: "VOD 애니메이션 '북극이와 발레해요!' 한 장면 — 눈 내리는 마을 배경에서 북극곰 캐릭터가 동작을 보여준다",
+    label: "북극이와 발레해요!",
   },
   {
-    label: "VOD 애니메이션",
-    size: "large",
-    imagePath: "/images/products/vod.jpg",
-    placeholderCaption: "VOD 대표 장면",
+    src: "/images/site/content/vod-ella-ballet.webp",
+    alt: "VOD 애니메이션 '엘라와 발레해요!' 한 장면 — 나무 아래에서 코끼리 캐릭터가 발레 동작을 보여준다",
+    label: "엘라와 발레해요!",
   },
   {
-    label: "워크북",
-    size: "large",
-    imagePath: "/images/products/workbook.jpg",
-    placeholderCaption: "워크북 제품 이미지",
-  },
-  {
-    label: "활동 음원",
-    size: "small",
-    imagePath: "/images/products/audio.jpg",
-    placeholderCaption: "활동 음원 커버 이미지",
-  },
-  {
-    label: "미술·창의활동 키트",
-    size: "small",
-    imagePath: "/images/products/kit.jpg",
-    placeholderCaption: "창의활동 키트 이미지",
-  },
-  {
-    label: "교사용 수업 가이드",
-    size: "small",
-    imagePath: "/images/products/guide.jpg",
-    placeholderCaption: "교사용 가이드 이미지",
+    src: "/images/site/classroom/classroom-workbook-play.webp",
+    alt: "아이가 교실 바닥에서 색연필로 워크북 활동지를 색칠하는 모습",
+    label: "워크북 활동",
   },
 ];
 
@@ -871,8 +868,6 @@ export const heroCopy = {
   supportingMessage: brandMessage.coreMessage,
   ctaPrimary: ctaLabels.primary,
   ctaSecondary: "서비스 한눈에 보기",
-  visualHeading: "수업 사진 · 성장기록 UI",
-  visualPlaceholderNote: "실제 이미지 준비 중",
   visualBadge: "원장 대시보드 연동",
   demoCard: {
     badge: "DEMO · 예시 화면",

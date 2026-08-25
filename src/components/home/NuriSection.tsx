@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { nuriCurriculum, nuriSectionCopy } from "@/data/site-copy";
@@ -57,6 +58,25 @@ export function NuriSection() {
             </div>
           </div>
         </div>
+
+        {/*
+          교육과정 구조(위)가 이 섹션의 주인공이므로 사진은 그 아래에 보조로만 둔다.
+          max-w-2xl로 묶어 화면 절반을 넘기지 않게 했다.
+        */}
+        <figure className="mx-auto mt-16 max-w-2xl">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy/5">
+            <Image
+              src="/images/site/classroom/classroom-vod-learning.webp"
+              alt="유치원 유희실에서 아이들이 화면에 나오는 이야기 영상을 보며 움직임으로 표현하는 수업 장면"
+              fill
+              sizes="(min-width: 768px) 672px, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-center text-xs font-medium text-navy/45">
+            실제 수업 현장
+          </figcaption>
+        </figure>
 
         <p className="mx-auto mt-14 max-w-xl text-center text-sm leading-relaxed text-navy/50">
           {nuriSectionCopy.disclaimer}

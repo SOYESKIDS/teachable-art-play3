@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -17,8 +18,31 @@ export function ClassTeacherSection() {
       <Container>
         <SectionHeader headline={classMessage.headline} subCopy={classMessage.sub} />
 
+        {/*
+          실제 수업 현장 사진 — 이 섹션의 주인공은 아래 50분 수업 구성이고,
+          사진은 "실제로 운영되고 있다"는 증거 역할만 한다.
+          그래서 폭(max-w-3xl)과 비율(16:9)을 함께 낮춰 시각적 무게를 줄였다.
+          16:10 → 16:9로 바꾸면 교사가 프레임에서 작아지고 아이들이 화면을 채워,
+          "담임교사가 앞에서 이끈다"는 메시지는 유지하면서 교사 얼굴이
+          시각적 초점이 되지 않는다.
+        */}
+        <figure className="mx-auto mt-12 max-w-3xl">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy/5">
+            <Image
+              src="/images/site/classroom/classroom-teacher-activity.webp"
+              alt="담임교사 한 명이 교실 앞에서 동작을 시범 보이고 아이들이 뒤에서 따라 하는 실제 수업 장면"
+              fill
+              sizes="(min-width: 1024px) 768px, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-center text-xs font-medium text-navy/45">
+            실제 수업 현장
+          </figcaption>
+        </figure>
+
         {/* A. 50분 표준수업 */}
-        <div className="mt-16">
+        <div className="mt-20">
           <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
             <span className="text-4xl font-bold text-navy sm:text-5xl">
               50
