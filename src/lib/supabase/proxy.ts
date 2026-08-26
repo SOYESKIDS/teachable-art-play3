@@ -15,10 +15,12 @@ function isPublicPath(pathname: string) {
  * 영역별 로그인 화면.
  *
  * SOYES 운영자와 기관 사용자는 로그인 화면이 다르므로 리다이렉트 대상도 분리한다.
- * (/admin → /admin/login, /director → /login)
+ * (/admin → /admin/login, /director·/teacher → /login)
  */
 function loginPathFor(pathname: string): string {
-  return pathname.startsWith("/director") ? "/login" : "/admin/login";
+  return pathname.startsWith("/director") || pathname.startsWith("/teacher")
+    ? "/login"
+    : "/admin/login";
 }
 
 /**

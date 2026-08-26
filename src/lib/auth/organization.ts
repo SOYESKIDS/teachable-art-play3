@@ -117,3 +117,19 @@ export async function requireOrganizationRole(
 export async function requireDirector(): Promise<OrganizationSession> {
   return requireOrganizationRole(["director"]);
 }
+
+/** 교사 전용 게이트 */
+export async function requireTeacher(): Promise<OrganizationSession> {
+  return requireOrganizationRole(["teacher"]);
+}
+
+/**
+ * 원장·교사 공용 게이트.
+ *
+ * 수업 상태 변경처럼 두 역할이 같은 동작을 하는 Server Action에서 쓴다.
+ * "어느 수업을 만질 수 있는가"는 여기서 판정하지 않는다 — RLS가 한다.
+ * 이 게이트가 보장하는 것은 "활성 기관의 활성 교직원인가"까지다.
+ */
+export async function requireStaff(): Promise<OrganizationSession> {
+  return requireOrganizationRole(["director", "teacher"]);
+}

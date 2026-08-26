@@ -10,6 +10,7 @@ import type {
   TeacherAssignmentViewModel,
 } from "@/types/class-teacher";
 import { TeacherAssignmentDialog } from "./TeacherAssignmentDialog";
+import { TeacherInviteDialog } from "./TeacherInviteDialog";
 
 interface TeacherAssignmentSectionProps {
   organizationId: string;
@@ -61,9 +62,8 @@ function AssignedClasses({
 /**
  * 담당 교사 관리 영역.
  *
- * Server Component다 — 목록은 정적이고 배정 Dialog만 Client다.
- * 이번 단계에서는 "이미 등록된 교사"의 반 배정만 다룬다.
- * 교사 초대(이메일 발송)는 제공하지 않으므로 초대 버튼도 두지 않는다.
+ * Server Component다 — 목록은 정적이고 초대/배정 Dialog만 Client다.
+ * 교사를 이메일로 초대해 기관 구성원으로 등록하고, 등록된 교사의 담당 반을 관리한다.
  */
 export function TeacherAssignmentSection({
   organizationId,
@@ -74,12 +74,20 @@ export function TeacherAssignmentSection({
 }: TeacherAssignmentSectionProps) {
   return (
     <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2">
-      <div>
-        <h2 className="text-[15px] font-bold text-navy">담당 교사 관리</h2>
-        <p className="mt-1 text-[12px] text-navy/50">
-          이미 이 기관에 등록된 교사의 담당 반을 관리합니다. 한 교사가 여러 반을
-          담당할 수 있습니다.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-[15px] font-bold text-navy">담당 교사 관리</h2>
+          <p className="mt-1 text-[12px] text-navy/50">
+            교사를 초대한 뒤 반의 담당 교사로 배정할 수 있습니다. 한 교사가 여러
+            반을 담당할 수 있습니다.
+          </p>
+        </div>
+        {!hasError && teachers.length > 0 ? (
+          <TeacherInviteDialog
+            organizationId={organizationId}
+            variant="outline"
+          />
+        ) : null}
       </div>
 
       {hasError ? (
@@ -101,8 +109,11 @@ export function TeacherAssignmentSection({
                 아직 등록된 교사가 없습니다.
               </p>
               <p className="mt-1 text-[13px] text-navy/50">
-                교사 초대 기능은 추후 제공됩니다.
+                교사를 초대한 뒤 담당 반을 배정해주세요.
               </p>
+              <div className="mt-4 flex justify-center">
+                <TeacherInviteDialog organizationId={organizationId} />
+              </div>
             </div>
           ) : (
             <>

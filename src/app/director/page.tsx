@@ -70,14 +70,31 @@ export default async function DirectorPage({
             </h1>
             <p className="mt-1 text-[14px] text-navy/55">원장 대시보드</p>
 
-            <div className="mt-6 rounded-xl border border-navy/10 bg-white p-8">
-              <p className="text-[15px] font-semibold text-navy">
-                기관 계정 연결이 정상적으로 완료되었습니다.
-              </p>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-navy/50">
-                교사 관리, 반 운영, 수업과 성장기록 기능은 순차적으로 열립니다.
-              </p>
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Link
+                href={`/director/sessions?org=${selected.organizationId}`}
+                className="rounded-xl border border-navy/10 bg-white p-6 transition-colors hover:border-navy/25"
+              >
+                <p className="text-[15px] font-bold text-navy">수업 운영</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-navy/50">
+                  오늘 예정된 수업을 확인하고 시작·완료 처리합니다.
+                </p>
+              </Link>
+
+              <Link
+                href={`/director/sessions/history?org=${selected.organizationId}`}
+                className="rounded-xl border border-navy/10 bg-white p-6 transition-colors hover:border-navy/25"
+              >
+                <p className="text-[15px] font-bold text-navy">수업 이력</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-navy/50">
+                  반별로 지난 수업 기록을 확인합니다.
+                </p>
+              </Link>
             </div>
+
+            <p className="mt-5 text-[13px] leading-relaxed text-navy/50">
+              반·원아 관리와 성장기록 기능은 순차적으로 열립니다.
+            </p>
 
             {memberships.length > 1 ? (
               <div className="mt-5">
