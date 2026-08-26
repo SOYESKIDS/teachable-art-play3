@@ -54,6 +54,8 @@ const MESSAGES = {
   assignmentNotInOrganization: "이 기관의 운영 정보가 아닙니다.",
   notActive:
     "운영 중인 배정만 종료할 수 있습니다. 이미 완료·취소된 이력은 다시 변경할 수 없습니다.",
+  staleAssignment:
+    "프로그램 운영 상태가 이미 변경되었습니다. 화면을 새로고침한 뒤 다시 확인해주세요.",
   createFailure: "프로그램을 배정하지 못했습니다. 잠시 후 다시 시도해주세요.",
   updateFailure: "운영 상태를 변경하지 못했습니다. 잠시 후 다시 시도해주세요.",
   created: "프로그램을 배정했습니다.",
@@ -261,18 +263,30 @@ export async function closeClassProgramAssignmentAction(
 
   // payload는 status 하나뿐이다.
   // start_date / organization_id / class_id / program_id는 여기 들어가지 않는다.
-  const { error: updateError } = await supabase
+  //
+  // ★ .select().maybeSingle()이 반드시 필요하다.
+  //   PostgREST의 PATCH는 return=representation이 없으면 204를 돌려주고,
+  //   postgrest-js는 조건에 맞는 행이 0개여도 { data: null, error: null }을 준다.
+  //   아래 status='active' 가드는 경합을 제대로 막아 주지만, error만 확인하면
+  //   "다른 관리자가 먼저 종료해서 아무것도 안 바뀐 경우"를 성공으로 착각한다.
+  //   실제로 바뀐 행을 돌려받아 확인한다.
+  const { data: updated, error: updateError } = await supabase
     .from("class_program_assignments")
     .update({ status })
     .eq("id", assignmentId)
     .eq("organization_id", organizationId)
     // 조회와 UPDATE 사이에 다른 관리자가 먼저 종료했을 수 있어 조건을 한 번 더 건다.
-    .eq("status", "active");
+    .eq("status", "active")
+    .select("id")
+    .maybeSingle();
 
   if (updateError) {
     logFailure("assignment close", updateError.message);
     return error(MESSAGES.updateFailure);
   }
+
+  // 0행 = 그 사이에 누군가 이 배정을 이미 완료/취소했다.
+  if (!updated) return error(MESSAGES.staleAssignment);
 
   refresh();
 

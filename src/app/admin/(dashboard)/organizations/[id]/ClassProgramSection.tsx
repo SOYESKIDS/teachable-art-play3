@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   ASSIGNMENT_STATUSES,
@@ -251,16 +252,27 @@ export function ClassProgramSection({
                               <ProgramStatusBadge status={item.programStatus} />
                             </td>
                             <td className="whitespace-nowrap px-4 py-3 text-right">
-                              {isTerminalAssignmentStatus(item.status) ? (
-                                <span className="text-[12px] text-navy/40">
-                                  변경 불가
-                                </span>
-                              ) : (
-                                <ClassProgramManageDialog
-                                  organizationId={organizationId}
-                                  assignment={item}
-                                />
-                              )}
+                              <span className="inline-flex items-center gap-3">
+                                {/* 수업 실행 이력은 종료된 배정에서도 열람할 수 있어야 한다. */}
+                                <Link
+                                  href={`/admin/organizations/${organizationId}/program-assignments/${item.id}`}
+                                  className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                                >
+                                  {isTerminalAssignmentStatus(item.status)
+                                    ? "수업 이력"
+                                    : "수업 운영"}
+                                </Link>
+                                {isTerminalAssignmentStatus(item.status) ? (
+                                  <span className="text-[12px] text-navy/40">
+                                    변경 불가
+                                  </span>
+                                ) : (
+                                  <ClassProgramManageDialog
+                                    organizationId={organizationId}
+                                    assignment={item}
+                                  />
+                                )}
+                              </span>
                             </td>
                           </tr>
                         ))}
@@ -298,16 +310,26 @@ export function ClassProgramSection({
                               ? CURRICULUM_STATUS_LABELS[item.programStatus]
                               : "—"}
                           </span>
-                          {isTerminalAssignmentStatus(item.status) ? (
-                            <span className="text-[12px] text-navy/40">
-                              변경 불가
-                            </span>
-                          ) : (
-                            <ClassProgramManageDialog
-                              organizationId={organizationId}
-                              assignment={item}
-                            />
-                          )}
+                          <span className="flex items-center gap-3">
+                            <Link
+                              href={`/admin/organizations/${organizationId}/program-assignments/${item.id}`}
+                              className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                            >
+                              {isTerminalAssignmentStatus(item.status)
+                                ? "수업 이력"
+                                : "수업 운영"}
+                            </Link>
+                            {isTerminalAssignmentStatus(item.status) ? (
+                              <span className="text-[12px] text-navy/40">
+                                변경 불가
+                              </span>
+                            ) : (
+                              <ClassProgramManageDialog
+                                organizationId={organizationId}
+                                assignment={item}
+                              />
+                            )}
+                          </span>
                         </div>
                       </li>
                     ))}
