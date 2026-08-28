@@ -4,7 +4,9 @@ import { useActionState } from "react";
 import { setPasswordAction } from "./actions";
 import {
   MIN_PASSWORD_LENGTH,
+  SET_PASSWORD_COPY,
   SET_PASSWORD_INITIAL_STATE,
+  type SetPasswordMode,
 } from "./form-state";
 
 const fieldClasses =
@@ -12,14 +14,23 @@ const fieldClasses =
 
 const labelClasses = "block text-[13px] font-semibold text-navy/70";
 
-export function SetPasswordForm() {
+interface SetPasswordFormProps {
+  /** 문구 선택에만 쓴다. 서버는 이 값으로 권한이나 대상을 판단하지 않는다. */
+  mode: SetPasswordMode;
+}
+
+export function SetPasswordForm({ mode }: SetPasswordFormProps) {
   const [state, formAction, isPending] = useActionState(
     setPasswordAction,
     SET_PASSWORD_INITIAL_STATE,
   );
 
+  const copy = SET_PASSWORD_COPY[mode];
+
   return (
     <form action={formAction} className="mt-8 flex flex-col gap-5" noValidate>
+      <input type="hidden" name="mode" value={mode} />
+
       <div className="flex flex-col gap-2">
         <label className={labelClasses} htmlFor="new-password">
           새 비밀번호
@@ -57,6 +68,7 @@ export function SetPasswordForm() {
       {state.error ? (
         <p
           role="alert"
+          aria-live="polite"
           className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"
         >
           {state.error}
@@ -68,7 +80,7 @@ export function SetPasswordForm() {
         disabled={isPending}
         className="mt-1 h-12 w-full rounded-full bg-navy text-[15px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? "설정 중…" : "비밀번호 설정"}
+        {isPending ? copy.pendingLabel : copy.submitLabel}
       </button>
     </form>
   );

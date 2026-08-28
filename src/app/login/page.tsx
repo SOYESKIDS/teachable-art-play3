@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "./LoginForm";
 import { LOGIN_NOTICES } from "./form-state";
 
@@ -38,6 +39,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </p>
 
           <LoginForm initialError={initialError} />
+
+          <p className="mt-5 text-center text-[13px] text-navy/50">
+            <Link
+              href="/auth/forgot-password"
+              className="font-semibold text-navy/70 underline-offset-4 transition-colors hover:text-navy hover:underline"
+            >
+              비밀번호를 잊으셨나요?
+            </Link>
+          </p>
         </div>
 
         <p className="mt-6 text-center text-[12px] text-navy/40">
