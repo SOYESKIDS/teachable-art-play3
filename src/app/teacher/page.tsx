@@ -101,6 +101,7 @@ export default async function TeacherTodayPage({
           board={board}
           showClassName
           hasError={!result.ok}
+          attendanceBasePath="/teacher/sessions"
         />
 
         {hasNoSession ? (

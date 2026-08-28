@@ -9,6 +9,8 @@ interface TodaySessionBoardProps {
   /** 담당 반이 아예 없을 때의 안내 (교사 전용) */
   noClassNotice?: string;
   hasError: boolean;
+  /** 출결 상세 route의 기준 경로 (예: /teacher/sessions) */
+  attendanceBasePath?: string;
 }
 
 function KpiItem({ label, value }: { label: string; value: number }) {
@@ -22,18 +24,32 @@ function KpiItem({ label, value }: { label: string; value: number }) {
   );
 }
 
+/** 출결 상세 링크. basePath가 없으면 출결 버튼을 노출하지 않는다. */
+function buildAttendanceHref(
+  basePath: string | undefined,
+  session: StaffSessionItem,
+): string | undefined {
+  if (!basePath) return undefined;
+
+  return `${basePath}/${session.id}/attendance?org=${encodeURIComponent(
+    session.organization_id,
+  )}`;
+}
+
 function Section({
   title,
   description,
   sessions,
   showClassName,
   emptyText,
+  attendanceBasePath,
 }: {
   title: string;
   description?: string;
   sessions: StaffSessionItem[];
   showClassName: boolean;
   emptyText?: string;
+  attendanceBasePath?: string;
 }) {
   if (sessions.length === 0 && !emptyText) return null;
 
@@ -62,6 +78,7 @@ function Section({
               key={session.id}
               session={session}
               showClassName={showClassName}
+              attendanceHref={buildAttendanceHref(attendanceBasePath, session)}
             />
           ))}
         </ul>
@@ -85,6 +102,7 @@ export function TodaySessionBoardView({
   showClassName = true,
   noClassNotice,
   hasError,
+  attendanceBasePath,
 }: TodaySessionBoardProps): ReactNode {
   if (hasError) {
     return (
@@ -118,6 +136,7 @@ export function TodaySessionBoardView({
         sessions={board.todaySessions}
         showClassName={showClassName}
         emptyText="오늘 예정된 수업이 없습니다."
+        attendanceBasePath={attendanceBasePath}
       />
 
       <Section
@@ -125,6 +144,7 @@ export function TodaySessionBoardView({
         description="아직 완료·취소 처리하지 않은 수업입니다."
         sessions={board.ongoingFromOtherDays}
         showClassName={showClassName}
+        attendanceBasePath={attendanceBasePath}
       />
 
       <Section
@@ -132,6 +152,7 @@ export function TodaySessionBoardView({
         description="예정일이 지났지만 아직 시작하지 않은 수업입니다. 진행했다면 완료로, 하지 않았다면 취소로 정리해주세요."
         sessions={board.overdueSessions}
         showClassName={showClassName}
+        attendanceBasePath={attendanceBasePath}
       />
 
       <Section
@@ -139,6 +160,7 @@ export function TodaySessionBoardView({
         description="예정일이 아직 정해지지 않은 수업입니다."
         sessions={board.undatedSessions}
         showClassName={showClassName}
+        attendanceBasePath={attendanceBasePath}
       />
     </>
   );

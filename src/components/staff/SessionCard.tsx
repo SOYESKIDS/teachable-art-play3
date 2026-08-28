@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   CLASS_SESSION_STATUS_BADGE_CLASSES,
   CLASS_SESSION_STATUS_LABELS,
@@ -14,6 +15,20 @@ interface SessionCardProps {
   showClassName?: boolean;
   /** 이력 화면에서는 상태 변경 버튼을 감춘다 */
   readOnly?: boolean;
+  /** 출결 상세 route. 없으면 출결 버튼을 표시하지 않는다. */
+  attendanceHref?: string;
+}
+
+/**
+ * 출결은 수업 상태와 별개 기능이라 상태별로 문구만 바꾼다.
+ * completed는 SessionActions가 사라져도 출결 정정은 가능하고,
+ * cancelled는 조회만 가능하다.
+ */
+function attendanceButtonLabel(status: StaffSessionItem["status"]): string {
+  if (status === "completed") return "출결 확인·정정";
+  if (status === "cancelled") return "출결 확인";
+
+  return "출결 체크";
 }
 
 export function SessionStatusBadge({
@@ -43,6 +58,7 @@ export function SessionCard({
   session,
   showClassName = true,
   readOnly = false,
+  attendanceHref,
 }: SessionCardProps) {
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
@@ -80,8 +96,23 @@ export function SessionCard({
         <SessionStatusBadge status={session.status} />
       </div>
 
-      {showActions ? (
+      {attendanceHref ? (
         <div className="mt-4 border-t border-navy/8 pt-4">
+          <Link
+            href={attendanceHref}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[14px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+          >
+            {attendanceButtonLabel(session.status)}
+          </Link>
+        </div>
+      ) : null}
+
+      {showActions ? (
+        <div
+          className={
+            attendanceHref ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
+          }
+        >
           <SessionActions session={session} />
         </div>
       ) : null}

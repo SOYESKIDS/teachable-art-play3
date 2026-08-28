@@ -17,6 +17,8 @@ interface SessionHistoryBoardProps {
   /** 교사 화면은 담당 반이 보통 하나라 반 필터를 감출 수 있다 */
   showClassFilter?: boolean;
   hasError: boolean;
+  /** 출결 상세 route의 기준 경로 (예: /director/sessions) */
+  attendanceBasePath?: string;
 }
 
 const controlClasses =
@@ -29,6 +31,18 @@ const STATUS_FILTERS: readonly (ClassSessionStatus | "all")[] = [
   "completed",
   "cancelled",
 ];
+
+/** 출결 상세 링크. basePath가 없으면 출결 버튼을 노출하지 않는다. */
+function buildAttendanceHref(
+  basePath: string | undefined,
+  session: StaffSessionItem,
+): string | undefined {
+  if (!basePath) return undefined;
+
+  return `${basePath}/${session.id}/attendance?org=${encodeURIComponent(
+    session.organization_id,
+  )}`;
+}
 
 /**
  * 수업 이력 화면 (원장·교사 공용).
@@ -46,6 +60,7 @@ export function SessionHistoryBoard({
   classOptions,
   showClassFilter = true,
   hasError,
+  attendanceBasePath,
 }: SessionHistoryBoardProps) {
   const [statusFilter, setStatusFilter] = useState<ClassSessionStatus | "all">(
     "all",
@@ -157,7 +172,12 @@ export function SessionHistoryBoard({
       ) : (
         <ul className="mt-4 flex flex-col gap-3">
           {visible.map((session) => (
-            <SessionCard key={session.id} session={session} readOnly />
+            <SessionCard
+              key={session.id}
+              session={session}
+              readOnly
+              attendanceHref={buildAttendanceHref(attendanceBasePath, session)}
+            />
           ))}
         </ul>
       )}
