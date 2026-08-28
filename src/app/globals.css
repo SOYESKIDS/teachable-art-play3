@@ -77,6 +77,20 @@
   --radius-4xl: var(--radius-4xl);
 }
 
+/*
+ * 가로 스크롤 영역의 스크롤바만 시각적으로 감춘다.
+ * 스크롤 기능 자체는 그대로이며(overflow 속성을 건드리지 않는다),
+ * 적용하는 곳에서는 키보드 접근(tabIndex)을 반드시 함께 보장한다.
+ */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   /*

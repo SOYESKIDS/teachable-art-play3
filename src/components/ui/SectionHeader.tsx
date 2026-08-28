@@ -25,7 +25,12 @@ export function SectionHeader({
           {eyebrow}
         </p>
       )}
-      <h2 className="max-w-3xl whitespace-pre-line text-4xl font-bold leading-[1.2] text-navy sm:text-[2.75rem] lg:text-[3.25rem] xl:text-[3.5rem]">
+      {/*
+        모바일 기본 크기만 36px → 32px(약 11%↓)로 줄인다.
+        390px에서 4줄로 접히던 제목들이 3줄로 정리되어 첫 화면에 본문이 함께 들어온다.
+        sm 이상(640px~) 값은 그대로라 desktop typography는 바뀌지 않는다.
+      */}
+      <h2 className="max-w-3xl whitespace-pre-line text-[2rem] font-bold leading-[1.2] text-navy sm:text-[2.75rem] lg:text-[3.25rem] xl:text-[3.5rem]">
         {headline}
       </h2>
       {subCopy && (

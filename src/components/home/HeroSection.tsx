@@ -140,9 +140,20 @@ export function HeroSection() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/35">
               하나로 연결된 5단계 플랫폼
             </p>
+            {/*
+              가로 스크롤 영역(xl 미만). 실측 390px에서 내용 648px / 표시 350px이라
+              세 번째 카드가 절반쯤 걸쳐 보이는 peek이 이미 만들어진다.
+              여기에 오른쪽 끝 fade를 더해 "더 있다"는 신호를 남기고 스크롤바만 감춘다.
+
+              tabIndex={0}은 장식이 아니다 — 스크롤바를 감추면 마우스 사용자의 단서가
+              사라지므로, 키보드로도 이 영역에 들어와 좌우 키로 넘길 수 있어야 한다
+              (WCAG 2.1.1). aria-label이 이미 있어 포커스 시 이름도 함께 읽힌다.
+              xl 이상은 overflow-visible이라 fade와 스크롤 처리를 모두 되돌린다.
+            */}
             <ol
               aria-label="TeachAble Art Play 5대 핵심 흐름"
-              className="flex items-center gap-2 overflow-x-auto pb-1 xl:flex-nowrap xl:gap-1.5 xl:overflow-visible xl:pb-0"
+              tabIndex={0}
+              className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1 [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] xl:flex-nowrap xl:gap-1.5 xl:overflow-visible xl:pb-0 xl:[mask-image:none]"
             >
               {heroFlowSteps.map((step, index) => (
                 <li
@@ -163,12 +174,19 @@ export function HeroSection() {
             </ol>
           </div>
 
+          {/*
+            모바일(lg 미만)에서는 하단 고정 CTA(MobileStickyCta)가 같은 "도입 상담 문의"를
+            항상 띄우고 있다. 첫 화면에서 같은 행동을 두 번 권하지 않도록 hero의 상담 CTA는
+            max-lg:hidden으로 감추고, 탐색 CTA("서비스 한눈에 보기")만 남긴다.
+            고정 CTA는 lg:hidden이라 lg 이상에서는 반대로 이 버튼이 유일한 상담 진입점이 된다
+            — 두 규칙이 정확히 맞물려 어느 폭에서도 상담 CTA가 사라지지 않는다.
+          */}
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <ButtonLink
               href="#contact"
               variant="primary"
               data-cta="contact-hero"
-              className="px-8 py-4 text-base font-bold sm:text-lg"
+              className="px-8 py-4 text-base font-bold max-lg:hidden sm:text-lg"
             >
               {ctaLabels.contact}
             </ButtonLink>
