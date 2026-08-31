@@ -72,6 +72,7 @@ export default async function DirectorHistoryPage({
           classOptions={buildClassFilterOptions(classes, sessions)}
           hasError={!result.ok}
           attendanceBasePath="/director/sessions"
+          observationBasePath="/director/sessions"
         />
       </div>
     </StaffShell>

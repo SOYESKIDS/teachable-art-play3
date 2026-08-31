@@ -96,6 +96,7 @@ export default async function DirectorSessionsPage({
           showClassName
           hasError={!result.ok}
           attendanceBasePath="/director/sessions"
+          observationBasePath="/director/sessions"
         />
       </div>
     </StaffShell>

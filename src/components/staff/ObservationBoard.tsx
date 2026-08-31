@@ -54,6 +54,19 @@ export function ObservationBoard({
     role === "teacher" &&
     session.classStatus !== "active";
 
+  /**
+   * 원장은 보관된 반의 기록도 그대로 읽는다 —
+   * 20260831094000의 SELECT Policy에는 반 상태 조건이 없고
+   * 원장 분기는 has_org_role() 하나뿐이다.
+   *
+   * 그래도 안내를 두는 이유: 아무 표시가 없으면 "왜 이 반이 목록에 있지"라고
+   * 오해하게 된다. 수업 정보 카드의 "(보관)" 표시만으로는 약하다.
+   * 저장 가능 여부 판정(canWrite)에는 관여하지 않는다 — 문구 전용이다.
+   */
+  const directorArchived =
+    role === "director" &&
+    session.classStatus !== "active";
+
   /** 관찰 원문은 그 자리에 있었던 교사만 쓴다. */
   const canWrite =
     role === "teacher" && !sessionReadOnly;
@@ -141,6 +154,16 @@ export function ObservationBoard({
       {teacherArchived && !sessionReadOnly ? (
         <p className="mt-4 rounded-xl border border-yellow/50 bg-yellow-soft px-4 py-3 text-[13px] leading-relaxed text-navy">
           보관된 반입니다. 기존 관찰기록은 정정할 수 있지만 새 기록은 작성할 수 없습니다.
+        </p>
+      ) : null}
+
+      {/*
+        cancelled 배너가 이미 "조회만 가능"을 말하고 있을 때는 겹쳐 띄우지 않는다.
+        (교사 쪽 배너와 같은 기준 — 배너가 세 개 쌓이면 아무것도 읽지 않게 된다)
+      */}
+      {directorArchived && !sessionReadOnly ? (
+        <p className="mt-4 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+          보관된 반의 관찰기록입니다. 기존 기록을 그대로 조회할 수 있습니다.
         </p>
       ) : null}
 
