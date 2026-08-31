@@ -70,6 +70,7 @@ export default async function TeacherHistoryPage({
           classOptions={buildClassFilterOptions(classes, sessions)}
           hasError={!result.ok}
           attendanceBasePath="/teacher/sessions"
+          observationBasePath="/teacher/sessions"
         />
       </div>
     </StaffShell>

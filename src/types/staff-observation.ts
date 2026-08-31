@@ -156,3 +156,55 @@ export const OBSERVATION_RECORD_STATUS_LABELS: Record<
   draft: "작성 중",
   complete: "작성 완료",
 };
+
+/**
+ * SERVICE-08B-2 — 저장 성공 직후 서버가 확정한 값.
+ *
+ * RPC(20260831100000)가 돌려주는 jsonb에서 읽는다:
+ *   observation_id / created / record_status / updated_at / domain_codes
+ *
+ * childVoice / teacherNote는 RPC 반환에 없다.
+ * 대신 Server Action이 RPC에 넘긴 정규화 값(trim → 빈 문자열이면 null)을 그대로 돌려준다.
+ * RPC는 우리가 보낸 값에 btrim/nullif를 한 번 더 적용하는데,
+ * 이미 trim된 문자열이라 결과가 같다. 즉 이 값이 DB에 저장된 값이다.
+ *
+ * ★ updatedAt은 RPC가 돌려준 문자열 그대로다.
+ *   이것이 다음 저장의 p_expected_updated_at이다. 재가공하면 안 된다.
+ */
+export interface ObservationSavedSnapshot {
+  observationId: string;
+  created: boolean;
+  recordStatus: ObservationRecordStatus;
+  /** timestamptz 원본 문자열. 다음 저장의 동시성 토큰. */
+  updatedAt: string;
+  childVoice: string | null;
+  teacherNote: string | null;
+  /** RPC가 sort_order 순으로 돌려준 최종 영역 집합(보존된 inactive 포함) */
+  domainCodes: string[];
+}
+
+/**
+ * 원아 1명 form의 상태.
+ *
+ * ★ stale을 error와 분리한 이유.
+ *   OB004는 "잘못 입력했다"가 아니라 "다른 사람이 먼저 저장했다"는 뜻이다.
+ *   같은 error로 뭉뚱그리면 화면이 "다시 시도"를 권하게 되고,
+ *   교사는 남의 기록을 덮어쓰려고 반복 저장하게 된다.
+ *   별도 상태로 두어야 "먼저 최신 기록을 확인하라"는 다른 안내를 낼 수 있다.
+ *
+ * childId를 함께 담는 이유:
+ * 한 화면에 여러 원아 form이 있으므로, 어느 form의 결과인지 확인할 수 있어야 한다.
+ */
+export interface ObservationFormState {
+  phase: "idle" | "success" | "error" | "stale";
+  message: string | null;
+  childId: string | null;
+  saved: ObservationSavedSnapshot | null;
+}
+
+export const OBSERVATION_FORM_INITIAL_STATE: ObservationFormState = {
+  phase: "idle",
+  message: null,
+  childId: null,
+  saved: null,
+};

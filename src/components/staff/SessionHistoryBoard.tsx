@@ -19,6 +19,13 @@ interface SessionHistoryBoardProps {
   hasError: boolean;
   /** 출결 상세 route의 기준 경로 (예: /director/sessions) */
   attendanceBasePath?: string;
+  /**
+   * 관찰기록 상세 route의 기준 경로 (예: /teacher/sessions).
+   *
+   * ★ 넘기지 않으면 관찰기록 버튼이 생기지 않는다.
+   *   08B에서는 교사 이력 화면만 넘긴다 — 원장 이력 화면(08C)은 그대로 둔다.
+   */
+  observationBasePath?: string;
 }
 
 const controlClasses =
@@ -44,6 +51,18 @@ function buildAttendanceHref(
   )}`;
 }
 
+/** 관찰기록 상세 링크. basePath가 없으면 관찰기록 버튼을 노출하지 않는다. */
+function buildObservationHref(
+  basePath: string | undefined,
+  session: StaffSessionItem,
+): string | undefined {
+  if (!basePath) return undefined;
+
+  return `${basePath}/${session.id}/observations?org=${encodeURIComponent(
+    session.organization_id,
+  )}`;
+}
+
 /**
  * 수업 이력 화면 (원장·교사 공용).
  *
@@ -61,6 +80,7 @@ export function SessionHistoryBoard({
   showClassFilter = true,
   hasError,
   attendanceBasePath,
+  observationBasePath,
 }: SessionHistoryBoardProps) {
   const [statusFilter, setStatusFilter] = useState<ClassSessionStatus | "all">(
     "all",
@@ -177,6 +197,10 @@ export function SessionHistoryBoard({
               session={session}
               readOnly
               attendanceHref={buildAttendanceHref(attendanceBasePath, session)}
+              observationHref={buildObservationHref(
+                observationBasePath,
+                session,
+              )}
             />
           ))}
         </ul>

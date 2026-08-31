@@ -4,6 +4,7 @@ import {
   formatLessonOrder,
   formatSessionDate,
 } from "@/lib/admin/class-session";
+import { ObservationChildForm } from "@/components/staff/ObservationChildForm";
 import {
   OBSERVATION_RECORD_STATUS_LABELS,
   type ObservationDomain,
@@ -20,21 +21,24 @@ interface ObservationBoardProps {
 }
 
 /**
- * SERVICE-08B-1 — 교사 관찰기록 조회 화면.
- *
- * 이번 단계는 읽기 전용이다. 저장 UI는 다음 단계에서 붙는다.
- * 여기서 확정되는 것은 "무엇이 기록으로 남아 있는가"를 보여주는 방식이고,
- * 저장 단계는 이 화면 위에 입력 폼만 얹는다.
+ * SERVICE-08B — 관찰기록 화면.
  *
  * ★ 이 화면은 아동을 평가하지 않는다.
  *   점수·등급·발달단계·위험도 같은 표시를 만들지 않는다.
- *   보여주는 것은 교사가 남긴 서술과 관찰영역 태그뿐이다.
+ *   다루는 것은 교사가 남긴 서술과 관찰영역 태그뿐이다.
  *
- * 표시 정책
- *   scheduled / in_progress / completed : 기록 조회
- *   cancelled                           : 기록 조회 (다음 단계에서도 저장 불가)
+ * 편집 정책
+ *   cancelled 수업            : 전원 조회만 (RPC OB003 · Policy가 최종 방어선)
+ *   교사 + 운영 중인 반       : 신규 작성 · 기존 정정
+ *   교사 + 보관된 반          : 기존 기록만 정정, 신규 작성 불가
+ *   원장                      : 조회만 (20260831094000의 쓰기 Policy에 director 분기가 없다)
+ *   이름을 읽지 못한 원아     : 조회만
  *
- * 최종 권한 판정은 RLS가 한다. 이 화면은 이미 읽힌 것만 그린다.
+ * ★ 다른 반으로 옮겨간 원아(historical)라고 해서 앱이 임의로 막지 않는다.
+ *   UPDATE Policy는 is_assigned_class_teacher()라 과거 기록의 정정을 허용한다.
+ *   여기서 현재 반 소속만 보고 차단하면 DB가 허용하는 정정을 화면이 막게 된다.
+ *
+ * 최종 권한 판정은 RLS + trigger + RPC다. 아래 판정은 사용자에게 이유를 설명하기 위한 것이다.
  */
 export function ObservationBoard({
   data,
@@ -43,16 +47,16 @@ export function ObservationBoard({
 }: ObservationBoardProps) {
   const { session, domains, children } = data;
 
-  const domainByCode = new Map<string, ObservationDomain>(
-    domains.map((domain) => [domain.code, domain]),
-  );
-
   const sessionReadOnly =
     session.status === "cancelled";
 
   const teacherArchived =
     role === "teacher" &&
     session.classStatus !== "active";
+
+  /** 관찰 원문은 그 자리에 있었던 교사만 쓴다. */
+  const canWrite =
+    role === "teacher" && !sessionReadOnly;
 
   const completeCount = children.filter(
     (child) => child.recordStatus === "complete",
@@ -66,7 +70,15 @@ export function ObservationBoard({
     children.length - completeCount - draftCount;
 
   return (
-    <div>
+    /*
+     * ★ isolate — 본문이 StaffShell의 sticky 헤더(z-30) 위로 올라오지 못하게 못 박는다.
+     *
+     *   이 화면은 카드마다 form·textarea·알림 배너가 들어가 있어
+     *   나중에 어느 하나에 z-index가 붙으면 헤더/nav를 가릴 수 있다.
+     *   여기서 stacking context를 닫아 두면 본문의 z-index가 밖으로 새지 않으므로
+     *   순서는 항상 헤더 → nav → 본문이 된다. (AttendanceEditor는 건드리지 않는다)
+     */
+    <div className="isolate">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Link
@@ -82,7 +94,12 @@ export function ObservationBoard({
         </span>
       </div>
 
-      <section className="mt-4 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
+      {/*
+        scroll-mt-28 — StaffShell 헤더는 상단 행 + nav 2단이라 약 107px을 덮는다.
+        수업 정보 카드(h1 포함)로 스크롤될 때 제목 윗부분이 nav 아래로 들어가지 않도록
+        그보다 조금 큰 여백(112px)을 둔다. 아래 목록·카드도 같은 값을 쓴다.
+      */}
+      <section className="mt-4 scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
         <p className="text-[13px] font-bold text-navy">
           {session.className ?? "반 정보 없음"}
           {session.classStatus === "archived" ? (
@@ -115,23 +132,25 @@ export function ObservationBoard({
         </p>
       </section>
 
-      <p className="mt-4 rounded-xl border border-navy/10 bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-navy/60">
-        지금은 저장된 관찰기록을 확인하는 화면입니다. 기록 작성과 수정은 다음 단계에서 열립니다.
-      </p>
-
       {sessionReadOnly ? (
-        <p className="mt-3 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
-          취소된 수업입니다. 이미 남아 있는 관찰기록만 확인할 수 있습니다.
+        <p className="mt-4 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+          취소된 수업입니다. 이미 남아 있는 관찰기록은 확인만 할 수 있습니다.
         </p>
       ) : null}
 
-      {teacherArchived ? (
-        <p className="mt-3 rounded-xl border border-yellow/50 bg-yellow-soft px-4 py-3 text-[13px] leading-relaxed text-navy">
-          보관된 반입니다. 이미 남아 있는 관찰기록은 그대로 확인할 수 있습니다.
+      {teacherArchived && !sessionReadOnly ? (
+        <p className="mt-4 rounded-xl border border-yellow/50 bg-yellow-soft px-4 py-3 text-[13px] leading-relaxed text-navy">
+          보관된 반입니다. 기존 관찰기록은 정정할 수 있지만 새 기록은 작성할 수 없습니다.
         </p>
       ) : null}
 
-      <section className="mt-5">
+      {role === "director" ? (
+        <p className="mt-4 rounded-xl border border-navy/10 bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-navy/60">
+          관찰기록은 수업을 담당한 교사가 작성합니다. 원장은 조회만 할 수 있습니다.
+        </p>
+      ) : null}
+
+      <section className="mt-5 scroll-mt-28">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-[17px] font-bold text-navy">
@@ -188,8 +207,11 @@ export function ObservationBoard({
             {children.map((child) => (
               <ObservationChildCard
                 key={child.childId}
+                sessionId={session.id}
                 child={child}
-                domainByCode={domainByCode}
+                domains={domains}
+                canWrite={canWrite}
+                teacherArchived={teacherArchived}
               />
             ))}
           </ul>
@@ -208,13 +230,55 @@ function childStatusLabel(
 }
 
 interface ObservationChildCardProps {
+  sessionId: string;
   child: StaffObservationChild;
-  domainByCode: Map<string, ObservationDomain>;
+  domains: ObservationDomain[];
+  canWrite: boolean;
+  teacherArchived: boolean;
+}
+
+/**
+ * 편집 가능 여부와 "왜 불가능한지"를 함께 판정한다.
+ *
+ * 이유를 함께 돌려주는 이유: 카드가 비어 보이면 교사는 화면 오류로 오해한다.
+ * 다만 수업 취소처럼 화면 상단 배너가 이미 설명한 경우에는 문구를 반복하지 않는다.
+ */
+function resolveEditability(
+  child: StaffObservationChild,
+  canWrite: boolean,
+  teacherArchived: boolean,
+): { editable: boolean; blockedReason: string | null } {
+  if (!canWrite) {
+    return { editable: false, blockedReason: null };
+  }
+
+  // 이름조차 읽히지 않는 비정상 행은 화면에서 임의로 정정하지 않는다.
+  if (!child.childName) {
+    return {
+      editable: false,
+      blockedReason:
+        "원아 정보를 확인할 수 없어 이 기록은 수정할 수 없습니다.",
+    };
+  }
+
+  // 보관된 반: 기존 기록 정정은 허용, 신규 작성은 불가 (INSERT Policy와 같은 규칙).
+  if (teacherArchived && !child.hasExistingObservation) {
+    return {
+      editable: false,
+      blockedReason:
+        "보관된 반에서는 새 관찰기록을 작성할 수 없습니다.",
+    };
+  }
+
+  return { editable: true, blockedReason: null };
 }
 
 function ObservationChildCard({
+  sessionId,
   child,
-  domainByCode,
+  domains,
+  canWrite,
+  teacherArchived,
 }: ObservationChildCardProps) {
   const statusLabel = childStatusLabel(
     child.childStatus,
@@ -226,12 +290,14 @@ function ObservationChildCard({
       ]
     : "미작성";
 
-  const hasText =
-    Boolean(child.childVoice) ||
-    Boolean(child.teacherNote);
+  const { editable, blockedReason } = resolveEditability(
+    child,
+    canWrite,
+    teacherArchived,
+  );
 
   return (
-    <li className="rounded-xl border border-navy/10 bg-white p-4">
+    <li className="scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="break-words text-[15px] font-bold text-navy">
@@ -263,79 +329,123 @@ function ObservationChildCard({
         </span>
       </div>
 
-      {child.hasExistingObservation ? (
-        <div className="mt-3 flex flex-col gap-3">
-          <div>
-            <p className="text-[11px] font-bold text-navy/55">
-              관찰영역
-            </p>
+      {editable ? (
+        <ObservationChildForm
+          sessionId={sessionId}
+          child={child}
+          domains={domains}
+        />
+      ) : (
+        <>
+          <ObservationChildReadOnly
+            child={child}
+            domains={domains}
+          />
 
-            {child.domainCodes.length === 0 ? (
-              <p className="mt-1 text-[13px] text-navy/45">
-                선택된 관찰영역이 없습니다.
-              </p>
-            ) : (
-              <ul className="mt-1.5 flex flex-wrap gap-1.5">
-                {child.domainCodes.map((code) => {
-                  const domain =
-                    domainByCode.get(code) ?? null;
-
-                  return (
-                    <li
-                      key={code}
-                      className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-[12px] font-semibold text-navy"
-                    >
-                      {/*
-                        은퇴한 영역도 과거 기록에는 그대로 남는다.
-                        label을 감추면 무엇을 관찰했는지 알 수 없게 되므로
-                        표시하되 현재 선택 목록에 없다는 것만 덧붙인다.
-                      */}
-                      {domain?.label ?? code}
-                      {domain && !domain.isActive ? (
-                        <span className="ml-1 font-normal text-navy/45">
-                          (사용 중지)
-                        </span>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-
-          <div>
-            <p className="text-[11px] font-bold text-navy/55">
-              아이의 말
-            </p>
-            <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
-              {child.childVoice ?? "기록 없음"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[11px] font-bold text-navy/55">
-              교사 관찰
-            </p>
-            <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
-              {child.teacherNote ?? "기록 없음"}
-            </p>
-          </div>
-
-          {/*
-            서술이 둘 다 비어 있는 draft는 정상적으로 존재할 수 있다
-            (complete만 내용을 요구한다). 빈 카드처럼 보이지 않게 알린다.
-          */}
-          {!hasText ? (
-            <p className="text-[12px] leading-relaxed text-navy/45">
-              아직 서술 내용이 입력되지 않은 기록입니다.
+          {blockedReason ? (
+            <p className="mt-3 text-[12px] leading-relaxed text-navy/45">
+              {blockedReason}
             </p>
           ) : null}
-        </div>
-      ) : (
-        <p className="mt-3 text-[13px] leading-relaxed text-navy/45">
-          아직 작성된 관찰기록이 없습니다.
-        </p>
+        </>
       )}
     </li>
+  );
+}
+
+interface ObservationChildReadOnlyProps {
+  child: StaffObservationChild;
+  domains: ObservationDomain[];
+}
+
+/** 편집할 수 없는 원아의 기록을 그대로 보여준다. */
+function ObservationChildReadOnly({
+  child,
+  domains,
+}: ObservationChildReadOnlyProps) {
+  const domainByCode = new Map(
+    domains.map((domain) => [domain.code, domain]),
+  );
+
+  const hasText =
+    Boolean(child.childVoice) ||
+    Boolean(child.teacherNote);
+
+  if (!child.hasExistingObservation) {
+    return (
+      <p className="mt-3 text-[13px] leading-relaxed text-navy/45">
+        아직 작성된 관찰기록이 없습니다.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-3 flex flex-col gap-3">
+      <div>
+        <p className="text-[11px] font-bold text-navy/55">
+          관찰영역
+        </p>
+
+        {child.domainCodes.length === 0 ? (
+          <p className="mt-1 text-[13px] text-navy/45">
+            선택된 관찰영역이 없습니다.
+          </p>
+        ) : (
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {child.domainCodes.map((code) => {
+              const domain =
+                domainByCode.get(code) ?? null;
+
+              return (
+                <li
+                  key={code}
+                  className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-[12px] font-semibold text-navy"
+                >
+                  {/*
+                    은퇴한 영역도 과거 기록에는 그대로 남는다.
+                    label을 감추면 무엇을 관찰했는지 알 수 없게 되므로
+                    표시하되 현재 선택 목록에 없다는 것만 덧붙인다.
+                  */}
+                  {domain?.label ?? code}
+                  {domain && !domain.isActive ? (
+                    <span className="ml-1 font-normal text-navy/45">
+                      (사용 중지)
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold text-navy/55">
+          아이의 말
+        </p>
+        <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+          {child.childVoice ?? "기록 없음"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold text-navy/55">
+          교사 관찰
+        </p>
+        <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+          {child.teacherNote ?? "기록 없음"}
+        </p>
+      </div>
+
+      {/*
+        서술이 둘 다 비어 있는 draft는 정상적으로 존재할 수 있다
+        (complete만 내용을 요구한다). 빈 카드처럼 보이지 않게 알린다.
+      */}
+      {!hasText ? (
+        <p className="text-[12px] leading-relaxed text-navy/45">
+          아직 서술 내용이 입력되지 않은 기록입니다.
+        </p>
+      ) : null}
+    </div>
   );
 }

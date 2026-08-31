@@ -17,6 +17,26 @@ interface SessionCardProps {
   readOnly?: boolean;
   /** 출결 상세 route. 없으면 출결 버튼을 표시하지 않는다. */
   attendanceHref?: string;
+  /**
+   * 관찰기록 상세 route. 없으면 관찰기록 버튼을 표시하지 않는다.
+   *
+   * ★ 출결과 같은 규칙이다 — 링크를 만들어 주는 화면에서만 버튼이 생긴다.
+   *   08B 기준으로 이 값을 넘기는 곳은 교사 화면 둘뿐이고,
+   *   원장 화면은 넘기지 않으므로 버튼이 나타나지 않는다(08C 범위).
+   */
+  observationHref?: string;
+}
+
+/**
+ * 스크린리더가 "관찰기록 링크"만 읽으면 어느 수업인지 알 수 없다.
+ * 목록에 카드가 여러 개 있으므로 반·차시를 접근성 이름에 함께 넣는다.
+ */
+function sessionAriaName(session: StaffSessionItem): string {
+  const parts = [session.className, session.lessonTitle].filter(
+    (value): value is string => Boolean(value),
+  );
+
+  return parts.length > 0 ? parts.join(" · ") : "이 수업";
 }
 
 /**
@@ -59,9 +79,11 @@ export function SessionCard({
   showClassName = true,
   readOnly = false,
   attendanceHref,
+  observationHref,
 }: SessionCardProps) {
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
+  const hasDetailLinks = Boolean(attendanceHref || observationHref);
 
   return (
     <li className="rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
@@ -96,21 +118,43 @@ export function SessionCard({
         <SessionStatusBadge status={session.status} />
       </div>
 
-      {attendanceHref ? (
-        <div className="mt-4 border-t border-navy/8 pt-4">
-          <Link
-            href={attendanceHref}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[14px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
-          >
-            {attendanceButtonLabel(session.status)}
-          </Link>
+      {/*
+        두 버튼은 각자 폭을 유지한 채 좁은 화면에서 줄바꿈된다(flex-wrap).
+        나란히 늘려 반씩 나누지 않는 이유: 문구 길이가 달라
+        좁은 화면에서 "출결 확인·정정"이 두 줄로 깨지기 때문이다.
+      */}
+      {hasDetailLinks ? (
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-navy/8 pt-4">
+          {attendanceHref ? (
+            <Link
+              href={attendanceHref}
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[14px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+            >
+              {attendanceButtonLabel(session.status)}
+            </Link>
+          ) : null}
+
+          {/*
+            ★ 수업 상태와 무관하게 항상 같은 문구·같은 링크다.
+              취소된 수업에도 그때 남긴 관찰기록이 있을 수 있어 조회 경로를 막지 않는다.
+              쓰기 가능 여부는 관찰기록 화면·Server Action·RLS가 판정한다.
+          */}
+          {observationHref ? (
+            <Link
+              href={observationHref}
+              aria-label={`${sessionAriaName(session)} 관찰기록`}
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-navy/20 bg-white px-4 text-[14px] font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+            >
+              관찰기록
+            </Link>
+          ) : null}
         </div>
       ) : null}
 
       {showActions ? (
         <div
           className={
-            attendanceHref ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
+            hasDetailLinks ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
           }
         >
           <SessionActions session={session} />

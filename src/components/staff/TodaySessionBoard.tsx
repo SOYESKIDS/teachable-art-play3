@@ -11,6 +11,13 @@ interface TodaySessionBoardProps {
   hasError: boolean;
   /** 출결 상세 route의 기준 경로 (예: /teacher/sessions) */
   attendanceBasePath?: string;
+  /**
+   * 관찰기록 상세 route의 기준 경로 (예: /teacher/sessions).
+   *
+   * ★ 넘기지 않으면 관찰기록 버튼이 생기지 않는다.
+   *   08B에서는 교사 화면만 넘긴다 — 원장 화면(08C)은 그대로 둔다.
+   */
+  observationBasePath?: string;
 }
 
 function KpiItem({ label, value }: { label: string; value: number }) {
@@ -36,6 +43,18 @@ function buildAttendanceHref(
   )}`;
 }
 
+/** 관찰기록 상세 링크. basePath가 없으면 관찰기록 버튼을 노출하지 않는다. */
+function buildObservationHref(
+  basePath: string | undefined,
+  session: StaffSessionItem,
+): string | undefined {
+  if (!basePath) return undefined;
+
+  return `${basePath}/${session.id}/observations?org=${encodeURIComponent(
+    session.organization_id,
+  )}`;
+}
+
 function Section({
   title,
   description,
@@ -43,6 +62,7 @@ function Section({
   showClassName,
   emptyText,
   attendanceBasePath,
+  observationBasePath,
 }: {
   title: string;
   description?: string;
@@ -50,6 +70,7 @@ function Section({
   showClassName: boolean;
   emptyText?: string;
   attendanceBasePath?: string;
+  observationBasePath?: string;
 }) {
   if (sessions.length === 0 && !emptyText) return null;
 
@@ -79,6 +100,10 @@ function Section({
               session={session}
               showClassName={showClassName}
               attendanceHref={buildAttendanceHref(attendanceBasePath, session)}
+              observationHref={buildObservationHref(
+                observationBasePath,
+                session,
+              )}
             />
           ))}
         </ul>
@@ -103,6 +128,7 @@ export function TodaySessionBoardView({
   noClassNotice,
   hasError,
   attendanceBasePath,
+  observationBasePath,
 }: TodaySessionBoardProps): ReactNode {
   if (hasError) {
     return (
@@ -137,6 +163,7 @@ export function TodaySessionBoardView({
         showClassName={showClassName}
         emptyText="오늘 예정된 수업이 없습니다."
         attendanceBasePath={attendanceBasePath}
+        observationBasePath={observationBasePath}
       />
 
       <Section
@@ -145,6 +172,7 @@ export function TodaySessionBoardView({
         sessions={board.ongoingFromOtherDays}
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
+        observationBasePath={observationBasePath}
       />
 
       <Section
@@ -153,6 +181,7 @@ export function TodaySessionBoardView({
         sessions={board.overdueSessions}
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
+        observationBasePath={observationBasePath}
       />
 
       <Section
@@ -161,6 +190,7 @@ export function TodaySessionBoardView({
         sessions={board.undatedSessions}
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
+        observationBasePath={observationBasePath}
       />
     </>
   );
