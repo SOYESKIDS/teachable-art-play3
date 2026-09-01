@@ -5,6 +5,7 @@ import {
   formatSessionDate,
 } from "@/lib/admin/class-session";
 import { ObservationChildForm } from "@/components/staff/ObservationChildForm";
+import { ObservationMediaSection } from "@/components/staff/ObservationMediaSection";
 import {
   OBSERVATION_RECORD_STATUS_LABELS,
   type ObservationDomain,
@@ -235,6 +236,7 @@ export function ObservationBoard({
                 domains={domains}
                 canWrite={canWrite}
                 teacherArchived={teacherArchived}
+                classActive={session.classStatus === "active"}
               />
             ))}
           </ul>
@@ -258,6 +260,58 @@ interface ObservationChildCardProps {
   domains: ObservationDomain[];
   canWrite: boolean;
   teacherArchived: boolean;
+  /** 반이 운영 중인가 — 활동사진 신규 업로드 조건(is_class_teacher와 같은 기준) */
+  classActive: boolean;
+}
+
+/**
+ * SERVICE-09A — 활동사진을 새로 올릴 수 있는가.
+ *
+ * DB 조건을 그대로 옮긴다.
+ *   Storage  can_upload_observation_media_object()
+ *              = is_class_teacher(반 active) + is_recordable_session(취소 아님)
+ *                + 원아가 그 반의 현재 소속
+ *   Table    INSERT Policy + enforce_observation_media_insert() trigger
+ *
+ * 여기 판정은 사용자에게 이유를 먼저 알려 주기 위한 것이고,
+ * 최종 판정은 Server Action → Storage RLS → DB trigger 순으로 다시 이뤄진다.
+ */
+function resolveMediaUpload(
+  child: StaffObservationChild,
+  canWrite: boolean,
+  classActive: boolean,
+): { canUpload: boolean; blockedReason: string | null } {
+  // 원장 · 취소된 수업 — 상단 배너가 이미 설명하고 있다.
+  if (!canWrite) {
+    return { canUpload: false, blockedReason: null };
+  }
+
+  if (!classActive) {
+    return {
+      canUpload: false,
+      blockedReason:
+        "보관된 반에는 새 활동 사진을 추가할 수 없습니다.",
+    };
+  }
+
+  // 수업 이후 다른 반으로 옮긴 원아. 기존 사진 조회는 그대로 가능하다.
+  if (!child.isCurrentClassMember) {
+    return {
+      canUpload: false,
+      blockedReason:
+        "현재 이 반에 소속되지 않은 원아에게는 새 활동 사진을 추가할 수 없습니다.",
+    };
+  }
+
+  if (!child.childName) {
+    return {
+      canUpload: false,
+      blockedReason:
+        "원아 정보를 확인할 수 없어 활동 사진을 추가할 수 없습니다.",
+    };
+  }
+
+  return { canUpload: true, blockedReason: null };
 }
 
 /**
@@ -302,6 +356,7 @@ function ObservationChildCard({
   domains,
   canWrite,
   teacherArchived,
+  classActive,
 }: ObservationChildCardProps) {
   const statusLabel = childStatusLabel(
     child.childStatus,
@@ -318,6 +373,8 @@ function ObservationChildCard({
     canWrite,
     teacherArchived,
   );
+
+  const media = resolveMediaUpload(child, canWrite, classActive);
 
   return (
     <li className="scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4">
@@ -372,6 +429,20 @@ function ObservationChildCard({
           ) : null}
         </>
       )}
+
+      {/*
+        SERVICE-09A — 활동사진.
+        관찰 텍스트 유무와 무관하게 항상 자리를 둔다. 사진이 없으면 안내만 뜬다.
+        (사진이 없다고 원아 카드를 감추지 않는다)
+      */}
+      <ObservationMediaSection
+        sessionId={sessionId}
+        childId={child.childId}
+        childName={child.childName}
+        media={child.media}
+        canUpload={media.canUpload}
+        uploadBlockedReason={media.blockedReason}
+      />
     </li>
   );
 }

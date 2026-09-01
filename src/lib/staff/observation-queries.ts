@@ -2,6 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ChildStatus, ClassStatus } from "@/types/class-child";
 import type { ClassSessionStatus } from "@/types/class-session";
 import {
+  MAX_OBSERVATION_MEDIA_LOOKUP,
+  OBSERVATION_MEDIA_BUCKET,
+  OBSERVATION_MEDIA_SIGNED_URL_TTL_SECONDS,
+  type ObservationMediaItem,
+} from "@/types/staff-observation-media";
+import {
   MAX_OBSERVATION_ROSTER,
   type ObservationDomain,
   type ObservationRecordStatus,
@@ -106,6 +112,17 @@ interface ObservationDomainLinkRow {
   domain_code: string;
 }
 
+interface ObservationMediaRow {
+  id: string;
+  child_id: string;
+  storage_path: string;
+  mime_type: string;
+  byte_size: number;
+  original_filename: string | null;
+  caption: string | null;
+  created_at: string;
+}
+
 function logQueryFailure(scope: string, message: string) {
   console.error(`[staff/observation] ${scope} query failed: ${message}`);
 }
@@ -155,6 +172,7 @@ export async function fetchStaffObservations(
     currentChildrenResult,
     domainResult,
     observationResult,
+    mediaResult,
   ] = await Promise.all([
     supabase
       .from("classes")
@@ -203,6 +221,26 @@ export async function fetchStaffObservations(
       .eq("organization_id", organizationId)
       .eq("class_session_id", session.id)
       .limit(LOOKUP_LIMIT),
+
+    /**
+     * SERVICE-09A — 이 수업의 활동사진 metadata를 한 번에 읽는다.
+     *
+     * ★ 원아별로 나눠 조회하지 않는다(N+1 금지).
+     *   수업 단위로 1회 읽고 아래에서 child_id로 묶는다.
+     *
+     * ★ 관찰 텍스트와 join하지 않는다.
+     *   사진은 observation_id가 아니라 (수업 · 원아)에 매달려 있어서,
+     *   서술이 아직 없는 원아의 사진도 그대로 나온다.
+     */
+    supabase
+      .from("class_session_observation_media")
+      .select(
+        "id, child_id, storage_path, mime_type, byte_size, original_filename, caption, created_at",
+      )
+      .eq("organization_id", organizationId)
+      .eq("class_session_id", session.id)
+      .order("created_at", { ascending: true })
+      .limit(MAX_OBSERVATION_MEDIA_LOOKUP),
   ]);
 
   if (classResult.error) {
@@ -235,6 +273,11 @@ export async function fetchStaffObservations(
     return { ok: false, reason: "load_failed" };
   }
 
+  if (mediaResult.error) {
+    logQueryFailure("observation media", mediaResult.error.message);
+    return { ok: false, reason: "load_failed" };
+  }
+
   const classRow =
     (classResult.data as unknown as ClassLookupRow | null) ?? null;
 
@@ -252,6 +295,9 @@ export async function fetchStaffObservations(
 
   const observationRows =
     (observationResult.data ?? []) as unknown as ObservationLookupRow[];
+
+  const mediaRows =
+    (mediaResult.data ?? []) as unknown as ObservationMediaRow[];
 
   const domains: ObservationDomain[] = domainRows.map((row) => ({
     code: row.code,
@@ -312,6 +358,70 @@ export async function fetchStaffObservations(
     });
   }
 
+  /**
+   * SERVICE-09A — signed URL 일괄 발급.
+   *
+   * ★ 사진 한 장마다 요청하지 않는다(N+1 금지).
+   *   createSignedUrls()로 이 수업의 경로 전부를 한 번에 서명한다.
+   *
+   * ★ bucket이 private이므로 public URL 경로는 존재하지 않는다.
+   *   여기서 만든 URL은 DB에 저장하지 않는다 — 영구 저장하는 것은 storage_path뿐이고,
+   *   화면을 열 때마다 짧은 수명의 URL을 새로 발급한다.
+   *
+   * ★ 서명에 실패해도 화면 전체를 실패로 만들지 않는다.
+   *   signedUrl이 null이면 그 자리에만 안내를 띄우고 나머지는 정상 표시한다.
+   *   (서명은 Storage RLS를 통과해야 발급되므로, 권한이 없으면 여기서 비게 된다)
+   */
+  const signedUrlByPath = new Map<string, string>();
+
+  if (mediaRows.length > 0) {
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from(OBSERVATION_MEDIA_BUCKET)
+      .createSignedUrls(
+        mediaRows.map((row) => row.storage_path),
+        OBSERVATION_MEDIA_SIGNED_URL_TTL_SECONDS,
+      );
+
+    if (signedError) {
+      logQueryFailure("media signed urls", signedError.message);
+    } else {
+      for (const entry of signedData ?? []) {
+        if (entry.error === null && entry.path && entry.signedUrl) {
+          signedUrlByPath.set(entry.path, entry.signedUrl);
+        }
+      }
+    }
+  }
+
+  /**
+   * 사진을 원아별로 묶는다. 질의는 이미 created_at 오름차순이라
+   * 각 원아 안에서도 올린 순서가 유지된다.
+   */
+  const mediaByChildId = new Map<string, ObservationMediaItem[]>();
+
+  for (const row of mediaRows) {
+    const item: ObservationMediaItem = {
+      id: row.id,
+      childId: row.child_id,
+      storagePath: row.storage_path,
+      mimeType: row.mime_type,
+      byteSize: row.byte_size,
+      originalFilename: row.original_filename,
+      caption: row.caption,
+      createdAt: row.created_at,
+      // ★ DB 값이 아니라 이번 요청에서만 유효한 임시 URL이다.
+      signedUrl: signedUrlByPath.get(row.storage_path) ?? null,
+    };
+
+    const bucket = mediaByChildId.get(row.child_id);
+
+    if (bucket) {
+      bucket.push(item);
+    } else {
+      mediaByChildId.set(row.child_id, [item]);
+    }
+  }
+
   const currentChildById = new Map(
     currentChildren.map((child) => [child.id, child]),
   );
@@ -328,11 +438,16 @@ export async function fetchStaffObservations(
    * 출결이 한 건도 없고 관찰만 있는 원아도 이 경로로 이름이 보인다
    * (20260831095000이 해결한 문제가 정확히 이것이다).
    */
+  /**
+   * ★ 09A부터는 사진만 있는 원아도 여기에 포함된다.
+   *   서술을 쓰기 전에 반을 옮긴 원아의 사진이 이름 없이 남지 않게 한다.
+   */
   const historicalChildIds = [
     ...new Set(
-      observationRows
-        .map((row) => row.child_id)
-        .filter((childId) => !currentChildById.has(childId)),
+      [
+        ...observationRows.map((row) => row.child_id),
+        ...mediaRows.map((row) => row.child_id),
+      ].filter((childId) => !currentChildById.has(childId)),
     ),
   ];
 
@@ -374,6 +489,8 @@ export async function fetchStaffObservations(
    * 현재 반 원아
    * UNION
    * 기존 관찰기록 원아
+   * UNION
+   * 이 수업에 활동사진이 있는 원아 (09A)
    *
    * ★ 이름을 읽지 못한 원아(childName = null)도 목록에서 빼지 않는다.
    *   이미 존재하는 관찰기록을 화면에서 조용히 사라지게 하면
@@ -383,6 +500,8 @@ export async function fetchStaffObservations(
     ...new Set([
       ...currentChildren.map((child) => child.id),
       ...observationRows.map((row) => row.child_id),
+      // 서술은 없고 사진만 올린 원아도 명단에서 빠지지 않는다.
+      ...mediaRows.map((row) => row.child_id),
     ]),
   ];
 
@@ -409,6 +528,8 @@ export async function fetchStaffObservations(
 
         hasExistingObservation: observation !== null,
         isCurrentClassMember: child?.class_id === session.class_id,
+
+        media: mediaByChildId.get(childId) ?? [],
       };
     })
     .sort((a, b) => {

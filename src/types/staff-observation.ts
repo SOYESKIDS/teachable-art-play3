@@ -1,5 +1,6 @@
 import type { ChildStatus, ClassStatus } from "./class-child";
 import type { ClassSessionStatus } from "./class-session";
+import type { ObservationMediaItem } from "./staff-observation-media";
 
 /**
  * SERVICE-08B — 교사 관찰기록 화면 타입.
@@ -101,6 +102,18 @@ export interface StaffObservationChild {
 
   hasExistingObservation: boolean;
   isCurrentClassMember: boolean;
+
+  /**
+   * SERVICE-09A — 이 수업에서 이 원아에 대해 올린 활동사진.
+   *
+   * ★ 관찰 텍스트가 없어도 사진만 있을 수 있다.
+   *   수업 중에는 사진을 먼저 찍고 서술은 나중에 쓴다.
+   *   그래서 media는 observationId가 아니라 (수업 · 원아)에 매달린다.
+   *   hasExistingObservation이 false여도 이 배열이 비어 있지 않을 수 있다.
+   *
+   * ★ 각 항목의 signedUrl은 요청마다 새로 발급되는 임시 값이다(DB 값이 아니다).
+   */
+  media: ObservationMediaItem[];
 }
 
 /**
