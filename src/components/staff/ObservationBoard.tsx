@@ -5,6 +5,7 @@ import {
   formatSessionDate,
 } from "@/lib/admin/class-session";
 import { ObservationChildForm } from "@/components/staff/ObservationChildForm";
+import { ObservationAiDraftSection } from "@/components/staff/ObservationAiDraftSection";
 import { ObservationMediaSection } from "@/components/staff/ObservationMediaSection";
 import {
   OBSERVATION_RECORD_STATUS_LABELS,
@@ -19,6 +20,11 @@ interface ObservationBoardProps {
   data: StaffObservationPageData;
   role: StaffRole;
   backHref: string;
+  /**
+   * SERVICE-10A — AI 정리 기능이 설정되어 있는가(환경변수 존재 여부).
+   * 서버에서만 판정해 내려보낸다. 값 자체는 화면에 오지 않는다.
+   */
+  aiEnabled?: boolean;
 }
 
 /**
@@ -45,6 +51,7 @@ export function ObservationBoard({
   data,
   role,
   backHref,
+  aiEnabled = false,
 }: ObservationBoardProps) {
   const { session, domains, children } = data;
 
@@ -237,6 +244,8 @@ export function ObservationBoard({
                 canWrite={canWrite}
                 teacherArchived={teacherArchived}
                 classActive={session.classStatus === "active"}
+                role={role}
+                aiEnabled={aiEnabled}
               />
             ))}
           </ul>
@@ -262,6 +271,8 @@ interface ObservationChildCardProps {
   teacherArchived: boolean;
   /** 반이 운영 중인가 — 활동사진 신규 업로드 조건(is_class_teacher와 같은 기준) */
   classActive: boolean;
+  role: StaffRole;
+  aiEnabled: boolean;
 }
 
 /**
@@ -357,6 +368,8 @@ function ObservationChildCard({
   canWrite,
   teacherArchived,
   classActive,
+  role,
+  aiEnabled,
 }: ObservationChildCardProps) {
   const statusLabel = childStatusLabel(
     child.childStatus,
@@ -442,6 +455,23 @@ function ObservationChildCard({
         media={child.media}
         canUpload={media.canUpload}
         uploadBlockedReason={media.blockedReason}
+      />
+
+      {/*
+        SERVICE-10A — AI 기록정리.
+        관찰기록 → 활동 사진 → AI 기록정리 순서로 둔다.
+        AI는 교사가 이미 쓴 문장만 읽는다 — 사진은 입력에 들어가지 않는다.
+      */}
+      <ObservationAiDraftSection
+        sessionId={sessionId}
+        childId={child.childId}
+        role={role}
+        aiEnabled={aiEnabled}
+        canWrite={canWrite}
+        classActive={classActive}
+        hasObservation={child.hasExistingObservation}
+        recordStatus={child.recordStatus}
+        draft={child.aiDraft}
       />
     </li>
   );

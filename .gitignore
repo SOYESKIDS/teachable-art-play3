@@ -43,5 +43,9 @@ next-env.d.ts
 .vercel
 .env*
 
+# 실제 값이 없는 예시 파일만 opt-in 한다 (위 주석의 "can opt-in" 경로).
+# 이 파일에는 변수 이름만 있고 secret 값은 들어가지 않는다.
+!.env.example
+
 # Local source image library
 /image-library/

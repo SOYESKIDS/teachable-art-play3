@@ -2,6 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ChildStatus, ClassStatus } from "@/types/class-child";
 import type { ClassSessionStatus } from "@/types/class-session";
 import {
+  MAX_AI_DRAFT_LOOKUP,
+  type ObservationAiDraft,
+  type ObservationAiReviewStatus,
+} from "@/types/staff-observation-ai";
+import {
   MAX_OBSERVATION_MEDIA_LOOKUP,
   OBSERVATION_MEDIA_BUCKET,
   OBSERVATION_MEDIA_SIGNED_URL_TTL_SECONDS,
@@ -112,6 +117,21 @@ interface ObservationDomainLinkRow {
   domain_code: string;
 }
 
+interface ObservationAiDraftRow {
+  id: string;
+  observation_id: string;
+  generated_text: string;
+  reviewed_text: string | null;
+  review_status: ObservationAiReviewStatus;
+  source_observation_updated_at: string;
+  updated_at: string;
+  provider: string;
+  model: string;
+  prompt_version: string;
+  generated_at: string;
+  reviewed_at: string | null;
+}
+
 interface ObservationMediaRow {
   id: string;
   child_id: string;
@@ -173,6 +193,7 @@ export async function fetchStaffObservations(
     domainResult,
     observationResult,
     mediaResult,
+    aiDraftResult,
   ] = await Promise.all([
     supabase
       .from("classes")
@@ -241,6 +262,25 @@ export async function fetchStaffObservations(
       .eq("class_session_id", session.id)
       .order("created_at", { ascending: true })
       .limit(MAX_OBSERVATION_MEDIA_LOOKUP),
+
+    /**
+     * SERVICE-10A — 이 수업의 AI 정리를 한 번에 읽는다.
+     *
+     * ★ 원아별로 나눠 조회하지 않는다(N+1 금지).
+     *   수업 단위로 1회 읽고 아래에서 observation_id로 묶는다.
+     *
+     * ★ 조회 자체는 Teacher와 Director가 같은 구조를 쓴다.
+     *   원장에게 무엇을 보여줄지는 화면이 정한다 — 원장 화면은
+     *   검토 완료된 문장만 표시하고 AI 원문은 표시하지 않는다.
+     */
+    supabase
+      .from("class_session_observation_ai_drafts")
+      .select(
+        "id, observation_id, generated_text, reviewed_text, review_status, source_observation_updated_at, updated_at, provider, model, prompt_version, generated_at, reviewed_at",
+      )
+      .eq("organization_id", organizationId)
+      .eq("class_session_id", session.id)
+      .limit(MAX_AI_DRAFT_LOOKUP),
   ]);
 
   if (classResult.error) {
@@ -278,6 +318,11 @@ export async function fetchStaffObservations(
     return { ok: false, reason: "load_failed" };
   }
 
+  if (aiDraftResult.error) {
+    logQueryFailure("observation ai drafts", aiDraftResult.error.message);
+    return { ok: false, reason: "load_failed" };
+  }
+
   const classRow =
     (classResult.data as unknown as ClassLookupRow | null) ?? null;
 
@@ -298,6 +343,48 @@ export async function fetchStaffObservations(
 
   const mediaRows =
     (mediaResult.data ?? []) as unknown as ObservationMediaRow[];
+
+  const aiDraftRows =
+    (aiDraftResult.data ?? []) as unknown as ObservationAiDraftRow[];
+
+  /**
+   * SERVICE-10A — AI 정리를 observation_id 기준으로 묶는다.
+   *
+   * ★ isSourceStale 은 여기서 계산한다.
+   *   생성 당시 저장한 source_observation_updated_at 과
+   *   관찰기록의 현재 updated_at 을 문자열 그대로 비교한다.
+   *   둘 다 PostgREST 가 만든 같은 형식이라 가공할 필요가 없고,
+   *   가공하면 마이크로초가 잘려 비교가 어긋난다.
+   */
+  const aiDraftByObservationId = new Map<string, ObservationAiDraft>();
+
+  const observationUpdatedAtById = new Map(
+    observationRows.map((row) => [row.id, row.updated_at]),
+  );
+
+  for (const row of aiDraftRows) {
+    const sourceNow =
+      observationUpdatedAtById.get(row.observation_id) ?? null;
+
+    aiDraftByObservationId.set(row.observation_id, {
+      id: row.id,
+      observationId: row.observation_id,
+      generatedText: row.generated_text,
+      reviewedText: row.reviewed_text,
+      reviewStatus: row.review_status,
+      sourceObservationUpdatedAt: row.source_observation_updated_at,
+      // ★ DB 문자열 그대로. 검토 저장의 동시성 토큰이다.
+      updatedAt: row.updated_at,
+      provider: row.provider,
+      model: row.model,
+      promptVersion: row.prompt_version,
+      generatedAt: row.generated_at,
+      reviewedAt: row.reviewed_at,
+      isSourceStale:
+        sourceNow === null ||
+        sourceNow !== row.source_observation_updated_at,
+    });
+  }
 
   const domains: ObservationDomain[] = domainRows.map((row) => ({
     code: row.code,
@@ -530,6 +617,11 @@ export async function fetchStaffObservations(
         isCurrentClassMember: child?.class_id === session.class_id,
 
         media: mediaByChildId.get(childId) ?? [],
+
+        // AI 정리는 관찰기록에 매달린다. 관찰기록이 없으면 있을 수 없다.
+        aiDraft: observation
+          ? (aiDraftByObservationId.get(observation.id) ?? null)
+          : null,
       };
     })
     .sort((a, b) => {

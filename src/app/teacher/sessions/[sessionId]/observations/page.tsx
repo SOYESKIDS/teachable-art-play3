@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchStaffObservations } from "@/lib/staff/observation-queries";
+import { isObservationAiConfigured } from "@/lib/ai/observation-draft-provider";
 import { resolveMembership } from "@/lib/staff/membership";
 import { ObservationBoard } from "@/components/staff/ObservationBoard";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
@@ -100,6 +101,7 @@ export default async function TeacherObservationPage({
         <ObservationBoard
           data={result.data}
           role="teacher"
+          aiEnabled={isObservationAiConfigured()}
           backHref={`/teacher?org=${encodeURIComponent(
             membership.organizationId,
           )}`}

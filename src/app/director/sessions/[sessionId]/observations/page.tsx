@@ -47,6 +47,11 @@ interface DirectorObservationPageProps {
  *   원장이 무엇을 볼 수 있는지는 RLS가 판정한다
  *   (observations SELECT Policy의 has_org_role(organization_id, ['director']) 분기).
  *
+ * ★ SERVICE-10A — 원장 화면에는 AI 생성 경로가 없다.
+ *   ObservationBoard에 aiEnabled를 넘기지 않으므로 기본값 false가 되고,
+ *   AI 영역은 "교사 검토 완료" 문장만 읽기 전용으로 표시한다.
+ *   이 파일은 observation-ai-actions도 AI provider도 import하지 않는다.
+ *
  * ★ 실패 문구는 "찾을 수 없거나 접근 권한이 없습니다" 하나로 합친다.
  *   존재하지 않는 수업과 권한 없는 수업을 구분해 보여주면
  *   sessionId를 바꿔가며 다른 기관의 수업 존재 여부를 확인할 수 있다.

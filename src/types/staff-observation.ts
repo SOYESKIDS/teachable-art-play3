@@ -1,5 +1,6 @@
 import type { ChildStatus, ClassStatus } from "./class-child";
 import type { ClassSessionStatus } from "./class-session";
+import type { ObservationAiDraft } from "./staff-observation-ai";
 import type { ObservationMediaItem } from "./staff-observation-media";
 
 /**
@@ -114,6 +115,16 @@ export interface StaffObservationChild {
    * ★ 각 항목의 signedUrl은 요청마다 새로 발급되는 임시 값이다(DB 값이 아니다).
    */
   media: ObservationMediaItem[];
+
+  /**
+   * SERVICE-10A — 이 관찰기록의 AI 정리.
+   *
+   * ★ 관찰기록이 없으면 반드시 null이다 (AI 정리는 observation에 매달린다).
+   * ★ isSourceStale은 DB 값이 아니라 조회 시점에 계산한 view model 값이다.
+   * ★ SERVICE-11이 쓸 수 있는 공식 텍스트는
+   *   officialObservationSummary()를 통과한 것뿐이다.
+   */
+  aiDraft: ObservationAiDraft | null;
 }
 
 /**
