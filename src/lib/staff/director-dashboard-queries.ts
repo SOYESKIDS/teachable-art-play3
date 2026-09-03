@@ -15,6 +15,10 @@ import { MAX_GROWTH_REPORT_LIST } from "@/types/staff-growth-report";
 import type { ObservationRecordStatus } from "@/types/staff-observation";
 import type { StaffSessionItem } from "@/types/staff-session";
 import {
+  isAttendanceRecordTarget,
+  isObservationRecordTarget,
+} from "@/lib/operations/session-record-rules";
+import {
   fetchSessionsInRange,
   sortForBoard,
 } from "./class-session-queries";
@@ -104,19 +108,16 @@ function emptyDashboard(today: string): DirectorDashboardData {
 /**
  * 출결/관찰 집계의 대상 수업.
  *
- * "오늘까지 이미 있었던 수업" 중 취소되지 않은 것.
+ * ★ 규칙 자체는 @/lib/operations/session-record-rules 한 곳에만 있다.
+ *   SERVICE-14 본사 운영 콘솔이 같은 판정을 써야 하기 때문이다.
+ *   두 화면이 각자 조건을 들고 있으면 언젠가 한쪽만 바뀌고,
+ *   같은 수업이 화면에 따라 다르게 보인다.
  *
- *   scheduled_date is not null : 언제 있었는지 알 수 없는 수업은 세지 않는다
- *   scheduled_date <= today    : ★ 아직 오지 않은 수업을 "기록 없음"으로 잡지 않는다
- *                                (fetchSessionsInRange 의 .lte 와 이중으로 건다 —
- *                                 조회 조건이 바뀌어도 이 규칙은 남아야 한다)
- *   status <> 'cancelled'      : 취소된 수업에는 기록을 요구하지 않는다
+ * fetchSessionsInRange 의 .lte 와 이중으로 걸리지만 그대로 둔다 —
+ * 조회 조건이 바뀌어도 이 규칙은 남아야 한다.
  */
 function isRecordTarget(session: StaffSessionItem, today: string): boolean {
-  if (session.scheduled_date === null) return false;
-  if (session.scheduled_date > today) return false;
-
-  return session.status !== "cancelled";
+  return isAttendanceRecordTarget(session, today);
 }
 
 /**
@@ -326,17 +327,15 @@ export async function fetchDirectorDashboard(
       (row) => row.record_status === "complete",
     ).length;
 
-    // ★ 완료된 수업만 본다.
-    //   예정일이 지났어도 status 가 'scheduled' 인 수업은 "아직 완료 처리되지
-    //   않은 수업"이지 "관찰을 안 쓴 수업"이 아니다. 그런 수업까지 여기 넣으면
-    //   수업이 실제로 열렸는지도 모르면서 기록을 요구하는 셈이 된다.
-    //   (그 수업은 출결 카드가 이미 사실 그대로 보여 준다)
+    // ★ 완료된 수업만 본다. 판정은 공통 helper 가 한다
+    //   (SERVICE-14 본사 콘솔과 같은 규칙을 쓰기 위해서다).
     //
     //   관찰기록이 완료 수업에 반드시 있어야 한다는 규칙은 이 서비스 어디에도
     //   없다. 그래서 화면 문구도 "미작성/누락"이 아니라 "관찰 기록 없음"이다.
     const withoutRecord = targetSessions.filter(
       (session) =>
-        session.status === "completed" && !sessionIdsWithRecord.has(session.id),
+        isObservationRecordTarget(session, today) &&
+        !sessionIdsWithRecord.has(session.id),
     );
 
     dashboard.observation = {

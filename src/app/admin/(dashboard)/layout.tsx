@@ -32,6 +32,9 @@ export default async function AdminDashboardLayout({
               </p>
               <p className="text-[14px] font-semibold text-navy">
                 TeachAble Art Play
+                <span className="ml-1.5 text-[12px] font-medium text-navy/45">
+                  운영 관리자
+                </span>
               </p>
             </div>
           </div>
@@ -58,9 +61,15 @@ export default async function AdminDashboardLayout({
           </div>
         </div>
 
-        {/* Mobile: 메뉴를 두 번째 줄로 내린다 */}
-        <div className="overflow-x-auto border-t border-navy/8 px-5 py-2 md:hidden">
-          <AdminNav />
+        {/*
+          Mobile: 메뉴를 두 번째 줄에 2열로 편다.
+
+          ★ overflow-x-auto 를 걷어냈다.
+            가로 스크롤이 있으면 마지막 메뉴가 화면 밖에 숨고, 브라우저 기본
+            스크롤바까지 노출된다. 2열이면 4개가 전부 보이고 넘칠 것이 없다.
+        */}
+        <div className="border-t border-navy/8 px-5 py-2 md:hidden">
+          <AdminNav layout="grid" />
         </div>
       </header>
 

@@ -42,6 +42,9 @@ import {
   formatInstitutionType,
   formatOrganizationDateTime,
 } from "@/lib/admin/organization-labels";
+import { fetchAdminOrganizationSummary } from "@/lib/admin/admin-dashboard-queries";
+import { todayInSeoul } from "@/lib/staff/class-session-queries";
+import { AdminOrganizationOperationsSummary } from "@/components/admin/AdminOrganizationOperationsSummary";
 import { OrganizationEditForm } from "./OrganizationEditForm";
 
 export const metadata: Metadata = {
@@ -102,6 +105,17 @@ export default async function OrganizationDetailPage({
   }
 
   const organization = result.organization;
+
+  // SERVICE-14 운영 요약. 실패해도 화면을 막지 않는다(컴포넌트가 안내 문구를 낸다).
+  //
+  // ★ 학부모 공유(child_growth_report_shares)는 조회하지 않는다 —
+  //   그 표의 SELECT Policy 에 본사 관리자 분기가 없고, RLS 를 우회하지 않는다.
+  const operationsSummary = await fetchAdminOrganizationSummary(
+    supabase,
+    id,
+    organization.status,
+    todayInSeoul(),
+  );
 
   const directorResult = await fetchOrganizationDirectors(supabase, id);
 
@@ -200,6 +214,8 @@ export default async function OrganizationDetailPage({
           {ORGANIZATION_STATUS_LABELS[organization.status]}
         </span>
       </div>
+
+      <AdminOrganizationOperationsSummary summary={operationsSummary} />
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <section className="rounded-xl border border-navy/10 bg-white p-5">
