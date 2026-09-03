@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ChildStatus, ClassStatus } from "@/types/class-child";
+import type { GrowthReportAiDraft } from "@/types/staff-growth-report-ai";
 import {
   MAX_GROWTH_REPORT_LIST,
   MAX_GROWTH_REPORT_SOURCES,
@@ -34,8 +35,19 @@ function logQueryFailure(scope: string, message: string) {
   console.error(`[staff/growth-report] ${scope} query failed: ${message}`);
 }
 
+interface AiDraftRow {
+  id: string;
+  source_revision: number;
+  generated_growth_changes: string;
+  generated_observation_summary: string;
+  generated_next_support: string;
+  applied_at: string | null;
+  generated_at: string;
+}
+
 interface ReportRow {
   id: string;
+  source_revision: number;
   organization_id: string;
   class_id: string;
   child_id: string;
@@ -86,7 +98,7 @@ interface ChildRow {
 }
 
 const REPORT_COLUMNS =
-  "id, organization_id, class_id, child_id, period_start, period_end, title, status, growth_changes, observation_summary, next_support, attendance_present_count, attendance_absent_count, attendance_late_count, attendance_left_early_count, session_count, completed_at, created_at, updated_at";
+  "id, organization_id, class_id, child_id, period_start, period_end, title, status, growth_changes, observation_summary, next_support, attendance_present_count, attendance_absent_count, attendance_late_count, attendance_left_early_count, session_count, completed_at, created_at, updated_at, source_revision";
 
 const SOURCE_COLUMNS =
   "id, report_id, observation_id, session_id, observed_on, lesson_title_snapshot, lesson_order_snapshot, domain_labels_snapshot, reviewed_text_snapshot, child_voice_snapshot, teacher_note_snapshot, source_observation_updated_at, source_ai_updated_at";
@@ -268,7 +280,7 @@ export async function fetchGrowthReportDetail(
 
   const report = reportData as unknown as ReportRow;
 
-  const [sourceResult, classResult, childResult] = await Promise.all([
+  const [sourceResult, classResult, childResult, aiDraftResult] = await Promise.all([
     supabase
       .from("child_growth_report_sources")
       .select(SOURCE_COLUMNS)
@@ -288,6 +300,22 @@ export async function fetchGrowthReportDetail(
       .eq("id", report.child_id)
       .eq("organization_id", organizationId)
       .maybeSingle(),
+
+    /**
+     * SERVICE-11B — 이 리포트의 AI 초안.
+     *
+     * ★ 원장에게는 0건이 돌아온다. SELECT Policy 에 원장 분기가 없기 때문이다.
+     *   화면에서 감추는 것이 아니라 DB 가 애초에 주지 않는다.
+     * ★ 조회 실패를 화면 실패로 만들지 않는다 — AI 는 보조 기능이라
+     *   초안을 못 읽어도 리포트 자체는 정상적으로 보여야 한다.
+     */
+    supabase
+      .from("child_growth_report_ai_drafts")
+      .select(
+        "id, source_revision, generated_growth_changes, generated_observation_summary, generated_next_support, applied_at, generated_at",
+      )
+      .eq("report_id", report.id)
+      .maybeSingle(),
   ]);
 
   if (sourceResult.error) {
@@ -304,6 +332,35 @@ export async function fetchGrowthReportDetail(
     logQueryFailure("child detail", childResult.error.message);
     return { ok: false, reason: "load_failed" };
   }
+
+  /**
+   * ★ AI 초안 조회 실패는 로그만 남기고 null 로 진행한다.
+   *   원장은 Policy 때문에 항상 0건이고, 그것은 오류가 아니라 설계다.
+   */
+  if (aiDraftResult.error) {
+    logQueryFailure("ai draft", aiDraftResult.error.message);
+  }
+
+  const aiRow =
+    (aiDraftResult.data as unknown as AiDraftRow | null) ?? null;
+
+  /**
+   * ★ stale 판정은 여기서 계산한다.
+   *   생성 당시의 근거 세대와 리포트의 현재 세대를 비교한다.
+   *   교사가 본문을 저장해도 세대는 그대로이므로 초안이 살아 있고,
+   *   "근거 다시 모으기"를 누르면 세대가 올라가 stale 이 된다.
+   */
+  const aiDraft: GrowthReportAiDraft | null = aiRow
+    ? {
+        id: aiRow.id,
+        growthChanges: aiRow.generated_growth_changes,
+        observationSummary: aiRow.generated_observation_summary,
+        nextSupport: aiRow.generated_next_support,
+        isSourceStale: aiRow.source_revision !== report.source_revision,
+        appliedAt: aiRow.applied_at,
+        generatedAt: aiRow.generated_at,
+      }
+    : null;
 
   const classRow =
     (classResult.data as unknown as ClassRow | null) ?? null;
@@ -347,6 +404,8 @@ export async function fetchGrowthReportDetail(
       createdAt: report.created_at,
       // ★ DB 문자열 그대로. 저장의 동시성 토큰이다.
       updatedAt: report.updated_at,
+
+      aiDraft,
     },
   };
 }

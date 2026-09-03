@@ -1,4 +1,5 @@
 import type { ClassStatus } from "./class-child";
+import type { GrowthReportAiDraft } from "./staff-growth-report-ai";
 
 /**
  * SERVICE-11A — 원아 성장 리포트 타입.
@@ -155,6 +156,16 @@ export interface GrowthReportDetail {
   createdAt: string;
   /** ★ 저장의 동시성 토큰. 가공하지 않는다. */
   updatedAt: string;
+
+  /**
+   * SERVICE-11B — 이 리포트의 AI 초안 (교사 화면 전용).
+   *
+   * ★ 원장에게는 언제나 null 이다 — DB SELECT Policy 에 원장 분기가 없어
+   *   조회 자체가 0건이 된다. 화면 조건이 아니라 RLS 가 만드는 경계다.
+   * ★ 이 값이 리포트의 공식 문장이 되는 것은 교사가 "초안 적용"을 누른 뒤
+   *   growthChanges / observationSummary / nextSupport 로 복사될 때뿐이다.
+   */
+  aiDraft: GrowthReportAiDraft | null;
 }
 
 /** 교사가 리포트를 만들 때 고를 수 있는 반·원아 */

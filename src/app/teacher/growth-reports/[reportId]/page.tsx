@@ -3,6 +3,8 @@ import Link from "next/link";
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchGrowthReportDetail } from "@/lib/staff/growth-report-queries";
 import { resolveMembership } from "@/lib/staff/membership";
+import { isGrowthReportAiConfigured } from "@/lib/ai/growth-report-draft-provider";
+import { GrowthReportAiDraftSection } from "@/components/staff/GrowthReportAiDraftSection";
 import { GrowthReportAttendanceSummary } from "@/components/staff/GrowthReportAttendanceSummary";
 import { GrowthReportEditor } from "@/components/staff/GrowthReportEditor";
 import { GrowthReportEvidenceTimeline } from "@/components/staff/GrowthReportEvidenceTimeline";
@@ -127,6 +129,21 @@ export default async function TeacherGrowthReportDetailPage({
           <GrowthReportAttendanceSummary
             attendance={result.report.attendance}
           />
+
+          {/*
+            SERVICE-11B — AI 초안은 작성 중인 리포트에서만 보인다.
+            완료된 리포트에는 생성·적용 버튼을 아예 렌더하지 않는다.
+            AI 는 리포트를 완성하지 않는다 — 확정은 아래 편집기의 "작성완료"다.
+          */}
+          {result.report.status === "draft" ? (
+            <GrowthReportAiDraftSection
+              reportId={result.report.id}
+              reportUpdatedAt={result.report.updatedAt}
+              sourceCount={result.report.sources.length}
+              aiEnabled={isGrowthReportAiConfigured()}
+              draft={result.report.aiDraft}
+            />
+          ) : null}
 
           <GrowthReportEditor report={result.report} />
 
