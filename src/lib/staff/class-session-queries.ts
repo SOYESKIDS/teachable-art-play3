@@ -275,7 +275,7 @@ const BOARD_STATUS_RANK: Record<string, number> = {
 };
 
 /** 진행 중 → 예정 → 완료 → 취소, 그 안에서는 반 이름·주차 순 */
-function sortForBoard(items: StaffSessionItem[]): StaffSessionItem[] {
+export function sortForBoard(items: StaffSessionItem[]): StaffSessionItem[] {
   return [...items].sort((a, b) => {
     const rank = BOARD_STATUS_RANK[a.status] - BOARD_STATUS_RANK[b.status];
     if (rank !== 0) return rank;
@@ -285,6 +285,56 @@ function sortForBoard(items: StaffSessionItem[]): StaffSessionItem[] {
 
     return (a.weekNo ?? 0) - (b.weekNo ?? 0) || (a.sessionNo ?? 0) - (b.sessionNo ?? 0);
   });
+}
+
+/**
+ * 기간 안의 수업 (SERVICE-12 원장 대시보드).
+ *
+ * ★ fetchTodayBoard / fetchSessionHistory 와 같은 경로를 쓴다.
+ *   조회 컬럼 · 반 목록 · metadata 결합을 전부 이 파일의 기존 함수로 처리하므로
+ *   같은 SQL 을 두 벌 유지하지 않는다. 질의 횟수는 수업 수와 무관하게 5회 고정이다.
+ *
+ * ★ 범위는 여기서 정하지 않는다.
+ *   organization_id 로만 좁히고, 무엇이 보이는지는 RLS 가 결정한다
+ *   (원장 = 기관 전체 / 교사 = 배정된 반). 다른 화면과 같은 규칙이다.
+ *
+ * ★ 상한에 닿았는지 호출자가 알 수 있어야 한다.
+ *   truncated 가 true 면 집계가 전체를 보지 못한 것이므로,
+ *   대시보드는 숫자를 지어내지 않고 그 사실을 그대로 표시한다.
+ */
+export async function fetchSessionsInRange(
+  supabase: SupabaseClient,
+  organizationId: string,
+  fromDate: string,
+  toDate: string,
+  limit: number,
+): Promise<
+  { ok: true; sessions: StaffSessionItem[]; truncated: boolean } | { ok: false }
+> {
+  const classes = await fetchVisibleClasses(supabase, organizationId);
+
+  if (classes === null) return { ok: false };
+
+  const { data, error } = await supabase
+    .from("class_sessions")
+    .select(SESSION_COLUMNS)
+    .eq("organization_id", organizationId)
+    .gte("scheduled_date", fromDate)
+    .lte("scheduled_date", toDate)
+    .order("scheduled_date", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    logQueryFailure("range sessions", error.message);
+    return { ok: false };
+  }
+
+  const rows = (data ?? []) as unknown as ClassSessionRow[];
+  const sessions = await attachMetadata(supabase, rows, classes);
+
+  if (sessions === null) return { ok: false };
+
+  return { ok: true, sessions, truncated: rows.length >= limit };
 }
 
 /** 수업 이력 — 이 기관에서 내가 볼 수 있는 모든 수업 */

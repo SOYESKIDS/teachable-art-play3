@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { requireDirector } from "@/lib/auth/organization";
+import { todayInSeoul } from "@/lib/staff/class-session-queries";
+import { fetchDirectorDashboard } from "@/lib/staff/director-dashboard-queries";
+import { resolveMembership } from "@/lib/staff/membership";
+import { DirectorDashboard } from "@/components/staff/DirectorDashboard";
+import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
+import { StaffShell } from "@/components/staff/StaffShell";
+import { DIRECTOR_NAV } from "./nav";
 
 export const metadata: Metadata = {
   title: "원장 대시보드 | TeachAble Art Play",
@@ -12,126 +18,56 @@ interface DirectorPageProps {
 }
 
 /**
- * 원장 Gate Dashboard.
+ * SERVICE-12 — 원장 운영 대시보드.
  *
- * 이번 Phase에서는 "기관 계정 연결이 되었다"는 것만 확인시킨다.
- * 교사 관리 / 반 / 아이 / 수업 / AI / 리포트는 다음 Phase에서 만든다.
+ * ★ 권한
+ *   requireDirector()가 로그인 · 활성 director membership · 활성 기관까지
+ *   DB로 판정한다. 교사 계정은 이 게이트를 통과하지 못한다.
+ *   URL의 ?org= 값은 resolveMembership()이 내 소속 목록 안에서만 인정하고,
+ *   그것을 통과하더라도 모든 질의는 다시 RLS를 거친다(이중 방어).
+ *
+ * ★ 오늘 날짜
+ *   todayInSeoul()로 서버에서 한 번만 정한다. Client가 다시 계산하지 않으므로
+ *   서버/브라우저 시간대 차이로 hydration이 어긋나지 않는다.
+ *
+ * ★ 이 페이지에는 쓰기 경로가 없다.
+ *   Server Action을 import하지 않고, 상태 변경 컴포넌트도 렌더하지 않는다.
  */
-export default async function DirectorPage({
-  searchParams,
-}: DirectorPageProps) {
-  // 로그인 + 활성 director membership + 활성 기관까지 DB가 판정한다.
-  const { email, memberships } = await requireDirector();
+export default async function DirectorPage({ searchParams }: DirectorPageProps) {
+  const { supabase, email, memberships } = await requireDirector();
 
   const params = await searchParams;
-  const rawOrg = params.org;
-  const requestedOrgId = Array.isArray(rawOrg) ? rawOrg[0] : rawOrg;
+  const membership = resolveMembership(memberships, params.org);
 
-  // URL의 org 값은 반드시 내 소속 목록 안에서만 유효하다.
-  const selected =
-    memberships.find((m) => m.organizationId === requestedOrgId) ??
-    (memberships.length === 1 ? memberships[0] : null);
+  if (!membership) {
+    return (
+      <OrganizationPicker
+        memberships={memberships}
+        basePath="/director"
+        roleLabel="원장"
+      />
+    );
+  }
+
+  const today = todayInSeoul();
+  const dashboard = await fetchDirectorDashboard(
+    supabase,
+    membership.organizationId,
+    today,
+  );
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface-soft">
-      <header className="border-b border-navy/10 bg-white">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-5 py-3 lg:px-8">
-          <div className="leading-tight">
-            <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
-              TEACHABLE ART PLAY
-            </p>
-            <p className="text-[14px] font-semibold text-navy">원장 대시보드</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {email ? (
-              <span className="hidden max-w-[220px] truncate text-[13px] text-navy/55 sm:inline">
-                {email}
-              </span>
-            ) : null}
-            {/* prefetch로 인한 의도치 않은 로그아웃을 막기 위해 Link가 아닌 form POST를 쓴다 */}
-            <form method="post" action="/auth/logout">
-              <button
-                type="submit"
-                className="rounded-lg border border-navy/20 px-3 py-2 text-[13px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
-              >
-                로그아웃
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-8 lg:px-8">
-        {selected ? (
-          <>
-            <h1 className="text-[22px] font-bold text-navy">
-              {selected.organizationName}
-            </h1>
-            <p className="mt-1 text-[14px] text-navy/55">원장 대시보드</p>
-
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Link
-                href={`/director/sessions?org=${selected.organizationId}`}
-                className="rounded-xl border border-navy/10 bg-white p-6 transition-colors hover:border-navy/25"
-              >
-                <p className="text-[15px] font-bold text-navy">수업 운영</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-navy/50">
-                  오늘 예정된 수업을 확인하고 시작·완료 처리합니다.
-                </p>
-              </Link>
-
-              <Link
-                href={`/director/sessions/history?org=${selected.organizationId}`}
-                className="rounded-xl border border-navy/10 bg-white p-6 transition-colors hover:border-navy/25"
-              >
-                <p className="text-[15px] font-bold text-navy">수업 이력</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-navy/50">
-                  반별로 지난 수업 기록을 확인합니다.
-                </p>
-              </Link>
-            </div>
-
-            <p className="mt-5 text-[13px] leading-relaxed text-navy/50">
-              반·원아 관리와 성장기록 기능은 순차적으로 열립니다.
-            </p>
-
-            {memberships.length > 1 ? (
-              <div className="mt-5">
-                <Link
-                  href="/director"
-                  className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
-                >
-                  다른 기관 선택
-                </Link>
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <>
-            <h1 className="text-[22px] font-bold text-navy">기관 선택</h1>
-            <p className="mt-1 text-[14px] text-navy/55">
-              원장으로 소속된 기관이 여러 곳입니다. 관리할 기관을 선택해주세요.
-            </p>
-
-            <ul className="mt-6 flex flex-col gap-3">
-              {memberships.map((membership) => (
-                <li key={membership.organizationId}>
-                  <Link
-                    href={`/director?org=${membership.organizationId}`}
-                    className="block rounded-xl border border-navy/10 bg-white p-5 transition-colors hover:border-navy/25"
-                  >
-                    <p className="text-[15px] font-bold text-navy">
-                      {membership.organizationName}
-                    </p>
-                    <p className="mt-0.5 text-[12px] text-navy/50">원장</p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </main>
-    </div>
+    <StaffShell
+      email={email}
+      roleLabel="원장"
+      organizationName={membership.organizationName}
+      navItems={DIRECTOR_NAV}
+      currentHref="/director"
+    >
+      <DirectorDashboard
+        data={dashboard}
+        organizationId={membership.organizationId}
+      />
+    </StaffShell>
   );
 }
