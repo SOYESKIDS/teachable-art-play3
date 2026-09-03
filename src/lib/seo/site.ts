@@ -35,7 +35,16 @@ export const publicRoutes = ["/"] as const;
  * 실제 접근 차단은 기존 Proxy(src/proxy.ts) + Supabase RLS가 담당한다.
  * 각 페이지에도 metadata robots: { index: false } 가 이미 설정되어 있다.
  */
-export const noIndexRoutes = ["/admin", "/director", "/login", "/auth"] as const;
+export const noIndexRoutes = [
+  "/admin",
+  "/director",
+  "/teacher",
+  "/login",
+  "/auth",
+  // SERVICE-13 학부모 공유 링크. 개인 문서라 색인 대상이 아니다.
+  // 실제 차단은 링크의 비밀값 + DB 함수 조건이 담당한다.
+  "/share",
+] as const;
 
 /** 사이트 공통 SEO 텍스트 */
 export const seoCopy = {

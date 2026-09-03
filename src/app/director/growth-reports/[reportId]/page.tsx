@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireDirector } from "@/lib/auth/organization";
 import { fetchGrowthReportDetail } from "@/lib/staff/growth-report-queries";
+import { fetchGrowthReportShare } from "@/lib/staff/growth-report-share-queries";
 import { resolveMembership } from "@/lib/staff/membership";
 import { GrowthReportAttendanceSummary } from "@/components/staff/GrowthReportAttendanceSummary";
 import { GrowthReportEvidenceTimeline } from "@/components/staff/GrowthReportEvidenceTimeline";
+import { GrowthReportShareSection } from "@/components/staff/GrowthReportShareSection";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { formatReportPeriod } from "@/types/staff-growth-report";
@@ -53,6 +55,12 @@ export default async function DirectorGrowthReportDetailPage({
     membership.organizationId,
     reportId,
   );
+
+  // ★ 공유 metadata 는 리포트를 실제로 읽을 수 있었을 때만 조회한다.
+  //   token 은 들어 있지 않다 — token_hash 는 SELECT GRANT 에 없다.
+  const share = result.ok
+    ? await fetchGrowthReportShare(supabase, reportId)
+    : null;
 
   const backHref = `/director/growth-reports?org=${encodeURIComponent(
     membership.organizationId,
@@ -146,6 +154,8 @@ export default async function DirectorGrowthReportDetailPage({
               />
             </div>
           </section>
+
+          <GrowthReportShareSection reportId={reportId} share={share} />
 
           <GrowthReportEvidenceTimeline sources={result.report.sources} />
         </div>
