@@ -74,24 +74,29 @@
 
   /* ── 표지 ─────────────────────────────────────────────── */
   .gr-report .gr-cover {
-    padding: 5mm 6mm;
+    /* 세로만 줄인다. 좌우는 본문 단락과 맞춰 두어야 지면이 흐트러지지 않는다. */
+    padding: 4.5mm 6mm;
   }
 
   .gr-report .gr-title {
-    font-size: 22pt;
+    /*
+      아이 이름이 이 문서의 주인이다. 종이에서 한 번 더 키우되,
+      그만큼 위 여백을 줄여 표지 전체 높이는 오히려 낮아지게 한다.
+    */
+    font-size: 23.5pt;
     line-height: 1.2;
-    margin-top: 3.5mm;
+    margin-top: 3.2mm;
   }
 
   .gr-report .gr-subtitle {
     font-size: 9pt;
     line-height: 1.45;
-    margin-top: 2.5mm;
+    margin-top: 2.2mm;
   }
 
   .gr-report .gr-cover-meta {
-    margin-top: 3.5mm;
-    padding-top: 2.5mm;
+    margin-top: 3.2mm;
+    padding-top: 2.2mm;
     gap: 0 8mm;
   }
 
@@ -112,9 +117,14 @@
     margin-top: 2mm;
   }
 
-  /* 01 은 종이에서도 가장 무겁게 남는다 — 크기와 선 굵기 둘 다로. */
+  /*
+   * 01 은 종이에서도 가장 무겁게 남는다 — 크기와 선 굵기 둘 다로.
+   * 0.25pt 차이는 한 글자만 보면 알아채기 어렵지만, 한 단락이 모이면
+   * 02·03 옆에서 확실히 더 진하게 읽힌다. 그 이상 키우면 줄 수가 늘어
+   * 페이지 수를 건드리게 된다.
+   */
   .gr-report .gr-narrative[data-emphasis="primary"] .gr-body {
-    font-size: 10pt;
+    font-size: 10.25pt;
     line-height: 1.55;
   }
 
@@ -141,8 +151,9 @@
     /* 한 활동이 페이지 경계에서 반으로 갈라지지 않게 한다. */
     break-inside: avoid;
     page-break-inside: avoid;
-    padding-top: 1mm;
-    padding-bottom: 1mm;
+    /* 활동명을 키운 만큼 줄 여백에서 되돌려 받는다. */
+    padding-top: 0.8mm;
+    padding-bottom: 0.8mm;
   }
 
   /*
@@ -161,14 +172,27 @@
     margin-top: 0;
   }
 
+  /*
+   * 한 줄에서 무엇을 먼저 읽어야 하는지를 굵기와 색으로 정한다 —
+   * 활동명 → 영역 → 날짜. 날짜는 언제 있었는지를 확인하는 값이지
+   * 이 줄의 주인이 아니다.
+   */
   .gr-report .gr-activity-title {
-    font-size: 9pt;
+    font-size: 9.5pt;
+    font-weight: 700;
     line-height: 1.3;
+    color: #10233c;
+  }
+
+  .gr-report .gr-activity .gr-meta {
+    font-size: 7.5pt;
   }
 
   .gr-report .gr-tag {
-    font-size: 7.5pt;
-    padding: 0 1.2mm;
+    font-size: 7pt;
+    line-height: 1.45;
+    padding: 0 1mm;
+    border-radius: 0.8mm;
   }
 
   /* ── 맺음말 ───────────────────────────────────────────── */
@@ -182,9 +206,19 @@
     margin-top: 0;
   }
 
+  /*
+   * 작성 완료일(8pt)과 브랜드 두 줄은 높이가 달라, 그냥 두면 아래 끝이
+   * 어긋나 보인다. 구분선 여백을 위아래로 고르게 주고 날짜를 조금
+   * 내려 브랜드의 마지막 줄과 밑선을 맞춘다.
+   */
   .gr-report .gr-footer > div {
     margin-top: 2.5mm;
-    padding-top: 2mm;
+    padding-top: 2.2mm;
+    align-items: flex-end;
+  }
+
+  .gr-report .gr-footer .gr-meta {
+    padding-bottom: 0.4mm;
   }
 
   .gr-report .gr-brand span:last-child {

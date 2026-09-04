@@ -420,21 +420,21 @@ function ActivityHighlight({
 function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
   return (
     <li className="gr-activity flex flex-col gap-1 py-2.5 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4">
-      <p className="gr-meta shrink-0 text-[12px] tabular-nums text-navy/45 sm:w-[86px]">
+      <p className="gr-meta shrink-0 text-[12px] tabular-nums text-navy/40 sm:w-[86px]">
         {activity.observedOn ? formatDate(activity.observedOn) : ""}
       </p>
 
       <div className="min-w-0 flex-1">
-        <p className="gr-activity-title break-words text-[14px] font-semibold leading-snug text-navy">
+        <p className="gr-activity-title break-words text-[15px] font-bold leading-snug text-navy">
           {activity.lessonTitle ?? "활동"}
         </p>
 
         {activity.domainLabels.length > 0 ? (
-          <p className="mt-1.5 flex flex-wrap gap-1.5">
+          <p className="mt-1.5 flex flex-wrap gap-1">
             {activity.domainLabels.map((label) => (
               <span
                 key={label}
-                className="gr-tag break-keep rounded-md border border-navy/15 px-2 py-0.5 text-[11px] text-navy/60"
+                className="gr-tag break-keep rounded border border-navy/15 px-1.5 text-[11px] leading-[1.6] text-navy/60"
               >
                 {label}
               </span>
@@ -458,11 +458,11 @@ function ReportFooter({ completedAt }: { completedAt: string | null }) {
       </p>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-navy/10 pt-4">
-        <p className="gr-meta text-[12px] tabular-nums text-navy/45">
-          {completedAt
-            ? `작성 완료 ${formatDate(completedAt.slice(0, 10))}`
-            : ""}
-        </p>
+        {completedAt ? (
+          <p className="gr-meta text-[12px] tabular-nums text-navy/45">
+            {`작성 완료 ${formatDate(completedAt.slice(0, 10))}`}
+          </p>
+        ) : null}
 
         <p className="gr-brand text-right">
           <span className="block text-[10px] font-bold tracking-[0.18em] text-navy/45">
