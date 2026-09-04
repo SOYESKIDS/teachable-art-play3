@@ -50,4 +50,8 @@ next-env.d.ts
 # Local source image library
 /image-library/
 
-/�����ڷ�/
+# Local reference materials (internal teacher guides — never commit)
+# 두 이름을 모두 막아 둔다. 지금 있는 폴더는 참고자료/ 이고,
+# 나중에 _local_reference_materials/ 로 바꾸더라도 그대로 무시된다.
+/참고자료/
+/_local_reference_materials/

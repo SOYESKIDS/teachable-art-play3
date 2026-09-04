@@ -49,38 +49,67 @@ export interface ProgramTheme {
 }
 
 /**
+ * 주차 안의 활동 한 갈래.
+ *
+ * title 은 활동 이름, summary 는 그 활동에서 아이가 무엇을 하는지 한두 줄,
+ * items 는 워크북처럼 여러 장으로 나뉜 경우의 대표 활동명이다.
+ * 교사용 자료의 문장을 그대로 옮기지 않고 공개용으로 짧게 다시 쓴다.
+ */
+export interface ProgramWeekActivity {
+  title: string;
+  summary?: string;
+  items?: string[];
+}
+
+/**
  * 한 주차.
  *
  * ★ week · topic · growthPoint 만 모든 주차가 갖는다.
- *   나머지는 확정된 주차에만 있다. 지금은 1주차뿐이다.
+ *   나머지는 확정된 주차에만 있다. 지금 상세가 있는 것은 1~6주차이고,
+ *   7~8주차는 별도로 준비 중이라 주제·스토리·핵심 메시지까지만 있다.
  *   화면은 있는 것만 그리고, 없는 자리를 지어내지 않는다.
  *
- * ★ movement · workbook · art 에 활동 내용을 적지 않는다.
- *   확정된 것은 그 블록이 몇 분짜리인가까지다. 그래서 값도 거기까지만 적는다.
- *   "나비처럼 날아보기" 같은 문장을 여기에 넣는 순간, 그것은 확인된 적 없는
- *   수업 내용이 상품 소개에 사실처럼 실리는 일이 된다.
+ * ★ 교사용 자료를 통째로 담지 않는다.
+ *   교사 발문 · 교사 역할 · 아이 반응별 대응 · 난이도 조절 · 개별 지원 ·
+ *   준비물 · 공간 세팅 · 안전 지침 · 관찰지표 · 기록 예문은 여기에 없다.
+ *   그것들은 도입한 기관의 교사에게 가는 자료이지 공개 상품 소개가 아니다.
+ *   여기 있는 것은 학부모와 원장이 보아도 되는 범위, 즉 "무엇을 하는가"까지다.
+ *
+ * ★ 교사용 가이드의 운영시간을 상품 시간으로 올리지 않는다.
+ *   가이드에는 55~65분처럼 현장에서 늘려 쓰는 시간이 적혀 있지만,
+ *   공개 상품 정보는 확정값(주 1회 40~50분)을 그대로 유지한다.
  */
 export interface ProgramCurriculumWeek {
   week: number;
   /** 그 주의 주제어 */
   topic: string;
-  /** 그 주에 자라는 지점 */
+  /** 그 주에 자라는 지점 (8주 성장 로드맵) */
   growthPoint: string;
+  /** 교사용 가이드가 정한 그 주의 성장키워드 */
+  growthKeyword?: string;
 
-  /** 그 주의 영상 스토리 제목 */
+  /** 그 주의 그림책 제목 */
   storyTitle?: string;
   /** 그 주가 아이에게 남기려는 한 문장 */
   coreMessage?: string;
+
+  /** "이번 주에는 이런 경험을 합니다" 한두 문장 */
+  experienceSummary?: string;
+  /** 경험이 이어지는 순서 */
+  experienceFlow?: string[];
+  /** 낱개로 꼽는 핵심 경험 (대표 수업 단락에서도 쓴다) */
   coreExperiences?: string[];
 
   /** 몸으로 놀기 */
-  movement?: string;
+  movement?: ProgramWeekActivity;
   /** 워크북 */
-  workbook?: string;
-  /** 미술활동 */
-  art?: string;
-  /** 완성작품 · 가정으로 가져가는 것 */
-  takeHome?: string;
+  workbook?: ProgramWeekActivity;
+  /** 미술·창작 활동 */
+  creative?: ProgramWeekActivity;
+  /** 완성 작품 */
+  takeHome?: ProgramWeekActivity;
+  /** 가정연계 */
+  homeConnection?: ProgramWeekActivity;
 
   /** 마지막 주차처럼 시각적으로 강조할 회차 */
   finale?: boolean;
@@ -293,93 +322,262 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
       subCopy:
         "주 1회, 여덟 개의 주제가 순서대로 이어집니다. 주차를 눌러 그 주에 무엇을 하는지 볼 수 있습니다.",
       /*
-        ★ 여덟 주 전부 확정 프로그램 문서에서 온 값이다.
-          주제 · 영상 스토리 · 핵심 메시지 · 신체활동 · 워크북 · 미술활동 ·
-          완성작품까지가 그 문서에 있는 범위이고, 여기에는 딱 그만큼만 담는다.
+        ★ 1~6주차는 교사용 수업가이드가 최신 확정본이다.
+          그 이전 전체 구성표와 다른 곳은 가이드를 따랐다.
+          (4주차 씨앗 헬리콥터 → 씨앗 소리 마라카스,
+           5주차 과일꼬치 → 나만의 꽃, 6주차 바람 친구 → 우리들의 비밀기지 등)
 
-        ★ 교사용 자료는 담지 않는다.
-          발문 · 교사 언어 · 개별 지원 지침 · 관찰지표 · 준비물 목록 ·
-          안전 운영 방법은 도입한 기관의 교사에게 가는 자료이지
-          공개 상품 소개가 아니다.
+        ★ 7~8주차는 별도로 준비 중이다.
+          주제 · 그림책 · 핵심 메시지 · 활동명까지 이전 구성표의 값을 그대로 두고,
+          이번에 아무것도 새로 만들지 않았다.
+
+        ★ 상품 정보와 충돌시키지 않는다.
+          가이드에는 55~65분 같은 현장 운영시간이 적혀 있지만,
+          공개 상품의 운영시간은 확정값(주 1회 40~50분)을 그대로 둔다.
       */
       weeks: [
         {
           week: 1,
           topic: "시작",
           growthPoint: "적응",
+          growthKeyword: "시작",
           storyTitle: "유치원 가는 날",
-          coreMessage: "유치원은 즐겁고 재밌는 곳",
+          coreMessage: "새로운 공간을 친구들과 탐색하며 편안함과 소속감을 만들어가요.",
+          experienceSummary:
+            "처음 만나는 유치원을 자기 속도로 둘러보며 내 이름과 내 자리를 발견하는 한 주입니다.",
+          experienceFlow: [
+            "새로운 환경 탐색",
+            "내 이름과 자리 발견",
+            "친구와 교사를 만나며 소속감 형성",
+          ],
           coreExperiences: ["새로운 환경 적응", "자기표현", "관계형성"],
-          movement: "교실 탐험 · 친구 찾기",
-          workbook: "자리 찾아주기 스티커",
-          art: "나만의 이름표 만들기",
-          takeHome: "이름표",
+          movement: {
+            title: "유치원 탐험",
+            summary:
+              "교실과 유치원의 여러 공간을 직접 둘러보며 내 자리와 좋아하는 공간을 발견합니다.",
+          },
+          workbook: {
+            title: "탐험한 공간 다시 떠올리기",
+            items: [
+              "같은 그림 찾기",
+              "길 찾기",
+              "내 물건 찾기",
+              "내 마음 색칠하기",
+            ],
+          },
+          creative: {
+            title: "나만의 이름표 만들기",
+            summary:
+              "내 이름을 찾아보고 좋아하는 색과 장식으로 꾸며 내 자리에 붙여봅니다.",
+          },
+          takeHome: { title: "이름표" },
+          homeConnection: {
+            title: "입학 기념 액자 만들기",
+            summary: "첫 등원 날의 사진을 가족과 함께 액자에 담아 꾸밉니다.",
+          },
         },
         {
           week: 2,
           topic: "끈기",
           growthPoint: "도전",
+          growthKeyword: "끈기",
           storyTitle: "끝까지 해보자",
-          coreMessage: "포기하지 않으면 할 수 있어",
-          movement: "간식 따서먹기",
-          workbook: "미로찾기 · 점선 따라 그림 완성",
-          art: "성공 메달 만들기",
-          takeHome: "메달",
+          coreMessage: "포기하지 않으면 할 수 있어!",
+          experienceSummary:
+            "잘 되지 않는 순간을 만나고, 방법을 바꿔 다시 해보며 작은 변화를 스스로 발견합니다.",
+          experienceFlow: ["잘 안 됨", "다시 시도", "방법 바꾸기", "작은 변화 발견"],
+          movement: {
+            title: "마루의 도전 미션",
+            summary:
+              "젓가락·집게 등 다양한 방법을 사용해 목표물을 옮겨보며 다시 시도하는 경험을 합니다.",
+            items: ["젓가락으로 옮기기", "집게로 옮기기", "함께 도전하기"],
+          },
+          workbook: {
+            title: "다른 길도 찾아보기",
+            items: ["미로 찾기", "선 따라 그리기", "다른 그림 찾기", "마루 꾸미기"],
+          },
+          creative: {
+            title: "끝까지 해본 용기 메달",
+            summary:
+              "결과에 대한 상이 아니라, 오늘 다시 시도한 경험을 기억하는 작품입니다.",
+          },
+          takeHome: { title: "용기 메달" },
+          homeConnection: {
+            title: "우리 가족 도전 미션",
+            summary: "가정에서 해볼 작은 도전을 하나 정하고 시도한 날을 함께 기록합니다.",
+          },
         },
         {
           week: 3,
           topic: "표현",
           growthPoint: "친구",
+          growthKeyword: "표현",
           storyTitle: "마음을 말해줘",
-          coreMessage: "마음을 말로 표현하면 더 행복해져",
-          movement: "짝꿍 협동게임",
-          workbook: "친구 표정 알아보기",
-          art: "우리반 우정 팔찌",
-          takeHome: "우정 팔찌",
+          coreMessage: "내 마음을 표현하면 친구와 서로를 더 잘 이해할 수 있어!",
+          experienceSummary:
+            "여러 가지 마음을 알아차리고 말과 표정으로 전해보며, 친구의 마음도 함께 들어봅니다.",
+          experienceFlow: [
+            "마음 알아차리기",
+            "말·표정으로 표현",
+            "친구의 마음 듣기",
+            "따뜻한 마음 전하기",
+          ],
+          movement: {
+            title: "마음배달",
+            summary:
+              "마음다리를 건너 친구에게 다가가 고마움·미안함·같이 놀고 싶은 마음을 자기 방식으로 표현해봅니다.",
+          },
+          workbook: {
+            title: "친구의 마음을 찾아주세요",
+            items: ["표정 살펴보기", "표정과 상황 연결하기", "해결방법 생각하기"],
+          },
+          creative: {
+            title: "마음을 전하는 팔찌 만들기",
+            summary:
+              "전하고 싶은 마음을 떠올려 팔찌를 만들고, 건네면서 그 말을 직접 전합니다.",
+          },
+          takeHome: { title: "마음을 전하는 팔찌" },
+          homeConnection: {
+            title: "우리 가족 마음배달 우체통",
+            summary: "가족에게 전하고 싶은 마음을 카드에 담아 우체통에 넣고 함께 읽습니다.",
+          },
         },
         {
           week: 4,
           topic: "씨앗과 새싹",
           growthPoint: "시작",
-          storyTitle: "고민고민하지마",
-          coreMessage: "좋은 일은 고민하지 말고 시작!",
-          movement: "씨앗 굴리기 · 새싹 놀이",
-          workbook: "씨앗 색칠하고 꾸미기",
-          art: "씨앗 헬리콥터 만들기",
-          takeHome: "씨앗 헬리콥터",
+          growthKeyword: "시작",
+          storyTitle: "소예의 씨앗",
+          coreMessage: "작은 씨앗도 정성과 기다림으로 자라나요!",
+          experienceSummary:
+            "서로 다른 씨앗을 눈과 손과 귀로 살펴보고, 씨앗이 내는 소리를 몸과 음악으로 표현합니다.",
+          experienceFlow: [
+            "씨앗 만나기",
+            "오감 탐색",
+            "성장 변화 발견",
+            "소리·움직임으로 표현",
+          ],
+          movement: {
+            title: "씨앗 탐험 & 씨앗 마라카스 연주회",
+            summary:
+              "서로 다른 씨앗의 크기·모양·색·소리를 살펴보고, 씨앗이 만드는 소리를 몸과 음악으로 경험합니다.",
+          },
+          workbook: {
+            title: "씨앗에서 새싹까지",
+            items: [
+              "씨앗 관찰하기",
+              "성장 순서 맞추기",
+              "새싹 그리기",
+              "자라는 데 필요한 것 찾기",
+            ],
+          },
+          creative: {
+            title: "씨앗 소리 마라카스 만들기",
+            summary:
+              "넣고 싶은 씨앗을 골라 소리를 비교해보고 나만의 소리 악기를 완성합니다.",
+          },
+          takeHome: { title: "씨앗 소리 마라카스" },
+          homeConnection: {
+            title: "우리 가족 씨앗 성장 이야기",
+            summary:
+              "가족이 고른 '시작의 사진'과 지금의 사진을 나란히 두고 그동안의 변화를 이야기합니다.",
+          },
         },
         {
           week: 5,
           topic: "꽃과 열매",
           growthPoint: "자존감",
+          growthKeyword: "자존감",
           storyTitle: "우린 모두 특별해",
-          coreMessage: "내게도 특별함이 있어",
-          movement: "꽃 놀이",
-          workbook: "꽃 패턴 찾기",
-          art: "나만의 과일꼬치 만들기",
-          takeHome: "과일 꼬치",
+          coreMessage:
+            "꽃마다 모양이 다르듯 우리도 모두 특별해요. 나도 소중하고 친구도 소중해요.",
+          experienceSummary:
+            "서로 다른 꽃을 살펴보며 나의 모습과 좋아하는 것을 찾아보고, 친구의 다른 점도 함께 바라봅니다.",
+          experienceFlow: [
+            "다른 꽃 발견",
+            "다양한 꽃 움직임",
+            "나의 모습과 장점 발견",
+            "친구의 특별함 존중",
+          ],
+          movement: {
+            title: "동글게 동글게 꽃놀이",
+            summary:
+              "여러 색과 모양의 꽃을 보고 음악과 몸으로 서로 다른 표현을 즐기는 활동입니다.",
+          },
+          workbook: {
+            title: "나를 닮은 꽃 찾기",
+            items: [
+              "같은 꽃 찾기",
+              "다른 꽃 찾기",
+              "꽃잎 색칠하기",
+              "나를 닮은 꽃 꾸미기",
+            ],
+          },
+          creative: {
+            title: "나만의 꽃 만들기",
+            summary:
+              "원하는 색과 재료를 스스로 골라 나를 닮은 꽃을 완성하고 우리 반 꽃밭에 함께 둡니다.",
+          },
+          takeHome: { title: "나만의 꽃" },
+          homeConnection: {
+            title: "우리 가족 꽃 이야기",
+            summary:
+              "가족과 함께 꽃을 꾸미며 서로의 좋은 점을 한 가지씩 이야기합니다.",
+          },
         },
         {
           week: 6,
           topic: "비·바람·햇살",
           growthPoint: "협력",
-          storyTitle: "혼자는 어려워",
-          coreMessage: "친구들은 나를 더 멋지게 해줘",
-          movement: "비놀이 · 햇살놀이 · 바람놀이",
-          workbook: "날아다니는 것 꾸미기",
-          art: "빙글빙글 바람 친구 만들기",
-          takeHome: "빙글빙글 바람 친구",
+          growthKeyword: "협력",
+          storyTitle: "우리들의 비밀기지",
+          coreMessage: "혼자 하기 어려운 일도 친구와 힘을 합치면 함께 해낼 수 있어요.",
+          experienceSummary:
+            "비와 햇살을 몸으로 주고받은 뒤, 각자 만든 장식을 모아 우리 반의 공간 하나를 함께 완성합니다.",
+          experienceFlow: [
+            "자연현상 표현",
+            "친구에게 다가가기",
+            "도움 주고받기",
+            "역할 나누기",
+            "하나의 공동 공간 완성",
+          ],
+          movement: {
+            title: "톡톡 비가 와요! 따뜻한 햇살이 와요!",
+            summary:
+              "비와 햇살의 움직임을 몸으로 표현하며 친구와 움직임을 주고받는 협력 놀이입니다.",
+          },
+          workbook: {
+            title: "날씨 표현 워크북",
+            items: [
+              "같은 날씨 찾기",
+              "무엇이 필요한지 연결하기",
+              "비·바람·햇살 선으로 표현하기",
+              "함께 완성한 비밀기지",
+            ],
+          },
+          creative: {
+            title: "우리들의 비밀기지 만들기",
+            summary:
+              "각자가 만든 장식과 아이디어를 하나씩 모아 우리 반의 공동 공간을 완성하는 협동 창작활동입니다.",
+          },
+          takeHome: { title: "우리 반 비밀기지", summary: "함께 만든 공동 작품" },
+          homeConnection: {
+            title: "나와 함께 자라는 우리 가족",
+            summary:
+              "가족사진으로 도안을 꾸미며 아이가 가족과 함께 자라고 있음을 이야기합니다.",
+          },
         },
         {
+          /* 7~8주차는 별도 준비 중이다. 이전 구성표의 확정 값만 그대로 둔다. */
           week: 7,
           topic: "나비·별",
           growthPoint: "기다림",
           storyTitle: "서두르지 않아도 돼",
           coreMessage: "기다림은 좋은 결과를 가져와",
-          movement: "나비 놀이 · 벌 놀이",
-          workbook: "나비 꾸미기",
-          art: "데칼코마니 나비",
-          takeHome: "데칼코마니 나비",
+          movement: { title: "나비 놀이 · 벌 놀이" },
+          workbook: { title: "나비 꾸미기" },
+          creative: { title: "데칼코마니 나비" },
+          takeHome: { title: "데칼코마니 나비" },
         },
         {
           week: 8,
@@ -387,10 +585,10 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
           growthPoint: "공동체",
           storyTitle: "모이면 숲이 되는 우리",
           coreMessage: "우리 모두가 있어서 멋진 우리반",
-          movement: "협동 놀이",
-          workbook: "나무 꾸미기",
-          art: "우리들의 숲 공동작품",
-          takeHome: "공동작품 액자",
+          movement: { title: "협동 놀이" },
+          workbook: { title: "나무 꾸미기" },
+          creative: { title: "우리들의 숲 공동작품" },
+          takeHome: { title: "공동작품 액자" },
           finale: true,
         },
       ],

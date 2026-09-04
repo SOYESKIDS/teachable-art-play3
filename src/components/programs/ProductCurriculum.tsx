@@ -4,6 +4,7 @@ import { useState } from "react";
 import type {
   ProgramCurriculumWeek,
   ProgramProduct,
+  ProgramWeekActivity,
 } from "@/data/program-products";
 
 /**
@@ -14,19 +15,20 @@ import type {
  *   그러면 상세 화면에 이 단락 자체가 생기지 않는다.
  *
  * ★ 기본은 전부 닫힘, 한 번에 하나만 열린다.
- *   여덟 개를 모두 펼쳐 두면 8주가 한눈에 들어오지 않는다.
- *   이 단락의 목적은 "8주가 어떻게 이어지는가"를 보여 주는 것이고,
- *   한 주의 내용은 그다음 관심사다.
+ *   여덟 개를 모두 펼쳐 두면 8주가 한눈에 들어오지 않고 페이지만 길어진다.
+ *   닫힌 줄에서 이미 그 주가 어떤 주인지(주제 · 성장 지점 · 그림책 ·
+ *   한 줄 메시지) 읽히므로, 펼치는 것은 더 알고 싶을 때의 선택이다.
  *
- * ★ 확정된 주차만 안을 채운다.
- *   지금 안이 있는 것은 1주차뿐이다. 나머지 주차는 주제와 성장 지점까지가
- *   확정된 전부이므로, 그 아래에 활동을 지어 넣지 않고 상담 안내로 잇는다.
- *   빈 자리를 그럴듯한 문장으로 메우면 그것은 상품 설명이 아니라 창작이 된다.
+ * ★ 있는 것만 그린다.
+ *   1~6주차는 교사용 수업가이드가 확정본이라 활동 네 갈래가 모두 들어 있고,
+ *   7~8주차는 별도로 준비 중이라 활동명까지만 있다.
+ *   없는 칸을 그럴듯한 문장으로 메우지 않는다.
  *
  * ★ 교사용 자료는 여기에 오지 않는다.
- *   발문 · 교사 언어 · 개별 지원 지침 · 관찰지표 · 준비물 · 안전 운영 방법은
- *   공개 화면에 담지 않는다. 여기 있는 것은 학부모와 원장이 보아도 되는
- *   범위, 즉 무엇을 하는가까지다.
+ *   교사 발문 · 교사 역할 · 아이 반응별 대응 · 난이도 조절 · 개별 지원 ·
+ *   준비물 · 공간 세팅 · 안전 지침 · 관찰지표 · 기록 예문은 공개 화면에
+ *   담지 않는다. 여기 있는 것은 학부모와 원장이 보아도 되는 범위,
+ *   즉 "아이가 무엇을 경험하는가"까지다.
  */
 export function ProductCurriculum({ product }: { product: ProgramProduct }) {
   const { curriculum, theme } = product;
@@ -85,20 +87,21 @@ function WeekRow({
   const panelId = `week-panel-${entry.week}`;
   const buttonId = `week-button-${entry.week}`;
 
-  const activities = [
-    { label: "몸으로 놀기", value: entry.movement },
-    { label: "워크북", value: entry.workbook },
-    { label: "미술활동", value: entry.art },
-    { label: "완성작품", value: entry.takeHome },
-  ].filter((row): row is { label: string; value: string } =>
-    Boolean(row.value),
+  const cards = [
+    { code: "MOVE & PLAY", activity: entry.movement },
+    { code: "WORKBOOK", activity: entry.workbook },
+    { code: "CREATE", activity: entry.creative },
+    { code: "HOME", activity: entry.homeConnection },
+  ].filter(
+    (card): card is { code: string; activity: ProgramWeekActivity } =>
+      Boolean(card.activity),
   );
 
-  const hasDetail =
-    activities.length > 0 ||
-    Boolean(entry.storyTitle) ||
-    Boolean(entry.coreMessage) ||
-    Boolean(entry.coreExperiences?.length);
+  const hasBody =
+    cards.length > 0 ||
+    Boolean(entry.experienceSummary) ||
+    Boolean(entry.experienceFlow?.length) ||
+    Boolean(entry.takeHome);
 
   return (
     <div
@@ -113,10 +116,10 @@ function WeekRow({
           onClick={onToggle}
           aria-expanded={isOpen}
           aria-controls={panelId}
-          className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-navy/[0.03] sm:px-5"
+          className="flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-navy/[0.03] sm:px-5"
         >
           <span
-            className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold tabular-nums tracking-[0.1em] ${
+            className={`mt-0.5 shrink-0 rounded-md px-2 py-1 text-[11px] font-bold tabular-nums tracking-[0.1em] ${
               entry.finale
                 ? "bg-navy text-yellow"
                 : `bg-navy/[0.05] ${accentText}`
@@ -128,20 +131,33 @@ function WeekRow({
           <span className="min-w-0 flex-1">
             <span className="block break-keep text-[15px] font-bold leading-snug text-navy sm:text-[16px]">
               {entry.topic}
+              <span className="ml-1.5 font-semibold text-navy/45">
+                · {entry.growthPoint}
+              </span>
             </span>
+
+            {entry.storyTitle ? (
+              <span className="mt-1 block break-keep text-[13px] font-semibold text-navy/70">
+                《{entry.storyTitle}》
+              </span>
+            ) : null}
+
+            {/* 닫힌 채로도 그 주가 무엇을 남기려는 주인지 한 줄로 읽힌다. */}
+            {entry.coreMessage ? (
+              <span className="mt-1 block break-keep text-[13px] leading-relaxed text-navy/50">
+                {entry.coreMessage}
+              </span>
+            ) : null}
+
             {/*
               마지막 주차를 색으로만 구분하지 않는다.
               색을 보지 못해도 "마무리"라는 글자가 그 사실을 말한다.
             */}
             {entry.finale ? (
-              <span className="mt-0.5 block text-[12px] font-semibold text-navy/50">
+              <span className="mt-1.5 block text-[12px] font-semibold text-navy/50">
                 마무리 — 여덟 주가 하나로 모입니다
               </span>
             ) : null}
-          </span>
-
-          <span className="shrink-0 break-keep rounded-full border border-navy/12 bg-surface-soft px-2.5 py-1 text-[12px] font-semibold text-navy/65">
-            {entry.growthPoint}
           </span>
 
           <svg
@@ -154,7 +170,7 @@ function WeekRow({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
-            className={`shrink-0 text-navy/35 transition-transform duration-200 ${
+            className={`mt-1.5 shrink-0 text-navy/35 transition-transform duration-200 ${
               isOpen ? "rotate-180" : ""
             }`}
           >
@@ -168,75 +184,112 @@ function WeekRow({
         role="region"
         aria-labelledby={buttonId}
         hidden={!isOpen}
-        className="border-t border-navy/10 px-4 py-4 sm:px-5"
+        className="border-t border-navy/10 px-4 py-5 sm:px-5"
       >
-        {hasDetail ? (
-          <div className="flex flex-col gap-4">
-            {entry.storyTitle ? (
+        {hasBody ? (
+          <div className="flex flex-col gap-5">
+            {/* ── 이번 주 경험 ─────────────────────────────────── */}
+            {entry.growthKeyword ||
+            entry.experienceSummary ||
+            entry.experienceFlow?.length ? (
               <div>
-                <p className="text-[11px] font-bold tracking-[0.14em] text-navy/40">
-                  영상 스토리
-                </p>
-                <p className="mt-1 break-keep text-[16px] font-bold text-navy">
-                  「{entry.storyTitle}」
-                </p>
-              </div>
-            ) : null}
-
-            {/*
-              그 주가 아이에게 남기려는 한 문장.
-              평가하는 말이 아니라 아이가 가져가는 말이므로 크게 둔다.
-            */}
-            {entry.coreMessage ? (
-              <p className="border-l-[3px] border-l-navy/20 pl-3.5 text-[15px] font-semibold leading-relaxed text-navy/85">
-                {entry.coreMessage}
-              </p>
-            ) : null}
-
-            {entry.coreExperiences?.length ? (
-              <div>
-                <p className="text-[11px] font-bold tracking-[0.14em] text-navy/40">
-                  핵심경험
-                </p>
-                <ul className="mt-2 flex flex-wrap gap-1.5">
-                  {entry.coreExperiences.map((item) => (
-                    <li
-                      key={item}
-                      className="break-keep rounded-md border border-navy/12 bg-white px-2.5 py-1 text-[12px] text-navy/70"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {activities.length > 0 ? (
-              <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {activities.map((row) => (
-                  <div
-                    key={row.label}
-                    className="rounded-lg border border-navy/10 bg-surface-soft px-3 py-2.5"
+                {entry.growthKeyword ? (
+                  <span
+                    className={`inline-block rounded-full bg-navy/[0.05] px-3 py-1 text-[12px] font-bold ${accentText}`}
                   >
-                    <dt className="text-[11px] font-bold text-navy/45">
-                      {row.label}
+                    성장키워드 · {entry.growthKeyword}
+                  </span>
+                ) : null}
+
+                {entry.experienceSummary ? (
+                  <p className="mt-3 break-keep text-[15px] leading-relaxed text-navy/80">
+                    {entry.experienceSummary}
+                  </p>
+                ) : null}
+
+                {entry.experienceFlow?.length ? (
+                  <ol className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-2">
+                    {entry.experienceFlow.map((step, index) => (
+                      <li key={step} className="flex items-center gap-1.5">
+                        <span className="break-keep rounded-md border border-navy/10 bg-surface-soft px-2.5 py-1 text-[12px] font-semibold text-navy/70">
+                          {step}
+                        </span>
+                        {index < (entry.experienceFlow?.length ?? 0) - 1 ? (
+                          <span aria-hidden="true" className="text-navy/25">
+                            →
+                          </span>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
+              </div>
+            ) : null}
+
+            {/* ── 활동 네 갈래 ─────────────────────────────────── */}
+            {cards.length > 0 ? (
+              <dl className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+                {cards.map((card) => (
+                  <div
+                    key={card.code}
+                    className="h-full rounded-lg border border-navy/10 bg-surface-soft px-4 py-3"
+                  >
+                    <p
+                      className={`text-[10px] font-bold tracking-[0.12em] ${accentText}`}
+                    >
+                      {card.code}
+                    </p>
+                    <dt className="mt-1 break-keep text-[14px] font-bold text-navy">
+                      {card.activity.title}
                     </dt>
-                    <dd className="mt-1 break-keep text-[13px] font-semibold text-navy/80">
-                      {row.value}
-                    </dd>
+
+                    {card.activity.summary ? (
+                      <dd className="mt-1 break-keep text-[13px] leading-relaxed text-navy/60">
+                        {card.activity.summary}
+                      </dd>
+                    ) : null}
+
+                    {card.activity.items?.length ? (
+                      <dd className="mt-2 flex flex-wrap gap-1">
+                        {card.activity.items.map((item) => (
+                          <span
+                            key={item}
+                            className="break-keep rounded border border-navy/12 bg-white px-1.5 py-0.5 text-[11px] leading-[1.6] text-navy/60"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </dd>
+                    ) : null}
                   </div>
                 ))}
               </dl>
             ) : null}
+
+            {/* ── 완성 작품 ────────────────────────────────────── */}
+            {entry.takeHome ? (
+              <p className="break-keep text-[13px] text-navy/60">
+                <span className="font-bold text-navy/45">완성 작품</span>
+                <span className="mx-2 text-navy/20">|</span>
+                <span className="font-semibold text-navy">
+                  {entry.takeHome.title}
+                </span>
+                {entry.takeHome.summary ? (
+                  <span className="text-navy/50">
+                    {` · ${entry.takeHome.summary}`}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
           </div>
         ) : (
           /*
-            아직 확정본이 없는 주차다.
+            아직 상세가 준비되지 않은 주차다.
             "준비 중"이라고 사과하는 대신, 실제로 답을 받을 수 있는 곳을 알려 준다.
             수업 세부 구성은 원래도 공개 화면이 아니라 상담에서 안내하는 범위다.
           */
           <p className="text-[13px] leading-relaxed text-navy/55">
-            {entry.growthPoint} 주차의 세부 구성은 도입 상담에서 안내드립니다.
+            이 주차의 세부 구성은 도입 상담에서 안내드립니다.
           </p>
         )}
       </div>
