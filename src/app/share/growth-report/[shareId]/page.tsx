@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { ParentGrowthReportView } from "@/components/share/ParentGrowthReportView";
+/*
+  인쇄 규칙. 이 route 에서만 불러오므로 @page 를 써도 다른 화면의
+  인쇄에 영향을 주지 않는다.
+*/
+import "./report-print.css";
 
 /**
  * SERVICE-13 — 학부모 공개 성장 리포트 페이지.
@@ -27,6 +32,12 @@ import { ParentGrowthReportView } from "@/components/share/ParentGrowthReportVie
  *   기관 이름 · 아이 이름 · 기간은 안쪽 리포트의 표지가 말한다.
  *   껍데기에서 같은 말을 반복하면 "공문" 같은 인상이 된다.
  *   여기 남는 것은 브랜드 한 줄과 링크 취급 안내뿐이고, 둘 다 인쇄에서 빠진다.
+ *
+ * ★ 보안 안내는 문서 바깥에 둔다.
+ *   "이 링크는 해당 보호자에게만" 안내는 리포트의 내용이 아니라 링크를 다루는
+ *   방법이다. 문서 안에 섞이면 저장하거나 인쇄한 성장 기록에 관리 문구가
+ *   따라 붙는다. 그래서 시각적으로 떼어 놓고 인쇄에서는 숨긴다 —
+ *   숨기는 것은 화면에서의 위치뿐이고, 문구 자체는 약화하지 않는다.
  */
 export const metadata: Metadata = {
   title: "성장 리포트 | TeachAble Art Play",
@@ -61,20 +72,30 @@ export default async function ParentSharePage({ params }: ParentSharePageProps) 
   return (
     <div className="min-h-screen bg-surface-soft print:bg-white">
       <header className="border-b border-navy/10 bg-white print:hidden">
-        <div className="mx-auto w-full max-w-[560px] px-5 py-3">
+        <div className="mx-auto w-full max-w-[960px] px-4 py-3 sm:px-6">
           <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
             TEACHABLE ART PLAY
           </p>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[560px] px-5 py-6 print:max-w-none print:px-0 print:py-0">
+      {/*
+        문서 폭 960px.
+        본문 단락은 안에서 다시 두 칸으로 나뉘므로 한 줄이 지나치게
+        길어지지 않고, A4 로 인쇄했을 때의 지면 비율과도 가깝다.
+      */}
+      <main className="gr-page mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
         <ParentGrowthReportView shareId={shareId} />
 
-        <p className="mt-6 rounded-xl border border-navy/10 bg-white px-4 py-3 text-[12px] leading-relaxed text-navy/50 print:hidden">
-          이 링크는 해당 보호자에게만 전달해주세요. 링크를 가진 사람은 유효기간
-          동안 내용을 볼 수 있습니다.
-        </p>
+        <aside className="mt-10 border-t border-navy/10 pt-5 print:hidden">
+          <p className="text-[10px] font-bold tracking-[0.16em] text-navy/40">
+            링크 안내
+          </p>
+          <p className="mt-2 max-w-[62ch] text-[12px] leading-relaxed text-navy/50">
+            이 링크는 해당 보호자에게만 전달해주세요. 링크를 가진 사람은
+            유효기간 동안 내용을 볼 수 있습니다.
+          </p>
+        </aside>
       </main>
     </div>
   );

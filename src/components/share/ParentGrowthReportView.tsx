@@ -174,95 +174,332 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
   const { report } = state;
 
   return (
-    <article className="flex flex-col gap-5">
-      {/* ─────────────────────────────────────────── 표지 */}
-      <header className="rounded-2xl border border-navy/10 bg-white px-5 py-7 text-center print:border-0 print:px-0 print:py-2">
-        <p className="text-[11px] font-bold tracking-[0.16em] text-navy/40">
-          SOYESKIDS · TEACHABLE ART PLAY
-        </p>
+    <>
+      {/*
+        ★ 문서 본체를 gr-report 하나로 감싼다.
+          인쇄 규칙(report-print.css)이 이 클래스 안에서만 동작하므로,
+          이 파일의 인쇄 스타일이 다른 화면으로 새어 나가지 않는다.
+      */}
+      <article className="gr-report flex flex-col gap-4 sm:gap-5">
+        <ReportCover report={report} />
 
-        <p className="mt-4 text-[13px] text-navy/55">
-          {report.organizationName}
-          {report.className ? ` · ${report.className}` : ""}
-        </p>
+        {/*
+          01 은 이 문서에서 가장 중요한 단락이다.
+          왼쪽 굵은 선 · 큰 본문 · 넓은 여백으로 무게를 준다 —
+          배경 인쇄를 끈 흑백 출력에서도 위계가 남아야 하므로
+          색이 아니라 선과 크기로 만든다.
+        */}
+        <Narrative
+          index="01"
+          eyebrow="GROWTH HIGHLIGHT"
+          heading="이번 기간의 성장 변화"
+          body={report.growthChanges}
+          emphasis="primary"
+        />
 
-        <h1 className="mt-1 break-words text-[24px] font-bold leading-snug text-navy">
-          {report.childName ? `${report.childName}의 성장 기록` : "성장 기록"}
-        </h1>
+        {/*
+          gr-duo 는 인쇄 규칙이 잡는 손잡이다.
+          화면에서는 lg 이상에서만 두 칸이 되지만, 인쇄 지면의 CSS 폭은
+          lg 에 못 미쳐 그 규칙이 걸리지 않는다. report-print.css 가
+          이 클래스를 보고 종이에서 다시 두 칸으로 세운다.
+        */}
+        <div className="gr-duo grid gap-4 sm:gap-5 lg:grid-cols-2 lg:items-start">
+          <Narrative
+            index="02"
+            eyebrow="OBSERVATION STORY"
+            heading="이번 기간에 관찰된 모습"
+            body={report.observationSummary}
+            emphasis="neutral"
+          />
+          <Narrative
+            index="03"
+            eyebrow="NEXT STEP"
+            heading="다음 활동에서 도와줄 부분"
+            body={report.nextSupport}
+            emphasis="soft"
+          />
+        </div>
 
-        <p className="mt-2 text-[13px] tabular-nums text-navy/50">
-          {formatPeriod(report.periodStart, report.periodEnd)}
-        </p>
+        {report.activities.length > 0 ? (
+          <ActivityHighlight activities={report.activities} />
+        ) : null}
 
-        <p className="mx-auto mt-4 max-w-[36ch] break-words text-[13px] leading-relaxed text-navy/60">
-          {report.title}
-        </p>
-      </header>
+        <ReportFooter completedAt={report.completedAt} />
+      </article>
 
-      {/* ─────────────────────────────────────────── 본문 */}
-      <Block label="이번 기간에 관찰된 모습" value={report.observationSummary} />
-      <Block label="이번 기간의 성장과 변화" value={report.growthChanges} />
-      <Block label="다음 활동에서 도와줄 부분" value={report.nextSupport} />
-
-      {/* ─────────────────────────────────────── 함께한 활동 */}
-      {report.activities.length > 0 ? (
-        <section className="rounded-2xl border border-navy/10 bg-white p-5 print:border-0 print:px-0">
-          <h2 className="text-[15px] font-bold text-navy">함께한 활동</h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-navy/45">
-            이 기간에 함께한 수업입니다.
-          </p>
-
-          <ul className="mt-4 flex flex-col divide-y divide-navy/8">
-            {report.activities.map((activity, index) => (
-              <ActivityRow
-                key={`${activity.observedOn ?? "unknown"}-${index}`}
-                activity={activity}
-              />
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {/* ─────────────────────────────────────────── 맺음말 */}
-      <footer className="rounded-2xl border border-navy/10 bg-surface-soft px-5 py-4 print:border-0 print:bg-transparent print:px-0">
-        <p className="text-[12px] leading-relaxed text-navy/55">
-          이 기록은 수업 중 관찰과 교사의 검토를 바탕으로 작성되었습니다.
-          {report.completedAt
-            ? ` 작성 완료 ${formatDate(report.completedAt.slice(0, 10))}.`
-            : ""}
-        </p>
-      </footer>
-
-      {/* 인쇄 버튼은 인쇄물에 남지 않는다 */}
-      <div className="print:hidden">
+      {/* 인쇄물에는 남지 않는다 — 문서가 아니라 화면의 도구다. */}
+      <div className="mt-6 print:hidden">
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/20 bg-white px-5 text-[14px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
         >
-          인쇄하기
+          <PrinterIcon />
+          인쇄 / PDF 저장
         </button>
       </div>
-    </article>
+    </>
   );
 }
+
+/* ─────────────────────────────────────────────────────────── 표지 */
+
+/**
+ * 표지.
+ *
+ * 가운데 정렬한 카드가 아니라 왼쪽 정렬 편집 지면처럼 짠다.
+ * 시선이 처음 닿는 곳이 아이 이름이어야 하므로 브랜드 표기는 작게 위로
+ * 올리고, 이름만 크게 남긴다.
+ */
+function ReportCover({ report }: { report: ParentSharedReport }) {
+  const place = [report.organizationName, report.className]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <header className="gr-block gr-cover rounded-2xl border border-navy/10 bg-white px-6 py-8 sm:px-9 sm:py-10">
+      <span
+        aria-hidden="true"
+        className="gr-accent block h-[3px] w-12 rounded-full bg-yellow"
+      />
+
+      <p className="gr-eyebrow mt-5 text-[10px] font-bold tracking-[0.2em] text-navy/45">
+        SOYESKIDS · TEACHABLE ART PLAY
+      </p>
+      <p className="gr-eyebrow mt-1.5 text-[10px] font-bold tracking-[0.28em] text-trust-blue">
+        GROWTH REPORT
+      </p>
+
+      <h1 className="gr-title mt-5 break-words text-[30px] font-bold leading-[1.25] text-navy sm:text-[38px]">
+        {report.childName ? (
+          <>
+            {report.childName}의
+            <br />
+            성장 기록
+          </>
+        ) : (
+          "성장 기록"
+        )}
+      </h1>
+
+      <p className="gr-subtitle mt-4 max-w-[46ch] break-words text-[14px] leading-relaxed text-navy/65 sm:text-[15px]">
+        {report.title}
+      </p>
+
+      <dl className="gr-cover-meta mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-navy/10 pt-5">
+        {place ? <MetaItem label="기관" value={place} /> : null}
+        <MetaItem
+          label="기간"
+          value={formatPeriod(report.periodStart, report.periodEnd)}
+        />
+        {report.completedAt ? (
+          <MetaItem
+            label="작성 완료"
+            value={formatDate(report.completedAt.slice(0, 10))}
+          />
+        ) : null}
+      </dl>
+    </header>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="gr-meta-label text-[10px] font-bold tracking-[0.14em] text-navy/40">
+        {label}
+      </dt>
+      <dd className="gr-meta mt-1 break-words text-[13px] font-medium tabular-nums text-navy/75">
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────────────── 본문 단락 */
+
+/**
+ * 번호 · 영문 표제 · 한글 제목 · 본문으로 이루어진 단락 하나.
+ *
+ * ★ 색으로만 위계를 만들지 않는다.
+ *   emphasis 는 배경색뿐 아니라 왼쪽 선의 진하기와 본문 크기까지 함께
+ *   바꾼다. 브라우저에서 "배경 그래픽"을 끄고 인쇄해도 01 이 가장 무겁게
+ *   남아야 한다.
+ *
+ * ★ 장식이 본문을 이기지 않게 한다.
+ *   번호와 영문 표제는 작고 흐리게 두고, 눈이 한글 제목과 본문으로
+ *   곧장 가게 한다.
+ */
+type Emphasis = "primary" | "neutral" | "soft";
+
+const EMPHASIS_SURFACE: Record<Emphasis, string> = {
+  primary: "border-navy/15 bg-white border-l-[3px] border-l-navy",
+  neutral: "border-navy/10 bg-white border-l-[3px] border-l-navy/25",
+  soft: "border-navy/10 bg-surface-soft border-l-[3px] border-l-soft-green",
+};
+
+const EMPHASIS_BODY: Record<Emphasis, string> = {
+  primary: "text-[17px] leading-[1.85]",
+  neutral: "text-[15px] leading-[1.8]",
+  soft: "text-[15px] leading-[1.8]",
+};
+
+function Narrative({
+  index,
+  eyebrow,
+  heading,
+  body,
+  emphasis,
+}: {
+  index: string;
+  eyebrow: string;
+  heading: string;
+  body: string;
+  emphasis: Emphasis;
+}) {
+  return (
+    <section
+      data-emphasis={emphasis}
+      className={`gr-block gr-narrative h-full rounded-2xl border px-6 py-6 sm:px-8 sm:py-7 ${EMPHASIS_SURFACE[emphasis]}`}
+    >
+      <p className="gr-index text-[11px] font-bold tabular-nums tracking-[0.1em] text-navy/35">
+        {index}
+      </p>
+      <p className="gr-eyebrow mt-1 text-[10px] font-bold tracking-[0.18em] text-trust-blue">
+        {eyebrow}
+      </p>
+
+      <h2 className="gr-heading mt-3 break-keep text-[18px] font-bold leading-snug text-navy sm:text-[20px]">
+        {heading}
+      </h2>
+
+      <p
+        className={`gr-body mt-4 whitespace-pre-wrap break-words text-navy ${EMPHASIS_BODY[emphasis]}`}
+      >
+        {body}
+      </p>
+    </section>
+  );
+}
+
+/* ───────────────────────────────────────────────────── 함께한 활동 */
+
+/**
+ * 함께한 활동.
+ *
+ * 활동마다 카드를 만들면 열 개짜리 리포트가 세로로 한없이 늘어나고
+ * 인쇄에서 두 장이 된다. 날짜 · 이름 · 영역을 한 줄로 묶어 표처럼 읽히게 한다.
+ * 잘라내는 것이 아니라 접어 넣는 것이다 — 내용은 하나도 빠지지 않는다.
+ */
+function ActivityHighlight({
+  activities,
+}: {
+  activities: ParentSharedActivity[];
+}) {
+  return (
+    <section className="gr-block gr-activities rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8 sm:py-7">
+      <h2 className="gr-heading text-[16px] font-bold text-navy sm:text-[17px]">
+        함께한 활동
+      </h2>
+      <p className="gr-meta mt-1 text-[12px] leading-relaxed text-navy/45">
+        이 기간에 함께한 수업입니다.
+      </p>
+
+      <ul className="mt-4 flex flex-col divide-y divide-navy/8">
+        {activities.map((activity, index) => (
+          <ActivityRow
+            key={`${activity.observedOn ?? "unknown"}-${index}`}
+            activity={activity}
+          />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
+  return (
+    <li className="gr-activity flex flex-col gap-1 py-2.5 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4">
+      <p className="gr-meta shrink-0 text-[12px] tabular-nums text-navy/45 sm:w-[86px]">
+        {activity.observedOn ? formatDate(activity.observedOn) : ""}
+      </p>
+
+      <div className="min-w-0 flex-1">
+        <p className="gr-activity-title break-words text-[14px] font-semibold leading-snug text-navy">
+          {activity.lessonTitle ?? "활동"}
+        </p>
+
+        {activity.domainLabels.length > 0 ? (
+          <p className="mt-1.5 flex flex-wrap gap-1.5">
+            {activity.domainLabels.map((label) => (
+              <span
+                key={label}
+                className="gr-tag break-keep rounded-md border border-navy/15 px-2 py-0.5 text-[11px] text-navy/60"
+              >
+                {label}
+              </span>
+            ))}
+          </p>
+        ) : null}
+      </div>
+    </li>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────── 맺음말 */
+
+/** 문서의 끝. 여기까지 읽으면 정식 결과물로 마무리되게 한다. */
+function ReportFooter({ completedAt }: { completedAt: string | null }) {
+  return (
+    <footer className="gr-block gr-footer rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8">
+      <p className="gr-body text-[13px] leading-relaxed text-navy/65">
+        이 기록은 TeachAble Art Play 수업 중 관찰과 교사의 검토를 바탕으로
+        작성되었습니다.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-navy/10 pt-4">
+        <p className="gr-meta text-[12px] tabular-nums text-navy/45">
+          {completedAt
+            ? `작성 완료 ${formatDate(completedAt.slice(0, 10))}`
+            : ""}
+        </p>
+
+        <p className="gr-brand text-right">
+          <span className="block text-[10px] font-bold tracking-[0.18em] text-navy/45">
+            SOYESKIDS
+          </span>
+          <span className="mt-0.5 block font-serif text-[15px] font-semibold italic text-navy">
+            TeachAble Art Play
+          </span>
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+/* ─────────────────────────────────────────────────────── 나머지 상태 */
 
 /** 불러오는 동안. 갑자기 나타나지 않도록 실제 구조와 비슷한 자리를 잡아 둔다. */
 function LoadingSkeleton() {
   return (
-    <div aria-live="polite" className="flex flex-col gap-5">
+    <div aria-live="polite" className="flex flex-col gap-4 sm:gap-5">
       <span className="sr-only">성장 기록을 불러오는 중입니다.</span>
 
-      <div className="rounded-2xl border border-navy/10 bg-white px-5 py-7">
-        <div className="mx-auto h-3 w-32 rounded bg-navy/10" />
-        <div className="mx-auto mt-4 h-3 w-24 rounded bg-navy/10" />
-        <div className="mx-auto mt-3 h-6 w-48 rounded bg-navy/10" />
+      <div className="rounded-2xl border border-navy/10 bg-white px-6 py-8 sm:px-9 sm:py-10">
+        <div className="h-[3px] w-12 rounded-full bg-navy/10" />
+        <div className="mt-5 h-2.5 w-40 rounded bg-navy/10" />
+        <div className="mt-6 h-8 w-56 rounded bg-navy/10" />
+        <div className="mt-3 h-8 w-40 rounded bg-navy/10" />
       </div>
 
-      {[0, 1, 2].map((n) => (
-        <div key={n} className="rounded-2xl border border-navy/10 bg-white p-5">
-          <div className="h-3 w-28 rounded bg-navy/10" />
-          <div className="mt-3 h-3 w-full rounded bg-navy/[0.07]" />
+      {[0, 1].map((n) => (
+        <div
+          key={n}
+          className="rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8"
+        >
+          <div className="h-2.5 w-24 rounded bg-navy/10" />
+          <div className="mt-4 h-4 w-48 rounded bg-navy/10" />
+          <div className="mt-4 h-3 w-full rounded bg-navy/[0.07]" />
           <div className="mt-2 h-3 w-11/12 rounded bg-navy/[0.07]" />
           <div className="mt-2 h-3 w-9/12 rounded bg-navy/[0.07]" />
         </div>
@@ -280,12 +517,36 @@ function NoticeCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-navy/10 bg-white px-5 py-12 text-center">
-      <p className="text-[16px] font-bold text-navy">{title}</p>
-      <p className="mx-auto mt-3 max-w-[32ch] text-[14px] leading-relaxed text-navy/55">
+    <div className="rounded-2xl border border-navy/10 bg-white px-6 py-14 text-center">
+      <span
+        aria-hidden="true"
+        className="mx-auto block h-[3px] w-12 rounded-full bg-yellow"
+      />
+      <p className="mt-6 text-[17px] font-bold text-navy">{title}</p>
+      <p className="mx-auto mt-3 max-w-[34ch] text-[14px] leading-relaxed text-navy/55">
         {children}
       </p>
     </div>
+  );
+}
+
+function PrinterIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M6 9V3.5h12V9" />
+      <path d="M6 18H4.5A1.5 1.5 0 0 1 3 16.5v-5A1.5 1.5 0 0 1 4.5 10h15a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H18" />
+      <rect x="6" y="14.5" width="12" height="6" rx="1" />
+    </svg>
   );
 }
 
@@ -319,48 +580,6 @@ function stripFragment() {
     // 그때는 주소창에 fragment 가 남지만 화면 동작은 그대로 유지한다.
     // 실패 사실도 로그로 남기지 않는다 — 남길 만한 안전한 정보가 없다.
   }
-}
-
-function Block({ label, value }: { label: string; value: string }) {
-  return (
-    <section className="rounded-2xl border border-navy/10 bg-white p-5 print:break-inside-avoid print:border-0 print:px-0">
-      <h2 className="text-[13px] font-bold tracking-wide text-navy/55">
-        {label}
-      </h2>
-      <p className="mt-3 whitespace-pre-wrap break-words text-[16px] leading-loose text-navy">
-        {value}
-      </p>
-    </section>
-  );
-}
-
-function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
-  return (
-    <li className="py-3 first:pt-0 last:pb-0 print:break-inside-avoid">
-      {activity.observedOn ? (
-        <p className="text-[12px] tabular-nums text-navy/45">
-          {formatDate(activity.observedOn)}
-        </p>
-      ) : null}
-
-      <p className="mt-0.5 break-words text-[15px] font-semibold leading-snug text-navy">
-        {activity.lessonTitle ?? "활동"}
-      </p>
-
-      {activity.domainLabels.length > 0 ? (
-        <p className="mt-1.5 flex flex-wrap gap-1.5">
-          {activity.domainLabels.map((label) => (
-            <span
-              key={label}
-              className="break-keep rounded-md border border-navy/10 bg-surface-soft px-2 py-0.5 text-[12px] text-navy/60"
-            >
-              {label}
-            </span>
-          ))}
-        </p>
-      ) : null}
-    </li>
-  );
 }
 
 /** date 컬럼이라 "YYYY-MM-DD" 문자열을 그대로 쪼갠다(시간대 변환 없음). */

@@ -1,0 +1,193 @@
+/*
+ * 학부모 성장 리포트 인쇄 규칙.
+ *
+ * ★ 이 파일은 /share/growth-report/[shareId] 에서만 불러온다.
+ *   그래서 @page 를 써도 다른 화면의 인쇄에 영향을 주지 않는다.
+ *   (Next.js App Router 가 이 route 의 CSS 만 이 route 에서 내려보낸다 —
+ *    실제로 별도 chunk 로 분리되어 나가는 것을 확인했다)
+ *
+ * ★ 배경색에 기대지 않는다.
+ *   브라우저 인쇄 설정에서 "배경 그래픽"은 기본이 꺼짐이다.
+ *   그래서 문서의 구조를 선 · 글자 크기 · 여백만으로 만든다.
+ *   배경이 전부 사라져도 표지 · 01/02/03 · 활동 · 맺음말이 그대로 읽혀야 한다.
+ *
+ * ★ 한 장에 넣으려고 글을 자르지 않는다.
+ *   line-clamp · overflow:hidden · text-overflow 를 쓰지 않는다.
+ *   보통 분량(각 단락 200~350자, 활동 5~8건)이면 A4 한 장에 들어가도록
+ *   여백을 조인다. 글이 그보다 길면 두 장이 된다 —
+ *   내용이 빠지는 것보다 그쪽이 낫다.
+ *
+ * ★ 여백 단위를 mm 로 쓰는 이유
+ *   지면은 px 가 아니라 종이다. 한 장에 들어가는지를 계산하려면
+ *   A4 인쇄 영역(186mm × 277mm)과 같은 단위로 적어야 한다.
+ */
+
+@page {
+  size: A4 portrait;
+  margin: 10mm 12mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  /* 문서 폭 제한을 풀어 종이 폭을 그대로 쓴다. */
+  .gr-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .gr-report {
+    max-width: none;
+    /* 카드 사이 간격을 화면보다 좁힌다. 종이에서는 여백이 곧 페이지 수다. */
+    gap: 4mm;
+    color: #10233c;
+  }
+
+  /* 그림자와 과한 곡률은 종이에서 잉크만 쓴다. */
+  .gr-report * {
+    box-shadow: none !important;
+  }
+
+  .gr-report .gr-block {
+    /* 한 단락이 두 페이지에 걸쳐 쪼개지지 않게 한다. */
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-radius: 1.5mm;
+    background: transparent;
+  }
+
+  /*
+   * 화면에서는 lg(1024px) 이상에서만 두 칸이 된다.
+   * 인쇄 지면의 CSS 폭은 그에 못 미쳐 그 규칙이 걸리지 않으므로,
+   * 여기서 다시 두 칸으로 세운다 — 02 와 03 이 나란히 서면
+   * 세로로 60mm 안팎을 아낀다. 한 장이 되느냐 두 장이 되느냐가 여기서 갈린다.
+   */
+  .gr-report .gr-duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+    align-items: start;
+  }
+
+  /* ── 표지 ─────────────────────────────────────────────── */
+  .gr-report .gr-cover {
+    padding: 5mm 6mm;
+  }
+
+  .gr-report .gr-title {
+    font-size: 22pt;
+    line-height: 1.2;
+    margin-top: 3.5mm;
+  }
+
+  .gr-report .gr-subtitle {
+    font-size: 9pt;
+    line-height: 1.45;
+    margin-top: 2.5mm;
+  }
+
+  .gr-report .gr-cover-meta {
+    margin-top: 3.5mm;
+    padding-top: 2.5mm;
+    gap: 0 8mm;
+  }
+
+  /* ── 본문 단락 ────────────────────────────────────────── */
+  .gr-report .gr-narrative {
+    padding: 4.5mm 5.5mm;
+  }
+
+  .gr-report .gr-heading {
+    font-size: 10.5pt;
+    line-height: 1.35;
+    margin-top: 1.5mm;
+  }
+
+  .gr-report .gr-body {
+    font-size: 9.5pt;
+    line-height: 1.5;
+    margin-top: 2mm;
+  }
+
+  /* 01 은 종이에서도 가장 무겁게 남는다 — 크기와 선 굵기 둘 다로. */
+  .gr-report .gr-narrative[data-emphasis="primary"] .gr-body {
+    font-size: 10pt;
+    line-height: 1.55;
+  }
+
+  .gr-report .gr-narrative[data-emphasis="primary"] {
+    border-left-width: 1mm;
+  }
+
+  .gr-report .gr-index,
+  .gr-report .gr-eyebrow,
+  .gr-report .gr-meta-label {
+    font-size: 7pt;
+  }
+
+  .gr-report .gr-meta {
+    font-size: 8pt;
+  }
+
+  /* ── 활동 ─────────────────────────────────────────────── */
+  .gr-report .gr-activities {
+    padding: 4.5mm 5.5mm;
+  }
+
+  .gr-report .gr-activity {
+    /* 한 활동이 페이지 경계에서 반으로 갈라지지 않게 한다. */
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding-top: 1mm;
+    padding-bottom: 1mm;
+  }
+
+  /*
+   * 화면에서는 차시명 아래에 영역 이름이 줄바꿈되어 붙는다.
+   * 종이에서는 그 한 줄이 활동 수만큼 곱해져 5건이면 20mm 가 넘는다.
+   * 같은 줄에 이어 붙이면 내용은 그대로인 채 높이만 절반이 된다.
+   */
+  .gr-report .gr-activity > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 3mm;
+  }
+
+  .gr-report .gr-activity > div > p:last-child {
+    margin-top: 0;
+  }
+
+  .gr-report .gr-activity-title {
+    font-size: 9pt;
+    line-height: 1.3;
+  }
+
+  .gr-report .gr-tag {
+    font-size: 7.5pt;
+    padding: 0 1.2mm;
+  }
+
+  /* ── 맺음말 ───────────────────────────────────────────── */
+  .gr-report .gr-footer {
+    padding: 3.5mm 5.5mm;
+  }
+
+  .gr-report .gr-footer .gr-body {
+    font-size: 8pt;
+    line-height: 1.45;
+    margin-top: 0;
+  }
+
+  .gr-report .gr-footer > div {
+    margin-top: 2.5mm;
+    padding-top: 2mm;
+  }
+
+  .gr-report .gr-brand span:last-child {
+    font-size: 10pt;
+  }
+}
