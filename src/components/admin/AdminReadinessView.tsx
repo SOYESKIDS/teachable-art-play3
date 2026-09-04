@@ -23,18 +23,18 @@ import {
  * ★ 읽기 전용이다. 삭제·수정 버튼이 없다.
  *
  * ★ 평가하지 않는다.
- *   위험 점수도, 등급도, 순위도 없다. "설정됨 / 미설정"이라는 사실만 말한다.
+ *   위험 점수도, 등급도, 순위도 없다. "설정됨 / 확인 필요"라는 상태만 말한다.
  *   완료 개수(3/7)는 진행 상황이지 평가가 아니며, 그 옆에 항상 항목 이름이 붙는다.
  *
  * ★ 색으로만 말하지 않는다.
- *   모든 배지가 "설정됨" · "미설정" 같은 한국어 라벨을 함께 갖는다.
+ *   모든 배지가 "설정됨" · "확인 필요" 같은 한국어 라벨을 함께 갖는다.
  */
 export function AdminReadinessView({ data }: { data: ReadinessData }) {
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 py-8 lg:px-8">
       <PageHeader
         title="서비스 오픈 준비"
-        description="첫 기관을 받기 전에 확인할 항목을 한 화면에서 봅니다. 이 화면은 읽기 전용입니다."
+        description="첫 기관 운영 전에 필요한 설정 상태를 확인합니다. 이 화면은 읽기 전용입니다."
         meta={`${data.todayLabel} 기준`}
         actions={
           <>
@@ -171,7 +171,7 @@ function OrganizationCard({ org }: { org: OrganizationReadiness }) {
           <StatusPill tone={allDone ? "done" : "pending"}>
             {allDone
               ? "설정 완료"
-              : `설정 ${org.doneCount}/${org.totalCount}`}
+              : `${org.totalCount}개 중 ${org.doneCount}개 설정됨`}
           </StatusPill>
         </div>
       </div>
@@ -187,8 +187,13 @@ function OrganizationCard({ org }: { org: OrganizationReadiness }) {
               <span className="text-[12px] tabular-nums text-navy/55">
                 {entry.detail}
               </span>
-              <StatusPill tone={entry.done ? "done" : "neutral"}>
-                {entry.done ? "설정됨" : "미설정"}
+              {/*
+                "미설정"은 잘못했다는 말처럼 읽힌다. 아직 안 한 것과 잘못한 것은
+                다르고, 이 화면은 평가하지 않는다. "확인 필요"는 다음에 할 일을
+                가리킬 뿐이다.
+              */}
+              <StatusPill tone={entry.done ? "done" : "pending"}>
+                {entry.done ? "설정됨" : "확인 필요"}
               </StatusPill>
             </span>
           </li>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { LoginForm } from "./LoginForm";
-import { LOGIN_NOTICES } from "./form-state";
+import { StaffLoginCard } from "@/components/auth/StaffLoginCard";
+import { resolveLoginNotice } from "./form-state";
 
 export const metadata: Metadata = {
   title: "로그인 | TeachAble Art Play",
@@ -12,47 +11,32 @@ interface LoginPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-/** searchParams는 신뢰할 수 없는 입력이므로 정해진 코드만 메시지로 변환한다 */
-function resolveNotice(value: string | string[] | undefined) {
-  const code = Array.isArray(value) ? value[0] : value;
-  return code ? (LOGIN_NOTICES[code] ?? null) : null;
-}
-
 /**
- * 기관 사용자(원장 · 향후 교사) 전용 로그인.
- * SOYES 운영자 로그인(/admin/login)과 화면·흐름을 분리한다.
+ * 기관 사용자(원장 · 교사) 로그인.
+ *
+ * ★ 이 경로는 옮기지도 지우지도 않는다.
+ *   초대 수락(/auth/confirm), 비밀번호 재설정(/auth/set-password),
+ *   로그아웃(/auth/logout), 권한 없는 접근(requireDirector/requireTeacher),
+ *   Proxy 의 비로그인 차단이 전부 /login 으로 돌아온다.
+ *   유치원 전용 포털(/kindergarten)은 그 위에 얹은 **입구**이지
+ *   이 목적지를 대신하는 것이 아니다.
+ *
+ * ★ 로그인 카드는 /kindergarten 과 같은 것을 쓴다.
+ *   인증 action 도 하나다(organizationSignInAction).
  */
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  const initialError = resolveNotice(params.error);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
       <div className="w-full max-w-[440px]">
-        <div className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-8 shadow-[var(--shadow-card)] sm:p-10">
-          <p className="text-[12px] font-bold tracking-[0.18em] text-yellow">
-            TEACHABLE ART PLAY
-          </p>
-          <h1 className="mt-3 text-[24px] font-bold text-navy">기관 로그인</h1>
-          <p className="mt-2 text-[14px] leading-relaxed text-navy/60">
-            원장님과 선생님을 위한 기관 운영 공간입니다.
-          </p>
-
-          <LoginForm initialError={initialError} />
-
-          <p className="mt-5 text-center text-[13px] text-navy/50">
-            <Link
-              href="/auth/forgot-password"
-              className="font-semibold text-navy/70 underline-offset-4 transition-colors hover:text-navy hover:underline"
-            >
-              비밀번호를 잊으셨나요?
-            </Link>
-          </p>
-        </div>
-
-        <p className="mt-6 text-center text-[12px] text-navy/40">
-          계정은 SOYESKIDS 담당자의 초대로 발급됩니다.
-        </p>
+        <StaffLoginCard
+          title="기관 로그인"
+          description="원장님과 선생님을 위한 기관 운영 공간입니다."
+          initialError={resolveLoginNotice(params.error)}
+          idPrefix="login"
+          footnote="계정은 SOYESKIDS 담당자의 초대로 발급됩니다."
+        />
       </div>
     </main>
   );

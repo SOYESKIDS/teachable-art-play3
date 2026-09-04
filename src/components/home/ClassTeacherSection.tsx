@@ -13,7 +13,7 @@ export function ClassTeacherSection() {
   return (
     <section
       id="program"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-28"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
     >
       <Container>
         <SectionHeader headline={classMessage.headline} subCopy={classMessage.sub} />

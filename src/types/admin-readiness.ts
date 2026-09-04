@@ -21,7 +21,7 @@ export interface ReadinessItem {
   label: string;
   /** true = 설정됨 */
   done: boolean;
-  /** "2개" "미설정" 처럼 사실만 담는 짧은 값 */
+  /** "2개" "없음" 처럼 사실만 담는 짧은 값 */
   detail: string;
 }
 

@@ -40,6 +40,14 @@ import { SectionCard, StatusPill } from "@/components/ui/surface";
  *   온보딩 전용 DB 표를 만들지 않았다.
  */
 
+/**
+ * 화면에 보이는 단계는 7개다.
+ *
+ * 1단계(기관)는 이 화면에 들어오기 전에 이미 끝나 있다 — 기관이 없으면
+ * 이 흐름 자체가 열리지 않는다. 그래도 목록에서 빼지 않는다.
+ * "1단계가 없는 2~7단계"는 사용자가 뭔가를 건너뛴 것처럼 느끼게 하고,
+ * 안내 문서에 적힌 "7단계"와도 어긋난다.
+ */
 const STEPS = [
   { no: 2, label: "원장" },
   { no: 3, label: "반" },
@@ -48,6 +56,8 @@ const STEPS = [
   { no: 6, label: "프로그램" },
   { no: 7, label: "확인" },
 ] as const;
+
+const TOTAL_STEPS = STEPS.length + 1;
 
 export function OnboardingFlow({ state }: { state: OnboardingState }) {
   const done = {
@@ -61,6 +71,10 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
 
   // 아직 끝나지 않은 첫 단계에서 시작한다. 전부 끝났으면 확인 단계.
   const firstPending = STEPS.find((s) => s.no !== 7 && !done[s.no])?.no ?? 7;
+
+  // 1단계(기관)는 이 화면에 온 시점에 이미 끝나 있으므로 항상 센다.
+  const doneCount =
+    1 + STEPS.filter((s) => s.no !== 7 && done[s.no]).length;
   const [step, setStep] = useState<number>(firstPending);
 
   const activeClasses = state.classes.filter((c) => c.status === "active");
@@ -69,7 +83,31 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
     <>
       {/* ───────────────────────────────────────── stepper */}
       <nav aria-label="도입 단계" className="mt-6">
-        <ol className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        <p className="text-[12px] font-semibold text-navy/50">
+          {`${TOTAL_STEPS}단계 중 ${doneCount}단계 설정 완료`}
+        </p>
+
+        {/*
+          ★ 좁은 화면에서 2열, 넓은 화면에서 한 줄.
+            7개를 360px 한 줄에 넣으면 셀 폭이 44px 밖에 안 되어
+            "프로그램"이 잘린다. 2열이면 네 줄이 되지만 전부 읽힌다.
+
+          ★ 색으로만 구분하지 않는다.
+            완료는 체크 표시(✓)와 "완료" 글자를 함께 갖고,
+            현재 단계는 진한 남색 + aria-current 로 두 번 말한다.
+            색각 이상이 있어도 상태를 읽을 수 있어야 한다.
+        */}
+        <ol className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
+          <li>
+            <div className="flex min-h-12 w-full items-center gap-2 rounded-lg border border-soft-green/50 bg-soft-green/15 px-2.5 text-[13px] font-semibold text-navy">
+              <span aria-hidden className="text-[13px] leading-none">
+                ✓
+              </span>
+              <span className="min-w-0 break-keep">기관</span>
+              <span className="sr-only">1단계 기관, 완료됨</span>
+            </div>
+          </li>
+
           {STEPS.map((entry) => {
             const isCurrent = entry.no === step;
             const isDone = entry.no !== 7 && done[entry.no];
@@ -80,7 +118,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
                   type="button"
                   onClick={() => setStep(entry.no)}
                   aria-current={isCurrent ? "step" : undefined}
-                  className={`flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border px-2 text-[13px] font-semibold transition-colors ${
+                  className={`flex min-h-12 w-full items-center gap-2 rounded-lg border px-2.5 text-[13px] font-semibold transition-colors ${
                     isCurrent
                       ? "border-navy bg-navy text-white"
                       : isDone
@@ -88,15 +126,23 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
                         : "border-navy/15 bg-white text-navy/55 hover:border-navy/30 hover:text-navy"
                   }`}
                 >
-                  <span className="tabular-nums">{entry.no}</span>
-                  <span className="break-keep">{entry.label}</span>
-                  {isDone && !isCurrent ? (
-                    <span aria-hidden className="text-[11px]">
-                      완료
-                    </span>
-                  ) : null}
+                  <span
+                    aria-hidden
+                    className="shrink-0 text-[13px] leading-none tabular-nums"
+                  >
+                    {isDone && !isCurrent ? "✓" : entry.no}
+                  </span>
+                  <span className="min-w-0 break-keep text-left">
+                    {entry.label}
+                  </span>
                   <span className="sr-only">
-                    {isDone ? " 완료됨" : " 아직 설정하지 않음"}
+                    {`${entry.no}단계 ${entry.label}, ${
+                      isCurrent
+                        ? "현재 단계"
+                        : isDone
+                          ? "완료됨"
+                          : "아직 설정하지 않음"
+                    }`}
                   </span>
                 </button>
               </li>
@@ -702,8 +748,8 @@ function SummaryStep({ state }: { state: OnboardingState }) {
               <span className="break-words text-[13px] font-semibold tabular-nums text-navy">
                 {row.value}
               </span>
-              <StatusPill tone={row.done ? "done" : "neutral"}>
-                {row.done ? "설정됨" : "미설정"}
+              <StatusPill tone={row.done ? "done" : "pending"}>
+                {row.done ? "설정됨" : "확인 필요"}
               </StatusPill>
             </span>
           </li>

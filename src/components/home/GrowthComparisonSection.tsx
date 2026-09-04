@@ -23,7 +23,7 @@ export function GrowthComparisonSection() {
   return (
     <section
       id="growth"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-28"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
     >
       <Container>
         <SectionHeader headline={growthCopy.headline} subCopy={growthCopy.subCopy} />

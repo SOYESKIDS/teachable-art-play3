@@ -40,6 +40,8 @@ export const noIndexRoutes = [
   "/director",
   "/teacher",
   "/login",
+  // 유치원 전용 포털도 로그인 화면이다. 색인 대상이 아니다.
+  "/kindergarten",
   "/auth",
   // SERVICE-13 학부모 공유 링크. 개인 문서라 색인 대상이 아니다.
   // 실제 차단은 링크의 비밀값 + DB 함수 조건이 담당한다.

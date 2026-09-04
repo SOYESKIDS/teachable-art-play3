@@ -206,7 +206,7 @@ export default async function LessonDetailPage({
               ) : (
                 <>
                   {/* PC: compact table */}
-                  <div className="mt-4 hidden overflow-hidden rounded-lg border border-navy/10 lg:block">
+                  <div className="mt-4 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
                     <table className="w-full border-collapse text-[13px]">
                       <thead>
                         <tr className="bg-surface-soft text-navy/50">

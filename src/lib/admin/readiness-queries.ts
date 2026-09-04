@@ -101,7 +101,7 @@ function countBy(rows: { organization_id: string }[]): Map<string, number> {
   return counts;
 }
 
-/** 개수를 사실 문장으로 바꾼다. 0 이면 "미설정". */
+/** 개수를 사실 문장으로 바꾼다. 0 이면 "없음" — 없다는 사실이지 잘못이 아니다. */
 function item(
   key: string,
   label: string,
@@ -112,7 +112,7 @@ function item(
     key,
     label,
     done: count > 0,
-    detail: count > 0 ? `${count.toLocaleString("ko-KR")}${unit}` : "미설정",
+    detail: count > 0 ? `${count.toLocaleString("ko-KR")}${unit}` : "없음",
   };
 }
 

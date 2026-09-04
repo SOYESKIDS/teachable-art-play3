@@ -9,7 +9,7 @@ export function FinalCTASection() {
   return (
     <section
       id="contact"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy py-20 sm:py-24 lg:py-28"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">

@@ -106,7 +106,14 @@ export function HeroSection() {
             </p>
           </div>
 
-          <h1 className="text-[2.5rem] font-bold leading-[1.15] text-navy sm:text-[3rem] lg:text-[3.75rem] xl:text-[4.25rem]">
+          {/*
+            모바일 기본 크기만 40px → 36px 로 줄인다.
+            360px 에서 40px 이면 "성장 이야기로 기록합니다."가 세 줄로 접혀
+            제목만 네 줄이 되고 본문이 첫 화면 밖으로 밀린다.
+            sm 이상 값은 건드리지 않았으므로 desktop typography 는 그대로다.
+            (SectionHeader 의 h2 도 같은 이유로 이미 2rem 로 내려와 있다)
+          */}
+          <h1 className="text-[2.25rem] font-bold leading-[1.15] text-navy sm:text-[3rem] lg:text-[3.75rem] xl:text-[4.25rem]">
             아이의 <span className="text-trust-blue">놀이</span>를,
             <br />
             <span className="relative inline-block">
@@ -119,7 +126,11 @@ export function HeroSection() {
             로 기록합니다.
           </h1>
 
-          <p className="max-w-[38rem] text-lg leading-[1.7] text-navy/75 sm:text-xl">
+          {/*
+            한 줄이 너무 길면 다음 줄 첫 글자를 찾는 데 눈이 걸린다.
+            34rem 이면 본문 20px 기준 한 줄이 대략 40자 안팎이 된다.
+          */}
+          <p className="max-w-[34rem] text-lg leading-[1.7] text-navy/75 sm:text-xl">
             {heroCopy.subCopy}
           </p>
 
