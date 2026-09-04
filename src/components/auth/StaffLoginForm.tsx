@@ -55,7 +55,15 @@ export function StaffLoginForm({
           id={emailId}
           name="email"
           type="email"
-          autoComplete="email"
+          /*
+            ★ "email" 이 아니라 "username" 이다.
+              이 칸은 연락처를 받는 곳이 아니라 로그인 식별자다.
+              비밀번호 관리자는 username + current-password 를 한 쌍으로 보고
+              저장·자동입력한다. email 로 두면 그 짝이 흐려져 저장된
+              자격증명이 채워지지 않는 경우가 생긴다.
+              키보드는 type="email" 이 이미 정해 주므로 잃는 것이 없다.
+          */
+          autoComplete="username"
           required
           disabled={isPending}
           /*
