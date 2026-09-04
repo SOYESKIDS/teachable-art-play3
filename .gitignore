@@ -49,3 +49,5 @@ next-env.d.ts
 
 # Local source image library
 /image-library/
+
+/참고자료/
