@@ -27,6 +27,17 @@ export function ProductGrowthFlow({ product }: { product: ProgramProduct }) {
         {GROWTH_FLOW.headline}
       </h2>
 
+      {/*
+        ★ 이 한 줄이 기록 기능의 설계 이유다.
+          잘 그렸는가가 아니라 무엇을 하려 했는가를 남긴다.
+          그래서 이 서비스에는 점수도 등급도 발달단계도 없다.
+      */}
+      <p
+        className={`mt-5 border-l-[3px] pl-4 text-[17px] font-bold leading-snug text-navy sm:text-[19px] ${theme.markerBorder}`}
+      >
+        {GROWTH_FLOW.philosophy}
+      </p>
+
       <ol className="mt-7 flex flex-wrap items-center gap-x-2 gap-y-3">
         {GROWTH_FLOW.steps.map((step, index) => (
           <li key={step} className="flex items-center gap-2">
