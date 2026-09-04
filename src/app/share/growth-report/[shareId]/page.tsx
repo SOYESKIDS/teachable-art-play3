@@ -22,6 +22,11 @@ import { ParentGrowthReportView } from "@/components/share/ParentGrowthReportVie
  * ★ 외부 링크를 넣지 않는다.
  *   referrer: no-referrer와 함께, 이 페이지에서 다른 사이트로 새어 나갈
  *   경로 자체를 만들지 않는다.
+ *
+ * ★ SERVICE-19 — 껍데기는 조용하게.
+ *   기관 이름 · 아이 이름 · 기간은 안쪽 리포트의 표지가 말한다.
+ *   껍데기에서 같은 말을 반복하면 "공문" 같은 인상이 된다.
+ *   여기 남는 것은 브랜드 한 줄과 링크 취급 안내뿐이고, 둘 다 인쇄에서 빠진다.
  */
 export const metadata: Metadata = {
   title: "성장 리포트 | TeachAble Art Play",
@@ -54,8 +59,8 @@ export default async function ParentSharePage({ params }: ParentSharePageProps) 
   const { shareId } = await params;
 
   return (
-    <div className="min-h-screen bg-surface-soft">
-      <header className="border-b border-navy/10 bg-white">
+    <div className="min-h-screen bg-surface-soft print:bg-white">
+      <header className="border-b border-navy/10 bg-white print:hidden">
         <div className="mx-auto w-full max-w-[560px] px-5 py-3">
           <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
             TEACHABLE ART PLAY
@@ -63,16 +68,10 @@ export default async function ParentSharePage({ params }: ParentSharePageProps) 
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[560px] px-5 py-6">
-        <p className="text-[13px] leading-relaxed text-navy/55">
-          아이의 수업에서 교사가 기록하고 작성 완료한 성장 리포트입니다.
-        </p>
+      <main className="mx-auto w-full max-w-[560px] px-5 py-6 print:max-w-none print:px-0 print:py-0">
+        <ParentGrowthReportView shareId={shareId} />
 
-        <div className="mt-5">
-          <ParentGrowthReportView shareId={shareId} />
-        </div>
-
-        <p className="mt-6 rounded-xl border border-navy/10 bg-white px-4 py-3 text-[12px] leading-relaxed text-navy/50">
+        <p className="mt-6 rounded-xl border border-navy/10 bg-white px-4 py-3 text-[12px] leading-relaxed text-navy/50 print:hidden">
           이 링크는 해당 보호자에게만 전달해주세요. 링크를 가진 사람은 유효기간
           동안 내용을 볼 수 있습니다.
         </p>

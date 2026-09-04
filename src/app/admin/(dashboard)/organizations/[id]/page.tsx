@@ -206,13 +206,26 @@ export default async function OrganizationDetailPage({
         ← 기관 목록
       </Link>
 
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="text-[22px] font-bold text-navy">{organization.name}</h1>
-        <span
-          className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[organization.status]}`}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <h1 className="text-[22px] font-bold text-navy">{organization.name}</h1>
+          <span
+            className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[organization.status]}`}
+          >
+            {ORGANIZATION_STATUS_LABELS[organization.status]}
+          </span>
+        </div>
+
+        {/*
+          SERVICE-17 — 이 기관을 대상으로 도입 흐름에 이어서 들어간다.
+          기존 관리 영역(원장·반·원아·프로그램)은 아래 그대로 남는다.
+        */}
+        <Link
+          href={`/admin/onboarding?organization=${organization.id}`}
+          className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[13px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
         >
-          {ORGANIZATION_STATUS_LABELS[organization.status]}
-        </span>
+          도입 설정 계속
+        </Link>
       </div>
 
       <AdminOrganizationOperationsSummary summary={operationsSummary} />

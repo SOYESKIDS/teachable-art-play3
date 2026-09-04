@@ -39,7 +39,12 @@ export default async function AdminDashboardLayout({
             </div>
           </div>
 
-          <div className="hidden md:block">
+          {/*
+            ★ lg 부터 한 줄 배치.
+              메뉴가 6개가 되면서 md(768px) 에서는 한 줄이 헤더 우측 영역과 부딪힌다.
+              태블릿도 아래 3열 배치를 쓰게 해 잘림을 원천 차단한다.
+          */}
+          <div className="hidden lg:block">
             <AdminNav />
           </div>
 
@@ -68,7 +73,7 @@ export default async function AdminDashboardLayout({
             가로 스크롤이 있으면 마지막 메뉴가 화면 밖에 숨고, 브라우저 기본
             스크롤바까지 노출된다. 2열이면 4개가 전부 보이고 넘칠 것이 없다.
         */}
-        <div className="border-t border-navy/8 px-5 py-2 md:hidden">
+        <div className="border-t border-navy/8 px-5 py-2 lg:hidden">
           <AdminNav layout="grid" />
         </div>
       </header>

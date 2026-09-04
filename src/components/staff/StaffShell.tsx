@@ -74,7 +74,15 @@ export function StaffShell({
           aria-label="교직원 메뉴"
           className="border-t border-navy/8 bg-white"
         >
-          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 px-5 lg:px-8">
+          {/*
+            ★ 좁은 화면에서 메뉴가 잘리지 않게 한다.
+              원장 메뉴는 4개(홈 · 수업 운영 · 수업 이력 · 성장 리포트)이고
+              360px 에서 좌우 여백까지 더하면 한 줄을 넘어선다.
+              그래서 좁은 화면에서만 항목 좌우 여백을 줄인다 — 그러면 들어간다.
+              그보다 더 좁은 기기를 위해 overflow-x-auto 를 안전망으로 둔다.
+              nav 안에서만 밀리므로 본문이 가로로 스크롤되는 일은 없다.
+          */}
+          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 overflow-x-auto px-5 lg:px-8">
             {navItems.map((item) => {
               const isCurrent = item.href === currentHref;
 
@@ -83,7 +91,7 @@ export function StaffShell({
                   key={item.href}
                   href={item.href}
                   aria-current={isCurrent ? "page" : undefined}
-                  className={`-mb-px border-b-2 px-3 py-3 text-[14px] font-semibold transition-colors ${
+                  className={`-mb-px shrink-0 border-b-2 px-2 py-3 text-[14px] font-semibold transition-colors sm:px-3 ${
                     isCurrent
                       ? "border-navy text-navy"
                       : "border-transparent text-navy/45 hover:text-navy/70"

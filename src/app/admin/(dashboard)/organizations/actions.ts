@@ -67,8 +67,17 @@ export async function createOrganizationAction(
     return { phase: "error", message: MESSAGES.createFailure };
   }
 
+  // ★ 도착지는 화이트리스트로만 정한다.
+  //   폼이 보내는 next 값은 임의 URL 이 아니라 아래 두 리터럴 중 하나로만 해석되며,
+  //   그 밖의 값은 전부 기본값(기관 상세)으로 떨어진다. open redirect 여지가 없다.
+  const next = String(formData.get("next") ?? "");
+
   // redirect()는 내부적으로 예외를 던지므로 에러 처리 이후에 호출한다.
-  redirect(`/admin/organizations/${data.id}`);
+  redirect(
+    next === "onboarding"
+      ? `/admin/onboarding?organization=${data.id}`
+      : `/admin/organizations/${data.id}`,
+  );
 }
 
 export async function updateOrganizationAction(

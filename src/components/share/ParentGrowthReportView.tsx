@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   SHARE_RESOLVE_ENDPOINT,
   SHARE_TOKEN_PATTERN,
@@ -16,6 +16,9 @@ interface ParentGrowthReportViewProps {
 type ViewState =
   | { phase: "loading" }
   | { phase: "ready"; report: ParentSharedReport }
+  /** 주소에 비밀값이 아예 없다 — 새로고침했거나 링크를 잘라서 열었다 */
+  | { phase: "needsLink" }
+  /** 그 밖의 모든 실패. 이유를 구분해 주지 않는다. */
   | { phase: "unavailable" };
 
 /**
@@ -54,6 +57,11 @@ type ViewState =
  *   부모에게 정확한 원인을 알려 줄 실익이 없고, 링크를 찔러 보는 사람에게는
  *   "이 주소는 존재한다"는 정보를 주게 된다.
  *
+ *   ※ 단 하나의 예외: **주소에 비밀값이 아예 없는 경우**.
+ *     이것은 서버에 묻지 않고도 알 수 있고, 보안 상태가 아니라 "무엇을 해야
+ *     하는가"의 문제다(새로고침 후 이 상태가 된다). 그래서 이때만 따로 안내한다.
+ *     서버에 요청을 보내지 않으므로 링크의 존재 여부는 여전히 드러나지 않는다.
+ *
  * ★ 점수 · 등급 · 진단 · 발달단계 문구가 없다.
  *   AI가 쓰였는지 여부도 표시하지 않는다.
  */
@@ -77,7 +85,17 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
         ? window.location.hash.slice(1)
         : "";
 
-      // ② 형식이 아예 다르면 서버에 요청조차 보내지 않는다.
+      // ② 주소에 비밀값이 아예 없다 = 새로고침했거나 링크를 잘라서 열었다.
+      //    서버에 물어볼 것이 없으므로 요청하지 않고 안내만 한다.
+      if (token === "") {
+        await Promise.resolve();
+        if (controller.signal.aborted) return;
+
+        setState({ phase: "needsLink" });
+        return;
+      }
+
+      // ③ 형식이 아예 다르면 서버에 요청조차 보내지 않는다.
       //    이 경로에서도 fragment 는 지운다 — 오타 하나 섞인 실제 비밀값일 수 있다.
       //    (형식이 틀린 값은 어느 실행에서 읽어도 틀리므로 정상 경로를 깨뜨리지 않는다)
       if (!SHARE_TOKEN_PATTERN.test(token)) {
@@ -116,7 +134,7 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
         if (controller.signal.aborted) return;
       }
 
-      // ③ 여기까지 왔다는 것은 취소되지 않은 실행이 응답을 손에 쥐었다는 뜻이다.
+      // ④ 여기까지 왔다는 것은 취소되지 않은 실행이 응답을 손에 쥐었다는 뜻이다.
       //    그때서야 주소창과 현재 history 항목에서 fragment 를 지운다.
       stripFragment();
       setState(next);
@@ -128,65 +146,73 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
   }, [shareId]);
 
   if (state.phase === "loading") {
+    return <LoadingSkeleton />;
+  }
+
+  if (state.phase === "needsLink") {
     return (
-      <p className="rounded-2xl border border-navy/10 bg-white px-5 py-12 text-center text-[14px] text-navy/50">
-        리포트를 불러오는 중입니다.
-      </p>
+      <NoticeCard title="처음 받으신 링크에서 열어주세요">
+        보안을 위해 화면이 열리면 주소에서 비밀 부분이 지워집니다. 그래서
+        새로고침한 화면에서는 기록을 다시 불러올 수 없습니다.
+        <br />
+        <br />
+        전달받으신 링크를 다시 눌러주세요.
+      </NoticeCard>
     );
   }
 
   if (state.phase === "unavailable") {
     return (
-      <div className="rounded-2xl border border-navy/10 bg-white px-5 py-12 text-center">
-        <p className="text-[15px] font-bold text-navy">
-          이 공유 링크를 사용할 수 없습니다.
-        </p>
-        <p className="mt-2 text-[13px] leading-relaxed text-navy/55">
-          링크가 만료되었거나 공유가 종료되었을 수 있습니다.
-          <br />
-          유치원에 새 링크를 요청해주세요.
-        </p>
-      </div>
+      <NoticeCard title="이 성장 기록을 열 수 없습니다">
+        링크가 만료되었거나 더 이상 공유되지 않는 기록일 수 있습니다.
+        <br />
+        유치원에 새 링크를 요청해주세요.
+      </NoticeCard>
     );
   }
 
   const { report } = state;
 
   return (
-    <article>
-      <header className="rounded-2xl border border-navy/10 bg-white p-5">
-        <p className="text-[12px] font-semibold text-navy/50">
-          {report.organizationName}
+    <article className="flex flex-col gap-5">
+      {/* ─────────────────────────────────────────── 표지 */}
+      <header className="rounded-2xl border border-navy/10 bg-white px-5 py-7 text-center print:border-0 print:px-0 print:py-2">
+        <p className="text-[11px] font-bold tracking-[0.16em] text-navy/40">
+          SOYESKIDS · TEACHABLE ART PLAY
         </p>
 
-        <h1 className="mt-1 break-words text-[20px] font-bold leading-snug text-navy">
-          {report.childName ? `${report.childName} 성장 리포트` : "성장 리포트"}
+        <p className="mt-4 text-[13px] text-navy/55">
+          {report.organizationName}
+          {report.className ? ` · ${report.className}` : ""}
+        </p>
+
+        <h1 className="mt-1 break-words text-[24px] font-bold leading-snug text-navy">
+          {report.childName ? `${report.childName}의 성장 기록` : "성장 기록"}
         </h1>
 
-        {report.className ? (
-          <p className="mt-1 text-[13px] text-navy/55">{report.className}</p>
-        ) : null}
-
-        <p className="mt-1.5 text-[13px] tabular-nums text-navy/55">
+        <p className="mt-2 text-[13px] tabular-nums text-navy/50">
           {formatPeriod(report.periodStart, report.periodEnd)}
         </p>
 
-        <p className="mt-3 break-words text-[13px] leading-relaxed text-navy/60">
+        <p className="mx-auto mt-4 max-w-[36ch] break-words text-[13px] leading-relaxed text-navy/60">
           {report.title}
         </p>
       </header>
 
-      <div className="mt-4 flex flex-col gap-4">
-        <Block label="이번 기간에 관찰된 모습" value={report.observationSummary} />
-        <Block label="성장 변화" value={report.growthChanges} />
-        <Block label="다음 지원 방향" value={report.nextSupport} />
-      </div>
+      {/* ─────────────────────────────────────────── 본문 */}
+      <Block label="이번 기간에 관찰된 모습" value={report.observationSummary} />
+      <Block label="이번 기간의 성장과 변화" value={report.growthChanges} />
+      <Block label="다음 활동에서 도와줄 부분" value={report.nextSupport} />
 
+      {/* ─────────────────────────────────────── 함께한 활동 */}
       {report.activities.length > 0 ? (
-        <section className="mt-6 rounded-2xl border border-navy/10 bg-white p-5">
+        <section className="rounded-2xl border border-navy/10 bg-white p-5 print:border-0 print:px-0">
           <h2 className="text-[15px] font-bold text-navy">함께한 활동</h2>
+          <p className="mt-1 text-[12px] leading-relaxed text-navy/45">
+            이 기간에 함께한 수업입니다.
+          </p>
 
-          <ul className="mt-3 flex flex-col divide-y divide-navy/8">
+          <ul className="mt-4 flex flex-col divide-y divide-navy/8">
             {report.activities.map((activity, index) => (
               <ActivityRow
                 key={`${activity.observedOn ?? "unknown"}-${index}`}
@@ -197,15 +223,69 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
         </section>
       ) : null}
 
-      <footer className="mt-6">
-        <p className="text-[12px] leading-relaxed text-navy/45">
-          교사가 작성 완료한 기록을 바탕으로 제공됩니다.
+      {/* ─────────────────────────────────────────── 맺음말 */}
+      <footer className="rounded-2xl border border-navy/10 bg-surface-soft px-5 py-4 print:border-0 print:bg-transparent print:px-0">
+        <p className="text-[12px] leading-relaxed text-navy/55">
+          이 기록은 수업 중 관찰과 교사의 검토를 바탕으로 작성되었습니다.
           {report.completedAt
             ? ` 작성 완료 ${formatDate(report.completedAt.slice(0, 10))}.`
             : ""}
         </p>
       </footer>
+
+      {/* 인쇄 버튼은 인쇄물에 남지 않는다 */}
+      <div className="print:hidden">
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+        >
+          인쇄하기
+        </button>
+      </div>
     </article>
+  );
+}
+
+/** 불러오는 동안. 갑자기 나타나지 않도록 실제 구조와 비슷한 자리를 잡아 둔다. */
+function LoadingSkeleton() {
+  return (
+    <div aria-live="polite" className="flex flex-col gap-5">
+      <span className="sr-only">성장 기록을 불러오는 중입니다.</span>
+
+      <div className="rounded-2xl border border-navy/10 bg-white px-5 py-7">
+        <div className="mx-auto h-3 w-32 rounded bg-navy/10" />
+        <div className="mx-auto mt-4 h-3 w-24 rounded bg-navy/10" />
+        <div className="mx-auto mt-3 h-6 w-48 rounded bg-navy/10" />
+      </div>
+
+      {[0, 1, 2].map((n) => (
+        <div key={n} className="rounded-2xl border border-navy/10 bg-white p-5">
+          <div className="h-3 w-28 rounded bg-navy/10" />
+          <div className="mt-3 h-3 w-full rounded bg-navy/[0.07]" />
+          <div className="mt-2 h-3 w-11/12 rounded bg-navy/[0.07]" />
+          <div className="mt-2 h-3 w-9/12 rounded bg-navy/[0.07]" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** 열 수 없을 때. 기술 용어를 쓰지 않고, 오류처럼 보이지 않게 한다. */
+function NoticeCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-navy/10 bg-white px-5 py-12 text-center">
+      <p className="text-[16px] font-bold text-navy">{title}</p>
+      <p className="mx-auto mt-3 max-w-[32ch] text-[14px] leading-relaxed text-navy/55">
+        {children}
+      </p>
+    </div>
   );
 }
 
@@ -243,9 +323,11 @@ function stripFragment() {
 
 function Block({ label, value }: { label: string; value: string }) {
   return (
-    <section className="rounded-2xl border border-navy/10 bg-white p-5">
-      <h2 className="text-[13px] font-bold text-navy/60">{label}</h2>
-      <p className="mt-2 whitespace-pre-wrap break-words text-[15px] leading-loose text-navy">
+    <section className="rounded-2xl border border-navy/10 bg-white p-5 print:break-inside-avoid print:border-0 print:px-0">
+      <h2 className="text-[13px] font-bold tracking-wide text-navy/55">
+        {label}
+      </h2>
+      <p className="mt-3 whitespace-pre-wrap break-words text-[16px] leading-loose text-navy">
         {value}
       </p>
     </section>
@@ -254,20 +336,27 @@ function Block({ label, value }: { label: string; value: string }) {
 
 function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
   return (
-    <li className="py-3 first:pt-0 last:pb-0">
+    <li className="py-3 first:pt-0 last:pb-0 print:break-inside-avoid">
       {activity.observedOn ? (
         <p className="text-[12px] tabular-nums text-navy/45">
           {formatDate(activity.observedOn)}
         </p>
       ) : null}
 
-      <p className="mt-0.5 break-words text-[14px] font-semibold leading-snug text-navy">
+      <p className="mt-0.5 break-words text-[15px] font-semibold leading-snug text-navy">
         {activity.lessonTitle ?? "활동"}
       </p>
 
       {activity.domainLabels.length > 0 ? (
-        <p className="mt-1 break-words text-[12px] leading-relaxed text-navy/50">
-          {activity.domainLabels.join(" · ")}
+        <p className="mt-1.5 flex flex-wrap gap-1.5">
+          {activity.domainLabels.map((label) => (
+            <span
+              key={label}
+              className="break-keep rounded-md border border-navy/10 bg-surface-soft px-2 py-0.5 text-[12px] text-navy/60"
+            >
+              {label}
+            </span>
+          ))}
         </p>
       ) : null}
     </li>
