@@ -828,7 +828,16 @@ export const contactInfo = {
   copyright: "© SOYE KIDS Co., Ltd.",
 };
 
-export const legalLinks = ["개인정보처리방침", "이용약관"];
+/**
+ * 법적 고지 링크.
+ *
+ * 지금까지는 문자열 배열이라 Footer 가 "준비 중입니다"라는 제목만 달고
+ * 누를 수 없는 글자로 그리고 있었다. 실제 문서가 생겼으므로 경로를 함께 둔다.
+ */
+export const legalLinks: { label: string; href: string }[] = [
+  { label: "개인정보처리방침", href: "/privacy" },
+  { label: "이용약관", href: "/terms" },
+];
 
 /**
  * CONTACT Section 전용 카피.

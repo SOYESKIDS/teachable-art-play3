@@ -26,8 +26,32 @@ function resolveSiteUrl(): string {
 /** 공개 홈페이지의 절대 URL (뒤쪽 슬래시 없음) */
 export const siteUrl = resolveSiteUrl();
 
-/** 공개 홈페이지에서 실제로 존재하는 URL 경로 (sitemap 기준) */
-export const publicRoutes = ["/"] as const;
+/**
+ * 검색엔진에 알릴 공개 경로.
+ *
+ * ★ 실제로 존재하는 경로만 넣는다.
+ *   상품 상세 세 개는 generateStaticParams 로 미리 만들어지는 실재 페이지이고,
+ *   법적 고지 두 개도 공개 문서다. 로그인·운영 화면은 여기 들어오지 않는다
+ *   (아래 noIndexRoutes 가 따로 막는다).
+ *
+ * ★ priority 는 상대적 중요도일 뿐이다.
+ *   홈이 1.0, 상품이 0.8, 법적 고지가 0.3 이다. 법적 고지는 반드시 찾을 수
+ *   있어야 하지만 검색 유입의 목적지는 아니다.
+ */
+export interface PublicRoute {
+  path: string;
+  changeFrequency: "daily" | "weekly" | "monthly" | "yearly";
+  priority: number;
+}
+
+export const publicRoutes: readonly PublicRoute[] = [
+  { path: "/", changeFrequency: "monthly", priority: 1 },
+  { path: "/programs/starter", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/programs/standard", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/programs/premium", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+] as const;
 
 /**
  * 검색 결과에 노출하지 않을 관리/인증 경로.

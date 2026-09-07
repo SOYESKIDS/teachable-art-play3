@@ -2,17 +2,23 @@ import type { MetadataRoute } from "next";
 import { publicRoutes, siteUrl } from "@/lib/seo/site";
 
 /**
- * 공개 홈페이지는 현재 단일 랜딩페이지(/) 구조다.
- * 실제로 존재하는 공개 URL만 포함하고, 관리/인증 경로는 넣지 않는다.
- * 공개 페이지가 늘어나면 `@/lib/seo/site`의 publicRoutes에만 추가하면 된다.
+ * 공개 sitemap.
+ *
+ * ★ 목록을 여기에 적지 않는다.
+ *   실제로 존재하는 공개 URL 은 @/lib/seo/site 의 publicRoutes 하나가 정한다.
+ *   페이지가 늘거나 줄면 그 배열만 고치면 된다 — 두 곳이 갈라질 자리를 만들지 않는다.
+ *
+ * ★ 관리·인증·학부모 공유 경로는 들어오지 않는다.
+ *   publicRoutes 에 없기 때문이다. robots.txt 의 Disallow 와 각 페이지의
+ *   robots metadata 가 그 위에 한 겹 더 있다.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
   return publicRoutes.map((route) => ({
-    url: route === "/" ? siteUrl : `${siteUrl}${route}`,
+    url: route.path === "/" ? siteUrl : `${siteUrl}${route.path}`,
     lastModified,
-    changeFrequency: "monthly" as const,
-    priority: route === "/" ? 1 : 0.7,
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
   }));
 }

@@ -93,11 +93,21 @@ export function Footer() {
 
         <div className="mt-8 flex flex-col-reverse gap-4 border-t border-line-inverse pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
           <p>{contactInfo.copyright}</p>
-          <div className="flex gap-4">
-            {legalLinks.map((label) => (
-              <span key={label} className="cursor-not-allowed" title="준비 중입니다">
-                {label}
-              </span>
+          {/*
+            ★ 누를 수 있는 링크가 되었다.
+              예전에는 "준비 중입니다"라는 제목을 단 회색 글자였다.
+              법적 고지는 서비스가 열리는 순간부터 읽을 수 있어야 한다.
+              글자 크기는 그대로 두고 상하 여백으로 44px 높이를 만든다.
+          */}
+          <div className="flex flex-wrap gap-x-5">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="inline-flex min-h-11 items-center underline-offset-4 transition-colors hover:text-white hover:underline"
+              >
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
