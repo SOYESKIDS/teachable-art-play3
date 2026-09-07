@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { aiFlowSteps, aiPrincipleCopy, aiPrincipleItems } from "@/data/site-copy";
@@ -106,6 +107,67 @@ export function AIPrincipleSection() {
               </li>
             ))}
           </ol>
+        </div>
+
+        {/*
+          ★ 실제 서비스 화면을 증거로 둔다.
+            위의 4단계는 "이렇게 흘러갑니다"라는 설명이고, 이 화면은
+            "그래서 실제로 이렇게 생겼습니다"라는 증거다. 설명 다음에 증거가
+            오는 순서가 자연스럽다.
+
+          ★ 원본보다 크게 늘리지 않는다.
+            이 스크린샷의 실제 폭은 1080px 이다. 컨테이너를 다 쓰면
+            1200px 로 늘어나 글자가 뭉개진다. 오른쪽 58% 자리에 두면
+            약 700px 로 줄어들어 선명하게 남으면서도 UI 를 읽을 수 있다.
+
+          ★ 테스트 기관 데이터다.
+            아이 이름도 기관 이름도 나오지 않고, 공유 링크 주소는 화면 자체가
+            다시 보여 주지 않는다(그것이 이 기능의 설계다).
+        */}
+        <div className="mt-16 grid grid-cols-1 items-center gap-10 lg:grid-cols-[42fr_58fr] lg:gap-14">
+          <div>
+            <p className="eyebrow text-trust-blue">ACTUAL SCREEN</p>
+            <h3 className="mt-2.5 text-h3 font-bold text-navy">
+              교사가 검토한 기록이
+              <br />
+              근거와 함께 남습니다
+            </h3>
+
+            <ul className="mt-6 flex flex-col gap-3">
+              {[
+                "리포트마다 근거가 된 관찰기록이 함께 보관됩니다.",
+                "학부모 공유 링크는 기본 30일 동안 유효하고, 언제든 중지할 수 있습니다.",
+                "보안을 위해 이미 발급한 링크 주소는 다시 표시되지 않습니다.",
+              ].map((line) => (
+                <li
+                  key={line}
+                  className="flex items-start gap-2.5 text-[15px] leading-relaxed text-navy/70"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-[10px] h-1 w-1 shrink-0 rounded-full bg-trust-blue"
+                  />
+                  <span className="break-keep">{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <figure>
+            <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-[var(--shadow-card)]">
+              <Image
+                src="/images/site/platform/director-growth-report-evidence.webp"
+                alt="원장 화면의 성장 리포트 관리 — 학부모 공유 링크 상태와 근거가 된 관찰기록이 함께 표시된다"
+                width={1080}
+                height={745}
+                sizes="(min-width: 1024px) 58vw, 100vw"
+                className="h-auto w-full"
+              />
+            </div>
+            <figcaption className="mt-3 text-[12px] font-medium text-navy/45">
+              실제 서비스 화면 예시 · 테스트 기관 데이터
+            </figcaption>
+          </figure>
         </div>
 
         {/* AI 기록 4가지 원칙 */}
