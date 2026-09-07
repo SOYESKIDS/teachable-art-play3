@@ -6,7 +6,7 @@ export function AdoptionSection() {
   return (
     <section
       id="adoption"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-12 sm:py-16 lg:py-20"
     >
       <Container>
         <SectionHeader headline={adoptionCopy.headline} subCopy={adoptionCopy.subCopy} />

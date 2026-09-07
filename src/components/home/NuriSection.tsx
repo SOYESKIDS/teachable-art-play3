@@ -60,16 +60,17 @@ export function NuriSection() {
         </div>
 
         {/*
-          교육과정 구조(위)가 이 섹션의 주인공이므로 사진은 그 아래에 보조로만 둔다.
-          max-w-2xl로 묶어 화면 절반을 넘기지 않게 했다.
+          교육과정 구조(위)가 이 섹션의 주인공이므로 사진은 그 아래에 둔다.
+          다만 672px 는 지나치게 작았다 — 보조라는 이유로 증거를 알아보기
+          어려울 만큼 줄일 필요는 없다. 한 단계 키운다.
         */}
-        <figure className="mx-auto mt-16 max-w-2xl">
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy/5">
+        <figure className="mx-auto mt-16 max-w-4xl">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-line bg-navy/5">
             <Image
               src="/images/site/classroom/classroom-vod-learning.webp"
               alt="유치원 유희실에서 아이들이 화면에 나오는 이야기 영상을 보며 움직임으로 표현하는 수업 장면"
               fill
-              sizes="(min-width: 768px) 672px, 100vw"
+              sizes="(min-width: 1024px) 896px, 100vw"
               className="object-cover"
             />
           </div>

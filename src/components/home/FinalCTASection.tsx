@@ -16,7 +16,13 @@ export function FinalCTASection() {
   return (
     <section
       id="contact"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy py-20 sm:py-24 lg:py-32"
+      /*
+        ★ Footer 와 같은 남색이라 둘이 한 덩어리로 붙어 보였다.
+          이 구간이 페이지의 마지막 결정 지점이므로 여기를 가장 어둡게 두고
+          (navy-deep) Footer 를 한 단계 밝게 남긴다. 선을 하나 더 긋는 것보다
+          면의 밝기 차이가 자연스럽다.
+      */
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy-deep py-20 sm:py-24 lg:py-32"
     >
       <Container>
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">

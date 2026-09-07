@@ -6,7 +6,7 @@ export function PilotSection() {
   return (
     <section
       id="pilot"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-12 sm:py-16 lg:py-20"
     >
       <Container>
         <div className="overflow-hidden rounded-3xl bg-navy px-6 py-12 text-center sm:px-14 sm:py-16">

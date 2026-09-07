@@ -19,7 +19,7 @@ export function Footer() {
   // 모바일 하단 고정 CTA(실측 79px + safe-area)에 Footer 내용이 가리지 않도록
   // 아래 여백은 Footer 안에서 확보한다. lg 이상은 고정 CTA가 없어 pb-16이면 충분하다.
   return (
-    <footer className="border-t border-line-soft bg-navy pt-14 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-16 lg:pb-16">
+    <footer className="border-t border-line-inverse bg-navy pt-14 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-16 lg:pb-16">
       <Container>
         {/* 브랜드 마감 한 문장 */}
         <p className="measure text-h3 font-bold text-white">

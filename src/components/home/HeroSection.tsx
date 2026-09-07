@@ -94,7 +94,13 @@ export function HeroSection() {
       id="hero"
       className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory"
     >
-      <Container className="grid grid-cols-1 items-center gap-14 py-12 sm:py-16 lg:grid-cols-[53fr_47fr] lg:gap-16 lg:py-20 xl:py-24">
+      {/*
+        ★ 글 53 / 사진 47 이던 비율을 45 / 55 로 뒤집는다.
+          첫 화면에서 이 서비스가 무엇인지 가장 빨리 말해 주는 것은 문장이 아니라
+          "실제 유치원 교실에서 아이들이 이렇게 움직인다"는 장면이다.
+          글은 measure 로 이미 읽기 좋은 폭이 잡혀 있어 조금 좁아져도 손해가 없다.
+      */}
+      <Container className="grid grid-cols-1 items-center gap-14 py-12 sm:py-16 lg:grid-cols-[45fr_55fr] lg:gap-16 lg:py-20 xl:py-24">
         {/* 좌측: 카피 + Micro Proof + Mini Flow + CTA */}
         <div className="flex flex-col gap-5 lg:gap-6">
           <div className="flex flex-col gap-2.5">
@@ -226,7 +232,7 @@ export function HeroSection() {
               alt="유치원 교실에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 교사와 함께 두 팔을 벌리는 실제 수업 장면"
               fill
               priority
-              sizes="(min-width: 1024px) 47vw, 100vw"
+              sizes="(min-width: 1024px) 55vw, 100vw"
               className="object-cover"
             />
 

@@ -90,33 +90,62 @@ export function ContentSection() {
         {/*
           실제 콘텐츠 예시 — "이런 걸 제공합니다"가 아니라 "이미 만들어져 있습니다"를
           보여주는 영역이라 이미지가 주인공이다. 설명문/CTA는 두지 않는다.
-          이미지 파일을 4:3으로 내보냈으므로 표시도 4:3으로 맞춘다 —
-          더 넓은 비율로 두면 상하가 잘려 VOD 타이틀 로고(좌·우상단)가 사라진다.
+
+          ★ 같은 크기 셋에서 하나를 크게 두는 구성으로 바꿨다.
+            똑같은 카드 세 장은 "예시가 세 개 있다"까지만 말한다.
+            수업 사진 한 장을 크게 세우면 "아이가 실제로 이렇게 한다"가 먼저 오고,
+            영상 콘텐츠 두 장이 그 옆을 받친다.
+
+          ★ 크기를 다르게 하되 VOD 스틸의 비율은 건드리지 않는다.
+            영상 스틸은 좌·우상단에 타이틀 로고가 박혀 있어 4:3 을 벗어나면
+            로고가 잘린다. 그래서 큰 자리를 받는 것은 로고가 없는 수업 사진이고,
+            영상 두 장은 4:3 그대로 옆에 쌓는다.
+            (넓은 화면에서 왼쪽 4:5 한 장과 오른쪽 4:3 두 장의 높이가 맞는다)
         */}
         <div className="mt-14">
-          <p className="text-center text-xs font-bold tracking-wide text-navy/45">
+          <p className="text-xs font-bold tracking-wide text-navy/45">
             실제 콘텐츠 예시
           </p>
-          <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-            {contentExamples.map((example) => (
-              <li
-                key={example.src}
-                className="overflow-hidden rounded-2xl border border-navy/10 bg-white"
-              >
-                <div className="relative aspect-[4/3] w-full bg-navy/5">
-                  <Image
-                    src={example.src}
-                    alt={example.alt}
-                    fill
-                    sizes="(min-width: 640px) 33vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-                <p className="px-5 py-3 text-[13px] font-medium text-navy/60">
-                  {example.label}
-                </p>
-              </li>
-            ))}
+
+          <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-[1.2fr_1fr]">
+            {/* 큰 자리 — 로고가 없는 수업 사진이라 비율을 바꿔도 안전하다 */}
+            <li className="overflow-hidden rounded-2xl border border-line bg-white sm:row-span-2 lg:row-span-1">
+              <div className="relative aspect-[4/3] w-full bg-navy/5 lg:aspect-[4/5]">
+                <Image
+                  src={contentExamples[2].src}
+                  alt={contentExamples[2].alt}
+                  fill
+                  sizes="(min-width: 1024px) 55vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <p className="px-5 py-3.5 text-[14px] font-semibold text-navy/70">
+                {contentExamples[2].label}
+              </p>
+            </li>
+
+            {/* 영상 콘텐츠 두 장 — 4:3 고정 */}
+            <li className="grid grid-cols-1 gap-5 sm:gap-6">
+              {[contentExamples[0], contentExamples[1]].map((example) => (
+                <figure
+                  key={example.src}
+                  className="overflow-hidden rounded-2xl border border-line bg-white"
+                >
+                  <div className="relative aspect-[4/3] w-full bg-navy/5">
+                    <Image
+                      src={example.src}
+                      alt={example.alt}
+                      fill
+                      sizes="(min-width: 1024px) 45vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="px-5 py-3 text-[13px] font-medium text-navy/60">
+                    {example.label}
+                  </figcaption>
+                </figure>
+              ))}
+            </li>
           </ul>
         </div>
 
