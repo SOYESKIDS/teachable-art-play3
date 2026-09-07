@@ -7,6 +7,7 @@ import {
 } from "@/lib/admin/class-session";
 import type { ClassSessionItem } from "@/types/class-session";
 import { rescheduleClassSessionAction } from "./class-session-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_SESSION_FORM_INITIAL_STATE,
   type ClassSessionFormState,
@@ -18,8 +19,7 @@ interface ClassSessionRescheduleDialogProps {
   session: ClassSessionItem;
 }
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 /**
  * 예정일 변경 Modal.

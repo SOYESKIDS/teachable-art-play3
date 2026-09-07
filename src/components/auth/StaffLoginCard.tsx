@@ -24,15 +24,11 @@ export function StaffLoginCard({
   footnote: string;
 }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-7 shadow-[var(--shadow-card)] sm:p-9">
-      <p className="text-[12px] font-bold tracking-[0.18em] text-yellow">
-        TEACHABLE ART PLAY
-      </p>
+    <div className="rounded-[var(--radius-card)] border border-line bg-white p-7 shadow-[var(--shadow-card)] sm:p-9">
+      <p className="eyebrow text-yellow">TEACHABLE ART PLAY</p>
 
-      <h1 className="mt-3 text-[24px] font-bold leading-snug text-navy">
-        {title}
-      </h1>
-      <p className="mt-2 text-[14px] leading-relaxed text-navy/60">
+      <h1 className="mt-3 text-h3 font-bold text-navy">{title}</h1>
+      <p className="mt-2 text-[15px] leading-relaxed text-navy/60">
         {description}
       </p>
 
@@ -47,7 +43,7 @@ export function StaffLoginCard({
         </Link>
       </p>
 
-      <p className="mt-2 border-t border-navy/8 pt-5 text-center text-[12px] leading-relaxed text-navy/45">
+      <p className="mt-2 border-t border-line-soft pt-5 text-center text-[12px] leading-relaxed text-navy/45">
         {footnote}
       </p>
     </div>

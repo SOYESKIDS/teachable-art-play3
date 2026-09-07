@@ -12,6 +12,7 @@ import type {
   AssignableProgramOption,
 } from "@/types/class-program";
 import { createClassProgramAssignmentAction } from "./class-program-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_CHILD_FORM_INITIAL_STATE,
   type ClassChildFormState,
@@ -33,8 +34,7 @@ const buttonClasses = {
     "rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
 } as const;
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 interface AssignFormValues {
   classId: string;

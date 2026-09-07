@@ -39,7 +39,7 @@ export function NeedsSection() {
   return (
     <section
       id="needs"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-surface-warm py-16 sm:py-20 lg:py-24"
     >
       <Container>
         <SectionHeader headline={threeNeedsCopy.headline} />

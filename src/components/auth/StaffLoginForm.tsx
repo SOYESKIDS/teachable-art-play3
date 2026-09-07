@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { organizationSignInAction } from "@/app/login/actions";
 import { ORGANIZATION_LOGIN_INITIAL_STATE } from "@/app/login/form-state";
+import { fieldAuth, fieldLabel } from "@/components/ui/field";
 
 /**
  * 기관 사용자(원장 · 교사) 로그인 폼.
@@ -19,10 +20,8 @@ import { ORGANIZATION_LOGIN_INITIAL_STATE } from "@/app/login/form-state";
  *   한 가지뿐이고, 이 폼은 받은 문구를 그대로 보여 준다.
  */
 
-const fieldClasses =
-  "w-full rounded-[var(--radius-lg)] border border-navy/15 bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
-
-const labelClasses = "block text-[13px] font-semibold text-navy/70";
+const fieldClasses = fieldAuth;
+const labelClasses = fieldLabel;
 
 interface StaffLoginFormProps {
   /** 서버에서 전달된 초기 안내 메시지 */

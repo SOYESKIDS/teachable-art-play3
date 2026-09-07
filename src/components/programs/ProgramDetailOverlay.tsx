@@ -174,7 +174,7 @@ export function ProgramDetailOverlay({
         aria-hidden="true"
         tabIndex={-1}
         onClick={requestClose}
-        className="absolute inset-0 cursor-default bg-navy/50 backdrop-blur-[2px]"
+        className="absolute inset-0 cursor-default bg-navy/55 backdrop-blur-[3px]"
       />
 
       <div
@@ -186,10 +186,16 @@ export function ProgramDetailOverlay({
           모바일에서는 화면을 가득 채운다. 작은 화면에서 가운데 뜬 상자는
           내용은 좁고 배경만 넓어 읽기가 더 어렵다.
         */
-        className="relative flex h-dvh w-full flex-col bg-ivory sm:h-auto sm:max-h-[90dvh] sm:max-w-[1200px] sm:rounded-2xl sm:shadow-[var(--shadow-elevated)]"
+        /*
+          ★ "팝업"이 아니라 "전시실"로 보이게 한다.
+            폭을 1280px 까지 열고 곡률을 한 단계 키웠다. 좁은 상자에 긴 상세를
+            밀어 넣으면 읽는 사람은 계속 스크롤만 하게 된다.
+            모바일에서는 그대로 화면을 가득 채운다.
+        */
+        className="relative flex h-dvh w-full flex-col bg-ivory sm:h-auto sm:max-h-[90dvh] sm:max-w-[var(--container-app)] sm:rounded-3xl sm:shadow-[var(--shadow-elevated)] lg:max-w-[1280px]"
       >
         {/* ── 상단 고정 줄 ───────────────────────────────────────── */}
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-navy/10 bg-ivory/95 px-4 py-3 backdrop-blur sm:rounded-t-2xl sm:px-6">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-soft bg-ivory/90 px-4 py-3 backdrop-blur-md sm:rounded-t-3xl sm:px-6">
           <button
             type="button"
             onClick={requestClose}
@@ -232,14 +238,14 @@ export function ProgramDetailOverlay({
         </div>
 
         {/* ── 본문 (오버레이 안에서만 스크롤) ────────────────────── */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-8 sm:px-8 sm:py-10">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-10 sm:px-10 sm:py-14">
           <div className="mx-auto w-full max-w-[900px]">
             <ProductDetail product={product} variant="overlay" />
           </div>
         </div>
 
         {/* ── 하단 고정 CTA ─────────────────────────────────────── */}
-        <div className="shrink-0 border-t border-navy/10 bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:rounded-b-2xl sm:px-6 sm:pb-3">
+        <div className="shrink-0 border-t border-line-soft bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:rounded-b-3xl sm:px-6 sm:pb-3">
           <div className="mx-auto flex w-full max-w-[900px] flex-wrap items-center justify-between gap-3">
             <p className="min-w-0 text-[13px] text-navy/60">
               <span className="font-bold text-navy">

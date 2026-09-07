@@ -10,6 +10,7 @@ import {
 } from "@/lib/admin/class-child";
 import type { ChildListItem, ClassListItem } from "@/types/class-child";
 import { createChildAction, updateChildAction } from "./class-child-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_CHILD_FORM_INITIAL_STATE,
   type ClassChildFormState,
@@ -32,8 +33,7 @@ const buttonClasses = {
   link: "text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70",
 } as const;
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 /**
  * 원아 등록 / 수정 Modal.

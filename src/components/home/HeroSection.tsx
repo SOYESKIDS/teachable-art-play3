@@ -94,26 +94,24 @@ export function HeroSection() {
       id="hero"
       className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory"
     >
-      <Container className="grid grid-cols-1 items-center gap-14 py-10 sm:py-14 lg:grid-cols-[53fr_47fr] lg:gap-14 lg:py-16 xl:py-20">
+      <Container className="grid grid-cols-1 items-center gap-14 py-12 sm:py-16 lg:grid-cols-[53fr_47fr] lg:gap-16 lg:py-20 xl:py-24">
         {/* 좌측: 카피 + Micro Proof + Mini Flow + CTA */}
         <div className="flex flex-col gap-5 lg:gap-6">
           <div className="flex flex-col gap-2.5">
-            <p className="text-xs font-semibold tracking-wide text-trust-blue sm:text-sm">
-              {heroCopy.eyebrow}
-            </p>
+            <p className="eyebrow text-trust-blue">{heroCopy.eyebrow}</p>
             <p className="font-serif text-lg italic text-navy/60 sm:text-xl">
               {heroCopy.brandName}
             </p>
           </div>
 
           {/*
-            모바일 기본 크기만 40px → 36px 로 줄인다.
-            360px 에서 40px 이면 "성장 이야기로 기록합니다."가 세 줄로 접혀
-            제목만 네 줄이 되고 본문이 첫 화면 밖으로 밀린다.
-            sm 이상 값은 건드리지 않았으므로 desktop typography 는 그대로다.
-            (SectionHeader 의 h2 도 같은 이유로 이미 2rem 로 내려와 있다)
+            ★ 네 단계 breakpoint 를 clamp 하나로 바꿨다.
+              양 끝(모바일 36px · 데스크톱 68px)은 예전과 같다.
+              달라지는 것은 그 사이다 — 예전에는 sm(640px)과 lg(1024px)에서
+              제목이 계단처럼 뛰었고, 그 사이 폭에서는 제목만 작아 보였다.
+              clamp 는 폭을 따라 이어져 어느 화면에서도 제목이 같은 무게로 온다.
           */}
-          <h1 className="text-[2.25rem] font-bold leading-[1.15] text-navy sm:text-[3rem] lg:text-[3.75rem] xl:text-[4.25rem]">
+          <h1 className="text-display font-bold text-navy">
             아이의 <span className="text-trust-blue">놀이</span>를,
             <br />
             <span className="relative inline-block">
@@ -126,13 +124,8 @@ export function HeroSection() {
             로 기록합니다.
           </h1>
 
-          {/*
-            한 줄이 너무 길면 다음 줄 첫 글자를 찾는 데 눈이 걸린다.
-            34rem 이면 본문 20px 기준 한 줄이 대략 40자 안팎이 된다.
-          */}
-          <p className="max-w-[34rem] text-lg leading-[1.7] text-navy/75 sm:text-xl">
-            {heroCopy.subCopy}
-          </p>
+          {/* 한 줄이 너무 길면 다음 줄 첫 글자를 찾는 데 눈이 걸린다. */}
+          <p className="measure text-lead text-navy/75">{heroCopy.subCopy}</p>
 
           <p className="text-sm italic text-navy/50 sm:text-base">
             {heroCopy.supportingMessage}
@@ -219,7 +212,7 @@ export function HeroSection() {
             (= 아이가 잘리거나 구도가 바뀌는 일이 없다). 세로 4:5였던 이전 비율은
             가로 구도의 교실 사진을 좌우로 크게 잘라내서 쓰지 않았다.
           */}
-          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-navy/10 bg-navy">
+          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-line bg-navy shadow-[var(--shadow-card)]">
             <Image
               src="/images/site/hero/hero-kindergarten-class.webp"
               alt="유치원 강당에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 동작을 따라 하는 실제 수업 장면"
@@ -238,7 +231,7 @@ export function HeroSection() {
           </div>
 
           {/* 메인 Floating DEMO 카드 — 성장기록 */}
-          <div className="absolute -bottom-10 left-5 right-5 rounded-2xl border border-navy/10 bg-white p-5 shadow-[var(--shadow-elevated)] sm:left-6 sm:right-auto sm:w-80">
+          <div className="absolute -bottom-10 left-5 right-5 rounded-2xl border border-line bg-white p-5 shadow-[var(--shadow-elevated)] sm:left-6 sm:right-auto sm:w-80">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="text-sm font-bold text-navy">
                 {heroCopy.demoCard.title}

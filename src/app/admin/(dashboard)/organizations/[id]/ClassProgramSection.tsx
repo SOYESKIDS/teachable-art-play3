@@ -22,6 +22,7 @@ import type {
 } from "@/types/class-program";
 import { ClassProgramAssignDialog } from "./ClassProgramAssignDialog";
 import { ClassProgramManageDialog } from "./ClassProgramManageDialog";
+import { fieldControl } from "@/components/ui/field";
 
 interface ClassProgramSectionProps {
   organizationId: string;
@@ -32,8 +33,7 @@ interface ClassProgramSectionProps {
   hasError: boolean;
 }
 
-const controlClasses =
-  "h-10 rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue focus:outline-none";
+const controlClasses = fieldControl;
 
 function SummaryItem({ label, value }: { label: string; value: number }) {
   return (

@@ -91,10 +91,14 @@ export default async function TeacherTodayPage({
       navItems={TEACHER_NAV}
       currentHref="/teacher"
     >
-      <h1 className="text-[22px] font-bold text-navy">오늘의 수업</h1>
-      <p className="mt-1 text-[14px] tabular-nums text-navy/55">
-        {formatToday(today)}
-      </p>
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h1 className="text-[26px] font-bold tracking-[-0.02em] text-navy sm:text-[28px]">
+          오늘의 수업
+        </h1>
+        <p className="text-[14px] font-medium tabular-nums text-navy/50">
+          {formatToday(today)}
+        </p>
+      </div>
 
       <div className="mt-5">
         <TodaySessionBoardView

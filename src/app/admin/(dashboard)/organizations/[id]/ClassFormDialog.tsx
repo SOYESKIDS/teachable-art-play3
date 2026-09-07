@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/class-child";
 import type { ClassListItem } from "@/types/class-child";
 import { createClassAction, updateClassAction } from "./class-child-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_CHILD_FORM_INITIAL_STATE,
   type ClassChildFormState,
@@ -37,8 +38,7 @@ const buttonClasses = {
 const ARCHIVE_CONFIRM =
   "이 반을 보관 상태로 변경하시겠습니까?\n기존 원아 정보는 삭제되지 않습니다.";
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 /**
  * 반 등록 / 수정 Modal.

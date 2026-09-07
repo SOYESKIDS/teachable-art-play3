@@ -19,11 +19,11 @@ export function ProductGrowthFlow({ product }: { product: ProgramProduct }) {
   return (
     <section className="border-t border-navy/10 pt-10 sm:pt-12">
       <p
-        className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+        className={`eyebrow ${theme.accentText}`}
       >
         {GROWTH_FLOW.eyebrow}
       </p>
-      <h2 className="mt-2 whitespace-pre-line text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+      <h2 className="mt-2 whitespace-pre-line text-h3 font-bold text-navy">
         {GROWTH_FLOW.headline}
       </h2>
 

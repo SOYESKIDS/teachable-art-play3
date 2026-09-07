@@ -4,9 +4,9 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import { signInAction } from "./actions";
 import { LOGIN_INITIAL_STATE } from "./login-state";
+import { fieldAuth } from "@/components/ui/field";
 
-const fieldClasses =
-  "w-full rounded-[var(--radius-lg)] border border-navy/15 bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const fieldClasses = fieldAuth;
 
 const labelClasses = "block text-[13px] font-semibold text-navy/70";
 

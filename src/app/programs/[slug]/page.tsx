@@ -69,7 +69,7 @@ export default async function ProgramDetailPage({ params }: ProgramPageProps) {
       <Header />
 
       <main className="flex-1 bg-ivory">
-        <div className="mx-auto w-full max-w-[960px] px-5 py-8 sm:px-8 sm:py-12">
+        <div className="mx-auto w-full max-w-[960px] px-5 py-10 sm:px-8 sm:py-16">
           <nav aria-label="이동 경로">
             <Link
               href="/#pricing"

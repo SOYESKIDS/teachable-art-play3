@@ -81,23 +81,24 @@ export default async function KindergartenPortalPage({
             </span>
           </Link>
 
-          <h2 className="mt-8 text-[28px] font-bold leading-[1.3] text-navy sm:text-[34px]">
+          {/* 마케팅 화면과 같은 타입 스케일 — 같은 브랜드의 다른 문이어야 한다. */}
+          <h2 className="mt-8 text-h1 font-bold text-navy">
             수업과 성장 기록을
             <br />
             한곳에서 관리하세요.
           </h2>
 
-          <p className="mt-4 max-w-[34ch] text-[15px] leading-relaxed text-navy/60 sm:text-base">
+          <p className="mt-5 max-w-[34ch] text-lead text-navy/60">
             원장님과 선생님을 위한 TeachAble Art Play 유치원 전용 공간입니다.
           </p>
 
-          <dl className="mt-9 grid gap-4 sm:grid-cols-2">
+          <dl className="mt-10 grid gap-4 sm:grid-cols-2">
             {ROLE_GUIDES.map((guide) => (
               <div
                 key={guide.role}
-                className="rounded-[var(--radius-card)] border border-navy/10 bg-white/70 p-5"
+                className="rounded-[var(--radius-card)] border border-line bg-white/70 p-5"
               >
-                <dt className="text-[14px] font-bold text-navy">
+                <dt className="text-[15px] font-bold text-navy">
                   {guide.role}
                 </dt>
                 <dd>

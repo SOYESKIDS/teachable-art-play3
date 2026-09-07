@@ -32,7 +32,13 @@ export function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-navy/10 bg-ivory/95 shadow-[var(--shadow-soft)] backdrop-blur">
+    /*
+      ★ 그림자를 걷고 선 하나로 띄운다.
+        머리띠에 그림자를 얹으면 본문 위로 떠 보여 화면이 무거워진다.
+        얇은 선과 반투명 배경이면 스크롤될 때 경계가 충분히 읽힌다 —
+        유리처럼 흐리게 만드는 효과는 여기까지만 쓴다.
+    */
+    <header className="sticky top-0 z-50 border-b border-line-soft bg-ivory/90 backdrop-blur-md">
       <Container className="flex h-[72px] items-center justify-between gap-4 lg:h-20">
         <Link
           href="/"
@@ -65,12 +71,12 @@ export function Header() {
             -mx 로 좌우 여백만큼 되돌려, 넓어진 것이 눌리는 범위이지
             메뉴 사이 간격이 아니게 한다.
         */}
-        <nav className="hidden items-center text-[15px] font-medium text-navy/80 xl:flex">
+        <nav className="hidden items-center text-[15px] font-medium text-navy/70 xl:flex">
           {navigation.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="inline-flex min-h-11 items-center rounded-lg px-3 transition-colors hover:text-navy"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 transition-colors duration-[var(--motion-fast)] hover:bg-navy/[0.04] hover:text-navy"
             >
               {item.label}
             </Link>

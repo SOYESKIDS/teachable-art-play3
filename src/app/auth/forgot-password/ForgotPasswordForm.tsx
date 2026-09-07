@@ -2,13 +2,13 @@
 
 import { useActionState } from "react";
 import { requestPasswordResetAction } from "./actions";
+import { fieldAuth } from "@/components/ui/field";
 import {
   FORGOT_PASSWORD_INITIAL_STATE,
   FORGOT_PASSWORD_SENT_MESSAGE,
 } from "./form-state";
 
-const fieldClasses =
-  "w-full rounded-[var(--radius-lg)] border border-navy/15 bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const fieldClasses = fieldAuth;
 
 const labelClasses = "block text-[13px] font-semibold text-navy/70";
 

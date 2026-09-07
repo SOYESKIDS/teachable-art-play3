@@ -13,6 +13,7 @@ import type {
   ClassSessionTransitionStatus,
 } from "@/types/class-session";
 import { transitionClassSessionAction } from "./class-session-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_SESSION_FORM_INITIAL_STATE,
   type ClassSessionFormState,
@@ -26,8 +27,7 @@ interface ClassSessionManageDialogProps {
   parentsActive: boolean;
 }
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 /** 상태 선택지 문구 — 사용자가 무엇을 하는지가 드러나게 동사로 적는다 */
 const TRANSITION_LABELS: Record<ClassSessionTransitionStatus, string> = {

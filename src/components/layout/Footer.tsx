@@ -1,15 +1,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { contactInfo, legalLinks, navigation } from "@/data/site-copy";
+import { brandMessage, contactInfo, legalLinks, navigation } from "@/data/site-copy";
 
+/**
+ * 사이트의 마지막 면.
+ *
+ * ★ 기능의 끝이 아니라 브랜드의 마감이다.
+ *   여기까지 내려온 사람은 이미 다 읽은 사람이다. 링크만 늘어놓고 끝내지 않고,
+ *   이 서비스가 무엇을 남기는지 한 문장을 크게 둔다.
+ *   그 문장은 새로 쓰지 않았다 — 사이트가 이미 쓰고 있는 문장(coreMessage)이다.
+ *
+ * ★ 모바일에서 길어지지 않게 한다.
+ *   문장 하나를 더했지만 나머지는 그대로다. 아래 고정 CTA 에 가리지 않도록
+ *   확보해 둔 여백도 그대로 유지한다.
+ */
 export function Footer() {
   // 모바일 하단 고정 CTA(실측 79px + safe-area)에 Footer 내용이 가리지 않도록
   // 아래 여백은 Footer 안에서 확보한다. lg 이상은 고정 CTA가 없어 pb-16이면 충분하다.
   return (
-    <footer className="border-t border-navy/10 bg-navy pt-14 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-16 lg:pb-16">
+    <footer className="border-t border-line-soft bg-navy pt-14 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-16 lg:pb-16">
       <Container>
-        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
+        {/* 브랜드 마감 한 문장 */}
+        <p className="measure text-h3 font-bold text-white">
+          {brandMessage.coreMessage}
+        </p>
+
+        <div className="mt-12 flex flex-col gap-10 border-t border-line-inverse pt-10 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-start gap-2.5">
             {/*
               워드마크에 흰색 외곽선이 들어가 있어 Navy 배경에서도 대비가 확보된다.
@@ -58,7 +75,7 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-10 flex flex-col gap-1.5 border-t border-white/10 pt-8 text-sm">
+        <div className="mt-10 flex flex-col gap-1.5 border-t border-line-inverse pt-8 text-sm">
           <a href={`tel:${contactInfo.phone}`} className="w-fit hover:text-white">
             {contactInfo.phone}
           </a>
@@ -74,7 +91,7 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col-reverse gap-4 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col-reverse gap-4 border-t border-line-inverse pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
           <p>{contactInfo.copyright}</p>
           <div className="flex gap-4">
             {legalLinks.map((label) => (

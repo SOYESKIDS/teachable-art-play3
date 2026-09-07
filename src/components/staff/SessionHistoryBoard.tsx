@@ -9,6 +9,7 @@ import type {
   StaffSessionItem,
 } from "@/types/staff-session";
 import { SessionCard } from "./SessionCard";
+import { fieldControl } from "@/components/ui/field";
 
 interface SessionHistoryBoardProps {
   sessions: StaffSessionItem[];
@@ -28,8 +29,7 @@ interface SessionHistoryBoardProps {
   observationBasePath?: string;
 }
 
-const controlClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] font-medium text-navy transition-colors focus:border-trust-blue focus:outline-none";
+const controlClasses = fieldControl;
 
 const STATUS_FILTERS: readonly (ClassSessionStatus | "all")[] = [
   "all",

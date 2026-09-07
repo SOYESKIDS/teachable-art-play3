@@ -11,13 +11,13 @@ import {
 import { formatOrganizationDate } from "@/lib/admin/organization-labels";
 import type { CurriculumStatus, ProgramListItem } from "@/types/curriculum";
 import { ProgramFormDialog } from "./ProgramFormDialog";
+import { fieldControl } from "@/components/ui/field";
 
 interface ProgramListSectionProps {
   programs: ProgramListItem[];
 }
 
-const controlClasses =
-  "h-10 rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none";
+const controlClasses = fieldControl;
 
 const headerCellClasses =
   "whitespace-nowrap px-4 py-3 text-[11px] font-semibold tracking-wide text-navy/45";

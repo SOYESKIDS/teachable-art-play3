@@ -13,6 +13,7 @@ import {
 } from "@/lib/admin/curriculum";
 import type { CurriculumLessonRow, CurriculumStatus } from "@/types/curriculum";
 import { createLessonAction, updateLessonAction } from "../lesson-actions";
+import { fieldInput, fieldTextarea } from "@/components/ui/field";
 import {
   CURRICULUM_FORM_INITIAL_STATE,
   type CurriculumFormState,
@@ -35,11 +36,9 @@ const buttonClasses = {
   link: "text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70",
 } as const;
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-soft disabled:opacity-70";
+const inputClasses = fieldInput;
 
-const textareaClasses =
-  "min-h-[88px] rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const textareaClasses = `${fieldTextarea} min-h-[88px]`;
 
 /**
  * 폼 입력값. 전부 문자열로 들고 있다가 그대로 제출한다.

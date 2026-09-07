@@ -40,17 +40,16 @@ export function ProductDetail({
           className={`block h-[3px] w-12 rounded-full ${theme.rule}`}
         />
 
-        <p
-          className={`mt-5 text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
-        >
+        <p className={`eyebrow mt-5 ${theme.accentText}`}>
           {product.hero.eyebrow}
         </p>
 
-        <Heading className="mt-3 whitespace-pre-line break-keep text-[28px] font-bold leading-[1.3] text-navy sm:text-[36px]">
+        {/* 상세도 홈페이지와 같은 타입 스케일을 쓴다 — 같은 제품처럼 보여야 한다. */}
+        <Heading className="mt-3 whitespace-pre-line break-keep text-h1 font-bold text-navy">
           {product.hero.headline}
         </Heading>
 
-        <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-navy/65 sm:text-[16px]">
+        <p className="measure mt-5 text-lead text-navy/65">
           {product.hero.subCopy}
         </p>
       </section>
@@ -81,11 +80,11 @@ export function ProductDetail({
       {product.story ? (
         <section className="border-t border-navy/10 pt-10 sm:pt-12">
           <p
-            className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+            className={`eyebrow ${theme.accentText}`}
           >
             {product.story.eyebrow}
           </p>
-          <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+          <h2 className="mt-2 text-h3 font-bold text-navy">
             {product.story.headline}
           </h2>
           <p className="mt-2 max-w-[54ch] text-[15px] leading-relaxed text-navy/60">
@@ -127,11 +126,11 @@ export function ProductDetail({
       {product.curriculum ? (
         <section className="border-t border-navy/10 pt-10 sm:pt-12">
           <p
-            className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+            className={`eyebrow ${theme.accentText}`}
           >
             GROWTH JOURNEY
           </p>
-          <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+          <h2 className="mt-2 text-h3 font-bold text-navy">
             8주 동안 자라는 것
           </h2>
 
@@ -186,11 +185,11 @@ export function ProductDetail({
       {product.featuredLesson ? (
         <section className="border-t border-navy/10 pt-10 sm:pt-12">
           <p
-            className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+            className={`eyebrow ${theme.accentText}`}
           >
             {`WEEK ${String(product.featuredLesson.week).padStart(2, "0")} · SAMPLE LESSON`}
           </p>
-          <h2 className="mt-2 break-keep text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+          <h2 className="mt-2 break-keep text-h3 font-bold text-navy">
             {`${product.featuredLesson.week}주차 「${product.featuredLesson.storyTitle}」`}
           </h2>
           <p className="mt-2 max-w-[54ch] text-[15px] leading-relaxed text-navy/60">
@@ -239,11 +238,11 @@ export function ProductDetail({
       {/* ──────────────────────────────────── E. 수업 경험 흐름 */}
       <section className="border-t border-navy/10 pt-10 sm:pt-12">
         <p
-          className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+          className={`eyebrow ${theme.accentText}`}
         >
           CLASS FLOW
         </p>
-        <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+        <h2 className="mt-2 text-h3 font-bold text-navy">
           수업 한 회차는 이렇게 흘러갑니다
         </h2>
 
@@ -277,11 +276,11 @@ export function ProductDetail({
       {product.nuriAreas?.length ? (
         <section className="border-t border-navy/10 pt-10 sm:pt-12">
           <p
-            className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+            className={`eyebrow ${theme.accentText}`}
           >
             NURI CURRICULUM
           </p>
-          <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+          <h2 className="mt-2 text-h3 font-bold text-navy">
             누리과정 5개 영역과 이어집니다
           </h2>
 
@@ -312,11 +311,11 @@ export function ProductDetail({
       {/* ───────────────────────────────────── F. 제공 콘텐츠 */}
       <section className="border-t border-navy/10 pt-10 sm:pt-12">
         <p
-          className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+          className={`eyebrow ${theme.accentText}`}
         >
           WHAT&apos;S INCLUDED
         </p>
-        <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+        <h2 className="mt-2 text-h3 font-bold text-navy">
           제공 콘텐츠
         </h2>
 
@@ -348,11 +347,11 @@ export function ProductDetail({
       {product.contentAreas?.length ? (
         <section className="border-t border-navy/10 pt-10 sm:pt-12">
           <p
-            className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+            className={`eyebrow ${theme.accentText}`}
           >
             CONTENT EXPERIENCE
           </p>
-          <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+          <h2 className="mt-2 text-h3 font-bold text-navy">
             여섯 가지 방식으로 만납니다
           </h2>
 
@@ -385,11 +384,11 @@ export function ProductDetail({
       {/* ────────────────────────────────────── H. 추천 기관 */}
       <section className="border-t border-navy/10 pt-10 sm:pt-12">
         <p
-          className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+          className={`eyebrow ${theme.accentText}`}
         >
           RECOMMENDED FOR
         </p>
-        <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+        <h2 className="mt-2 text-h3 font-bold text-navy">
           이런 기관에 맞습니다
         </h2>
 

@@ -17,7 +17,7 @@ export default async function AdminDashboardLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-soft">
-      <header className="sticky top-0 z-30 border-b border-navy/10 bg-white">
+      <header className="sticky top-0 z-30 border-b border-line-soft bg-white">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
           <div className="flex items-center gap-3">
             <span
@@ -58,7 +58,7 @@ export default async function AdminDashboardLayout({
             <form method="post" action="/admin/logout">
               <button
                 type="submit"
-                className="rounded-lg border border-navy/20 px-3 py-2 text-[13px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+                className="inline-flex min-h-11 items-center rounded-lg border border-line-strong px-3 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/[0.04]"
               >
                 로그아웃
               </button>
@@ -73,7 +73,7 @@ export default async function AdminDashboardLayout({
             가로 스크롤이 있으면 마지막 메뉴가 화면 밖에 숨고, 브라우저 기본
             스크롤바까지 노출된다. 2열이면 4개가 전부 보이고 넘칠 것이 없다.
         */}
-        <div className="border-t border-navy/8 px-5 py-2 lg:hidden">
+        <div className="border-t border-line-soft px-5 py-2 lg:hidden">
           <AdminNav layout="grid" />
         </div>
       </header>

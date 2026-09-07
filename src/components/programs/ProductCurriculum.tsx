@@ -41,11 +41,11 @@ export function ProductCurriculum({ product }: { product: ProgramProduct }) {
   return (
     <section className="border-t border-navy/10 pt-10 sm:pt-12">
       <p
-        className={`text-[11px] font-bold tracking-[0.18em] ${theme.accentText}`}
+        className={`eyebrow ${theme.accentText}`}
       >
         {curriculum.eyebrow}
       </p>
-      <h2 className="mt-2 text-[24px] font-bold leading-snug text-navy sm:text-[28px]">
+      <h2 className="mt-2 text-h3 font-bold text-navy">
         {curriculum.headline}
       </h2>
       <p className="mt-2 max-w-[54ch] text-[15px] leading-relaxed text-navy/60">

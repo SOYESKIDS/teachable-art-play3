@@ -15,6 +15,7 @@ import type {
   ClassListItem,
 } from "@/types/class-child";
 import { ChildFormDialog } from "./ChildFormDialog";
+import { fieldControl } from "@/components/ui/field";
 
 interface ChildManagementSectionProps {
   organizationId: string;
@@ -40,8 +41,7 @@ function SummaryItem({ label, value }: { label: string; value: number }) {
   );
 }
 
-const controlClasses =
-  "h-10 rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none";
+const controlClasses = fieldControl;
 
 /**
  * 원아 관리 영역.

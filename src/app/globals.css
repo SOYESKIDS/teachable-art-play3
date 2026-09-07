@@ -1,14 +1,37 @@
 @import "tailwindcss";
 
 /*
- * TeachAble Art Play — Warm Premium EdTech 디자인 토큰
- * Premium Kindergarten B2B / Professional SaaS 기준으로 정리한 Global Design System.
+ * TeachAble Art Play — Design System V2
+ * Warm Premium EdTech · Editorial · Calm
+ *
+ * ─────────────────────────────────────────────────────────────────
+ * V2 에서 무엇을 바꿨고, 무엇을 일부러 두었는가
+ *
+ * 감사 결과 실제로 흔들리던 것은 색이 아니라 **타이포와 선**이었다.
+ *   · 제목 크기가 21가지 (text-[15px] ~ text-[4.25rem], Tailwind 스케일과 혼용)
+ *   · 테두리 투명도가 10가지 (navy/8 · /10 · /12 · /15 · /20 · /25 · /30 · /35 · /40 · /45)
+ *   · eyebrow 자간이 10가지 (tracking-wide · [0.06em] ~ [0.28em])
+ *   · 본문이 12~13px 에 몰려 있어(594곳) 마케팅 화면까지 "관리자 화면"처럼 보였다
+ *
+ * 그래서 V2 의 중심은 **타입 스케일과 선 체계**다.
+ * 색 토큰(--color-navy · --color-yellow …)은 이미 잘 잡혀 있어 그대로 둔다 —
+ * 이름을 바꾸면 500곳이 한꺼번에 흔들리고, 얻는 것은 이름뿐이다.
+ *
+ * ★ clamp 의 양 끝을 기존 값에 맞췄다.
+ *   display 는 모바일 36px · 데스크톱 68px 로, 지금 Hero 가 쓰던
+ *   2.25rem ~ 4.25rem 와 같다. 중간 구간만 매끄러워지고 양 끝은 그대로다 —
+ *   그래서 이 스케일을 넣는 것만으로는 어느 화면도 갑자기 달라지지 않는다.
+ *
+ * ★ 앱 화면(admin · director · teacher)의 조밀한 12~13px 은 낮추지 않았다.
+ *   운영 콘솔은 한 화면에 많이 보여야 하고, 그 밀도는 의도된 것이다.
+ *   타입 스케일은 마케팅·상품·포털 화면에 적용한다.
+ * ─────────────────────────────────────────────────────────────────
  */
 :root {
   --background: #fbf8f1;
   --foreground: #152e4f;
 
-  /* Brand core */
+  /* ── Brand core ─────────────────────────────────────────────── */
   --color-navy: #152e4f;
   --color-navy-deep: #102744;
   --color-yellow: #f3ba18;
@@ -22,23 +45,59 @@
   --color-soft-green: #8fc9a9; /* 아이 · 활동 */
   --color-pale-yellow: #fce9ae; /* BEST / 추천 */
 
-  /* Surface / Border (Neutral 체계) */
+  /* ── Surface ────────────────────────────────────────────────── */
   --color-surface: #ffffff;
   --color-surface-soft: #f6f3ec;
+  /* 흰 카드가 흰 배경 위에 놓일 때 쓰는 아주 옅은 온기 */
+  --color-surface-warm: #faf7f0;
 
-  /* Shadow — 매우 절제된 3단계 + CTA 전용 Glow */
+  /*
+   * ── Line ──────────────────────────────────────────────────────
+   * 지금까지 테두리 투명도가 10가지였다. 세 단계면 충분하다.
+   *   soft   : 같은 면 안의 구분선(표 행, 목록 구분)
+   *   default: 카드의 바깥 테두리
+   *   strong : 눌리는 것(버튼 외곽선)
+   * navy 를 그대로 옅게 쓴다 — 회색을 새로 들이면 따뜻한 바탕과 어긋난다.
+   */
+  --color-line-soft: rgba(21, 46, 79, 0.08);
+  --color-line: rgba(21, 46, 79, 0.12);
+  --color-line-strong: rgba(21, 46, 79, 0.2);
+
+  /* 어두운 면(navy 섹션) 위에서 쓰는 선 */
+  --color-line-inverse: rgba(255, 255, 255, 0.14);
+
+  /* ── Shadow ─────────────────────────────────────────────────── */
+  /* 고급스러움을 그림자로 만들지 않는다. 네 단계에서 늘리지 않는다. */
   --shadow-soft: 0 1px 2px rgba(21, 46, 79, 0.05);
   --shadow-card: 0 6px 20px rgba(21, 46, 79, 0.08);
   --shadow-elevated: 0 20px 48px rgba(21, 46, 79, 0.14);
   --shadow-cta: 0 8px 20px rgba(243, 186, 24, 0.35);
 
-  /* Radius — Small / Card / Large Surface / Pill 4단계 */
-  --radius-card: 20px;
+  /* ── Radius ─────────────────────────────────────────────────── */
+  /*
+   * lg 이상은 기존 값을 그대로 둔다 — 450곳 넘게 쓰이고 있어
+   * 여기서 바꾸면 그것만으로 사이트 전체가 달라진다.
+   * 손대는 것은 md 하나뿐이다(6px → 8px). 배지·작은 칩이 4px·6px·12px 로
+   * 세 갈래였던 것을 한 칸 좁힌다.
+   */
+  --radius-sm: 6px;
+  --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-2xl: 20px;
   --radius-3xl: 28px;
   --radius-4xl: 32px;
+  --radius-card: 20px;
+
+  /* ── Container ──────────────────────────────────────────────── */
+  --container-marketing: 1280px; /* 마케팅 — 넓은 시각 구성 */
+  --container-app: 1200px; /* 운영 화면 */
+  --container-reading: 68ch; /* 긴 본문 한 줄 길이 */
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   --header-height: 72px;
 }
@@ -65,16 +124,80 @@
   --color-pale-yellow: var(--color-pale-yellow);
   --color-surface: var(--color-surface);
   --color-surface-soft: var(--color-surface-soft);
+  --color-surface-warm: var(--color-surface-warm);
+
+  /* border-line / border-line-soft / border-line-strong 로 쓴다 */
+  --color-line: var(--color-line);
+  --color-line-soft: var(--color-line-soft);
+  --color-line-strong: var(--color-line-strong);
+  --color-line-inverse: var(--color-line-inverse);
 
   --font-sans: var(--font-pretendard);
   --radius-card: var(--radius-card);
 
-  /* Tailwind 기본 radius scale을 재정의 — rounded-lg/xl/2xl/3xl/4xl 전체에 즉시 반영된다 */
+  /* Tailwind 기본 radius scale을 재정의 — rounded-md/lg/xl/2xl/3xl/4xl 에 즉시 반영된다 */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
   --radius-2xl: var(--radius-2xl);
   --radius-3xl: var(--radius-3xl);
   --radius-4xl: var(--radius-4xl);
+
+  /*
+   * ── Type scale ───────────────────────────────────────────────
+   * clamp 의 양 끝이 지금 쓰이는 값과 같다. 중간만 매끄러워진다.
+   *   display 36 → 68px   (Hero)
+   *   h1      32 → 52px
+   *   h2      32 → 56px   (섹션 제목 — 기존 2rem ~ 3.5rem 과 동일)
+   *   h3      20 → 26px
+   *   lead    17 → 20px   (제목 아래 안내문)
+   * 본문 이하는 흔들릴 이유가 없어 고정값이다.
+   */
+  --text-display: clamp(2.25rem, 1.06rem + 5.29vw, 4.25rem);
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.035em;
+
+  --text-h1: clamp(2rem, 1.4rem + 2.67vw, 3.25rem);
+  --text-h1--line-height: 1.18;
+  --text-h1--letter-spacing: -0.03em;
+
+  --text-h2: clamp(2rem, 1.29rem + 3.17vw, 3.5rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.03em;
+
+  --text-h3: clamp(1.25rem, 1.14rem + 0.5vw, 1.625rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.02em;
+
+  --text-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.25rem);
+  --text-lead--line-height: 1.65;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.75;
+
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.6;
+}
+
+/*
+ * ── Eyebrow ───────────────────────────────────────────────────
+ * 섹션 위에 얹는 작은 대문자 라벨. 지금까지 자간이 10가지였다.
+ * 한 곳에서 정하고, 색은 쓰는 자리에서 정한다.
+ */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+}
+
+/*
+ * 긴 글 한 줄이 너무 길어지지 않게 한다.
+ * 한 줄이 70자를 넘으면 다음 줄 첫 글자를 찾는 데 눈이 걸린다.
+ */
+@utility measure {
+  max-width: var(--container-reading);
 }
 
 /*
@@ -128,7 +251,7 @@ h4 {
 
 /* Card / Button 등 Micro Interaction 공통 Timing */
 * {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-timing-function: var(--ease-standard);
 }
 
 /*

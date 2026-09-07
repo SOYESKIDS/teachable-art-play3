@@ -10,6 +10,7 @@ import type {
   ClassProgramAssignmentItem,
 } from "@/types/class-program";
 import { closeClassProgramAssignmentAction } from "./class-program-actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   CLASS_CHILD_FORM_INITIAL_STATE,
   type ClassChildFormState,
@@ -20,8 +21,7 @@ interface ClassProgramManageDialogProps {
   assignment: ClassProgramAssignmentItem;
 }
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 /** 배정 정보 한 줄 (읽기 전용) */
 function InfoRow({ label, value }: { label: string; value: string }) {

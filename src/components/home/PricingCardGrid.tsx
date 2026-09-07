@@ -84,10 +84,14 @@ export function PricingCardGrid() {
             <Card
               key={pkg.id}
               variant={cardVariant[pkg.accentColor]}
+              /*
+                ★ 강조를 그림자가 아니라 테두리와 자리로 만든다.
+                  예전에는 추천 상품에만 노란 글로우(0 12px 32px …)를 달아 두어
+                  카드 하나가 다른 재질처럼 보였다. 세 장은 비교 대상이므로
+                  같은 재질이어야 하고, 다른 것은 테두리와 위치뿐이면 된다.
+              */
               className={`flex cursor-pointer flex-col gap-5 p-7 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] sm:p-8 ${
-                pkg.isBest
-                  ? "sm:-mt-4 border-2 border-yellow shadow-[0_12px_32px_rgba(243,186,24,0.18)]"
-                  : ""
+                pkg.isBest ? "border-yellow sm:-mt-4" : ""
               }`}
               onClick={(event) => {
                 // 글자를 끌어 선택하던 중이라면 열지 않는다.
@@ -103,16 +107,14 @@ export function PricingCardGrid() {
             >
               <div className="flex items-center justify-between">
                 <span
-                  className={`rounded-full px-3 py-1 text-[11px] font-bold tracking-wide ${
-                    isNavy
-                      ? "bg-white/10 text-white"
-                      : "bg-navy/[0.06] text-navy/60"
+                  className={`eyebrow rounded-full px-3 py-1.5 ${
+                    isNavy ? "bg-white/10 text-white/80" : "bg-navy/5 text-navy/60"
                   }`}
                 >
                   {pkg.label}
                 </span>
                 {pkg.isBest && (
-                  <span className="rounded-full bg-yellow px-3 py-1 text-[11px] font-bold text-navy">
+                  <span className="eyebrow rounded-full bg-yellow px-3 py-1.5 text-navy">
                     BEST
                   </span>
                 )}
@@ -120,14 +122,12 @@ export function PricingCardGrid() {
 
               <div>
                 <h3
-                  className={`text-2xl font-extrabold sm:text-3xl ${
-                    isNavy ? "text-white" : "text-navy"
-                  }`}
+                  className={`text-h3 font-bold ${isNavy ? "text-white" : "text-navy"}`}
                 >
                   {pkg.name}
                 </h3>
                 <p
-                  className={`mt-1 text-sm font-medium ${
+                  className={`mt-1.5 text-[15px] font-medium ${
                     isNavy ? "text-white/60" : "text-navy/50"
                   }`}
                 >
@@ -151,12 +151,12 @@ export function PricingCardGrid() {
               </dl>
 
               <div
-                className={`border-t pt-4 ${
-                  isNavy ? "border-white/15" : "border-navy/10"
+                className={`border-t pt-5 ${
+                  isNavy ? "border-line-inverse" : "border-line"
                 }`}
               >
                 <p
-                  className={`text-3xl font-extrabold sm:text-4xl ${
+                  className={`text-[2rem] font-bold tabular-nums leading-none sm:text-[2.25rem] ${
                     isNavy ? "text-white" : "text-navy"
                   }`}
                 >
@@ -183,10 +183,10 @@ export function PricingCardGrid() {
               </ul>
 
               <p
-                className={`mt-auto rounded-xl border px-4 py-3.5 text-center text-xs leading-relaxed sm:text-[13px] ${
+                className={`mt-auto rounded-xl border px-4 py-3.5 text-center text-[13px] leading-relaxed ${
                   isNavy
-                    ? "border-white/15 bg-white/[0.06] text-white/70"
-                    : "border-navy/10 bg-navy/[0.03] text-navy/60"
+                    ? "border-line-inverse bg-white/[0.06] text-white/70"
+                    : "border-line bg-navy/[0.03] text-navy/60"
                 }`}
               >
                 {publicNotice.pricing}
@@ -195,10 +195,10 @@ export function PricingCardGrid() {
               <button
                 type="button"
                 data-detail-trigger
-                className={`inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border px-4 text-[13px] font-bold transition-colors sm:text-sm ${
+                className={`inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-bold transition-colors ${
                   isNavy
                     ? "border-white/25 text-white hover:border-white/45 hover:bg-white/[0.08]"
-                    : "border-navy/25 text-navy hover:border-navy/45 hover:bg-navy/[0.04]"
+                    : "border-line-strong text-navy hover:border-navy/40 hover:bg-navy/[0.04]"
                 }`}
               >
                 {detailLinkLabel(pkg)}

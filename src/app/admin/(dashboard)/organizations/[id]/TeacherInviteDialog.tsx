@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { inviteTeacherAction } from "../actions";
+import { fieldInput } from "@/components/ui/field";
 import {
   TEACHER_INVITE_INITIAL_STATE,
   type TeacherInviteState,
@@ -19,8 +20,7 @@ const buttonClasses = {
     "rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
 } as const;
 
-const inputClasses =
-  "h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60";
+const inputClasses = fieldInput;
 
 interface InviteFormValues {
   displayName: string;
