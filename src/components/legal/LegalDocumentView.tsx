@@ -22,7 +22,7 @@ export function LegalDocumentView({
   company,
 }: {
   document: LegalDocument;
-  /** 보호책임자 표를 넣을 섹션이 있으면 함께 넘긴다 (id: "officer") */
+  /** 개인정보 보호 담당부서 표. id "officer" 섹션 안에 그린다. */
   officer?: CompanyField[];
   /** 문서 끝에 붙는 사업자 정보 */
   company?: CompanyField[];

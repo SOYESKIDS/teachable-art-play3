@@ -55,3 +55,7 @@ next-env.d.ts
 # 나중에 _local_reference_materials/ 로 바꾸더라도 그대로 무시된다.
 /참고자료/
 /_local_reference_materials/
+
+# Supabase CLI local link state — 프로젝트 ref/리전이 저장소에 박히면
+# 새로 clone 한 환경이 옛 프로젝트에 연결된다. 로컬에만 둔다.
+/supabase/.temp/

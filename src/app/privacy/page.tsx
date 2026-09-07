@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
-import { COMPANY_FIELDS, PRIVACY_OFFICER, PRIVACY_POLICY } from "@/data/legal";
+import { COMPANY_FIELDS, PRIVACY_CONTACT, PRIVACY_POLICY } from "@/data/legal";
 
 /**
  * 개인정보처리방침.
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
       <Header />
       <LegalDocumentView
         document={PRIVACY_POLICY}
-        officer={PRIVACY_OFFICER}
+        officer={PRIVACY_CONTACT}
         company={COMPANY_FIELDS}
       />
       <Footer />
