@@ -823,7 +823,7 @@ export const finalCtaCopy = {
 /** Footer 전용: 연락처 (실제 확정된 정보만 사용) */
 export const contactInfo = {
   phone: "02-303-4420",
-  email: "soyes@soyesai.com",
+  email: "soyes2013@gmail.com",
   website: "www.soyes.kr",
   copyright: "© SOYE KIDS Co., Ltd.",
 };

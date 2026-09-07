@@ -54,6 +54,21 @@ const CheckIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
+/**
+ * 티어별 상단 강조선.
+ *
+ * 세 장은 비교 대상이라 재질(흰 카드 · 같은 곡률 · 같은 테두리)은 같아야 하고,
+ * 다른 것은 이 얇은 선 하나면 충분하다.
+ *   STARTER  차분한 파랑  — 처음 도입하는 기관
+ *   STANDARD 금색        — 한 학기 운영
+ *   PREMIUM  금색(남색 면 위) — 가장 완성된 운영형
+ */
+const TIER_RULE: Record<PricingPackage["accentColor"], string> = {
+  "light-blue": "bg-trust-blue/50",
+  "ivory-yellow": "bg-yellow",
+  "navy-yellow": "bg-yellow",
+};
+
 export function PricingCardGrid() {
   /*
     ★ 눌린 버튼을 ref 가 아니라 state 로 들고 있는다.
@@ -105,6 +120,11 @@ export function PricingCardGrid() {
                 });
               }}
             >
+              <span
+                aria-hidden="true"
+                className={`block h-[3px] w-10 rounded-full ${TIER_RULE[pkg.accentColor]}`}
+              />
+
               <div className="flex items-center justify-between">
                 <span
                   className={`eyebrow rounded-full px-3 py-1.5 ${

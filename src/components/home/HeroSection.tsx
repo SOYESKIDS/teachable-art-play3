@@ -207,15 +207,23 @@ export function HeroSection() {
         {/* 우측: 실제 수업 현장 사진 + Floating UI */}
         <div className="relative mb-14 lg:mb-0">
           {/*
-            비율을 breakpoint별로 나누지 않고 5:4 하나로 통일했다.
-            사진 파일 자체를 5:4로 내보냈기 때문에, 어느 화면에서도 추가 crop이 일어나지 않는다
-            (= 아이가 잘리거나 구도가 바뀌는 일이 없다). 세로 4:5였던 이전 비율은
-            가로 구도의 교실 사진을 좌우로 크게 잘라내서 쓰지 않았다.
+            ★ 사진을 바꿨다.
+              이전 이미지는 휴대폰으로 찍은 스냅이라 아이 둘에 바닥이 넓게 비어 있었고,
+              투사 화면에 워터마크 자국이 남아 있었다. 같은 수업의 DSLR 촬영본
+              (6720x4480)으로 교체한다 — 네 아이와 교사가 함께 들어오고,
+              벽에 걸린 아이들 작품까지 한 장에 담긴다.
+
+            ★ 원본 비율(3:2) 그대로 쓴다.
+              4:3 으로 자르면 오른쪽 아이가 얼굴에서 잘린다. 자르지 않고
+              가로로 넓게 두는 편이 첫 화면도 더 시원하다.
+
+            ★ 아이 얼굴이 카메라를 향하지 않는 컷을 골랐다.
+              공개 사이트에 실을 사진이므로 뒷모습 위주 컷을 쓴다.
           */}
-          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-line bg-navy shadow-[var(--shadow-card)]">
+          <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-line bg-navy shadow-[var(--shadow-card)]">
             <Image
-              src="/images/site/hero/hero-kindergarten-class.webp"
-              alt="유치원 강당에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 동작을 따라 하는 실제 수업 장면"
+              src="/images/site/hero/hero-class-movement.webp"
+              alt="유치원 교실에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 교사와 함께 두 팔을 벌리는 실제 수업 장면"
               fill
               priority
               sizes="(min-width: 1024px) 47vw, 100vw"
@@ -227,6 +235,24 @@ export function HeroSection() {
             <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/70 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:right-5 sm:top-5">
               <span className="h-1.5 w-1.5 rounded-full bg-yellow" aria-hidden="true" />
               {heroCopy.visualBadge}
+            </div>
+          </div>
+
+          {/*
+            ★ 보조 프레임은 넓은 화면에서만 나온다.
+              main + supporting + report preview 세 겹은 데스크톱에서 편집 지면처럼
+              읽히지만, 좁은 화면에서 그대로 겹치면 서로를 가린다.
+              모바일에서는 사진 한 장과 기록 카드 한 장만 남긴다.
+          */}
+          <div className="absolute -right-6 -top-8 hidden w-44 overflow-hidden rounded-xl border border-line bg-white shadow-[var(--shadow-card)] xl:block">
+            <div className="relative aspect-[3/2] w-full bg-navy">
+              <Image
+                src="/images/site/classroom/class-teacher-lead.webp"
+                alt="교사가 앞에서 동작을 이끌고 아이들이 따라 하는 수업 장면"
+                fill
+                sizes="176px"
+                className="object-cover"
+              />
             </div>
           </div>
 

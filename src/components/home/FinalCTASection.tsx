@@ -2,8 +2,15 @@ import { Container } from "@/components/ui/Container";
 import { contactSectionCopy } from "@/data/site-copy";
 
 /**
- * 공개 홈페이지 하단 CONTACT Section.
- * 공개 신청/구매 폼과 mailto 바로가기 없이, 담당자 연락처를 텍스트로만 안내한다.
+ * 공개 홈페이지 하단 도입 상담 영역.
+ *
+ * ★ 신청 폼도 mailto 도 만들지 않는다.
+ *   기존 정책 그대로다. 기관 담당자가 전화와 이메일 두 가지를 빠르게 찾고
+ *   바로 복사할 수 있으면 그것으로 충분하다.
+ *
+ * ★ 두 창구의 무게를 다르게 둔다.
+ *   전화가 먼저다 — B2B 도입 문의는 대부분 통화로 시작한다.
+ *   이메일은 그 옆에 같은 크기로 두되 select-all 로 복사만 쉽게 한다.
  */
 export function FinalCTASection() {
   return (
@@ -13,33 +20,29 @@ export function FinalCTASection() {
     >
       <Container>
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <p className="text-xs font-semibold tracking-[0.22em] text-yellow sm:text-sm">
-            {contactSectionCopy.eyebrow}
-          </p>
+          <p className="eyebrow text-yellow">{contactSectionCopy.eyebrow}</p>
 
-          <h2 className="mt-5 text-3xl font-bold leading-[1.25] text-white sm:text-4xl lg:text-[2.75rem]">
+          <h2 className="mt-5 text-h2 font-bold text-white">
             {contactSectionCopy.headline}
           </h2>
 
           <span
             aria-hidden="true"
-            className="mt-7 block h-px w-16 bg-white/20"
+            className="mt-7 block h-px w-16 bg-yellow/60"
           />
 
-          <p className="mt-7 whitespace-pre-line text-base leading-[1.85] text-white/70 sm:text-lg">
+          <p className="measure mt-7 whitespace-pre-line text-lead text-white/70">
             {contactSectionCopy.description}
           </p>
 
-          <dl className="mt-12 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+          <dl className="mt-12 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
             {contactSectionCopy.channels.map((channel) => (
               <div
                 key={channel.label}
-                className="rounded-2xl border border-white/12 bg-white/[0.04] px-6 py-7 text-center"
+                className="rounded-2xl border border-line-inverse bg-white/[0.04] px-6 py-8 text-left transition-colors hover:border-white/25"
               >
-                <dt className="text-[11px] font-semibold tracking-[0.2em] text-white/45">
-                  {channel.label}
-                </dt>
-                <dd className="mt-3 select-all break-all text-xl font-semibold text-white sm:text-2xl">
+                <dt className="eyebrow text-white/45">{channel.label}</dt>
+                <dd className="mt-3 select-all break-all text-[22px] font-bold tabular-nums text-white sm:text-[26px]">
                   {channel.value}
                 </dd>
               </div>

@@ -134,40 +134,45 @@ export function ProductDetail({
             8주 동안 자라는 것
           </h2>
 
-          <ol className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
-            {product.curriculum.weeks.map((entry) => (
-              <li
-                key={entry.week}
-                className={`rounded-xl border p-3 text-center ${
-                  entry.finale
-                    ? "border-navy bg-navy"
-                    : "border-navy/10 bg-white"
-                }`}
-              >
-                <p
-                  className={`text-[10px] font-bold tabular-nums tracking-[0.1em] ${
-                    entry.finale ? "text-yellow" : "text-navy/35"
-                  }`}
-                >
-                  {`W${String(entry.week).padStart(2, "0")}`}
-                </p>
-                <p
-                  className={`mt-1.5 break-keep text-[15px] font-bold leading-snug ${
-                    entry.finale ? "text-white" : "text-navy"
-                  }`}
-                >
-                  {entry.growthPoint}
-                </p>
-                <p
-                  className={`mt-1 break-keep text-[11px] leading-snug ${
-                    entry.finale ? "text-white/60" : "text-navy/45"
-                  }`}
-                >
-                  {entry.topic}
-                </p>
-              </li>
-            ))}
-          </ol>
+          {/*
+            ★ 상자 여덟 개가 아니라 하나의 여정으로 읽히게 한다.
+              뒤에 가로선을 한 줄 깔고 그 위에 마디를 얹으면, 여덟 칸이
+              따로 놓인 카드가 아니라 이어진 길로 보인다.
+              선은 장식이므로 화면 읽기 도구에서 숨기고, 순서는 <ol> 자체가 말한다.
+
+            ★ 색으로만 마지막을 구분하지 않는다.
+              번호(W08)와 굵은 테두리가 함께 붙는다.
+          */}
+          <div className="relative mt-8">
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 top-[26px] hidden h-px bg-line lg:block"
+            />
+
+            <ol className="relative grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 lg:grid-cols-8 lg:gap-x-2">
+              {product.curriculum.weeks.map((entry) => (
+                <li key={entry.week} className="flex flex-col items-center text-center">
+                  {/* 여정의 마디 */}
+                  <span
+                    className={`flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border-2 text-[13px] font-bold tabular-nums ${
+                      entry.finale
+                        ? "border-navy bg-navy text-yellow"
+                        : "border-line-strong bg-white text-navy/50"
+                    }`}
+                  >
+                    {String(entry.week).padStart(2, "0")}
+                  </span>
+
+                  <p className="mt-3 break-keep text-[15px] font-bold leading-snug text-navy">
+                    {entry.growthPoint}
+                  </p>
+                  <p className="mt-1 break-keep text-[11px] leading-snug text-navy/45">
+                    {entry.topic}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
       ) : null}
 
@@ -196,23 +201,44 @@ export function ProductDetail({
             {`한 회차가 여섯 단계로 진행됩니다. 전체 ${lessonMinutes(product.featuredLesson.blocks)}분입니다.`}
           </p>
 
-          <ol className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-            {product.featuredLesson.blocks.map((block) => (
-              <li
-                key={block.code}
-                className={`h-full rounded-xl border border-navy/10 border-l-[3px] bg-white p-3 ${theme.markerBorder}`}
-              >
-                <p
-                  className={`break-keep text-[10px] font-bold tracking-[0.1em] ${theme.accentText}`}
+          {/*
+            ★ 표가 아니라 흐름으로 보여 준다.
+              여섯 칸을 나란히 두고 사이를 화살표로 이으면, 각 단계가 따로 있는
+              항목이 아니라 한 회차가 지나가는 순서로 읽힌다.
+              분 표시를 위로 올려 시간 배분이 한눈에 들어오게 했다.
+          */}
+          <ol className="mt-7 grid grid-cols-2 gap-x-2 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
+            {product.featuredLesson.blocks.map((block, index) => (
+              <li key={block.code} className="relative h-full">
+                <div
+                  className={`h-full rounded-xl border border-line border-l-[3px] bg-white px-3 py-3.5 ${theme.markerBorder}`}
                 >
-                  {block.code}
-                </p>
-                <p className="mt-1.5 break-keep text-[14px] font-bold text-navy">
-                  {block.label}
-                </p>
-                <p className="mt-1 text-[12px] font-semibold tabular-nums text-navy/45">
-                  {`${block.minutes}분`}
-                </p>
+                  <p className="text-[17px] font-bold tabular-nums leading-none text-navy">
+                    {block.minutes}
+                    <span className="ml-0.5 text-[11px] font-semibold text-navy/45">
+                      분
+                    </span>
+                  </p>
+
+                  <p className="mt-2.5 break-keep text-[14px] font-bold text-navy">
+                    {block.label}
+                  </p>
+                  <p
+                    className={`mt-0.5 break-keep text-[10px] font-bold tracking-[0.08em] ${theme.accentText}`}
+                  >
+                    {block.code}
+                  </p>
+                </div>
+
+                {/* 다음 단계로 이어진다는 표시. 마지막 칸에는 붙이지 않는다. */}
+                {index < product.featuredLesson!.blocks.length - 1 ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -right-2 top-1/2 hidden -translate-y-1/2 text-[12px] text-navy/25 lg:block"
+                  >
+                    →
+                  </span>
+                ) : null}
               </li>
             ))}
           </ol>
@@ -284,20 +310,33 @@ export function ProductDetail({
             누리과정 5개 영역과 이어집니다
           </h2>
 
-          <ul className="mt-6 flex flex-wrap gap-2">
+          {/*
+            영역 이름과 중심/연계 구분까지만 적는다.
+            영역별 목표나 성취 기준을 지어내지 않는다 —
+            이 서비스는 누리과정을 평가하는 도구가 아니라 활동을 연결하는 도구다.
+          */}
+          <ul className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
             {product.nuriAreas.map((entry) => (
               <li
                 key={entry.area}
-                className={`break-keep rounded-full border px-4 py-2 text-[14px] font-semibold ${
+                className={`rounded-xl border px-4 py-3.5 ${
                   entry.emphasis === "primary"
-                    ? "border-trust-blue/30 bg-trust-blue/[0.06] text-navy"
-                    : "border-navy/15 bg-white text-navy/55"
+                    ? "border-trust-blue/25 bg-trust-blue/[0.05]"
+                    : "border-line bg-white"
                 }`}
               >
-                {entry.area}
-                <span className="ml-1.5 text-[11px] font-bold text-navy/35">
+                <p
+                  className={`eyebrow ${
+                    entry.emphasis === "primary"
+                      ? "text-trust-blue"
+                      : "text-navy/35"
+                  }`}
+                >
                   {entry.emphasis === "primary" ? "중심" : "연계"}
-                </span>
+                </p>
+                <p className="mt-1.5 break-keep text-[15px] font-bold text-navy">
+                  {entry.area}
+                </p>
               </li>
             ))}
           </ul>
@@ -355,23 +394,34 @@ export function ProductDetail({
             여섯 가지 방식으로 만납니다
           </h2>
 
+          {/*
+            ★ 기능 목록이 아니라 하나의 수업 경험으로 보이게 한다.
+              여섯 갈래를 같은 무게의 칸으로 늘어놓으면 "기능이 여섯 개"로 읽힌다.
+              번호를 붙여 한 회차 안에서 만나는 순서로 묶고,
+              수량은 눈에 띄게 따로 세워 무엇을 얼마나 받는지가 먼저 보이게 한다.
+          */}
           <dl className="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {product.contentAreas.map((area) => (
+            {product.contentAreas.map((area, index) => (
               <div
                 key={area.code}
-                className="h-full rounded-xl border border-navy/10 bg-white p-4"
+                className="flex h-full items-start gap-3.5 rounded-xl border border-line bg-white p-4"
               >
-                <p
-                  className={`break-keep text-[10px] font-bold tracking-[0.12em] ${theme.accentText}`}
+                <span
+                  aria-hidden="true"
+                  className={`mt-0.5 shrink-0 text-[13px] font-bold tabular-nums ${theme.accentText}`}
                 >
-                  {area.code}
-                </p>
-                <dt className="mt-1.5 break-keep text-[15px] font-bold text-navy">
-                  {area.label}
-                </dt>
-                <dd className="mt-1 break-keep text-[13px] leading-relaxed text-navy/60">
-                  {area.detail}
-                </dd>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <div className="min-w-0">
+                  <p className={`eyebrow ${theme.accentText}`}>{area.code}</p>
+                  <dt className="mt-1.5 break-keep text-[15px] font-bold text-navy">
+                    {area.label}
+                  </dt>
+                  <dd className="mt-1 break-keep text-[13px] leading-relaxed text-navy/60">
+                    {area.detail}
+                  </dd>
+                </div>
               </div>
             ))}
           </dl>
