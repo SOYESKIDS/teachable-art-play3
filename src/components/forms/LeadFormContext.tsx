@@ -49,6 +49,18 @@ export function LeadFormProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Provider가 없으면 null을 돌려주는 안전한 접근자.
+ *
+ * Header·MobileStickyCta는 LeadFormProvider가 없는 페이지(/programs/*, /kindergarten 등)
+ * 에서도 그대로 렌더링된다. 그쪽에서 useLeadForm()을 부르면 throw되어
+ * 페이지 전체가 죽는다. 그래서 전환 버튼은 이 hook을 쓰고,
+ * Provider가 없으면 #contact 앵커로 대체한다.
+ */
+export function useOptionalLeadForm() {
+  return useContext(LeadFormContext);
+}
+
 export function useLeadForm() {
   const context = useContext(LeadFormContext);
   if (!context) {

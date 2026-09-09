@@ -44,7 +44,7 @@ export function ClassTeacherSection() {
           </figcaption>
         </figure>
 
-        {/* A. 50분 표준수업 */}
+        {/* A. 표준수업 흐름 (공개 기준: 주 1회 40~50분) */}
         <div className="mt-20">
           <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
             <span className="text-4xl font-bold text-navy sm:text-5xl">
@@ -60,7 +60,7 @@ export function ClassTeacherSection() {
 
           <div
             role="img"
-            aria-label="50분 수업 시간 구성: 마음 열기 5분, 주제 이해 10분, 창의 표현 활동 25분, 작품 나눔 5분, 촬영·업로드 5분"
+            aria-label="한 회차 수업 시간 구성(40~50분 기준): 마음 열기 5분, 주제 이해 10분, 창의 표현 활동 25분, 작품 나눔 5분, 촬영·업로드 5분"
             className="mt-6 flex h-4 w-full overflow-hidden rounded-full bg-navy/10 sm:h-5"
           >
             {classSteps.map((step) => (

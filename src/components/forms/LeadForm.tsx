@@ -260,7 +260,16 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
             className="mt-0.5 h-4 w-4 shrink-0 accent-trust-blue"
           />
           <span>
-            개인정보 수집·이용에 동의합니다. <span className="text-trust-blue">*</span>
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-trust-blue underline underline-offset-2"
+            >
+              개인정보 처리방침
+            </a>
+            을 확인했으며 개인정보 수집·이용에 동의합니다.{" "}
+            <span className="text-trust-blue">*</span>
           </span>
         </label>
         {errors.privacyAgreed && (
@@ -276,6 +285,19 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
           />
           <span>소식 및 안내 수신에 동의합니다. (선택)</span>
         </label>
+
+        <p className="text-xs leading-relaxed text-navy/45">
+          {"서비스 이용에 관한 사항은 "}
+          <a
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-navy/70"
+          >
+            이용약관
+          </a>
+          {"에서 확인하실 수 있습니다."}
+        </p>
       </div>
 
       {submitStatus === "error" && (

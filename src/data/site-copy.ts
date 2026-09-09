@@ -10,9 +10,12 @@ import type {
   CoreSolutionFlowStep,
   DashboardCallout,
   DashboardRecentReport,
+  DifferentiatorRow,
   DirectorKpi,
   GrowthExamplePoint,
   GrowthObservationItem,
+  OperationMetric,
+  PackageScenario,
   PlatformTab,
   ProblemStatement,
   SafeOperationPrinciple,
@@ -26,9 +29,8 @@ import type {
 export const brandMessage = {
   mainHeadline: "아이의 놀이를,\n성장 이야기로 기록합니다.",
   subHeadline:
-    "누리과정 연계 수업 콘텐츠부터 교사 운영, AI 성장기록, 학부모 리포트, 원장 대시보드까지 하나로 연결한 유치원 교육 운영 플랫폼",
-  coreMessage:
-    "놀이가 끝나면 사진만 남는 것이 아니라, 아이의 성장 이야기가 남습니다.",
+    "담임교사가 운영하고, 수업 이후의 성장기록까지 남는 8·16·24주 유치원 교육 운영 시스템",
+  coreMessage: "활동은 남습니다. 성장은 남지 않습니다.",
 };
 
 /** 기획서 6번: 유치원이 겪는 3가지 문제 (WHY NOW Section) */
@@ -138,9 +140,9 @@ export const coreSolutions: CoreSolution[] = [
   {
     code: "CORE 03",
     title: "AI 성장기록",
-    items: ["사진 분류", "기록 요약", "변화 흐름 정리", "리포트 초안"],
+    items: ["관찰 메모 정리", "기록 요약", "누적 기록 흐름 정리", "리포트 초안"],
     description:
-      "작품사진 · 활동사진 · 아이 설명 · 교사의 관찰메모를 기반으로 지원합니다.",
+      "교사가 입력한 아이의 말 · 선택 · 행동 · 관찰 메모를 읽기 좋은 초안으로 정리합니다. 최종 판단과 발행은 교사가 합니다.",
   },
   {
     code: "CORE 04",
@@ -165,7 +167,7 @@ export const serviceFlow = [
   { order: 1, title: "수업 콘텐츠", detail: "마음동화 · VOD" },
   { order: 2, title: "창의활동", detail: "워크북 · 창의키트" },
   { order: 3, title: "교사 운영", detail: "발문 · 관찰 · 기록" },
-  { order: 4, title: "AI 기록 정리", detail: "사진분류 · 요약 · 변화흐름 · 리포트 초안" },
+  { order: 4, title: "AI 기록 정리", detail: "관찰메모 정리 · 요약 · 누적 흐름 · 리포트 초안" },
   { order: 5, title: "교사 검토", detail: "활동맥락 확인 · 수정 · 승인" },
   { order: 6, title: "성장리포트", detail: "학부모 · 원장 전달" },
 ];
@@ -207,7 +209,7 @@ export const coreSolutionFlow: CoreSolutionFlowStep[] = [
     code: "STEP 04",
     label: "AI ORGANIZE",
     title: "AI 기록 정리",
-    description: "사진·기록을 분류하고 변화 흐름과 리포트 초안을 정리합니다.",
+    description: "교사가 남긴 관찰 메모를 요약하고 누적 흐름과 리포트 초안을 정리합니다.",
   },
   {
     order: 5,
@@ -230,7 +232,7 @@ export const aiPrinciple = {
   headline: "AI가 판단하지 않습니다. 교사가 최종 결정합니다.",
   flow: ["교사 입력", "AI 정리", "교사 검토", "최종 승인", "전달"],
   description:
-    "AI는 작품사진, 활동사진, 아이 설명, 교사의 관찰메모 등 누적된 기록을 정리하여 시간에 따른 변화의 흐름을 교사가 확인할 수 있도록 지원하는 교육기록 보조도구입니다.",
+    "AI는 교사가 입력한 아이의 말 · 선택 · 행동 · 관찰 메모를 읽기 좋은 성장기록 초안으로 정리합니다. 아이를 진단하거나 평가·점수화하지 않으며, 최종 판단과 발행은 교사가 합니다.",
 };
 
 /** 기획서 10번: 성장 관찰 예시 항목 (점수 아닌 변화 흐름) */
@@ -329,13 +331,27 @@ export const teacherSupportMessage =
   "교사의 준비는 줄이고, 아이를 관찰하는 시간은 늘립니다.";
 
 /** 기획서 25번: CTA 전략 */
+/**
+ * CTA 라벨.
+ *
+ * ★ 홈페이지의 Primary conversion은 오직 하나 — demo("20분 데모 신청")다.
+ *   Hero · Header · Mobile Sticky · Final CTA가 전부 같은 문구를 쓴다.
+ *   방문자가 "무엇을 해야 하는가"를 페이지 어디에서나 같은 말로 만나야
+ *   결정이 흩어지지 않는다.
+ *
+ * ★ consult(도입 상담)와 pilot(4주 파일럿)은 secondary channel이다.
+ *   없애지 않되 primary와 같은 무게로 배치하지 않는다.
+ */
 export const ctaLabels = {
-  primary: "4주 파일럿 신청하기",
-  secondary: "대시보드 데모 보기",
+  /** PRIMARY — 홈페이지 전역에서 이 문구 하나만 primary로 쓴다 */
+  demo: "20분 데모 신청",
+  pilot: "4주 파일럿 문의",
+  consult: "도입 상담",
+  primary: "20분 데모 신청",
+  secondary: "서비스 한눈에 보기",
   tertiary: "기관 맞춤 상담",
   selectProduct: "이 상품 선택하기",
   purchase: "구매하기",
-  consult: "도입 상담",
   contact: "도입 상담 문의",
 };
 
@@ -344,9 +360,9 @@ export const ctaLabels = {
  * 기존 CTA 자리에는 클릭 동작이 없는 안내 문구만 표시한다.
  */
 export const publicNotice = {
-  pricing: "기관별 도입 조건은 담당자 상담을 통해 안내드립니다.",
+  pricing: "기관 규모와 운영조건에 따른 최종 도입 조건은 20분 데모와 담당자 상담에서 안내드립니다.",
   pilot: "파일럿 운영 조건은 담당자 상담을 통해 안내드립니다.",
-  demo: "플랫폼 화면은 담당자 미팅을 통해 직접 안내해드립니다.",
+  demo: "실제 화면은 20분 데모에서 직접 보여드립니다.",
 };
 
 /** 기획서 23번: 헤더 내비게이션 (아직 없는 개별 라우트로 연결하지 않도록 전부 홈페이지 앵커로 구성) */
@@ -448,7 +464,7 @@ export const nuriSectionCopy = {
   subCopy:
     "TeachAble Art Play는 예술경험 · 의사소통 · 사회관계를 중심으로 누리과정과 연결하고, 자연탐구 · 신체운동·건강을 놀이의 맥락 안에서 함께 경험하도록 설계했습니다.",
   disclaimer:
-    "AI는 누리과정을 평가하거나 아동을 진단하는 도구가 아니라, 활동과 표현의 변화 흐름을 정리하는 교육기록 보조도구입니다.",
+    "AI는 누리과정을 평가하거나 아동을 진단하는 도구가 아니라, 교사가 입력한 관찰 기록을 정리하는 교육기록 보조도구입니다.",
 };
 
 /** PLATFORM PREVIEW Section 전용 카피 */
@@ -466,8 +482,8 @@ export const platformTabs: PlatformTab[] = [
     label: "AI 성장기록",
     tagline: "기록을 정리합니다.",
     demoLabel: "햇살반 · 예시 원아",
-    input: ["대표 작품", "활동 과정", "아이의 말", "교사 관찰"],
-    output: ["사진 분류", "기록 요약", "변화 흐름", "리포트 초안"],
+    input: ["아이의 말", "아이의 선택·행동", "교사 관찰 메모", "활동·작품 사진"],
+    output: ["관찰 메모 정리", "기록 요약", "누적 기록 흐름", "리포트 초안"],
   },
   {
     id: "parent",
@@ -513,8 +529,9 @@ export const aiPrincipleCopy = {
   eyebrow: "AI RECORD PRINCIPLE",
   headline: "AI는 아이를 판단하지 않고,\n변화의 흐름을 정리합니다.",
   subCopy:
-    "AI는 의료적·심리적 진단도구가 아닙니다. 작품과 활동기록을 정리하고, 시간에 따른 표현의 변화 흐름을 교사가 확인할 수 있도록 지원하는 교육기록 보조도구입니다.",
+    "AI는 의료적·심리적 진단도구가 아닙니다. 교사가 입력한 관찰 메모를 읽기 좋은 초안으로 정리하고, 누적된 기록의 흐름을 교사가 확인할 수 있도록 돕는 교육기록 보조도구입니다.",
   highlight: aiPrinciple.headline,
+  safeLine: "AI는 정리를 돕고, 최종 판단은 교사가 합니다.",
 };
 
 /** AI PRINCIPLE Section 전용: 교사 → AI → 교사 → 전달의 Human-Machine-Human 4-STEP */
@@ -523,14 +540,14 @@ export const aiFlowSteps: AIFlowStep[] = [
     step: 1,
     title: "교사 입력",
     role: "교사",
-    items: ["작품사진", "활동사진", "아이의 설명", "교사 관찰메모"],
+    items: ["아이의 말", "아이의 선택·행동", "교사 관찰 메모", "활동·작품 사진 첨부"],
     accent: "neutral",
   },
   {
     step: 2,
-    title: "AI 정리",
+    title: "AI 초안 정리",
     role: "AI",
-    items: ["사진 분류", "기록 요약", "변화 흐름 정리", "리포트 초안"],
+    items: ["관찰 메모 정리", "기록 요약", "누적 기록 흐름 정리", "리포트 초안"],
     accent: "ai",
   },
   {
@@ -558,8 +575,9 @@ export const aiPrincipleItems: AIPrincipleItem[] = [
   },
   {
     order: 2,
-    title: "작품 한 장으로 판단하지 않습니다.",
-    description: "색상 하나나 특정 작품만으로 아이를 규정하지 않습니다.",
+    title: "사진을 분석하지 않습니다.",
+    description:
+      "AI가 정리하는 것은 교사가 입력한 텍스트 기록뿐입니다. 작품·활동 사진은 교사와 학부모가 직접 보는 자료입니다.",
   },
   {
     order: 3,
@@ -736,6 +754,75 @@ export const benefitItems: BenefitItem[] = [
   },
 ];
 
+/**
+ * WHAT WE MEASURE — Benefits Section 하단에 흡수되는 신뢰 블록.
+ *
+ * ★ 이 프로젝트에서 가장 조심해야 하는 부분이다.
+ *   "창의성 +37%", "만족도 98%" 같은 수치는 근거가 없으면 만들지 않는다.
+ *   대신 분자와 분모가 분명해서 기관이 대시보드에서 직접 셀 수 있는
+ *   운영지표 네 가지만 말한다. 과장하지 않는 것이 이 상품의 신뢰 전략이다.
+ */
+export const operationMetricsCopy = {
+  eyebrow: "WHAT WE MEASURE",
+  headline: "교육효과를 과장하지 않고,\n운영 결과를 확인합니다.",
+  subCopy:
+    "근거 없는 교육효과 수치가 아니라, 기관이 직접 확인할 수 있는 운영지표를 관리합니다.",
+};
+
+export const operationMetrics: OperationMetric[] = [
+  {
+    order: "01",
+    title: "수업 운영률",
+    formula: "완료 회차 / 계획 회차",
+    description: "계획한 회차가 실제로 운영되었는지",
+  },
+  {
+    order: "02",
+    title: "관찰기록 작성률",
+    formula: "기록 건수 / 수업 건수",
+    description: "수업 이후 기록이 누락 없이 쌓였는지",
+  },
+  {
+    order: "03",
+    title: "리포트 발행률",
+    formula: "발행 건수 / 계획 건수",
+    description: "학부모에게 실제로 전달되었는지",
+  },
+  {
+    order: "04",
+    title: "학기 포트폴리오",
+    formula: "아동 1인당 1권",
+    description: "학기 말에 남는 결과물이 있는지",
+  },
+];
+
+/**
+ * WHY DIFFERENT — 같은 Benefits Section 안의 두 번째 블록.
+ *
+ * ★ 경쟁사 실명을 쓰지 않는다. 비교 대상은 개별 서비스가 아니라 운영유형이다.
+ *   비방하지 않고, 우리 열만 분명하게 만든다.
+ */
+export const differentiatorCopy = {
+  eyebrow: "WHY DIFFERENT",
+  headline: "콘텐츠보다,\n연결되는 운영구조가 다릅니다.",
+  note: "일반적인 운영유형 기준이며, 개별 서비스에 따라 제공범위가 다를 수 있습니다.",
+};
+
+export const differentiatorColumns = [
+  "일반 활동자료",
+  "외부강사형 프로그램",
+  "TeachAble Art Play",
+] as const;
+
+export const differentiatorRows: DifferentiatorRow[] = [
+  { label: "완성형 커리큘럼", values: [false, true, true] },
+  { label: "담임교사 운영", values: [true, false, true] },
+  { label: "관찰기록", values: [false, false, true] },
+  { label: "성장리포트", values: [false, false, true] },
+  { label: "원장 운영확인", values: [false, false, true] },
+  { label: "수업–기록 통합", values: [false, false, true] },
+];
+
 /** SAFE OPERATION Section 전용 카피 */
 export const safeOperationCopy = {
   headline: "아이의 기록은 더 세심하게,\n활용은 더 안전하게.",
@@ -744,13 +831,22 @@ export const safeOperationCopy = {
   reconnect: aiPrinciple.headline,
 };
 
-/** SAFE OPERATION Section 전용: 4가지 운영 원칙 (확정되지 않은 보관기간·인증 등은 다루지 않음) */
+/**
+ * SAFE OPERATION Section 전용: 4가지 운영 원칙.
+ *
+ * ★ 확정되지 않은 보관기간·인증 규격을 만들지 않는다.
+ *   "몇 년 보관"처럼 계약서에서 정해질 값을 홈페이지가 먼저 말하면
+ *   나중에 계약과 어긋난다. 원칙만 말하고 조건은 서면으로 넘긴다.
+ */
 export const safeOperationPrinciples: SafeOperationPrinciple[] = [
-  { order: 1, text: "AI는 진단·점수화하지 않습니다." },
-  { order: 2, text: "교사가 최종 검토·승인합니다." },
-  { order: 3, text: "기관·사용자별 접근권한을 관리합니다." },
-  { order: 4, text: "학부모에게는 승인된 기록만 제공합니다." },
+  { order: 1, text: "기록 운영·관리 기준을 사전에 합의합니다." },
+  { order: 2, text: "공개 범위는 기관이 결정합니다." },
+  { order: 3, text: "교사 승인 후 학부모에게 발행합니다." },
+  { order: 4, text: "종료 시 이관·보관·파기 기준을 확정합니다." },
 ];
+
+export const safeOperationNote =
+  "개인정보 처리·위탁·보관·파기 조건은 계약 및 관련 기준에 따라 별도 서면으로 확정합니다.";
 
 /** PRICING & PACKAGES Section 전용 카피 */
 export const pricingCopy = {
@@ -759,17 +855,78 @@ export const pricingCopy = {
     "첫 도입을 위한 8주, 한 학기 운영을 위한 16주, 성장기록과 대시보드까지 확장하는 24주 프로그램을 제공합니다.",
 };
 
+/**
+ * 우리 원 규모에 맞는 시작 방법 — Pricing Section 상단.
+ *
+ * ★ 가격표를 보기 전에 "우리는 어디에 해당하는가"를 먼저 정하게 한다.
+ *   세 상품을 나란히 놓고 비교하게 하면 원장은 대부분 가장 싼 것을 고르거나
+ *   결정을 미룬다. 반 수와 목적으로 먼저 나누면 고르는 문제가 아니라
+ *   확인하는 문제가 된다.
+ */
+export const packageScenarioCopy = {
+  eyebrow: "WHERE TO START",
+  headline: "우리 원 규모에 맞는 시작 방법",
+};
+
+export const packageScenarios: PackageScenario[] = [
+  {
+    code: "A",
+    title: "1~2개 반으로 시작",
+    recommended: "STARTER 8주",
+    packageId: "starter",
+    operation: "1~2개 반 · 방학/신학기",
+    purpose: "운영 적합성 확인",
+    next: "STANDARD 전 학급 확대",
+  },
+  {
+    code: "B",
+    title: "전 학급 한 학기 운영",
+    recommended: "STANDARD 16주",
+    packageId: "standard",
+    operation: "전 학급 · 한 학기 정규",
+    purpose: "포트폴리오 · 월간 리포트 확인",
+    next: "연속 운영 · PREMIUM 검토",
+    isRecommended: true,
+  },
+  {
+    code: "C",
+    title: "우리 원의 시그니처",
+    recommended: "PREMIUM 24주",
+    packageId: "premium",
+    operation: "전 학급 · 24주 장기 과정",
+    purpose: "누적 포트폴리오 · 상담자료",
+    next: "원의 대표 교육과정으로 운영",
+  },
+];
+
+/**
+ * 20분 데모 — Pilot Section 상단.
+ *
+ * ★ 홈페이지의 Primary conversion이 여기로 모인다.
+ *   4주 파일럿은 그 다음 단계이지 첫 행동이 아니다.
+ */
+export const demoOffer = {
+  eyebrow: "20-MINUTE DEMO",
+  headline: "한 학기 전체를 결정하기 전에,\n20분만 실제 화면을 확인해 보세요.",
+  items: [
+    "교사 화면 시연",
+    "성장리포트 샘플",
+    "원장 운영 화면",
+    "온라인 · 방문 모두 가능",
+  ],
+};
+
 /** Lead Form(4개 Type) 전용 Headline/설명 */
 export const leadFormCopy = {
   pilot: {
-    headline: "4주 파일럿 신청",
+    headline: "4주 파일럿 문의",
     description:
-      "정규 도입 전, TeachAble Art Play의 수업 운영과 성장기록 흐름을 먼저 경험해 보세요.",
+      "1~2개 반에서 담임교사가 직접 4주를 운영해 보고 결정하는 과정입니다. 4주 후 운영지표를 함께 확인합니다.",
   },
   demo: {
-    headline: "대시보드 데모 요청",
+    headline: "20분 데모 신청",
     description:
-      "원장·교사 대시보드가 실제로 어떤 방식으로 운영되는지 온라인 데모를 요청하세요.",
+      "교사 화면 · 성장리포트 샘플 · 원장 운영 화면을 20분 안에 직접 확인하실 수 있습니다. 온라인 · 방문 모두 가능합니다.",
   },
   consult: {
     headline: "기관 맞춤 도입 상담",
@@ -802,22 +959,21 @@ export const purchaseCopy = {
 /** ADOPTION PROCESS Section 전용 카피 */
 export const adoptionCopy = {
   headline: "도입은 어렵지 않습니다.",
-  subCopy: "상담부터 운영까지 5단계로 시작합니다.",
+  subCopy: "상담부터 정규 도입까지 5단계로 진행합니다.",
 };
 
 export const adoptionSteps: AdoptionStep[] = [
   { order: 1, title: "기관 상담", description: "현황 · 목표 · 규모 확인" },
-  { order: 2, title: "상품 선택", description: "8주 · 16주 · 24주" },
-  { order: 3, title: "교사 온보딩", description: "플랫폼 · 수업 운영 안내" },
-  { order: 4, title: "프로그램 운영", description: "주 1회 표준수업" },
-  { order: 5, title: "리뷰 · 정규 운영", description: "파일럿 또는 계약 이후 운영 검토" },
+  { order: 2, title: "20분 데모", description: "교사 · 리포트 · 원장 화면 확인" },
+  { order: 3, title: "4주 파일럿", description: "1~2개 반에서 실제 운영" },
+  { order: 4, title: "운영 리뷰", description: "4주 후 운영지표 확인" },
+  { order: 5, title: "정규 도입", description: "STARTER · STANDARD · PREMIUM" },
 ];
 
 /** FINAL CTA Section 전용 카피 */
 export const finalCtaCopy = {
-  headline: "유치원의 놀이를,\n아이의 성장 이야기로 바꿔보세요.",
-  subCopy:
-    "수업 콘텐츠부터 성장기록과 학부모 소통까지, TeachAble Art Play로 시작할 수 있습니다.",
+  headline: "아이의 하루가 기록이 되고,\n기록이 성장 이야기가 되도록.",
+  subCopy: "TeachAble Art Play",
 };
 
 /** Footer 전용: 연락처 (실제 확정된 정보만 사용) */
@@ -844,15 +1000,15 @@ export const legalLinks: { label: string; href: string }[] = [
  * mailto / 메일 보내기 등 바로가기 동작 없이 연락처를 텍스트로만 표기한다.
  */
 export const contactSectionCopy = {
-  eyebrow: "CONTACT",
-  headline: "TeachAble Art Play 도입 상담",
+  eyebrow: "TEACHABLE ART PLAY",
+  headline: finalCtaCopy.headline,
   description:
-    "우리 원의 규모와 운영 목적에 맞는\nTeachAble Art Play 도입 방법을\nSOYESKIDS 담당자가 직접 안내해드립니다.",
+    "한 학기 전체를 결정하기 전에,\n20분만 실제 화면을 확인해 보세요.",
   channels: [
     { label: "TEL", value: contactInfo.phone },
     { label: "E-MAIL", value: contactInfo.email },
   ],
-  note: "상품 도입 및 기관 상담은\n담당자와 사전 미팅을 통해 안내드립니다.",
+  note: "전화와 이메일로도 도입 상담을 신청하실 수 있습니다.",
 };
 
 /** Hero 전용: 5대 핵심상품 Mini Flow (CoreSolution의 상세 6-STEP과는 별개, coreSolutions 5개를 순서대로 재사용) */
@@ -863,8 +1019,8 @@ export const heroFlowSteps = coreSolutions.map((solution, index) => ({
 
 /** Hero 전용: 원장이 5초 안에 확인할 수 있는 작은 신뢰 정보 3개 (검증되지 않은 수치는 넣지 않음) */
 export const heroMicroProof = [
-  "누리과정 연계",
   "담임교사 1인 운영",
+  "누리과정 연계",
   "주간·월간·학기 성장기록",
 ];
 
@@ -875,8 +1031,8 @@ export const heroCopy = {
   headline: brandMessage.mainHeadline,
   subCopy: brandMessage.subHeadline,
   supportingMessage: brandMessage.coreMessage,
-  ctaPrimary: ctaLabels.primary,
-  ctaSecondary: "서비스 한눈에 보기",
+  ctaPrimary: ctaLabels.demo,
+  ctaSecondary: ctaLabels.secondary,
   visualBadge: "원장 대시보드 연동",
   demoCard: {
     badge: "DEMO · 예시 화면",

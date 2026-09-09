@@ -678,7 +678,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "STANDARD 16주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 50분 · 만 4~7세 · 1개 반 15명 기준, 월 150,000원. 마음동화와 EBOOK 16회, VOD 16회, 워크북 16회, 활동음원 48개, 미술·창의키트 4회, 월간 성장 리포트, 학기 성장 포트폴리오, 대시보드를 제공합니다.",
+        "TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 40~50분 · 만 4~7세 · 1개 반 15명 기준, 월 150,000원. 마음동화와 EBOOK 16회, VOD 16회, 워크북 16회, 활동음원 48개, 미술·창의키트 4회, 월간 성장 리포트, 학기 성장 포트폴리오, 대시보드를 제공합니다.",
     },
   },
 
@@ -709,7 +709,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "PREMIUM 24주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play PREMIUM 스마트 아트 & 플레이. 24주 · 주 1회 50분 · 만 4~7세 · 1개 반 15명 기준, 월 250,000원. 마음동화와 EBOOK 24회, VOD 24회, 워크북 24회, 활동음원 72개, 프리미엄 활동키트 6회, 교사 운영 플랫폼, 주간·월간·학기 성장리포트, 원장 대시보드, 원 브랜딩 지원을 제공합니다.",
+        "TeachAble Art Play PREMIUM 스마트 아트 & 플레이. 24주 · 주 1회 40~50분 · 만 4~7세 · 1개 반 15명 기준, 월 250,000원. 마음동화와 EBOOK 24회, VOD 24회, 워크북 24회, 활동음원 72개, 프리미엄 활동키트 6회, 교사 운영 플랫폼, 주간·월간·학기 성장리포트, 원장 대시보드, 원 브랜딩 지원을 제공합니다.",
     },
   },
 };

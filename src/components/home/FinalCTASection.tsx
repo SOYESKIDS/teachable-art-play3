@@ -1,16 +1,17 @@
 import { Container } from "@/components/ui/Container";
-import { contactSectionCopy } from "@/data/site-copy";
+import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
+import { contactSectionCopy, ctaLabels } from "@/data/site-copy";
 
 /**
- * 공개 홈페이지 하단 도입 상담 영역.
+ * 공개 홈페이지 마지막 결정 지점.
  *
- * ★ 신청 폼도 mailto 도 만들지 않는다.
- *   기존 정책 그대로다. 기관 담당자가 전화와 이메일 두 가지를 빠르게 찾고
- *   바로 복사할 수 있으면 그것으로 충분하다.
+ * ★ Primary conversion이 여기에도 있다 — 20분 데모 신청.
+ *   여기까지 읽고 내려온 사람에게 다시 "전화하세요"라고만 하면
+ *   행동이 오늘 밤으로 미뤄진다. 지금 누를 수 있는 버튼을 먼저 둔다.
  *
- * ★ 두 창구의 무게를 다르게 둔다.
- *   전화가 먼저다 — B2B 도입 문의는 대부분 통화로 시작한다.
- *   이메일은 그 옆에 같은 크기로 두되 select-all 로 복사만 쉽게 한다.
+ * ★ 전화·이메일은 그 아래 secondary channel로 남긴다.
+ *   mailto 는 여전히 만들지 않는다 — 기관 담당자는 대부분 번호를 복사해
+ *   내부 결재 후 연락한다. select-all 로 복사만 쉽게 한다.
  */
 export function FinalCTASection() {
   return (
@@ -41,6 +42,18 @@ export function FinalCTASection() {
             {contactSectionCopy.description}
           </p>
 
+          <div className="mt-11 flex justify-center">
+            <LeadCtaButton
+              type="demo"
+              variant="primary"
+              dataCta="demo-final-cta"
+              className="px-8 py-4 text-base font-bold sm:text-lg"
+            >
+              {ctaLabels.demo}
+            </LeadCtaButton>
+          </div>
+
+          {/* 전화·이메일은 데모 신청 아래 secondary channel로 둔다 */}
           <dl className="mt-12 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
             {contactSectionCopy.channels.map((channel) => (
               <div

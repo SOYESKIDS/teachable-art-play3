@@ -1,7 +1,11 @@
 import type { ReactNode } from "react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { safeOperationCopy, safeOperationPrinciples } from "@/data/site-copy";
+import {
+  safeOperationCopy,
+  safeOperationNote,
+  safeOperationPrinciples,
+} from "@/data/site-copy";
 
 const iconProps = {
   viewBox: "0 0 24 24",
@@ -14,23 +18,28 @@ const iconProps = {
   "aria-hidden": true,
 };
 
-/** safeOperationPrinciples 순서와 반드시 일치해야 하는 아이콘 */
+/**
+ * safeOperationPrinciples 순서와 반드시 일치해야 하는 아이콘.
+ * 01 사전 합의(문서) · 02 공개 범위(잠금) · 03 교사 승인(체크) · 04 이관·파기(보관함)
+ */
 const principleIcons: ReactNode[] = [
-  <svg key="no-diagnose" {...iconProps}>
-    <path d="M12 3.5 4.5 6.7v5.1c0 4.6 3.2 7.7 7.5 8.7 4.3-1 7.5-4.1 7.5-8.7V6.7L12 3.5Z" />
-    <path d="M9.5 12.5 8 11M9.5 12.5 12 10M14.5 12.5 16 11M14.5 12.5 12 10" />
+  <svg key="agreement" {...iconProps}>
+    <path d="M6.5 3.5h7l4.5 4.5v12a1 1 0 0 1-1 1h-10.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
+    <path d="M13.5 3.5V8h4.5" />
+    <path d="M9 13h6M9 16.5h4" />
   </svg>,
-  <svg key="review" {...iconProps}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="m8.3 12.3 2.3 2.3 5-5.4" />
-  </svg>,
-  <svg key="access" {...iconProps}>
+  <svg key="scope" {...iconProps}>
     <rect x="5.5" y="10.5" width="13" height="9" rx="2" />
     <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
   </svg>,
-  <svg key="approved" {...iconProps}>
-    <path d="M20.5 12a8 8 0 0 1-11.9 6.9L4 20l1.2-4.4A8 8 0 1 1 20.5 12Z" />
-    <path d="m9.5 12 1.8 1.8L14.5 10" />
+  <svg key="approval" {...iconProps}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8.3 12.3 2.3 2.3 5-5.4" />
+  </svg>,
+  <svg key="retention" {...iconProps}>
+    <path d="M4.5 7.5h15v11a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-11Z" />
+    <path d="M3.5 4.5h17v3h-17z" />
+    <path d="M10 12h4" />
   </svg>,
 ];
 
@@ -64,6 +73,15 @@ export function SafeOperationSection() {
 
         <p className="mx-auto mt-10 max-w-xl text-center text-sm font-medium text-navy/45">
           {safeOperationCopy.reconnect}
+        </p>
+
+        {/*
+          ★ 보관기간·인증 규격 같은 확정되지 않은 값을 여기에 쓰지 않는다.
+            계약서에서 정해질 값을 홈페이지가 먼저 말하면 나중에 어긋난다.
+            원칙만 말하고 조건은 서면으로 넘긴다.
+        */}
+        <p className="mx-auto mt-4 max-w-2xl text-center text-xs leading-relaxed text-navy/40">
+          {safeOperationNote}
         </p>
       </Container>
     </section>

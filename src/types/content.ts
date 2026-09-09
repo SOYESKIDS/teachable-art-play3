@@ -155,14 +155,63 @@ export interface PricingPackage {
   name: string;
   subtitle: string;
   label: string;
+  /** 상품소개서 v4의 한 줄 메시지 (처음 경험하기 / 한 학기 기록 만들기 / 우리 원의 시그니처) */
+  tagline: string;
   isBest: boolean;
   durationWeeks: number;
   frequency: string;
   recommendedAge: string;
   priceUnitNote: string;
   monthlyPriceKrw: number;
+  /**
+   * 운영기간 전체 금액.
+   *
+   * ★ 컴포넌트에서 monthlyPriceKrw × 개월수를 계산하지 않는다.
+   *   STARTER는 8주(2개월) 198,000원, STANDARD는 16주(4개월) 600,000원,
+   *   PREMIUM은 24주(6개월) 1,500,000원으로 영업자료에 확정되어 있고,
+   *   PREMIUM은 250,000 × 6 = 1,500,000이지만 나머지도 같은 규칙이라 보장할 수 없다.
+   *   확정된 값을 그대로 데이터에 둔다.
+   */
+  totalPriceKrw: number;
+  /** 총액 옆에 붙는 기간 표기 (예: "8주 총액") */
+  totalPriceNote: string;
   contentItems: string[];
   accentColor: "light-blue" | "ivory-yellow" | "navy-yellow";
+}
+
+/**
+ * WHAT WE MEASURE — 기관이 직접 확인할 수 있는 운영지표.
+ *
+ * ★ 교육효과 수치가 아니다. "창의성 +37%" 같은 근거 없는 marketing metric을
+ *   만들지 않기 위해, 분자/분모가 명확한 운영지표만 다룬다.
+ */
+export interface OperationMetric {
+  order: string;
+  title: string;
+  formula: string;
+  description: string;
+}
+
+/**
+ * WHY DIFFERENT — 운영유형 비교.
+ *
+ * ★ 경쟁사 실명을 쓰지 않는다. 비교 대상은 서비스가 아니라 "운영유형"이다.
+ */
+export interface DifferentiatorRow {
+  label: string;
+  values: [boolean, boolean, boolean];
+}
+
+/** 우리 원 규모에 맞는 시작 방법 (Pricing 앞) */
+export interface PackageScenario {
+  code: string;
+  title: string;
+  recommended: string;
+  packageId: PricingPackage["id"];
+  operation: string;
+  purpose: string;
+  next: string;
+  isRecommended?: boolean;
 }
 
 export interface ComparisonRow {

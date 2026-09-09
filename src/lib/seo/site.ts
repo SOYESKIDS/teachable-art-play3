@@ -75,22 +75,23 @@ export const noIndexRoutes = [
 /** 사이트 공통 SEO 텍스트 */
 export const seoCopy = {
   siteName: "TeachAble Art Play",
-  title: "TeachAble Art Play | 유치원 AI 성장기록 교육 플랫폼",
+  title: "TeachAble Art Play | 담임교사가 운영하는 유치원 교육 운영 시스템",
   description:
-    "누리과정 연계 수업 콘텐츠부터 교사 운영, AI 성장기록, 학부모 리포트, 원장 대시보드까지 연결하는 SOYESKIDS의 유치원 교육 운영 플랫폼입니다.",
+    "담임교사가 직접 운영하는 8·16·24주 유치원 교육 운영 시스템. 마음동화·VOD·워크북·창의활동과 교사 관찰기록, AI 성장기록 초안, 학부모 리포트, 원장 운영 화면을 연결합니다.",
   keywords: [
     "TeachAble Art Play",
     "소예키즈",
     "유치원 교육",
     "누리과정",
     "유아 예술교육",
-    "AI 성장기록",
+    "담임교사 운영",
+    "성장기록",
     "유치원 교육 플랫폼",
   ],
   /** 카카오톡 · 문자 · SNS 공유 미리보기 문구 */
   openGraph: {
     title: "TeachAble Art Play | 아이의 놀이를 성장 이야기로 기록합니다",
     description:
-      "누리과정 연계 수업부터 AI 성장기록, 학부모 리포트, 원장 대시보드까지 하나로 연결합니다.",
+      "담임교사가 운영하고, 수업 이후의 성장기록까지 남는 8·16·24주 유치원 교육 운영 시스템입니다.",
   },
 } as const;

@@ -4,7 +4,8 @@ import { useState, type ReactNode } from "react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DemoBadge } from "@/components/ui/DemoBadge";
-import { platformCopy, platformTabs, publicNotice } from "@/data/site-copy";
+import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
+import { ctaLabels, platformCopy, platformTabs, publicNotice } from "@/data/site-copy";
 import type { PlatformTab } from "@/types/content";
 
 const arrowIconProps = {
@@ -298,10 +299,18 @@ export function PlatformPreviewSection() {
           {activeTab.id === "director" && <DirectorPreview tab={activeTab} />}
         </div>
 
-        <div className="mt-14 text-center">
-          <p className="mx-auto max-w-xl rounded-2xl border border-navy/10 bg-ivory px-6 py-4 text-sm leading-relaxed text-navy/60 sm:text-base">
+        <div className="mt-14 flex flex-col items-center gap-5 text-center">
+          <p className="mx-auto max-w-xl text-sm leading-relaxed text-navy/60 sm:text-base">
             {publicNotice.demo}
           </p>
+          <LeadCtaButton
+            type="demo"
+            variant="primary"
+            dataCta="demo-platform-preview"
+            className="px-7 py-3.5 text-base font-bold"
+          >
+            {ctaLabels.demo}
+          </LeadCtaButton>
         </div>
       </Container>
     </section>

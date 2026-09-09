@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
-import { ctaLabels, heroCopy, heroFlowSteps, heroMicroProof } from "@/data/site-copy";
+import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
+import { heroCopy, heroFlowSteps, heroMicroProof } from "@/data/site-copy";
 
 function CheckIcon() {
   return (
@@ -185,21 +186,21 @@ export function HeroSection() {
           </div>
 
           {/*
-            모바일(lg 미만)에서는 하단 고정 CTA(MobileStickyCta)가 같은 "도입 상담 문의"를
-            항상 띄우고 있다. 첫 화면에서 같은 행동을 두 번 권하지 않도록 hero의 상담 CTA는
+            모바일(lg 미만)에서는 하단 고정 CTA(MobileStickyCta)가 같은 "20분 데모 신청"을
+            항상 띄우고 있다. 첫 화면에서 같은 행동을 두 번 권하지 않도록 hero의 데모 CTA는
             max-lg:hidden으로 감추고, 탐색 CTA("서비스 한눈에 보기")만 남긴다.
-            고정 CTA는 lg:hidden이라 lg 이상에서는 반대로 이 버튼이 유일한 상담 진입점이 된다
-            — 두 규칙이 정확히 맞물려 어느 폭에서도 상담 CTA가 사라지지 않는다.
+            고정 CTA는 lg:hidden이라 lg 이상에서는 반대로 이 버튼이 유일한 데모 진입점이 된다
+            — 두 규칙이 정확히 맞물려 어느 폭에서도 Primary CTA가 사라지지 않는다.
           */}
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <ButtonLink
-              href="#contact"
+            <LeadCtaButton
+              type="demo"
               variant="primary"
-              data-cta="contact-hero"
+              dataCta="demo-hero"
               className="px-8 py-4 text-base font-bold max-lg:hidden sm:text-lg"
             >
-              {ctaLabels.contact}
-            </ButtonLink>
+              {heroCopy.ctaPrimary}
+            </LeadCtaButton>
             <ButtonLink
               href="#solution"
               variant="tertiary"

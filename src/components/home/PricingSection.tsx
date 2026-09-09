@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { PricingCardGrid } from "./PricingCardGrid";
 import { comparisonRows, priceDisclaimerLines, pricingPackages } from "@/data/packages";
-import { pricingCopy } from "@/data/site-copy";
+import { packageScenarioCopy, packageScenarios, pricingCopy } from "@/data/site-copy";
 import { PROGRAM_PRODUCTS, programPath } from "@/data/program-products";
 
 /**
@@ -113,6 +113,70 @@ export function PricingSection() {
         <SectionHeader headline={pricingCopy.headline} subCopy={pricingCopy.subCopy} />
 
         <StarterShowcase />
+
+        {/*
+          ── 우리 원 규모에 맞는 시작 방법 ────────────────────────────
+          ★ 가격표보다 먼저 온다.
+            세 상품을 나란히 놓고 비교하게 하면 원장은 대부분 가장 싼 것을
+            고르거나 결정을 미룬다. 반 수와 목적으로 먼저 나누면
+            "고르는 문제"가 "확인하는 문제"로 바뀐다.
+
+          ★ 추천(B)을 과하게 표시하지 않는다.
+            테두리 한 겹과 작은 배지까지다. 세 카드의 크기는 같다.
+        */}
+        <div className="mt-16">
+          <p className="eyebrow text-trust-blue">{packageScenarioCopy.eyebrow}</p>
+          <h3 className="mt-3 text-h3 font-bold text-navy">
+            {packageScenarioCopy.headline}
+          </h3>
+
+          <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {packageScenarios.map((scenario) => (
+              <div
+                key={scenario.code}
+                className={`flex flex-col rounded-2xl border bg-white px-6 py-7 ${
+                  scenario.isRecommended
+                    ? "border-trust-blue/45 shadow-[var(--shadow-card)]"
+                    : "border-line"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-navy text-[13px] font-bold text-white">
+                    {scenario.code}
+                  </span>
+                  {scenario.isRecommended ? (
+                    <span className="rounded-full bg-trust-blue/10 px-2.5 py-1 text-[11px] font-bold text-trust-blue">
+                      가장 많이 선택합니다
+                    </span>
+                  ) : null}
+                </div>
+
+                <p className="mt-4 text-lg font-bold text-navy">{scenario.title}</p>
+
+                <p className="mt-3 rounded-lg bg-ivory px-3 py-2 text-center text-sm font-bold text-navy">
+                  {scenario.recommended}
+                </p>
+
+                <dl className="mt-5 flex flex-col gap-2.5 text-[13px] leading-relaxed">
+                  <div>
+                    <dt className="font-semibold text-navy/40">운영</dt>
+                    <dd className="mt-0.5 break-keep text-navy/70">
+                      {scenario.operation}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-navy/40">확인</dt>
+                    <dd className="mt-0.5 break-keep text-navy/70">{scenario.purpose}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-navy/40">다음</dt>
+                    <dd className="mt-0.5 break-keep text-navy/70">{scenario.next}</dd>
+                  </div>
+                </dl>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <PricingCardGrid />
 

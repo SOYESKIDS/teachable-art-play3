@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { ProgramDetailOverlay } from "@/components/programs/ProgramDetailOverlay";
 import { detailLinkLabel, type ProgramSlug } from "@/data/program-products";
 import { pricingPackages } from "@/data/packages";
-import { publicNotice } from "@/data/site-copy";
+import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
+import { ctaLabels } from "@/data/site-copy";
 import type { PricingPackage } from "@/types/content";
 
 /**
@@ -153,6 +154,13 @@ export function PricingCardGrid() {
                 >
                   {pkg.subtitle}
                 </p>
+                <p
+                  className={`mt-2 text-[15px] font-bold ${
+                    isNavy ? "text-yellow" : "text-trust-blue"
+                  }`}
+                >
+                  {pkg.tagline}
+                </p>
               </div>
 
               <dl
@@ -185,6 +193,18 @@ export function PricingCardGrid() {
                     원 / 월
                   </span>
                 </p>
+                {/*
+                  총액은 pricingPackages.totalPriceKrw를 그대로 읽는다.
+                  월 금액 × 개월수를 여기서 계산하지 않는다 — 영업자료의
+                  확정 총액과 어긋날 여지를 만들지 않기 위해서다.
+                */}
+                <p
+                  className={`mt-2 text-sm font-semibold tabular-nums ${
+                    isNavy ? "text-white/60" : "text-navy/55"
+                  }`}
+                >
+                  {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원`}
+                </p>
               </div>
 
               <ul
@@ -202,15 +222,21 @@ export function PricingCardGrid() {
                 ))}
               </ul>
 
-              <p
-                className={`mt-auto rounded-xl border px-4 py-3.5 text-center text-[13px] leading-relaxed ${
-                  isNavy
-                    ? "border-line-inverse bg-white/[0.06] text-white/70"
-                    : "border-line bg-navy/[0.03] text-navy/60"
-                }`}
-              >
-                {publicNotice.pricing}
-              </p>
+              {/*
+                기존에는 "담당자 상담을 통해 안내드립니다"라는 안내문만 있었다.
+                읽고 나서 할 수 있는 행동이 없어 카드가 거기서 끝났다.
+                같은 자리에 홈페이지의 Primary conversion을 둔다.
+              */}
+              <div className="mt-auto">
+                <LeadCtaButton
+                  type="demo"
+                  variant="primary"
+                  dataCta={`demo-pricing-${pkg.id}`}
+                  className="w-full px-5 py-3.5 text-[15px] font-bold"
+                >
+                  {ctaLabels.demo}
+                </LeadCtaButton>
+              </div>
 
               <button
                 type="button"

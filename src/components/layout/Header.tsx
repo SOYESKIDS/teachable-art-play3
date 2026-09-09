@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
 import { ctaLabels, navigation } from "@/data/site-copy";
 
 /**
@@ -27,6 +28,18 @@ import { ctaLabels, navigation } from "@/data/site-copy";
 const KINDERGARTEN_LOGIN_LABEL = "유치원 로그인";
 const KINDERGARTEN_LOGIN_HREF = "/kindergarten";
 
+/*
+ * ★ 헤더의 두 버튼은 `hidden ... sm:inline-flex`가 아니라 `max-sm:hidden`을 쓴다.
+ *
+ *   Button/ButtonLink의 baseClasses에 이미 `inline-flex`가 들어 있다.
+ *   `hidden`과 `inline-flex`는 둘 다 variant 없는 display 유틸리티라
+ *   승자는 클래스 문자열 순서가 아니라 **생성된 CSS의 등장 순서**로 정해진다.
+ *   실측 결과 `.inline-flex{`가 `.hidden{`보다 뒤에 있어 `hidden`이 무효였고,
+ *   360px에서 헤더가 528px로 벌어지며 문서 전체에 가로 스크롤이 생겼다.
+ *
+ *   `max-sm:hidden`은 variant라 base 유틸리티를 확실히 이긴다.
+ *   sm 이상에서는 baseClasses의 inline-flex가 그대로 살아난다.
+ */
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
@@ -87,19 +100,19 @@ export function Header() {
           <ButtonLink
             href={KINDERGARTEN_LOGIN_HREF}
             variant="tertiary"
-            className="hidden whitespace-nowrap px-4 text-sm font-semibold md:inline-flex"
+            className="whitespace-nowrap px-4 text-sm font-semibold max-md:hidden"
           >
             {KINDERGARTEN_LOGIN_LABEL}
           </ButtonLink>
 
-          <ButtonLink
-            href="#contact"
+          <LeadCtaButton
+            type="demo"
             variant="primary"
-            data-cta="contact-header"
-            className="hidden whitespace-nowrap px-5 text-sm font-semibold sm:inline-flex"
+            dataCta="demo-header"
+            className="whitespace-nowrap px-5 text-sm font-semibold max-sm:hidden"
           >
-            {ctaLabels.contact}
-          </ButtonLink>
+            {ctaLabels.demo}
+          </LeadCtaButton>
 
           <button
             type="button"
@@ -163,15 +176,15 @@ export function Header() {
             >
               {KINDERGARTEN_LOGIN_LABEL}
             </ButtonLink>
-            <ButtonLink
-              href="#contact"
+            <LeadCtaButton
+              type="demo"
               variant="primary"
-              data-cta="contact-mobile-menu"
-              onClick={closeMenu}
+              dataCta="demo-mobile-menu"
+              onBeforeOpen={closeMenu}
               className="w-full px-5 text-[15px] font-bold"
             >
-              {ctaLabels.contact}
-            </ButtonLink>
+              {ctaLabels.demo}
+            </LeadCtaButton>
           </div>
         </nav>
       )}
