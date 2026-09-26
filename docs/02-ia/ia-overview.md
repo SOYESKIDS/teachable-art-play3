@@ -63,7 +63,7 @@
 | HQ | `/admin/readiness` | 오픈 준비 + **Pilot Ready 점검** | admin | — | 수정 | P0 |
 | HQ | `/admin/onboarding` | **0 상품·계약** + 7단계 | admin | — | 수정 | P0 |
 | HQ | `/admin/organizations` | 기관 목록 + 상품·계약 | admin · sales(메타) | — | 수정 | P0 |
-| HQ | `/admin/organizations/[id]` | 기관 상세 + **계약·이용권** + **긴급 숨김** | admin (sales 제한) | — | 수정 | P0 |
+| HQ | `/admin/organizations/[id]` | 기관 상세 + **계약·이용권** + **긴급 숨김** | admin (sales: 계약 metadata read-only · 집계만 — DEC-058) | — | 수정 | P0 |
 | HQ | `/admin/organizations/[id]/program-assignments/[assignmentId]` | 배정 · 세션 | admin | 주차 범위 | 수정 | P0 |
 | HQ | `/admin/curriculum` · `/admin/curriculum/[id]` | 프로그램 · 차시 목록 | admin | — | 유지 | — |
 | HQ | `/admin/curriculum/[id]/lessons/[lessonId]` | 차시 **15섹션 검수** | admin | — | 수정 | P0 |
@@ -74,13 +74,13 @@
 | HQ | `/admin/curriculum/[id]/lessons/[lessonId]/preview` | Class Mode 미리보기 | admin | — | 신규 | P1 |
 | HQ | `/admin/shipments` · `/admin/support` | 배송 · 지원 | admin | — | 신규 | P2 |
 | DIRECTOR | `/director` | 대시보드 | 원장 | **director_dashboard** | 수정 (게이트) | P0 |
-| DIRECTOR | `/director/sessions` | 수업 운영 ([수업 시작] 직접 전환 제거) | 원장 | PROVISIONAL | 수정 (DEC-046) | P0 |
-| DIRECTOR | `/director/sessions/history` | 수업 이력 | 원장 | PROVISIONAL | 유지 | — |
-| DIRECTOR | `/director/sessions/[sessionId]/attendance` | 출결 관리 | 원장 | PROVISIONAL | 유지 | — |
-| DIRECTOR | `/director/sessions/[sessionId]/observations` | 관찰 조회 + Growth 5/Stage | 원장 | PROVISIONAL | 수정 | P0 |
-| DIRECTOR | `/director/growth-reports` · `/director/growth-reports/[reportId]` | complete 리포트 · 긴급 숨김 | 원장 | PROVISIONAL | 수정 | P0 |
+| DIRECTOR | `/director/sessions` | 수업 운영 ([수업 시작] 직접 전환 제거) | 원장 | 전 상품 (DEC-056) | 수정 (DEC-046) | P0 |
+| DIRECTOR | `/director/sessions/history` | 수업 이력 | 원장 | 전 상품 (DEC-056) | 유지 | — |
+| DIRECTOR | `/director/sessions/[sessionId]/attendance` | 출결 관리 | 원장 | 전 상품 (DEC-056) | 유지 | — |
+| DIRECTOR | `/director/sessions/[sessionId]/observations` | 관찰 조회 + Growth 5/Stage | 원장 | 전 상품 (DEC-056) | 수정 | P0 |
+| DIRECTOR | `/director/growth-reports` · `/director/growth-reports/[reportId]` | complete 리포트 · 긴급 숨김 | 원장 | 전 상품 (DEC-056) | 수정 | P0 |
 | DIRECTOR | `/director/portal` | **학부모 공유 · 사진 동의** | 원장 | parent_portal | 신규 | P0 |
-| DIRECTOR | `/director/growth-reports/print` | 반 일괄 인쇄 | 원장 | PROVISIONAL | 신규 | P1 |
+| DIRECTOR | `/director/growth-reports/print` | 반 일괄 인쇄 | 원장 | `bulk_print` (STANDARD · PREMIUM · STARTER 제외 — DEC-056) | 신규 | P1 |
 | TEACHER | `/teacher` | 오늘의 수업 | 교사 | — | 수정 | P0 |
 | TEACHER | `/teacher/sessions/[sessionId]` | Class Mode 진입 (route handler) | 교사 | class_mode + 주차 | 신규 | P0 |
 | TEACHER | `/teacher/sessions/[sessionId]/before` | BEFORE | 교사 | 〃 | 신규 | P0 |
@@ -103,7 +103,7 @@
 |---|---|---|
 | **Teacher** | 오늘의 수업 · 수업 이력 · 성장 리포트 | **변경 없음.** Class Mode 중에는 StaffShell 메뉴를 숨기고 "나가기"만 둔다 |
 | **Director (Pilot · STANDARD · PREMIUM)** | 홈 · 수업 운영 · 수업 이력 · 성장 리포트 · **학부모 공유** | 메뉴 1개 추가 |
-| **Director (정규 STARTER)** | 수업 운영 · 수업 이력 · 성장 리포트 · 학부모 공유 | "홈" 숨김 (HARD RULE) · 나머지 경계는 PROVISIONAL (IA-9) |
+| **Director (정규 STARTER)** | 수업 운영 · 수업 이력 · 성장 리포트 · 학부모 공유 | "홈" 숨김 (HARD RULE) · 나머지 운영 화면 제공 · 집계/누락 탐지 우회 제공 금지 (*Updated by DEC-056*) |
 | **HQ admin** | 운영 대시보드 · 오픈 준비 · 새 기관 도입 · 기관 관리 · 수업 프로그램 · 문의 관리 (P1: 상품·계약 · 콘텐츠) | P0 메뉴 변경 없음. 계약은 기관 상세 내부 |
 | **HQ sales** | 문의 관리 · 기관 관리 (메타데이터만) | **신규 분기** (P0-15). 현재 로그인 착지 `/admin/leads`는 그대로 적합 |
 | **Parent** | 이번 주 · 지난 기록 | 신규 (DEC-042) |

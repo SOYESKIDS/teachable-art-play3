@@ -55,7 +55,7 @@ TeachAble Art Play는 유치원 대상 예술·창의 교육 프로그램을 **�
 | **P5** | **지표 체계가 갈라져 있다** | DB(미술 5영역) ≠ 홈페이지(Growth 5) ≠ 교사가이드(주차별 관찰영역) ≠ 성장키워드 8개. 홈페이지는 이미 Growth 5를 공개했다 |
 | **P6** | **AI가 성장리포트의 단일 장애점** | `child_growth_report_sources.ai_draft_id NOT NULL` + `review_status='accepted'` 요구 → API 키 없으면 리포트 생성이 `GR003`으로 차단. `.env.example`은 "AI만 비활성"이라고 적혀 있어 사실과 다르다 |
 | **P7** | **사진을 삭제할 수 없다** | `class_session_observation_media`와 `storage.objects` 양쪽에 UPDATE·DELETE 정책 0개. 잘못 올린 아동 사진을 아무도 회수할 수 없다 |
-| **P8** | **16·24주 콘텐츠가 원본에도 없다** | `D:\소예키즈` 3단계 전수 탐색 결과 16주·24주 자료 0건 → `SOURCE NOT AVAILABLE`. STANDARD·PREMIUM은 판매 중이지만 제작 전이다 |
+| **P8** | **16·24주 콘텐츠가 원본에도 없다** | `D:\소예키즈` 3단계 전수 탐색 결과 16주·24주 자료 0건 → `SOURCE NOT AVAILABLE`. STANDARD·PREMIUM은 판매 중이지만 제작 전이다 · *Updated 2026-09-27: 로컬 탐색 기준 판정이었다. 원본은 Project External Source로 존재 (Week 9~16 MIXED · 17~24 DRAFT/PROPOSAL). production-approved 운영 콘텐츠는 아직 없다 → DEC-063 · 03-commerce BC-1 · BC-2* |
 
 ### 1-3. SaaS 2.0 변화
 
@@ -367,7 +367,7 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 | 6 | 협력 | 우리들의 비밀기지 | ✅ 확정본 |
 | 7 | 기다림 | *(원자료 필요)* | ⚠️ PDF 존재 / 규격 미적용 |
 | 8 | 공동체 | *(원자료 필요)* | ⚠️ PDF 존재 / 규격 미적용 |
-| 9~24 | — | — | 🔴 `SOURCE NOT AVAILABLE` |
+| 9~24 | — | — | 🔴 `SOURCE NOT AVAILABLE` · *Updated 2026-09-27: SOURCE EXISTS (9~16 MIXED · 17~24 DRAFT/PROPOSAL · Project External) · production pending* |
 
 ### 7-5. Asset 모델
 
@@ -410,8 +410,8 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 |---|---|---|---|---|---|---|
 | STARTER 1~6주 | ✅ | ✅ 규격 확정 | ✅ | ✅ | ✅ | **즉시 이관 가능** |
 | STARTER 7~8주 | ✅ | ⚠️ 규격 미적용 | ⚠️ | 🔴 | 🔴 | **규격화 필요** |
-| STANDARD 9~16주 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | `SOURCE NOT AVAILABLE` |
-| PREMIUM 17~24주 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | `SOURCE NOT AVAILABLE` |
+| STANDARD 9~16주 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | `SOURCE NOT AVAILABLE` · *Updated 2026-09-27: SOURCE EXISTS (MIXED · Project External) · repo 이관 · 승인 전* |
+| PREMIUM 17~24주 | 🔴 | 🔴 | 🔴 | 🔴 | 🔴 | `SOURCE NOT AVAILABLE` · *Updated 2026-09-27: SOURCE EXISTS (DRAFT/PROPOSAL · Project External) · repo 이관 · 승인 전* |
 
 ---
 
@@ -588,7 +588,7 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 | **목적** | 이번 주에 무슨 일이 있었는지 전달 | 한 달의 변화를 설명 | 학기 전체 성장 이야기 |
 | **주 사용자** | 학부모 | 학부모 + 원장 | 학부모 + 원장 + (평가·장학) |
 | **발행 주기** | 주 1회 | 월 1회 | 학기 1회 |
-| **포함 상품** | STARTER 이상 | STANDARD 이상 | STANDARD 이상 |
+| **포함 상품** | STARTER 이상 (= STARTER · STANDARD · PREMIUM · PILOT) · *Updated by DEC-057: STANDARD Weekly 포함 확정* | STANDARD 이상 | STANDARD 이상 · *DEC-055: Monthly Entitlement를 필수 dependency로 두지 않음* |
 | **입력 (근거)** | 해당 주 관찰 1~2건 + Growth 5/Stage + 선별 사진 + 아이의 말 + §13 가정연계 + 다음 주 Lesson | 4~5주 관찰 + Growth 5 흐름 + 대표 활동 | 16~24주 전체 + Growth 5 누적 + 대표 작품·발화 + Nuri |
 | **출력** | 이번 주 활동 / Growth 5 / 관찰단계 / 아이의 말 / 교사 관찰 / 선택된 사진 / 가정연계 / 다음 주 예고 | 이번 달 성장 변화 / 대표 관찰 / Growth 5 흐름 / 대표 활동 / 교사 서술 / 가정연계 | 학기 성장 이야기 / 주차별 변화 / Growth 5 누적 흐름 / 대표 작품 / 대표 발화 / 누리과정 연결 / 교사 종합기록 |
 | **교사 작업량 목표** | **3분 이내 / 아동** | 10분 이내 | 20분 이내 |
@@ -979,8 +979,8 @@ AI 리포트 초안 (generated_*)  ← AI. 학부모에게 도달 불가
 | 1주차 프로그램 강의안 | `참고자료/소예키즈_유치원_1주차_프로그램_강의안.pdf` | 존재 확인 |
 | 프로그램 구성 8주차 | `참고자료/프로그램 구성 8주차.png` | ⚠️ 미판독 (이미지). 규격문서가 내부 불일치 지적 |
 | 홈페이지 참고 | `참고자료/홈페이지1.pdf` · `홈페이지.jpg` | 존재 확인 |
-| 16 · 24주 커리큘럼 | — | 🔴 `SOURCE NOT AVAILABLE` (`D:\소예키즈` 3단계 전수 탐색 0건) |
-| 상품소개서 v4 | 세션 첨부 (재판독 불가) | `src/data/packages.ts`가 대리 출처 |
+| 16 · 24주 커리큘럼 | — | 🔴 `SOURCE NOT AVAILABLE` (`D:\소예키즈` 3단계 전수 탐색 0건) · *Updated 2026-09-27: Project External Source `TeachAble_ArtPlay_24주_강의교안_데이터구조.pdf`에 존재 (9~16 MIXED · 17~24 DRAFT/PROPOSAL) · repo 미포함* |
+| 상품소개서 v4 | 세션 첨부 (재판독 불가) | `src/data/packages.ts`가 대리 출처 · *Updated 2026-09-27: `TeachAble_Art_Play_유치원_상품소개서_v4.pdf`는 Project External Source로 존재 · repo에 versioned source로 미포함* |
 | 샘플 주간 리포트 3p | 세션 첨부 (재판독 불가) | 원본 §12가 5항목 서식을 교차 확인 |
 | 연구자료 12종 | 세션 첨부 (재판독 불가) | AUDIT 1/2 기록 사실만 인용 |
 

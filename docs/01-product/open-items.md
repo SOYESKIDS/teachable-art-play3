@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | 문서 상태 | 운영 중 (미확정 사항만 기록) |
-| 최종 갱신 | 2026-09-26 |
+| 최종 갱신 | 2026-09-27 (PHASE 03 상태 정합화) |
 | Branch / commit | `saas-v2` / `faa8f9a` |
 | 관련 문서 | [../00-project/decision-log.md](../00-project/decision-log.md) · [product-definition.md](./product-definition.md) · [mvp-scope.md](./mvp-scope.md) · [content-governance.md](./content-governance.md) |
 
@@ -18,6 +18,16 @@
 | **3** | **추측을 적지 않는다.** 원본 자료가 없으면 `SOURCE NOT AVAILABLE`로 기록한다 |
 | **4** | 각 항목에 **차단하는 것(Blocks)**과 **결정 주체(Owner)**를 명시한다 |
 | **5** | 항목 ID는 분류별 접두어를 쓴다. `BC-` (Content) · `BP-` (Business Policy) · `PH3-` (PHASE 03 이후) · `AD-` (Architecture Decision) |
+
+### 0-0. PHASE 03 이후 상태 표시 방식
+
+2026-09-27 PHASE 03부터는 해결된 항목을 **삭제하지 않고** 상태 칸에 표시한다 (역사 보존). 규칙 2는 PHASE 01 제거분에만 적용되었다.
+
+| 표시 | 의미 |
+|---|---|
+| ✅ **RESOLVED by DEC-XXX** | 전체 해결 |
+| 🟡 **Resolved portion / Remaining portion → CO-XX** | 일부 해결. 잔여는 [../03-commerce/open-items.md](../03-commerce/open-items.md)에서 관리 |
+| ↪ **MOVED → CO-XX** | 해당 문서로 관리 이관 |
 
 ### 0-1. PHASE 01에서 제거된 항목
 
@@ -41,11 +51,13 @@
 
 | ID | 항목 | 상태 | Blocks |
 |---|---|---|---|
-| **BC-1** | **STANDARD Week 9~16 커리큘럼** | 🔴 `SOURCE NOT AVAILABLE`<br>`D:\소예키즈` 3단계 전수 탐색 결과 16주 자료 0건 | STANDARD 판매 · P2-1 · Monthly/Semester 리포트 실운영 |
-| **BC-2** | **PREMIUM Week 17~24 커리큘럼** | 🔴 `SOURCE NOT AVAILABLE`<br>동일 탐색 결과 24주 자료 0건 | PREMIUM 판매 · P2-1 · Semester Portfolio 실운영 |
+| **BC-1** | **STANDARD Week 9~16 커리큘럼** | 🔴 `SOURCE NOT AVAILABLE`<br>`D:\소예키즈` 3단계 전수 탐색 결과 16주 자료 0건<br>🟡 **Updated 2026-09-27**: 위 판정은 **로컬 탐색 범위 기준**이었다. **SOURCE EXISTS (MIXED)** — Project External Source `TeachAble_ArtPlay_24주_강의교안_데이터구조.pdf` P2 "우리 그리고 모두의 사계절" (9~16주 스탠다드 교사용 프로그램 설명서 PDF + 미기재 항목 초안). repo 미포함 · **production-approved operational content pending** (DEC-063 Not Ready 유지) | STANDARD 판매 · P2-1 · Monthly/Semester 리포트 실운영 |
+| **BC-2** | **PREMIUM Week 17~24 커리큘럼** | 🔴 `SOURCE NOT AVAILABLE`<br>동일 탐색 결과 24주 자료 0건<br>🟡 **Updated 2026-09-27**: 위 판정은 **로컬 탐색 범위 기준**이었다. **SOURCE EXISTS (DRAFT / PROPOSAL)** — 같은 자료 P3 "두근두근 세계여행" (주제 원안 · 주차별 키워드 + 전체 초안 설계). repo 미포함 · **production-approved operational content pending** (DEC-063 Not Ready 유지) | PREMIUM 판매 · P2-1 · Semester Portfolio 실운영 |
 | **BC-3** | **STARTER Week 7~8 규격 확정본** | ⚠️ PDF는 존재 (`SOYE_KIDS_STARTER_7주차_기다림.pdf` · `8주차_공동체.pdf`)<br>그러나 표준화 규격 v1.0 §7-7이 "7·8주차 전체 원자료 없음"으로 기록 → **규격 미적용 상태** | STARTER 8주 정식 판매 · P1-4 |
 
 > **BC-1 · BC-2가 이 프로젝트의 최대 병목이다.** Repository 부재가 아니라 SOURCE 자체가 존재하지 않으므로 이관 과제가 아니라 **제작 과제**다. 개발 트랙(PHASE 02~08)과 무관하게 즉시 착수해야 한다.
+>
+> *Updated 2026-09-27: "SOURCE 자체가 존재하지 않는다"는 판단은 정정한다. Week 9~16(MIXED) · 17~24(DRAFT/PROPOSAL) 원본은 Project External Source로 존재한다. 따라서 과제는 "처음부터 제작"이 아니라 **원본의 확정(미기재 · 초안 부분 보완) → 표준 규격 적용 → 승인 → repo 이관**이다. 최대 병목이라는 판단과 즉시 착수 필요성은 유지한다.*
 
 ### 1-2. 🔴 원본 미해결 데이터 (표준화 규격 §7이 스스로 기록)
 
@@ -77,7 +89,7 @@
 
 | ID | 항목 | 상태 | Blocks |
 |---|---|---|---|
-| **BC-15** | **상품소개서 v4 원본** | ⚠️ 세션 첨부본. 현재 재판독 불가.<br>`src/data/packages.ts`가 대리 출처 역할 | 상품 데이터 검증 (P0-14) · BP 항목 다수 |
+| **BC-15** | **상품소개서 v4 원본** | ⚠️ 세션 첨부본. 현재 재판독 불가.<br>`src/data/packages.ts`가 대리 출처 역할<br>🟡 **Updated 2026-09-27**: `TeachAble_Art_Play_유치원_상품소개서_v4.pdf`는 **PROJECT EXTERNAL SOURCE**다 (source verified during PHASE 03 review · original PDF exists in Project materials · PDF is not versioned inside this Git repository). PHASE 03 review에서 확인된 항목은 [03-commerce/product-catalog.md §3](../03-commerce/product-catalog.md)에 `SOURCE(v4)`로 반영 | 상품 데이터 검증 (P0-14) · BP 항목 다수 |
 | **BC-16** | **샘플 주간 리포트 3페이지 PDF** | ⚠️ 세션 첨부본. 재판독 불가.<br>단 원본 §12가 5항목 서식을 교차 확인하여 설계 불확실성은 해소됨 | Weekly 리포트 레이아웃 상세 (PHASE 06) |
 | **BC-17** | **연구자료 12종** (AI 아동발달 · 누리과정 · 벤치마킹 · 해외 플랫폼 사례) | ⚠️ 세션 첨부본. 재판독 불가.<br>AUDIT 1/2에 기록된 사실만 인용 가능 | 교육적 근거 문서화 · AI 원칙 근거 보강 |
 
@@ -100,26 +112,26 @@
 | **BP-5** | **PG 사업자 선정** | 🔴 이번 PHASE 미확정 (DEC-017). Payment Adapter 전제 | P2-6. **P1-16 Adapter 인터페이스는 진행 가능** |
 | **BP-6** | **초과요금 청구 방식** (15명 초과 1인당 월 6,600원) | 🔴 정책 미확정.<br>확정 전 자동 청구 미구현 (DEC-018) | 자동 청구 · 원아 수 스냅샷 시점 · 중도 입퇴원 처리 |
 | **BP-7** | **3개 반 이상 단가** | 🔴 "별도 상담" | Product 데이터 · 견적 자동화 |
-| **BP-8** | **계약 단위** (8주 = 2개월 vs 학기) | 🔴 미확정 | Contract `period` 모델 |
-| **BP-9** | **연장 · 업그레이드 규칙** (STARTER → STANDARD) | 🔴 미정의 | Lifecycle ⑧ RENEWAL |
+| **BP-8** | **계약 단위** (8주 = 2개월 vs 학기) | 🟡 **Resolved portion**: 계약 단위 = Organization × Product Version × Class Scope × Period · ONE EFFECTIVE CONTRACT AT A TIME (**DEC-049**) / **Remaining portion**: 달력 계약기간 vs 운영 주차 → **CO-11** · (이전 상태: 🔴 미확정) | Contract `period` 모델 |
+| **BP-9** | **연장 · 업그레이드 규칙** (STARTER → STANDARD) | ✅ **RESOLVED by DEC-053** (Upgrade · Renewal = 후속 계약 · Downgrade는 갱신 시점) · 프로그램 구조 세부는 **CO-7** · (이전 상태: 🔴 미정의) | Lifecycle ⑧ RENEWAL |
 | **BP-10** | **B2G 조건** (교육청 · 늘봄학교 등) | 🔴 별도 검토 | 별도 상품/계약 유형 |
 
 ### 2-2. 🔴 상품 정의
 
 | ID | 항목 | 상태 | Blocks |
 |---|---|---|---|
-| **BP-11** | **Entitlement feature 목록 최종 확정** | 🔴 PHASE 03에서 확정 (DEC-031이 방향만 제시) | P0-14 구현 상세 · 권한 매트릭스 (PHASE 02) |
-| **BP-12** | **원 브랜딩 지원의 실체** (PREMIUM) | 🔴 현판(실물)인가 시스템 테넌트 브랜딩인가 미확정 | P2-9 · Entitlement `branding` feature 정의 |
-| **BP-13** | **STARTER의 Weekly 리포트 범위** — 상품표는 "주간 미니 리포트". 5항목 전체인가 축약형인가 | 🔴 미확정 | Weekly 리포트 상품별 차이 (P0-9) |
+| **BP-11** | **Entitlement feature 목록 최종 확정** | 🟡 **Resolved portion**: Feature Catalog · 상품별 배분 (**DEC-055** · **DEC-057**) / **Remaining portion**: `ai_assist` 상품 배분 → **CO-5** · (이전 상태: 🔴 PHASE 03에서 확정, DEC-031이 방향만 제시) | P0-14 구현 상세 · 권한 매트릭스 (PHASE 02) |
+| **BP-12** | **원 브랜딩 지원의 실체** (PREMIUM) | 🟡 **Resolved portion**: 현판 · 상담자료 팩 = Contract Deliverable · P0/P1 시스템 Branding 없음 (**DEC-062**) / **Remaining portion**: 시스템 Branding 범위 → **CO-8** · (이전 상태: 🔴 미확정) | P2-9 · Entitlement `branding` feature 정의 |
+| **BP-13** | **STARTER의 Weekly 리포트 범위** — 상품표는 "주간 미니 리포트". 5항목 전체인가 축약형인가 | ✅ **RESOLVED by DEC-057** (축약판 아님 · DEC-024 5항목 구조 · STANDARD Weekly 포함도 함께 확정) · (이전 상태: 🔴 미확정) | Weekly 리포트 상품별 차이 (P0-9) |
 
 ### 2-3. 🔴 판매 고지 정합성
 
 | ID | 항목 | 상태 | Blocks |
 |---|---|---|---|
-| **BP-14** | **16 · 24주 콘텐츠 제작 전 STANDARD · PREMIUM 판매 고지 정합성** | 🔴 **사업 판단 필요.**<br>공개 홈페이지가 현재 STANDARD(600,000원/학기) · PREMIUM(1,500,000원)을 판매 중이나 Week 9~24 콘텐츠가 존재하지 않는다 (BC-1 · BC-2) | 판매 고지 · 계약 이행 · 법적 위험 |
+| **BP-14** | **16 · 24주 콘텐츠 제작 전 STANDARD · PREMIUM 판매 고지 정합성** | 🔴 **사업 판단 필요.**<br>공개 홈페이지가 현재 STANDARD(600,000원/학기) · PREMIUM(1,500,000원)을 판매 중이나 Week 9~24 콘텐츠가 존재하지 않는다 (BC-1 · BC-2) · *Updated 2026-09-27: 원본 자료는 존재(9~16 MIXED · 17~24 DRAFT/PROPOSAL)하나 production-approved 운영 콘텐츠가 없다*<br>🟡 **Resolved portion (2026-09-27)**: 콘텐츠 미준비 상품의 **production service activation 차단** (**DEC-063**) / **Remaining portion**: 판매 고지 문구 · 계약 이행 조건은 여전히 사업 판단 | 판매 고지 · 계약 이행 · 법적 위험 |
 | **BP-15** | **결제 도입 시 법무 문서 개정** | 🔴 현재 이용약관·개인정보처리방침이 *"웹사이트를 통한 즉시 결제나 온라인 구독 신청을 제공하지 않으며"* · *"공개 회원가입은 제공하지 않습니다"* · "결제정보 수집 안 함"을 명시 | P2-6. Source-of-Truth R-7 (법적 고지 ≠ 제품 동작 → 즉시 수정 대상) |
 | **BP-16** | **개인정보 국외이전 (AI 위탁) 고지 범위** | ⚠️ `/privacy` 실내용 점검 필요.<br>AI provider 코드 주석이 자유입력 내 실명 전송 가능성을 인정하고 있다 | P0-16 고지 정합화 · Pilot Go G-9 |
-| **BP-17** | **계약 종료 시 데이터 이관 · 보관 · 파기 기준** | 🔴 미확정. 상품소개서가 "종료 시 이관·보관·파기 기준 확정"을 약속 | P2-11 · Lifecycle ⑧ · Pilot Go G-12 |
+| **BP-17** | **계약 종료 시 데이터 이관 · 보관 · 파기 기준** | 🔴 미확정. 상품소개서가 "종료 시 이관·보관·파기 기준 확정"을 약속<br>🟡 **Resolved portion (2026-09-27)**: 종료 시 접근 모델 · 새 작업 차단 · 자동 삭제 없음 (**DEC-052**) / **Remaining portion**: Read-only 유예 기간 → **CO-1** · 보관 · 파기 · Export → **CO-2** (Production Blocker) | P2-11 · Lifecycle ⑧ · Pilot Go G-12 |
 
 ---
 
@@ -131,13 +143,13 @@
 | ID | 항목 | 현재 상태 / 논점 | Owner | 확정 PHASE |
 |---|---|---|---|---|
 | **PH3-1** | **Growth 5 시계열 표현 방식** | 🟠 **부분 차단 (PHASE 02 IA에 영향)**<br>샘플 주간 리포트의 "지난주 대비 ↑ 한 단계" 표기가 UX 원칙 **U-1**(단계는 순위가 아니다) · **U-3**("스스로"가 목표가 아니다)과 충돌한다.<br>선택지: (a) 변화 서술만 — "3월: 한두 가지 색 → 6월: 여러 색 조합" (b) 단계 증감 기호 병기 (c) 주차별 격자만 제시하고 증감 표기 없음 | Product (교육) | PHASE 02~04 |
-| **PH3-2** | **원장에게 교사 초대 · 배정 권한 위임 여부** | 현재 `organization_members` INSERT/UPDATE와 `class_teachers` INSERT/DELETE가 HQ 전용.<br>운영 편의 vs 통제. 위임하면 기관이 스스로 교사를 늘릴 수 있으나 좌석(seat) 관리와 충돌 가능 | Product + 사업 | PHASE 03 |
-| **PH3-3** | **리포트 reopen 정책** | `complete → draft` 전환 경로가 없다. 주간 다건 운영 시 오타 정정 수단이 필요.<br>논점: 권한(교사만/원장 승인) · 사유 기록 · 이력 보존 · 이미 학부모가 본 경우 처리 | Product | PHASE 03 |
-| **PH3-4** | **Child Portal 링크 만료 기간** | 현재 트리거가 30일로 설정. 아동 단위 링크는 학기(약 6개월) 필요.<br>논점: 보안(장기 링크 노출 위험) vs UX(학부모가 매번 새 링크를 받지 않아도 됨). 중간안으로 만료 시 원장 재발급 알림 | Security + Product | PHASE 03 |
+| **PH3-2** | **원장에게 교사 초대 · 배정 권한 위임 여부** | 현재 `organization_members` INSERT/UPDATE와 `class_teachers` INSERT/DELETE가 HQ 전용.<br>운영 편의 vs 통제. 위임하면 기관이 스스로 교사를 늘릴 수 있으나 좌석(seat) 관리와 충돌 가능 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-049 · DEC-051의 반 범위와 함께 검토) | Product + 사업 | PHASE 03 → PHASE 05 전 |
+| **PH3-3** | **리포트 reopen 정책** | `complete → draft` 전환 경로가 없다. 주간 다건 운영 시 오타 정정 수단이 필요.<br>논점: 권한(교사만/원장 승인) · 사유 기록 · 이력 보존 · 이미 학부모가 본 경우 처리 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-043 숨김 해제와 함께) | Product | PHASE 03 → PHASE 04 |
+| **PH3-4** | **Child Portal 링크 만료 기간** | 현재 트리거가 30일로 설정. 아동 단위 링크는 학기(약 6개월) 필요.<br>논점: 보안(장기 링크 노출 위험) vs UX(학부모가 매번 새 링크를 받지 않아도 됨). 중간안으로 만료 시 원장 재발급 알림 · ↪ **MOVED → CO-12** (Production Blocker) | Security + Product | PHASE 03 → P0 Portal Production 전 |
 | **PH3-5** | **AI 원본 응답 저장 범위** | 현재 `response.output_text`만 취하고 `usage` · `finish_reason` · `response_id`를 버린다.<br>논점: 메타만 저장(비용·품질 추적) vs 본문까지 저장(사후 감사). 본문 저장은 아동 관련 문장을 추가 보관하는 것이므로 개인정보 검토 필요 | Privacy + Product | PHASE 04 |
-| **PH3-6** | **Asset 다운로드 허용 정책** | 자산 type별로 다르다. VOD는 스트리밍, 워크북은 인쇄용 다운로드가 필요할 수 있다.<br>논점: 저작권(BC-14) · 워터마크 · 기관 종료 후 잔존 | Product + 법무 | PHASE 03 |
-| **PH3-7** | **Demo 계정 · 샘플 데이터 체계** | Lifecycle ② DEMO가 오프라인으로만 운영된다. 20분 데모용 샘플 기관/반/아동 데이터를 시스템에 둘지, 매번 만들지 | 사업 + Product | PHASE 03 |
-| **PH3-8** | **학기 전환 절차** | 반 재편성 · 원아 진급 · 프로그램 재배정을 어떻게 처리할지. 현재 `children.class_id` nullable과 `is_assigned_class_teacher` 비대칭 설계로 기록 연속성은 확보되어 있으나 전환 절차 자체가 정의되지 않았다 | Product + 운영 | PHASE 03 |
+| **PH3-6** | **Asset 다운로드 허용 정책** | 자산 type별로 다르다. VOD는 스트리밍, 워크북은 인쇄용 다운로드가 필요할 수 있다.<br>논점: 저작권(BC-14) · 워터마크 · 기관 종료 후 잔존 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (P1 콘텐츠 재생 전) | Product + 법무 | PHASE 03 → P1 |
+| **PH3-7** | **Demo 계정 · 샘플 데이터 체계** | Lifecycle ② DEMO가 오프라인으로만 운영된다. 20분 데모용 샘플 기관/반/아동 데이터를 시스템에 둘지, 매번 만들지 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 | 사업 + Product | PHASE 03 → P1 |
+| **PH3-8** | **학기 전환 절차** | 반 재편성 · 원아 진급 · 프로그램 재배정을 어떻게 처리할지. 현재 `children.class_id` nullable과 `is_assigned_class_teacher` 비대칭 설계로 기록 연속성은 확보되어 있으나 전환 절차 자체가 정의되지 않았다 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-053 Renewal과 연결) | Product + 운영 | PHASE 03 → Renewal 첫 사례 전 |
 | **PH3-9** | **워크북 optional evidence 설계** | DEC-012가 MVP 제외를 확정했으나 "향후 특정 Workbook의 optional evidence로 확장 가능하게만 고려"라고 여지를 남겼다. 어떤 워크북에 어떤 수치를, 누가 언제 입력하는지 | Product (교육) | PHASE 04 이후 |
 | **PH3-10** | **Parent Account 도입 여부** | DEC-013이 2.0 범위 밖으로 확정. 도입 시 RLS 정책 66개 전수 재검토 필요.<br>특히 `private.is_active_org_member()`가 커리큘럼 읽기를 열어주므로 학부모에게 교사용 수업안이 노출될 위험 | Product + Architecture | 2.0 이후 |
 
@@ -178,7 +190,7 @@
 
 | 분류 | 항목 수 | 최대 병목 | Owner |
 |---|---|---|---|
-| **Blocked By Content** | 17 (BC-1~17) | **BC-1 · BC-2** (Week 9~24 `SOURCE NOT AVAILABLE`) | 교육기획 / 콘텐츠 |
+| **Blocked By Content** | 17 (BC-1~17) | **BC-1 · BC-2** (Week 9~24 `SOURCE NOT AVAILABLE` → *Updated 2026-09-27: SOURCE EXISTS · production-approved content pending*) | 교육기획 / 콘텐츠 |
 | **Blocked By Business Policy** | 17 (BP-1~17) | **BP-14** (판매 고지 정합성) · **BP-11** (Entitlement feature) | 사업 / 경영 |
 | **PHASE 03 이후 결정** | 10 (PH3-1~10) | **PH3-1** (Growth 5 시계열 표현 — PHASE 02 부분 차단) | Product |
 | **Architecture Decision** | 14 (AD-1~14) | **AD-4** (회귀테스트 도구 — P0-1 전제) · **AD-1** (사진 anon 노출) | Architecture |

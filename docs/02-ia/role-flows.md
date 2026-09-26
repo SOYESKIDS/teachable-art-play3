@@ -136,6 +136,11 @@ flowchart TD
 
 **정규 STARTER 처리**: "홈" 메뉴 숨김 · 직접 URL 접근 시 Not Entitled 안내 (HARD RULE, DEC-031 · DEC-044). 학부모 공유 · 리포트 조회 · 수업 운영은 C-5(원장 공유 활성)를 성립시키기 위해 허용을 권고하나 최종 목록은 **PROVISIONAL** (IA-9).
 
+> *Updated by DEC-056 (2026-09-27)*: STARTER 원장 경계 확정.
+> - **EXCLUDED / UPSELL**: `/director` Dashboard · 자동 누락 탐지 · 기간 집계 · Dashboard 확장 카드 · Bulk Print
+> - **STARTER에도 제공**: Sessions · History · Attendance read/edit · Observation read · Complete Report read · Parent Portal 관리 · Photo Consent 상태 · Emergency Hide · 단건 Print
+> - 제공 화면에서 Dashboard의 **집계 · 누락 탐지 가치를 우회 제공하지 않는다.**
+
 ---
 
 ## 4. Teacher End-to-End Flow

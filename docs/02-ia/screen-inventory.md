@@ -43,7 +43,7 @@
 | HQ-02 | 오픈 준비 | admin | `/admin/readiness` | + **Pilot Ready 점검** | PARTIAL | MODIFY | P0 | — |
 | HQ-03 | 새 기관 도입 | admin | `/admin/onboarding` | + **0단계 상품·계약** · Pilot 분기 | PARTIAL | MODIFY | P0 | — |
 | HQ-04 | 기관 목록 | admin · sales(메타) | `/admin/organizations` | + 상품 · 계약 상태 컬럼 | PARTIAL | MODIFY | P0 | — |
-| HQ-05 | 기관 상세 | admin (sales 제한) | `/admin/organizations/[id]` | + **계약·이용권** · **학부모 공개 리포트 긴급 숨김** · sales 비노출 영역 | PARTIAL | MODIFY | P0 | — |
+| HQ-05 | 기관 상세 | admin (sales 제한) | `/admin/organizations/[id]` | + **계약·이용권** · **학부모 공개 리포트 긴급 숨김** · sales 비노출 영역 (*Updated by DEC-058*: sales는 계약 metadata read-only · 원아/교사/초과 인원 집계만. 원아 명단 · 동의 · 리포트 · 긴급 숨김 · 계약 변경 불가) | PARTIAL | MODIFY | P0 | — |
 | HQ-06 | 프로그램 배정 · 세션 | admin | `/admin/organizations/[id]/program-assignments/[assignmentId]` | 세션 생성 시 Entitlement 주차 범위 제한 · **`in_progress` 직접 전환 제거** (DEC-046) · **`scheduled → completed` 불허** (DEC-047) | PARTIAL | MODIFY | P0 | 주차 범위 |
 | HQ-07 | 프로그램 목록 | admin | `/admin/curriculum` | 프로그램 관리 | EXISTING | KEEP | — | — |
 | HQ-08 | 프로그램 상세 | admin | `/admin/curriculum/[id]` | 차시 목록 | EXISTING | KEEP | — | — |
@@ -56,14 +56,14 @@
 | HQ-15 | 배송 관리 | admin | `/admin/shipments` | KIT · 워크북 | NEW | CREATE | P2 | — |
 | HQ-16 | 지원 · 문의 이력 | admin | `/admin/support` | 기관 지원 | NEW | CREATE | P2 | — |
 | DR-01 | 대시보드 | 원장 | `/director` | 누락 발견 (내용 KEEP) + **Entitlement 게이트** | PARTIAL | MODIFY | P0 | **director_dashboard** (HARD) |
-| DR-02 | 수업 운영 | 원장 | `/director/sessions` | 오늘 수업 · 상태 변경. **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047)** — 조회 · 출결 정정 · 취소 · 진행 중 세션 완료 유지 | PARTIAL | MODIFY | P0 | PROVISIONAL |
-| DR-03 | 수업 이력 | 원장 | `/director/sessions/history` | 이력 | EXISTING | KEEP | — | PROVISIONAL |
-| DR-04 | 출결 관리 | 원장 | `/director/sessions/[sessionId]/attendance` | 출결 정정 | EXISTING | KEEP | — | PROVISIONAL |
-| DR-05 | 관찰 조회 | 원장 | `/director/sessions/[sessionId]/observations` | + Growth 5 / Stage 읽기 · 고정 안내문 | PARTIAL | MODIFY | P0 | PROVISIONAL |
-| DR-06 | 성장 리포트 목록 | 원장 | `/director/growth-reports` | + 유형 · 주차 필터 · 숨김 상태 | PARTIAL | MODIFY | P0 | PROVISIONAL |
-| DR-07 | 성장 리포트 상세 | 원장 | `/director/growth-reports/[reportId]` | Weekly 서식 · **긴급 숨김** · 기존 공유 섹션 Cutover 처리 | PARTIAL | MODIFY | P0 | PROVISIONAL |
+| DR-02 | 수업 운영 | 원장 | `/director/sessions` | 오늘 수업 · 상태 변경. **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047)** — 조회 · 출결 정정 · 취소 · 진행 중 세션 완료 유지 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
+| DR-03 | 수업 이력 | 원장 | `/director/sessions/history` | 이력 | EXISTING | KEEP | — | 전 상품 (DEC-056) |
+| DR-04 | 출결 관리 | 원장 | `/director/sessions/[sessionId]/attendance` | 출결 정정 | EXISTING | KEEP | — | 전 상품 (DEC-056) |
+| DR-05 | 관찰 조회 | 원장 | `/director/sessions/[sessionId]/observations` | + Growth 5 / Stage 읽기 · 고정 안내문 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
+| DR-06 | 성장 리포트 목록 | 원장 | `/director/growth-reports` | + 유형 · 주차 필터 · 숨김 상태 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
+| DR-07 | 성장 리포트 상세 | 원장 | `/director/growth-reports/[reportId]` | Weekly 서식 · **긴급 숨김** · 기존 공유 섹션 Cutover 처리 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
 | DR-08 | 학부모 공유 · 사진 동의 | 원장 | `/director/portal` | 아동별 Portal 링크 · 사진 동의 상태 · 노출 리포트 · 긴급 숨김 | NEW | CREATE | P0 | parent_portal |
-| DR-09 | 리포트 일괄 인쇄 | 원장 | `/director/growth-reports/print` | 반 단위 인쇄 (D-5) | NEW | CREATE | P1 | PROVISIONAL |
+| DR-09 | 리포트 일괄 인쇄 | 원장 | `/director/growth-reports/print` | 반 단위 인쇄 (D-5) | NEW | CREATE | P1 | `bulk_print` — STANDARD · PREMIUM (STARTER 제외 · DEC-056) |
 | TC-01 | 오늘의 수업 | 교사 | `/teacher` | + **[수업 준비] → Class Mode** · Week · 성장키워드 · "이어서" · 기존 [수업 시작]은 **BEFORE 이동만** (직접 전환 제거, DEC-046) · 빠른 [완료] **제거** (DEC-047) | PARTIAL | MODIFY | P0 | — |
 | TC-02 | Class Mode BEFORE | 교사 | `/teacher/sessions/[sessionId]/before` | 준비 · 필수 확인 · 수업 시작 | NEW | CREATE | P0 | class_mode · 주차 |
 | TC-03 | Class Mode DURING | 교사 | `/teacher/sessions/[sessionId]/during` | 6단계 진행 · Timer · Quick Memo | NEW | CREATE | P0 | class_mode · 주차 |

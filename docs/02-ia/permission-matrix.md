@@ -13,6 +13,8 @@
 범례: ✅ ALLOW · ⛔ DENY · ◐ CONDITIONAL
 표시: **H** = HARD RULE (확정 결정) · **P** = PROVISIONAL (PHASE 03 확정 필요)
 
+> *Updated 2026-09-27 (PHASE 03 정합화): STANDARD Weekly · HQ SALES · STARTER Director · Child Portal · Contract Ended 행을 DEC-052 · DEC-055 · DEC-056 · DEC-057 · DEC-058 기준으로 갱신했다. 상세 정책은 [../03-commerce/entitlement-policy.md](../03-commerce/entitlement-policy.md) · [../03-commerce/sales-privacy-boundary.md](../03-commerce/sales-privacy-boundary.md).*
+
 ---
 
 ## 1. CURRENT 권한 기반 (기준 commit)
@@ -34,15 +36,15 @@
 
 | 화면 | HQ ADMIN | HQ SALES | DIRECTOR | TEACHER | PARENT SHARE |
 |---|---|---|---|---|---|
-| HQ 운영 대시보드 · 오픈 준비 | ✅ | ⛔ **P** | ⛔ | ⛔ | ⛔ |
+| HQ 운영 대시보드 · 오픈 준비 | ✅ | ◐ Readiness **summary**만 **H** (DEC-058) | ⛔ | ⛔ | ⛔ |
 | 문의 관리 | ✅ | ✅ | ⛔ | ⛔ | ⛔ |
 | 기관 목록 · 기관 메타데이터 | ✅ | ◐ 메타데이터만 **H** | ⛔ | ⛔ | ⛔ |
-| 기관 상세 — 원아 명단 | ✅ | ◐ **P** (IA-8) | ⛔ | ⛔ | ⛔ |
+| 기관 상세 — 원아 명단 · 원아 상세 | ✅ | ⛔ **H** (DEC-058) — 원아 수 · 교사 수 · 초과 인원 **집계만** | ⛔ | ⛔ | ⛔ |
 | 온보딩 · 반 · 원아 · 교사 · 프로그램 배정 · 세션 | ✅ | ⛔ **P** | ⛔ (위임 PH3-2) | ⛔ | ⛔ |
-| Product / Contract (기관 상세 내부) | ✅ | ◐ 읽기 **P** | ⛔ | ⛔ | ⛔ |
+| Product / Contract (기관 상세 내부) | ✅ | ◐ metadata **read-only** · 상태 변경 불가 **H** (DEC-058) | ⛔ | ⛔ | ⛔ |
 | Curriculum 편집 · 검수 | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Director Dashboard | ⛔ (HQ는 `/admin`) | ⛔ | ◐ Entitlement **H** | ⛔ | ⛔ |
-| 수업 운영 · 이력 · 출결 (원장) | — | ⛔ | ◐ **P** (STARTER 범위 IA-9) | ⛔ | ⛔ |
+| 수업 운영 · 이력 · 출결 (원장) | — | ⛔ | ✅ 전 상품 (STARTER 포함) **H** (DEC-056) | ⛔ | ⛔ |
 | Teacher Today | ⛔ | ⛔ | ⛔ | ✅ 담당 반 | ⛔ |
 | Class Mode | ⛔ | ⛔ | ⛔ | ◐ 담당 반 · 발행 · 필수 데이터 · Entitlement · 이용 기간 | ⛔ |
 | 세션 `scheduled → in_progress` (수업 시작) | ⛔ **H** (비상 강제 경로는 PHASE 05 검토 · P0 없음) | ⛔ **H** | ⛔ **H** | ◐ BEFORE 필수 확인 완료 후 Class Mode [수업 시작]만 **H** | ⛔ |
@@ -60,6 +62,7 @@
 | Child Portal | — | — | — | — | ◐ 유효 링크 · 해당 아동 · 노출 리포트만 |
 
 - HQ SALES의 "아동 관찰기록 · 활동사진 접근 금지"는 **HARD** (project-charter §3-1 · P0-15).
+- *Updated by DEC-058*: HQ SALES는 원아 이름 · 명단 · 상세 · Observation · Child Voice · Growth 5 · Stage · Photo · Report · Portal token/link · Consent per child · Emergency Hide · Contract 상태 변경 **모두 불가**. Lead · 기관 metadata · Contact · Product/Contract metadata(read-only) · 계약 기간/상태 · 반 수 · 원아 수/교사 수/초과 인원 **집계** · Readiness summary만 허용.
 - Parent Share는 계정이 아니라 링크 소지자다 (DEC-013).
 
 ---
@@ -70,18 +73,19 @@
 |---|---|---|---|---|
 | 콘텐츠 주차 범위 | Week 1~8 **H** | Week 1~16 **H** | Week 1~24 **H** | Week 1~4 **H** |
 | Class Mode | ✅ **H** | ✅ **H** | ✅ **H** | ✅ **H** |
-| Weekly Report | ✅ **H** | ◐ **P** (IA-15) | ✅ **H** | ✅ **H** |
+| Weekly Report | ✅ **H** | ✅ **H** (DEC-057 · 상품소개서 v4) | ✅ **H** | ✅ **H** |
 | Monthly Report | ⛔ **H** | ✅ **H** | ✅ **H** | ⛔ **H** |
 | Semester Report | ⛔ **H** | ✅ **H** | ✅ **H** | ⛔ **H** |
 | Director Dashboard (`/director` 홈) | ⛔ **H** | ✅ **H** | ✅ **H** | ✅ **H** (검증용 별도 Entitlement) |
-| 원장 수업 운영 · 리포트 조회 · 학부모 공유 | ◐ **P** (허용 권고, IA-9) | ✅ **P** | ✅ **P** | ✅ **P** |
-| Child Portal | ✅ **P** | ✅ **P** | ✅ **P** | ✅ **P** |
+| 원장 운영 화면 — Sessions · History · Attendance · Observation read · Complete Report · Portal 관리 · Consent 상태 · Emergency Hide · 단건 Print | ✅ **H** (DEC-056) | ✅ **H** | ✅ **H** | ✅ **H** |
+| 원장 자동 누락 탐지 · 기간 집계 · 확장 카드 · Bulk Print | ⛔ **H** (DEC-056 · 운영 화면에서 우회 제공 금지) | ✅ (Bulk Print P1) | ✅ (Bulk Print P1) | ✅ Dashboard · ⛔ Bulk Print |
+| Child Portal | ✅ **H** (DEC-055) | ✅ **H** | ✅ **H** | ✅ **H** |
 | Report Emergency Hide | ✅ **H** (Portal이 있으면 반드시) | ✅ **H** | ✅ **H** | ✅ **H** |
 | Branding | ⛔ | ⛔ | ✅ **H** (실체 BP-12) | ⛔ |
 | 콘텐츠 인앱 재생 (P1) | ◐ **P** | ◐ **P** | ◐ **P** | ⛔ (P0 범위 밖) |
 
-HARD RULE 출처: DEC-031 · DEC-032 · 사용자 PHASE 02 지시 §17.
-정확한 Feature Code 목록은 PHASE 03 (BP-11).
+HARD RULE 출처: DEC-031 · DEC-032 · 사용자 PHASE 02 지시 §17 · *Updated*: DEC-055 · DEC-056 · DEC-057.
+Feature Code 목록은 PHASE 03에서 확정 → [../03-commerce/product-catalog.md §6](../03-commerce/product-catalog.md#6-feature-catalog-dec-055).
 
 ---
 
@@ -93,7 +97,7 @@ HARD RULE 출처: DEC-031 · DEC-032 · 사용자 PHASE 02 지시 §17.
 | **NOT ENTITLED (기능)** 예: STARTER 대시보드 · Monthly | 기능 없음 | **숨김** | **SY-02 "현재 이용 상품에 포함되지 않은 기능"** — 상품명 · 포함 상품 · HQ 문의 경로 | 원장: HQ 문의 (업그레이드 경로는 PHASE 03) / 교사: 돌아가기 |
 | **NOT ENTITLED (콘텐츠 주차)** 예: STARTER의 Week 9 | 없는 것으로 보인다 (0건) | — | SY-01 찾을 수 없음 | HQ 단계에서 배정 · 세션 생성이 막힌다 |
 | **CONTRACT NOT STARTED** | 로그인 가능 · 오늘 화면에 "이용 시작일" | 수업 기능 비활성 | SY-02 "이용 기간이 아닙니다" | 시작일까지 대기 · HQ |
-| **CONTRACT ENDED** | **P**: 기존 기록 읽기 전용 · 신규 수업 · Class Mode · 리포트 작성 차단 | 작성 기능 숨김 | SY-02 "이용 기간이 종료되었습니다" | HQ 갱신 문의 · 이관/파기 (IA-10 · BP-17) |
+| **CONTRACT ENDED** | **H** (DEC-052): 기존 기록 Read-only · 신규 수업 · Class Mode · Observation · 리포트 작성 · 새 Publish 차단. Read-only 유예 기간은 CO-1 | 작성 기능 숨김 | SY-02 "이용 기간이 종료되었습니다" | HQ 갱신 문의 · 보관/파기 (CO-2) |
 | **ORG SUSPENDED** | CURRENT 유지: `no_access` | — | `/login?error=no_access` | 원 → HQ. Portal 동작은 PHASE 05에서 확인 |
 | **CONTENT NOT PUBLISHED / 필수 데이터 부족** | 세션 카드 "수업 내용 준비 중" · [수업 준비] 비활성 | — | SY-02 "수업 내용이 아직 준비되지 않았습니다" (DEC-037) | HQ |
 

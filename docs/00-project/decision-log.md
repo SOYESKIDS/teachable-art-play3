@@ -4,9 +4,9 @@
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
 | 최종 갱신 | 2026-09-26 |
-| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) 확정 사항 |
-| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) |
-| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) |
+| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) 확정 사항 |
+| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) |
+| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) |
 
 ---
 
@@ -45,6 +45,7 @@ DEC-045  Observation Stage에 AI 제안을 도입한다  (supersedes DEC-007)
 |---|---|
 | `ACTIVE` | 현재 유효 |
 | `SUPERSEDED by DEC-XXX` | 다른 결정으로 대체됨 |
+| `ACTIVE · clarified by DEC-XXX` | 결정 자체는 유효. 본문 일부 서술(주로 결정 이유 안의 부수 서술)이 후속 결정으로 명확화됨. **본문은 수정하지 않고** 후속 결정이 관계와 우선 내용을 적는다 (2026-09-27 PHASE 03에서 추가) |
 | `WITHDRAWN` | 철회됨 (대체 결정 없음). 철회 이유 필수 |
 
 ### 0-4. 결정 출처 표기
@@ -400,7 +401,7 @@ Observation Stage는 점수 · 등급 · 발달수준 · 또래평가가 **아�
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-057 (결정 이유 안의 상품별 리포트 배분 서술) |
 | 출처 | 사용자 확정 |
 
 **결정 내용**
@@ -1250,7 +1251,397 @@ DEC-046으로 `in_progress` 진입을 필수 확인 경로로 단일화해도, `
 
 ---
 
-## 11. 결정 요약표
+## 11. Product · Contract · Entitlement · Commerce (PHASE 03)
+
+> PHASE 03 검토·승인(2026-09-27)에서 확정된 결정. 상세 정책은 [../03-commerce/](../03-commerce/) 문서에 둔다. Feature Code와 Contract State는 **제품 정책 이름**이며 DB enum · SQL이 아니다 (PHASE 05).
+
+### DEC-048 · Product / Product Version / Contract / Entitlement 계층
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-1) |
+
+**결정 내용**
+
+| 층 | 정의 |
+|---|---|
+| **Product** | 판매 정의 (STARTER · STANDARD · PREMIUM) |
+| **Product Version** | 특정 시점의 판매 정의 스냅샷. 상품 정의가 바뀌면 새 버전이 생기고, 체결된 계약은 체결 당시 버전을 유지한다 |
+| **Contract** | 기관과 체결한 서비스 약정 |
+| **Entitlement** | 현재 시스템이 실제로 허용하는 기능 · 콘텐츠 · 한도. **Contract에서 파생한다** |
+
+일반 운영자는 Entitlement를 직접 수정하지 않는다. 허용 범위를 바꾸려면 Contract를 변경한다 (감사 대상).
+
+**결정 이유**
+판매 정의 · 약정 사실 · 시스템 권한이 한 곳에 섞이면 상품 개편이 기존 기관의 권한을 소급 변경하거나, 수동 예외가 계약 근거 없이 쌓인다. 파생 구조는 "왜 이 기관이 이 기능을 쓰는가"를 항상 계약으로 설명하게 한다.
+
+**관련**: DEC-016 · DEC-031 · [../03-commerce/commerce-overview.md](../03-commerce/commerce-overview.md)
+
+---
+
+### DEC-049 · Contract Unit과 ONE EFFECTIVE CONTRACT AT A TIME
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-2 · BP-8) |
+
+**결정 내용**
+- Contract Unit = **Organization × Product Version × Contract Class Scope × Contract Period**.
+- 한 기관에는 **같은 시점에 효력이 발생하는 정규 계약이 최대 1개**만 존재할 수 있다.
+- 다음은 현재 계약과 **함께 존재할 수 있다**: `draft` 계약 · 미래 시작일의 Renewal Contract · 미래 시작일의 Upgrade Contract.
+- Pilot Offer는 별도 유형이다 (DEC-054).
+- 한 기관 안에서 반별로 다른 상품을 동시에 계약하는 구조는 미결정 (03-commerce CO-6).
+
+**결정 이유**
+가격 근거가 "1개 반 · 15명 기준"이므로 반 수가 계약 범위여야 한다. 반마다 계약을 두면 기관 기능(원장 대시보드)과 어긋나고 갱신이 반 수만큼 늘어난다. 동시 효력 계약을 1개로 제한하면 Entitlement 계산이 모호해지지 않으면서, 미래 시작 후속 계약은 끊김 없는 갱신·업그레이드를 가능하게 한다.
+
+**관련**: DEC-048 · DEC-053 · DEC-054
+
+---
+
+### DEC-050 · Contract State · 날짜 파생 상태 · Activation
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-3) |
+
+**결정 내용**
+- Product State: `draft` · `active` · `suspended` · `ended`.
+- 날짜 기반 파생 상태 개념: `before_start` · `in_service` · `expired`. DB enum 여부는 PHASE 05.
+- **서비스 활성화 = HQ 확인 AND Start Date 도래.**
+- **Payment Status는 활성화 조건이 아니다.**
+- **Contract active와 Organization active는 서로 다른 축이다.** 기관 상태는 테넌트 보안 · 전면 차단 스위치이고, 계약 상태는 상업적 권한이다.
+
+**결정 이유**
+B2B/B2G에서는 서명·발주 후 입금 전에 서비스를 여는 것이 정상 관행이다. 입금을 활성화 조건으로 묶으면 결제 시스템이 없는 P0에서 서비스를 열 수 없다. 기관 상태와 계약 상태를 섞으면 계약 만료가 로그인 차단(보안 조치)과 구분되지 않는다.
+
+**관련**: DEC-017 · DEC-048
+
+---
+
+### DEC-051 · 반 · 원아 한도 정책
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-4 · IA-12) |
+
+**결정 내용**
+
+| 대상 | 정규 상품 | Pilot |
+|---|---|---|
+| 서비스 반 수 | Contract Class Scope를 초과할 수 없다. **프로그램 배정 HARD BLOCK** | 최대 2반 |
+| 반당 원아 | 16번째 이상도 등록을 막지 않는다. **ALLOW + OVERAGE RECORD** | 15명 초과 시 **Pilot Ready 불가** (검증 조건) |
+| 청구 | **자동 청구하지 않는다** (DEC-018) | — |
+
+**Pilot 15명의 의미 (HARD)**: 데이터 준비 과정에서 Pilot 반에 16명 이상이 등록될 수는 있다. 그러나 반당 child count > 15이면 **Pilot Ready = FALSE**이고 **Pilot Activation은 차단**된다. **P0에서 HQ reason만으로 Ready를 override할 수 없다.** 15명 초과 Pilot을 허용하려면 향후 별도 Business Decision이 필요하다. 정규 상품의 ALLOW + OVERAGE RECORD와 혼동하지 않는다.
+
+**결정 이유**
+반은 가격 단위이므로 계약 범위 밖 반에 서비스를 여는 것은 무계약 제공이다. 반면 실제 반에서 16번째 아동의 등록을 막으면 그 아이만 수업 기록과 리포트에서 빠지게 되며, 제품이 만들어서는 안 되는 결과다. Pilot의 15명은 가격 조건이 아니라 검증 설계 조건이다 (DEC-032).
+
+**관련**: DEC-018 · DEC-032 · DEC-049
+
+---
+
+### DEC-052 · Contract Suspended / Ended 접근 모델
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-5 · IA-10 · BP-17 일부) |
+
+**결정 내용**
+- Contract `suspended` / `ended` 시 새로운 **Class Mode · Observation · Report 작성 · 새 Publish**를 차단한다.
+- 기존 기록은 **Read-only 정책**을 따른다.
+- Parent Portal은 기존 공개 링크에 대해 **별도 정책**을 따른다 (새 공개 · 새 링크 발급 없음).
+- **Organization suspended는 보안 · 전면 차단이며 Contract suspended보다 우선한다.**
+- Read-only 유예 기간 · Data Retention · 삭제/파기 기간의 **숫자는 확정하지 않는다** (03-commerce CO-1 · CO-2).
+- 데이터는 자동 삭제하지 않는다. 파기는 별도 확인 절차로만 한다 (현행 개인정보처리방침 문구와 일치).
+
+**결정 이유**
+계약 종료 즉시 전면 차단하면 마지막 주 리포트 확인·인쇄가 불가능하고, 기관이 자기 데이터를 확인할 수 있다는 약관과 긴장이 생긴다. 반대로 종료 후에도 새 작업을 허용하면 계약 없는 서비스 제공이 된다. 기간 숫자는 법무·계약 서식 사항이므로 제품이 추측하지 않는다.
+
+**관련**: DEC-050 · DEC-044 · [../03-commerce/contract-policy.md](../03-commerce/contract-policy.md)
+
+---
+
+### DEC-053 · Upgrade · Renewal · Downgrade · Amendment
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-6 · BP-9) |
+
+**결정 내용**
+
+| 변경 | 처리 |
+|---|---|
+| Upgrade | **후속 Contract** |
+| Renewal | **후속 Contract** |
+| Downgrade | **Renewal 시점에서만** 허용 |
+| 단순 날짜 조정 | 현재 Contract 수정 가능 · **reason · audit 필수** |
+
+어떤 경우에도 기존 Observation · Report · Portal 데이터를 **삭제하거나 재생성하지 않는다.** 가격 차액은 P0 시스템에서 계산하지 않는다 (견적·계약서로 처리).
+
+**결정 이유**
+계약 기간마다 상품 버전 · 반 범위 · 가격 근거가 독립 기록으로 남아야 감사 추적이 가능하다. 기간 중 다운그레이드는 이미 제공한 기능·콘텐츠의 처리 문제를 만들므로 갱신 경계에서만 허용한다.
+
+**관련**: DEC-049 · DEC-055
+
+---
+
+### DEC-054 · Pilot Offer
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-7) |
+
+**결정 내용**
+- Pilot은 **별도 Offer 유형**이다. **STARTER 할인판이 아니다.**
+- Entitlement: Class Mode · Weekly · Parent Portal · Director Dashboard · Content Week 1~4. 한도: 반 최대 2 · 반당 15명 · 교사 2~4 (DEC-032 · DEC-051).
+- Pilot → Regular 전환 시 **organization · class · child · teacher · record · report · portal**을 유지한다.
+- Pilot 가격 · 무료 여부는 미확정 (03-commerce CO-3).
+
+**결정 이유**
+Pilot에는 STARTER에 없는 대시보드가 있고 한도가 검증 조건이므로 같은 상품의 가격 변형으로 표현할 수 없다. 전환 시 데이터를 유지해야 Pilot 4주가 정규 운영의 1~4주로 이어진다.
+
+**관련**: DEC-031 · DEC-032 · DEC-049
+
+---
+
+### DEC-055 · Entitlement Feature Catalog · Content Entitlement · 기록 보존
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-8 · BP-11) |
+
+**결정 내용**
+1. Feature Catalog (정책 코드, enum 아님): `class_mode` · `weekly_report` · `monthly_report` · `semester_report` · `director_dashboard` · `parent_portal` · `bulk_print` · `content_playback` · `ai_assist` · `branding`. 상품별 배분과 확정도는 [../03-commerce/product-catalog.md](../03-commerce/product-catalog.md).
+2. 교직원 기본 운영(오늘 · 이력 · 출결 · 관찰 · 리포트 조회 · 긴급 숨김)은 유효 계약이면 항상 허용되며 별도 Feature Code를 두지 않는다.
+3. **콘텐츠 권한(주차 범위)은 기능 권한과 분리**한다: STARTER Week 1~8 · STANDARD 1~16 · PREMIUM 1~24 · PILOT 1~4.
+4. **권한이 줄어도 기존 기록은 삭제되지 않는다.** 상품 downgrade · entitlement 축소 시 기존 기록 접근은 기본적으로 유지된다. 단 Contract 종료 이후의 실제 Staff 접근 가능 기간은 DEC-052(End / Read-only)를 따른다. **이 원칙을 영구 로그인 권리로 해석하지 않는다.**
+5. **`semester_report`는 `monthly_report` Entitlement를 필수 dependency로 두지 않는다.** Semester는 Observation · Weekly · Monthly 등 허용된 Evidence Source에서 독립 생성 가능하게 한다. 정확한 source aggregation은 PHASE 04/05.
+6. 사진 공유는 Entitlement가 아니라 기관 설정 + 아동별 동의로 제어한다 (DEC-059).
+
+**결정 이유**
+기능과 콘텐츠 범위를 한 코드로 묶으면 주차 확장이 기능 코드 폭증을 부른다. Semester를 Monthly에 종속시키면 Monthly가 없는 운영 형태(향후 상품 개편)에서 Semester를 만들 수 없게 된다.
+
+**관련**: DEC-048 · DEC-052 · DEC-057
+
+---
+
+### DEC-056 · STARTER Director Boundary
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-9 · IA-9) |
+
+**결정 내용**
+
+| 구분 | 기능 |
+|---|---|
+| **NOT INCLUDED / UPSELL** | `/director` Dashboard · 자동 누락 탐지 · 기간 집계 · Dashboard 확장 카드 · Bulk Print |
+| **STARTER에도 운영상 제공** | Director Sessions · Session History · Attendance read/edit · Observation read · Complete Report read · Parent Portal 관리 · Photo Consent 상태 · Emergency Hide · 단건 Print |
+
+제공되는 화면에서 **Dashboard의 집계 · 누락 탐지 가치를 우회 제공하지 않는다.**
+
+**결정 이유**
+대시보드의 가치는 "놓친 것을 시스템이 먼저 알려주는 것"이다. 그러나 원장이 공유를 활성화하고(C-5) 동의를 기록하고(C-6) 사고 리포트를 숨길 수 없으면 STARTER 기관은 서비스를 운영할 수 없다.
+
+**관련**: DEC-031 · DEC-043 · DEC-044
+
+---
+
+### DEC-057 · Package별 Report Entitlement (STANDARD Weekly 포함 · STARTER Weekly 전체 서식)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-10 · C-11 · IA-15 · BP-13) + **SOURCE DOCUMENT** — 상품소개서 v4 (`TeachAble_Art_Play_유치원_상품소개서_v4.pdf` — PROJECT EXTERNAL SOURCE: source verified during PHASE 03 review · original PDF exists in Project materials · PDF is not versioned inside this Git repository): Weekly = STARTER 이상 · Monthly = STANDARD 이상 · Semester Portfolio = STANDARD 이상 · STANDARD 구성 = Weekly / Monthly Report · Semester Portfolio · Director Dashboard |
+| Clarifies | **DEC-010** 결정 이유의 "STANDARD 월간·학기" 서술 |
+
+**결정 내용**
+
+| | Weekly | Monthly | Semester |
+|---|---|---|---|
+| **STARTER** | YES | NO | NO |
+| **STANDARD** | **YES** | YES | YES |
+| **PREMIUM** | YES | YES | YES |
+| **PILOT** | YES | NO | NO |
+
+- **STARTER Weekly는 축약판이 아니다.** DEC-024 5항목 Weekly 구조를 사용한다. 마케팅 표현 "주간 미니 리포트"가 있어도 별도 축약 데이터 모델을 만들지 않는다.
+- 이 결정은 **SOURCE DOCUMENT(상품소개서 v4)와 일치**하며, 문서 · 코드 간 불일치를 정리하는 Product Decision이다. 현재 코드에서 STANDARD Weekly가 빠진 문구는 Source Conflict가 아니라 **CURRENT CODE / MARKETING DRIFT**다.
+
+**기존 결정과의 관계**
+DEC-010의 결정 본문(3계층 정의)은 그대로 유효하다. DEC-010 **결정 이유** 안의 "(STARTER 주간 / STANDARD 월간·학기 / PREMIUM 전부)"는 상품별 배분을 확정한 문장이 아니었으며, 본 결정으로 STANDARD에 Weekly가 포함됨이 명확해진다 (`ACTIVE · clarified by DEC-057`).
+
+**Marketing Drift 정합화 대상 (코드 미수정 · 향후 작업)**
+`src/data/packages.ts` 비교표 "월간 · 학기 리포트" · `src/data/program-products.ts` STANDARD 설명·SEO(주간 없음). R-2(DB ≠ Marketing → Marketing 수정)에 따라 P1-14 범위에서 수정한다.
+
+**결정 이유**
+Monthly · Semester는 Weekly와 같은 주차별 관찰 흐름 위에 있어 Weekly를 빼도 교사 작업이 거의 줄지 않는다. Weekly가 없으면 STANDARD 학부모의 Portal이 한 달 중 3주 비고, STARTER → STANDARD 업그레이드가 학부모에게는 주간 소식이 끊기는 다운그레이드가 된다. STARTER 5항목 서식은 원본 STARTER 표준화 규격 §4가 "플랫폼 서식과 동일"로 지정한 것이다.
+
+**관련**: DEC-010 · DEC-024 · DEC-039 · DEC-055
+
+---
+
+### DEC-058 · HQ Sales 최소 권한
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-12 · IA-8) |
+
+**결정 내용**
+
+| ALLOW | DENY |
+|---|---|
+| Lead · Institution metadata · Contact · Product / Contract metadata (read-only) · Contract dates / status · Class count · Child count aggregate · Teacher count aggregate · Overage aggregate · Readiness summary | Child name list · Child detail · Observation · Child Voice · Growth 5 · Stage · Photo · Report · Portal token/link · Consent per child · Emergency Hide · Contract state mutation |
+
+**결정 이유**
+영업에는 규모(수치)가 필요하고 아동 신원은 필요하지 않다. 최소권한 원칙과 project-charter §3-1(영업은 아동 관찰기록·활동사진에 접근하지 않는다)을 원아 명단까지 확장한다.
+
+**관련**: P0-15 · DEC-043
+
+---
+
+### DEC-059 · Photo Consent 운영 책임
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-13 · IA-6 운영 부분) |
+
+**결정 내용** (제품 운영 책임만 정한다)
+
+| 주체 | 책임 |
+|---|---|
+| Director | 아동별 Consent State를 기록한다 |
+| Teacher | BEFORE에서 상태를 확인하고, 공개 가능한 사진만 Report에 선택한다 |
+| HQ Admin | 운영상 필요한 Consent State 확인만 한다 |
+| HQ Sales | 접근 금지 |
+| Parent | Portal에 Consent State 자체를 노출하지 않는다 |
+| Consent withdrawal | Product Requirement: 향후 공개 사진 노출 중단을 지원해야 한다 |
+
+동의의 법적 단위 · 촬영/공유 분리 · 동의 문구 · 단체 사진 · 개인정보처리방침에 대해서는 **법적 결론을 내리지 않는다** (03-commerce CO-9 · CO-10).
+
+**관련**: DEC-014 · DEC-036 · DEC-058
+
+---
+
+### DEC-060 · Parent Portal: 결석 · 미공개 주차 표시 규칙
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-14 · IA-11) |
+| Clarifies | DEC-042 "이번 주" 탭의 빈 상태 동작 |
+
+**결정 내용**
+- 결석한 주차를 Portal에서 **"결석"이라는 성장기록으로 표시하지 않는다.**
+- 학부모에게 **결석 · 교사 미작성 · 미공개 사유를 구분해서 노출하지 않는다.**
+- 이번 주에 공개된 Report가 없을 때 **이전 Report를 "이번 주 Report"처럼 보여주지 않는다.** 화면은 "현재 새로 공유된 기록이 없습니다."를 표시하고, 필요 시 "최근 공유 기록 · Week N · 실제 날짜"를 별도로 보여준다.
+- 모든 리포트 표시에 **실제 week와 date를 항상 표시**한다.
+- "이번 주"의 정확한 판정 기준은 PHASE 05/06.
+
+**기존 서술과의 관계**
+[../02-ia/report-portal-flow.md](../02-ia/report-portal-flow.md) §3 · §4-2의 "이번 주 = 가장 최근 노출 Weekly", "직전 노출 리포트 또는 빈 상태" 서술은 본 결정이 우선한다 (02-ia/open-items §7 정합화 대기).
+
+**결정 이유**
+"결석"이 성장 기록 화면에 나오면 결핍 신호로 읽힌다. 사유를 구분하면 교사 미작성이라는 운영 누락이 학부모에게 드러난다. 반대로 지난 기록을 "이번 주"로 보여주면 학부모가 오래된 내용을 새 소식으로 오해한다.
+
+**관련**: DEC-042 · DEC-043 · DEC-044
+
+---
+
+### DEC-061 · Commerce Flow · Signup · Payment Boundary
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-15) |
+
+**결정 내용**
+- P0 · P1에 **Public self-signup 없음.** 상담 우선 (Lead → 상담 → Demo → 견적 → 계약 → Contract Record → Activation → Entitlement → Onboarding).
+- "구매하기" = `purchase_interest` Lead. 즉시 결제로 가지 않는다.
+- **P0: Payment 구현 없음.** P1: Payment Adapter + manual payment status 후보. P2: PG 후보. **특정 PG는 선택하지 않는다.**
+- Commercial Contract · Service Entitlement · Payment Status를 분리한다.
+
+**관련**: DEC-017 · DEC-050
+
+---
+
+### DEC-062 · Contract Deliverable과 Branding
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-16 · BP-12 일부) |
+
+**결정 내용**
+- PREMIUM의 **현판 · 상담자료 팩은 Contract Deliverable**이며 시스템 Entitlement가 아니다.
+- PREMIUM "원 브랜딩"의 정확한 시스템 기능은 SOURCE가 없다. **P0 · P1 시스템 Branding 없음.** P2 Open (03-commerce CO-8).
+
+**관련**: DEC-055
+
+---
+
+### DEC-063 · Commercial Activation Readiness Gate
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 03 C-17) |
+
+**결정 내용**
+Product가 Catalog에 존재하거나 공개 사이트에 소개되어 있는 것과, 실제 기관에 **Service Contract를 활성화할 수 있는 것**을 구분한다.
+
+**Product Version이 계약상 INCLUDED라고 약속하는 모든 것** — Content · Report capability · Feature · Entitlement dependency — 은 Production Service Activation 전에 **모두 Service Ready**여야 한다.
+- published curriculum (필수 수업 데이터 · DEC-037 기준)
+- 약속한 week range 전체 (STARTER 1~8 · STANDARD 1~16 · PREMIUM 1~24)
+- 약속한 report capability 전체 (예: STANDARD = Weekly · Monthly · Semester)
+- 약속한 feature · entitlement dependency 전체 (예: STANDARD · PREMIUM = Director Dashboard)
+
+**"학기 후반에 필요하니 지금 없어도 된다"는 자동 예외는 없다.** STANDARD Product Version이 Weekly · Monthly · Semester · Director Dashboard · Week 1~16을 INCLUDED로 약속하면, 전부 Production Ready가 되기 전에는 STANDARD Production Activation이 불가하다. PREMIUM도 동일하다. STARTER Product Version이 "8주 요약"을 구성으로 약속한다면, CO-4가 해결되어 그 산출물이 정의되기 전까지 해당 Version의 Readiness에 영향을 준다. Pilot은 기존 P0 Ready 조건(DEC-037 · DEC-051 · DEC-054)을 유지한다.
+
+일부 기능을 나중에 제공하는 상품을 판매하려는 경우 **기존 Product Version을 불완전한 상태로 활성화하지 않는다.** 향후 별도 결정으로 (a) 별도 Product Version 또는 (b) 명시적으로 축소된 계약 Offer를 정의해야 한다.
+
+준비되지 않은 상품은 marketing · consultation · quote는 가능할 수 있으나 **production service activation은 차단**한다. 정확한 Readiness **계산 방식**은 PHASE 05에서 정하되, 위 "약속한 것 전체" 원칙은 바꾸지 않는다.
+
+현재 STANDARD · PREMIUM의 판정 근거: Week 9~16 · 17~24 **원본 자료는 Project External Source로 존재**하나(9~16 MIXED · 17~24 DRAFT/PROPOSAL), repo 내 **Production-approved operational content로 승격 · 정규화되지 않았다** (BC-1 · BC-2). 또한 Monthly(P1) · Semester(P2)가 아직 없다. 판매 고지 정합성(BP-14)은 이 Gate와 연결된다.
+
+*(2026-09-27 PHASE 03 검토 반영: "후반 기능" 처리를 명확화하고 CO-13을 이 결정으로 해소. Week 9~24 근거 표현을 정정.)*
+
+**결정 이유**
+콘텐츠가 없는 16주·24주 상품의 계약을 시스템에서 활성화하면 교사는 9주차부터 빈 화면을 만나고, 계약 이행 불능이 운영 중에 드러난다. 판매 활동과 서비스 개시를 분리하면 영업은 계속하되 이행 불가능한 활성화를 막을 수 있다. DEC-037(Pilot 필수 데이터 게이트)을 정규 상품 활성화 단위로 확장한 것이다.
+
+**관련**: DEC-037 · DEC-050 · BC-1 · BC-2 · BP-14
+
+---
+
+## 12. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
 |---|---|---|---|---|
@@ -1301,27 +1692,43 @@ DEC-046으로 `in_progress` 진입을 필수 확인 경로로 단일화해도, `
 | DEC-045 | 상품 | P0 상품·계약 운영은 기관 상세 내부 · 관리 UI P1 | ACTIVE | 사용자 (PHASE 02) |
 | DEC-046 | 수업 | Class Mode 적용 세션의 수업 시작 = BEFORE 필수 확인 통과 Teacher 경로로 단일화 | ACTIVE | 사용자 (IA-18) |
 | DEC-047 | 수업 | Class Mode 적용 세션의 `scheduled → completed` 직접 전환 금지 · 정상 흐름 단일화 | ACTIVE | 사용자 (IA-19) |
+| DEC-048 | 상품 | Product / Version / Contract / Entitlement 계층 · Entitlement는 파생 | ACTIVE | 사용자 (C-1) |
+| DEC-049 | 계약 | Contract Unit · ONE EFFECTIVE CONTRACT AT A TIME | ACTIVE | 사용자 (C-2 · BP-8) |
+| DEC-050 | 계약 | Contract State · 날짜 파생 상태 · 활성화 = HQ 확인 ∧ 시작일 | ACTIVE | 사용자 (C-3) |
+| DEC-051 | 계약 | 서비스 반 수 HARD · 초과 원아 허용 + 기록 · Pilot 15명 | ACTIVE | 사용자 (C-4 · IA-12) |
+| DEC-052 | 계약 | Suspended / Ended 접근 모델 · 기관 정지 우선 · 기간 미확정 | ACTIVE | 사용자 (C-5 · IA-10) |
+| DEC-053 | 계약 | Upgrade · Renewal = 후속 계약 · Downgrade는 갱신 시점만 | ACTIVE | 사용자 (C-6 · BP-9) |
+| DEC-054 | Pilot | Pilot = 별도 Offer · 전환 시 전체 데이터 유지 | ACTIVE | 사용자 (C-7) |
+| DEC-055 | 권한 | Feature Catalog · Content 범위 분리 · 기록 보존 · Semester 독립 | ACTIVE | 사용자 (C-8 · BP-11) |
+| DEC-056 | 권한 | STARTER Director Boundary | ACTIVE | 사용자 (C-9 · IA-9) |
+| DEC-057 | 리포트 | Package별 Report Entitlement · STANDARD Weekly 포함 (clarifies DEC-010) | ACTIVE | 사용자 (C-10 · C-11) |
+| DEC-058 | 권한 | HQ Sales 최소 권한 | ACTIVE | 사용자 (C-12 · IA-8) |
+| DEC-059 | 학부모 | Photo Consent 운영 책임 | ACTIVE | 사용자 (C-13 · IA-6) |
+| DEC-060 | 학부모 | Portal 결석 · 미공개 주차 표시 규칙 (clarifies DEC-042) | ACTIVE | 사용자 (C-14 · IA-11) |
+| DEC-061 | 상품 | 상담 우선 · Self-signup 없음 · P0 결제 없음 | ACTIVE | 사용자 (C-15) |
+| DEC-062 | 상품 | 현판 · 상담자료 팩 = Contract Deliverable · 시스템 Branding P2 | ACTIVE | 사용자 (C-16) |
+| DEC-063 | 상품 | Commercial Activation Readiness Gate · 약속한 것 전체 Ready · 후반 기능 예외 없음 | ACTIVE | 사용자 (C-17) |
 
-**총 47건 · ACTIVE 47 · SUPERSEDED 0 · WITHDRAWN 0**
+**총 63건 · ACTIVE 63 (clarified 1: DEC-010) · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 
-## 12. 다음 Decision 예정 영역
+## 13. 다음 Decision 예정 영역
 
-아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) 및 [../02-ia/open-items.md](../02-ia/open-items.md)에서 관리되며, 확정 시 DEC-048부터 부여한다.
+아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md)에서 관리되며, 확정 시 DEC-064부터 부여한다.
 
 | 예정 영역 | 확정 PHASE |
 |---|---|
-| Entitlement feature 목록 최종 확정 | PHASE 03 |
+| ~~Entitlement feature 목록 최종 확정~~ → **DEC-055로 확정** (`ai_assist` 배분은 03-commerce CO-5) | PHASE 03 |
 | 환불 · 자동갱신 · 해지 · 결제주기 정책 | PHASE 03 (사업) |
 | PG 사업자 선정 | PHASE 03 (사업) |
 | Growth 5 시계열 표현 방식 (변화 서술 vs 단계 증감 표기) | PHASE 02~04 (교육) |
 | 사진 anon 노출 방식 (service_role 확장 vs 별도 사본) | PHASE 05 (Architecture) |
-| Child Portal 링크 만료 기간 | PHASE 05 |
+| Child Portal 링크 만료 · 재발급 정책 (03-commerce CO-12 · Production Blocker) | P0 Portal Production 전 |
 | AI 원본 응답 저장 범위 | PHASE 04 |
 | Part 계층 도입 여부 | PHASE 05 |
 | Marketing↔DB 동기화 방식 (DB 직독 vs 빌드 검증) | PHASE 05 |
-| 리포트 reopen 정책 | PHASE 03 |
-| 원장에게 교사 초대·배정 권한 위임 여부 | PHASE 03 |
+| 리포트 reopen · 숨김 해제 정책 (PHASE 03에서 미처리 → 03-commerce §3 이월) | PHASE 04 |
+| 원장에게 교사 초대·배정 권한 위임 여부 (PHASE 03에서 미처리 → 03-commerce §3 이월) | PHASE 05 전 |
 | 회귀테스트 도구 선정 | PHASE 05 |
 | 16 · 24주 콘텐츠 제작 계획 | 콘텐츠 트랙 |

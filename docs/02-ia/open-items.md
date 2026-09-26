@@ -35,19 +35,21 @@
 
 ---
 
-## 2. Open Decisions (9)
+## 2. Open Decisions (PHASE 02 종료 시 9건 → PHASE 03 이후 미해결 2건: IA-3 · IA-13)
+
+> 2026-09-27 PHASE 03 상태 정합화: 해결 항목은 삭제하지 않고 상태를 표시한다. 잔여 부분은 [../03-commerce/open-items.md](../03-commerce/open-items.md)의 CO 항목으로 관리한다.
 
 | ID | 항목 | 현재 상태 / 논점 | 권고 (확정 아님) | Owner | 확정 PHASE |
 |---|---|---|---|---|---|
 | **IA-3** | Growth 지표 미선택 시 저장 방식 | (A) 행 없음 = NOT_OBSERVED / (B) NOT_OBSERVED 명시 저장. 제품 개념 4 states · UX 3 choices는 DEC-038로 확정. 지표만 선택하고 방식을 고르지 않은 경우의 저장 처리도 포함 | (A) | Architecture | PHASE 05 (AD-3 연동) |
-| **IA-6** | 사진 동의의 운영정책 · 법적 단위 | 누가 입력하는가(원장 / HQ) · 단위(아동 단위 동의 여부 / 촬영 · 학부모 공유 분리 여부) · 철회 처리 · 증빙 보관. BEFORE 필수 확인 · Pilot Ready G-8 · Portal 사진 노출이 모두 의존 | 원장이 아동 단위로 입력 | Product + 법무 | PHASE 03 |
-| **IA-8** | HQ sales의 원아 명단 열람 | 관찰기록 · 사진 금지는 HARD. 기관 상세의 원아 이름 목록은 미정 | 불가 | Product + 보안 | PHASE 03 |
-| **IA-9** | 정규 STARTER 원장의 비대시보드 Feature 최종 목록 | `/director` 홈 미포함은 HARD. 수업 운영 · 이력 · 출결 · 리포트 조회 · 학부모 공유 허용 범위 | 허용 (C-5 성립 조건) | Product + 사업 | PHASE 03 (BP-11) |
-| **IA-10** | 계약 종료 후 Read-only 기간 | 종료 후 기록 열람 · 학부모 Portal 유지 · 이관/파기 시점 | 일정 기간 읽기 전용 | 사업 + 법무 | PHASE 03 (BP-17) |
-| **IA-11** | 결석 주차의 Parent 표시 | 리포트는 만들지 않는다(확정). Portal에 "이번 주 결석" 흔적을 둘지 | 표시 안 함 | Product (교육) | PHASE 03 |
-| **IA-12** | 좌석 초과 정책 최종 | 반 수 · 반당 원아 수 초과 시 경고 / 차단. 초과요금 자동청구는 없음(DEC-018) | 경고 | 사업 | PHASE 03 (BP-6 · BP-7) |
+| **IA-6** | 사진 동의의 운영정책 · 법적 단위 | 🟡 **Resolved portion**: 운영 책임 (**DEC-059**) / **Remaining portion**: 법적 단위 · 문구 · 단체 사진 → **CO-9 · CO-10** · (이전 논점) 누가 입력하는가(원장 / HQ) · 단위(아동 단위 동의 여부 / 촬영 · 학부모 공유 분리 여부) · 철회 처리 · 증빙 보관. BEFORE 필수 확인 · Pilot Ready G-8 · Portal 사진 노출이 모두 의존 | 원장이 아동 단위로 입력 | Product + 법무 | PHASE 03 |
+| **IA-8** | HQ sales의 원아 명단 열람 | ✅ **RESOLVED by DEC-058** (원아 명단 불가) · (이전 논점) 관찰기록 · 사진 금지는 HARD. 기관 상세의 원아 이름 목록은 미정 | 불가 | Product + 보안 | PHASE 03 |
+| **IA-9** | 정규 STARTER 원장의 비대시보드 Feature 최종 목록 | ✅ **RESOLVED by DEC-056** · (이전 논점) `/director` 홈 미포함은 HARD. 수업 운영 · 이력 · 출결 · 리포트 조회 · 학부모 공유 허용 범위 | 허용 (C-5 성립 조건) | Product + 사업 | PHASE 03 (BP-11) |
+| **IA-10** | 계약 종료 후 Read-only 기간 | 🟡 **Resolved portion**: 접근 모델 (**DEC-052**) / **Remaining portion**: 유예 기간 → **CO-1** · 보관·파기 → **CO-2** · (이전 논점) 종료 후 기록 열람 · 학부모 Portal 유지 · 이관/파기 시점 | 일정 기간 읽기 전용 | 사업 + 법무 | PHASE 03 (BP-17) |
+| **IA-11** | 결석 주차의 Parent 표시 | ✅ **RESOLVED by DEC-060** (결석 표시 없음 · 사유 무구분 · 이전 리포트를 "이번 주"로 보이지 않음 · 실제 week/date 표시) · (이전 논점) 리포트는 만들지 않는다(확정). Portal에 "이번 주 결석" 흔적을 둘지 | 표시 안 함 | Product (교육) | PHASE 03 |
+| **IA-12** | 좌석 초과 정책 최종 | ✅ **RESOLVED by DEC-051** (반 수 HARD · 원아 ALLOW + OVERAGE RECORD · Pilot 15명 초과 Ready 불가) · 청구 방식은 BP-6 유지 · (이전 논점) 반 수 · 반당 원아 수 초과 시 경고 / 차단. 초과요금 자동청구는 없음(DEC-018) | 경고 | 사업 | PHASE 03 (BP-6 · BP-7) |
 | **IA-13** | Parent Weekly의 Stage 최종 표현 | Stage 라벨을 그대로 노출할지, 서술문으로 풀어 쓸지. U-1 · U-3 · PH3-1과 연결 | 서술문 | Product (교육) | PHASE 04 · 06 |
-| **IA-15** | STANDARD의 Weekly 포함 여부 | PHASE 02 HARD RULE 목록에는 STANDARD Weekly가 없고, DEC-010 비교표는 "STARTER 이상"으로 기재. 문서 간 차이 | — (추측 금지) | 사업 | PHASE 03 (BP-11 · BP-13) |
+| **IA-15** | STANDARD의 Weekly 포함 여부 | ✅ **RESOLVED by DEC-057** (STANDARD Weekly 포함) · (이전 논점) PHASE 02 HARD RULE 목록에는 STANDARD Weekly가 없고, DEC-010 비교표는 "STARTER 이상"으로 기재. 문서 간 차이 | — (추측 금지) | 사업 | PHASE 03 (BP-11 · BP-13) |
 
 ---
 
@@ -71,7 +73,7 @@
 |---|---|---|
 | **PH3-1** | Growth 5 시계열 표현 | DEC-039로 P0 Weekly는 비교 표기 없음 → **P0 차단 해소**. Portal 성장 탭(P1) · Monthly에서 다시 필요 |
 | **PH3-3** | 리포트 reopen 정책 | Weekly 흐름에 PROPOSED placeholder만 둠. **Emergency Hide의 숨김 해제 · 정정 경로도 여기서 함께 확정** |
-| **PH3-4** | Child Portal 링크 만료 기간 | 아동 단위 링크 1개를 학기 동안 쓰는 흐름(DEC-040)이 이 결정에 의존. CURRENT 30일 |
+| **PH3-4** | Child Portal 링크 만료 기간 | 아동 단위 링크 1개를 학기 동안 쓰는 흐름(DEC-040)이 이 결정에 의존. CURRENT 30일 · ↪ **MOVED → 03-commerce CO-12** (Production Blocker) |
 | **PH3-2** | 원장에게 교사 초대·배정 위임 | 변경 없음 (HQ 전용 유지 가정) |
 | **BP-1 ~ BP-10** | 계약 · 결제 · 갱신 · 해지 · 단위 | Contract 상태 흐름(draft/active/suspended/ended)만 정의. 세부 정책은 PHASE 03 |
 | **BP-11 · BP-13** | Entitlement feature 목록 · STARTER Weekly 범위 | IA-9 · IA-15를 함께 넘김 |
@@ -112,3 +114,21 @@ PHASE 03 (Product / Contract / Entitlement / Commerce) 착수 시 넘기는 입�
 | R-7 | P0 화면 수 | 낮음 | 신규 5 · 수정 19 ([screen-inventory.md §7](./screen-inventory.md#7-screen-count-inventory-1에서-계산)) |
 | R-8 | Session completed 직후 follow-up 발생 | 낮음 | 의도된 동작 (DEC-034). 문구는 비난이 아니라 안내 |
 | R-9 | 사진 동의 입력 지연 시 사진 전면 차단 | 중 | Pilot Ready 점검 항목 (G-8) · IA-6 |
+
+---
+
+## 7. PHASE 03 결정으로 갱신이 필요한 PHASE 02 서술 (정합화 대기)
+
+> PHASE 03 문서 작업의 수정 허용 범위가 `docs/02-ia/open-items.md`로 제한되어, 아래 PHASE 02 본문은 이번에 고치지 않았다. **Decision Log가 우선한다.** 다음 docs 정합화 작업에서 반영한다.
+>
+> ✅ **2026-09-27 정합화 완료** (PHASE 03 최종 검토): 아래 각 위치에 `Updated by DEC-XXX` 주석으로 반영했다. STANDARD Weekly(DEC-057) · HQ SALES(DEC-058) · STARTER Director(DEC-056) · Parent "이번 주"(DEC-060) · Contract Ended(DEC-052). role-flows의 IA-6 · IA-10 · IA-12 참조는 이 문서 §2에 해결 상태가 표시되어 있어 본문을 바꾸지 않았다.
+
+| 문서 · 위치 | 현재 서술 | 우선하는 결정 |
+|---|---|---|
+| [permission-matrix.md](./permission-matrix.md) §3 | STANDARD Weekly `◐ P (IA-15)` · 원장 비대시보드 기능 `◐ P (IA-9)` · Parent Portal `✅ P` | DEC-057 (STANDARD Weekly YES) · DEC-056 · DEC-055 |
+| [permission-matrix.md](./permission-matrix.md) §2 | HQ SALES 원아 명단 `◐ P (IA-8)` · 계약 메타 `◐ 읽기 P` | DEC-058 |
+| [permission-matrix.md](./permission-matrix.md) §4 | CONTRACT ENDED `P` | DEC-052 |
+| [report-portal-flow.md](./report-portal-flow.md) §3 · §4-2 | "이번 주 = 가장 최근 노출 Weekly" · "직전 노출 리포트 또는 빈 상태" | **DEC-060** — 이전 리포트를 "이번 주"로 보이지 않음 · "현재 새로 공유된 기록이 없습니다" + 최근 공유 기록(Week · 날짜) |
+| [report-portal-flow.md](./report-portal-flow.md) §1-3 | 결석 아동 Portal 표시 IA-11 | DEC-060 |
+| [role-flows.md](./role-flows.md) §2 · §3 | 사진 동의 IA-6 · STARTER 원장 IA-9 | DEC-059 · DEC-056 |
+| [ia-overview.md](./ia-overview.md) §4 | STARTER 원장 "나머지 경계는 PROVISIONAL (IA-9)" | DEC-056 |

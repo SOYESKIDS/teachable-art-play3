@@ -18,7 +18,7 @@ SOYE 원본 교육자료는 **확정도가 균일하지 않다.**
 |---|---|
 | Week 1~6 | 표준화 규격 v1.0이 적용된 확정본 (15섹션 · 주차당 4,000~6,500자) |
 | Week 7~8 | PDF는 존재하나 규격 미적용. 표준화 규격 문서 스스로 "원자료 없음"으로 기록 |
-| Week 9~24 | `SOURCE NOT AVAILABLE` |
+| Week 9~24 | `SOURCE NOT AVAILABLE` *[Historical baseline — updated by PHASE 03]*<br>**Updated 2026-09-27 — DEC-063 / PHASE 03**: Week 9~16 = **SOURCE EXISTS · CERTAINTY MIXED** (provenance: 9~16주 스탠다드 교사용 프로그램 설명서 PDF + 미기재 항목 초안) · Week 17~24 = **SOURCE EXISTS · CERTAINTY DRAFT / PROPOSAL** (provenance: 주제 원안 · 주차별 키워드 + 전체 초안 설계). 자료: `TeachAble_ArtPlay_24주_강의교안_데이터구조.pdf` — PROJECT EXTERNAL SOURCE (source verified during PHASE 03 review · original PDF exists in Project materials · PDF is not versioned inside this Git repository). **SOURCE EXISTS ≠ LOCAL REPO OPERATIONAL SOURCE ≠ PRODUCTION READY** — production-approved operational curriculum 미완료 |
 | 미해결 데이터 | 대상 연령 · 워크북 페이지 수 · 음원 러닝타임 · 준비물 수량 기준 · 5주차 음원 중복 · 3주차 링 개수 등 7건 |
 | 내부 불일치 | 프로그램 구성표의 성장 로드맵 7개 ≠ 성장 스토리 8개 |
 
@@ -261,8 +261,10 @@ SOURCE DOCUMENT                    DB                          기관
 |---|---|---|---|
 | Week 1~6 | ✅ 규격 확정본 (15섹션) | ✅ 즉시 | `PUBLISHED` (미해결 항목 해소 후) |
 | Week 7~8 | ⚠️ PDF 존재 / 규격 미적용 | 🟡 부분 | `DRAFT` |
-| Week 9~16 | 🔴 `SOURCE NOT AVAILABLE` | ❌ | — |
-| Week 17~24 | 🔴 `SOURCE NOT AVAILABLE` | ❌ | — |
+| Week 9~16 | 🔴 `SOURCE NOT AVAILABLE` *[Historical baseline — updated by PHASE 03]*<br>**Updated 2026-09-27 — DEC-063 / PHASE 03**: 🟡 **SOURCE EXISTS · MIXED** — PROJECT EXTERNAL SOURCE `TeachAble_ArtPlay_24주_강의교안_데이터구조.pdf` (9~16주 스탠다드 교사용 프로그램 설명서 PDF + 미기재 항목 초안) · repo 미포함 | ❌ → 🟡 미기재 항목 확정 · 규격 적용 · 승인 후 가능 (repo 이관 전) | — · **STANDARD는 DEC-063 기준 Production Service Ready 아님** |
+| Week 17~24 | 🔴 `SOURCE NOT AVAILABLE` *[Historical baseline — updated by PHASE 03]*<br>**Updated 2026-09-27 — DEC-063 / PHASE 03**: 🟡 **SOURCE EXISTS · DRAFT / PROPOSAL** — 같은 PROJECT EXTERNAL SOURCE (주제 원안 · 주차별 키워드 + 전체 초안 설계) · repo 미포함 | ❌ → 초안 확정 · 규격 적용 · 승인 후 가능 | — · **PREMIUM은 DEC-063 기준 Production Service Ready 아님** |
+
+> *Updated 2026-09-27 — DEC-063 / PHASE 03*: SOURCE EXISTS(원본 존재) ≠ LOCAL REPO OPERATIONAL SOURCE(repo에서 운영 데이터로 연결 가능) ≠ PRODUCTION READY(승인 콘텐츠 + 필수 기능 충족). 원본의 존재가 `APPROVED` · `PUBLISHED`를 뜻하지 않는다.
 
 ### 6-4. `APPROVED` 게이트에 걸리는 원본 미해결 항목
 

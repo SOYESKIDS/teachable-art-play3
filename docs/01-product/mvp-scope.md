@@ -133,7 +133,7 @@
 
 | # | 항목 | 비고 |
 |---|---|---|
-| **P2-1** | **STANDARD Week 9~16 · PREMIUM Week 17~24 제작 · 이관** | 🔴 **콘텐츠 트랙 의존** (`SOURCE NOT AVAILABLE`) |
+| **P2-1** | **STANDARD Week 9~16 · PREMIUM Week 17~24 제작 · 이관** | 🔴 **콘텐츠 트랙 의존** (`SOURCE NOT AVAILABLE`) *[Historical baseline — updated by PHASE 03]* · **Updated 2026-09-27 — DEC-063 / PHASE 03**: 원본은 PROJECT EXTERNAL SOURCE로 존재 (9~16 MIXED · 17~24 DRAFT / PROPOSAL · `TeachAble_ArtPlay_24주_강의교안_데이터구조.pdf` · repo 미포함). 과제는 처음부터 제작이 아니라 **원본 확정 → 규격 적용 → 승인 → repo 이관**. Production-approved operational curriculum 미완료 |
 | **P2-2** | **Semester Portfolio** — 아동 단위 누적 산출물 | DEC-015 |
 | **P2-3** | **콘텐츠 이용 로그 + 대시보드 실데이터** | 현재 하드코딩 DEMO 배열 |
 | **P2-4** | **배송 관리** — KIT · 워크북 (주차별 · 기관별) | |
@@ -354,7 +354,7 @@ P0-1 회귀테스트
 
 | # | 트랙 | 왜 지금 시작해야 하는가 | 산출물 |
 |---|---|---|---|
-| **T-1** | **콘텐츠 트랙** — Week 7·8 규격화 → Week 9~24 제작 | **가장 긴 리드타임.** PHASE 02~08과 무관하게 지금 시작해야 STANDARD·PREMIUM 판매가 가능해진다 | 규격 적용 확정본 |
+| **T-1** | **콘텐츠 트랙** — Week 7·8 규격화 → Week 9~24 제작 · *Updated 2026-09-27 — DEC-063 / PHASE 03: Week 9~24는 PROJECT EXTERNAL SOURCE로 원본이 존재하므로 "제작"은 원본 확정(9~16 미기재 항목 · 17~24 초안) · 규격 적용 · 승인 · repo 이관을 뜻한다* | **가장 긴 리드타임.** PHASE 02~08과 무관하게 지금 시작해야 STANDARD·PREMIUM 판매가 가능해진다 | 규격 적용 확정본 |
 | **T-2** | **원본 미해결 항목 확인** — 대상 연령 · 워크북 페이지 · 음원 러닝타임 · 준비물 수량 · 5주차 음원 중복 · 3주차 링 개수 · 구성표 불일치 · 4주차 키워드 · 가정연계 중복 | Curriculum 모델 확정과 Content Governance `APPROVED` 게이트의 전제 | 확정 답변 |
 | **T-3** | **사업 정책 트랙** — 환불 · 자동갱신 · 해지 · 결제주기 · Entitlement feature 목록 · STARTER 대시보드 강제 범위 | PHASE 03 진입 조건 | 정책 문서 |
 | **T-4** | **자산 인벤토리** — VOD · 음원 · EBOOK · MV 실물 파일 + 저작권·라이선스 범위 | PHASE 05(저장·전송 아키텍처) 진입 조건 | 자산 목록 + 권리 확인서 |
@@ -376,7 +376,7 @@ P0-1 회귀테스트
 |---|---|---|---|---|
 | **Pilot (4주)** | Week 1~4 확정본 | Weekly | P0 | 🟢 **P0 완료 시 가능** |
 | **STARTER 8주** | Week 1~6 확정 / 7~8 규격화 필요 | Weekly | P0 + P1 | 🟡 **T-1 일부 완료 후** |
-| **STANDARD 16주** | Week 9~16 `SOURCE NOT AVAILABLE` | Monthly · Semester | P1 | 🔴 **콘텐츠 제작 선행** |
-| **PREMIUM 24주** | Week 17~24 `SOURCE NOT AVAILABLE` | 전부 | P1 · P2 | 🔴 **콘텐츠 제작 선행** |
+| **STANDARD 16주** | Week 9~16 `SOURCE NOT AVAILABLE` *[Historical baseline — updated by PHASE 03]* · **Updated 2026-09-27 — DEC-063 / PHASE 03**: SOURCE EXISTS · MIXED (PROJECT EXTERNAL SOURCE) · production-approved content 미완료 | Monthly · Semester · *Updated by DEC-057: **Weekly 포함*** | P1 | 🔴 **콘텐츠 제작 선행** · *Updated: DEC-063 기준 **Production Service Ready 아님** (약속한 Weekly · Monthly · Semester · Dashboard · Week 1~16 전체 Ready 필요)* |
+| **PREMIUM 24주** | Week 17~24 `SOURCE NOT AVAILABLE` *[Historical baseline — updated by PHASE 03]* · **Updated 2026-09-27 — DEC-063 / PHASE 03**: SOURCE EXISTS · DRAFT / PROPOSAL (PROJECT EXTERNAL SOURCE) · production-approved content 미완료 | 전부 | P1 · P2 | 🔴 **콘텐츠 제작 선행** · *Updated: DEC-063 기준 **Production Service Ready 아님*** |
 
 > ⚠️ 공개 홈페이지는 현재 STANDARD · PREMIUM을 판매 중이다. 콘텐츠 제작 일정과 판매 고지의 정합성은 **사업 판단 사항**이며 [open-items.md](./open-items.md) Blocked By Business Policy에서 관리한다.
