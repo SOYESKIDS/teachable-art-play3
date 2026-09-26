@@ -4,9 +4,9 @@
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
 | 최종 갱신 | 2026-09-26 |
-| 범위 | PHASE 01 (Product Definition) 확정 사항 |
-| Branch / commit | `saas-v2` / `faa8f9a` |
-| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) |
+| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) 확정 사항 |
+| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) |
+| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) |
 
 ---
 
@@ -841,7 +841,416 @@ Week 1~4로 한정하는 이유는 원본 표준화 규격이 적용된 확정�
 
 ---
 
-## 10. 결정 요약표
+## 10. User Flow · IA (PHASE 02)
+
+> PHASE 02 검토·승인(2026-09-26)에서 확정된 결정. 화면 배치 수준의 세부는 [../02-ia/](../02-ia/) 문서에 두고, 여기에는 제품 동작·권한·데이터 요구에 영향을 주는 결정만 기록한다.
+
+### DEC-033 · 기존 URL 유지 · Class Mode 경로 구조
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+`/admin` · `/director` · `/teacher` 기존 URL 체계를 유지하고 기능을 확장한다. Class Mode는 기존 세션 경로 아래에 둔다.
+
+| 구간 | 경로 | 처리 |
+|---|---|---|
+| 진입 | `/teacher/sessions/[sessionId]` | 신규 route handler — 세션 상태에 따라 해당 구간으로 보낸다 |
+| BEFORE | `/teacher/sessions/[sessionId]/before` | 신규 |
+| DURING | `/teacher/sessions/[sessionId]/during` | 신규 |
+| AFTER ① 출결 | `/teacher/sessions/[sessionId]/attendance` | 기존 재사용 · 수정 |
+| AFTER ② 관찰 | `/teacher/sessions/[sessionId]/observations` | 기존 재사용 · 수정 |
+
+Teacher Primary Navigation은 현재 3개(오늘의 수업 · 수업 이력 · 성장 리포트)를 유지한다. Class Mode는 메뉴가 아니라 세션 카드에서 진입하는 전체화면 모드다.
+
+**결정 이유**
+출결·관찰 화면은 이미 권한(`requireTeacher` · RLS · 비대칭 권한)과 동시성 처리가 검증된 상태다. AFTER를 새로 만들면 검증된 쓰기 경로를 중복 구현하게 된다. URL을 유지하면 기존 링크·원장 follow-up 링크(`/director/sessions/{id}/…`)와의 대응도 깨지지 않는다.
+
+**관련**: DEC-004 · DEC-029 · [../02-ia/class-mode-flow.md](../02-ia/class-mode-flow.md)
+
+---
+
+### DEC-034 · Session / Observation / Report "완료"의 의미 분리
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+
+| 용어 | 의미 | 전환 시점 |
+|---|---|---|
+| **Session completed** | 교실 수업 진행 종료 | Class Mode DURING의 [수업 마치기] → `in_progress → completed` |
+| **Observation complete** | 아동 1명의 관찰 기록 완료 | AFTER에서 아동별 저장 (`record_status = 'complete'`) |
+| **Weekly complete** | 아동 1명의 주간 리포트 작성 완료 · 잠금 | 리포트 검토 화면의 작성완료 |
+
+세 상태를 UI·문서·지표에서 같은 "완료"로 부르지 않는다. Session completed 후 Observation이 미작성인 상태가 Director follow-up에 잡히는 것은 **의도된 동작**이다.
+
+**결정 이유**
+현재 원장 대시보드의 관찰 follow-up은 `completed` 세션만 대상으로 한다(`isObservationRecordTarget`). 수업 종료를 AFTER 이후로 미루면 관찰 누락이 대시보드에 나타나지 않고, 반대로 세 "완료"를 섞으면 교사는 수업을 끝냈는데 "미완료"로 보이는 혼란이 생긴다.
+
+**관련**: DEC-030 · DEC-033 · [../02-ia/state-error-model.md](../02-ia/state-error-model.md)
+
+---
+
+### DEC-035 · Quick Memo P0 교사 전용 서버 임시저장
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-1) |
+
+**결정 내용**
+Class Mode DURING의 Quick Memo는 브라우저 local-only가 아니라 **교사 전용 서버 임시저장**을 P0 Product Requirement로 한다.
+
+| 항목 | 요구 |
+|---|---|
+| 목적 | 새로고침 후 복구 · 기기 문제 시 손실 방지 · Pilot KPI "Class Mode 중 데이터 손실 0건" |
+| 접근 | 작성 교사 본인 / 담당 반 범위 |
+| Director | **노출하지 않는다** |
+| Parent | **노출하지 않는다** |
+| AI | 입력으로 사용하지 않는다 |
+| 지위 | **최종 Observation이 아니다.** 교사가 AFTER에서 참고하고 필요한 내용만 직접 Observation으로 옮긴다. 자동 이관하지 않는다 |
+
+정확한 저장 구조와 RLS는 PHASE 05에서 설계한다.
+
+**결정 이유**
+Quick Memo는 수업 중 아이의 말·행동을 붙잡는 유일한 수단이고, 기억에 의존하는 기록 문제(Teacher Pain Point)를 푸는 장치다. local-only는 기기 교체·저장소 삭제·브라우저 오류 시 복구할 수 없다. 원장 비노출은 DEC-030의 "draft 비노출" 원칙과 같은 이유(초안 단계 자기검열 방지)다.
+
+**관련**: DEC-030 · DEC-033 · Invariant AI-10
+
+---
+
+### DEC-036 · BEFORE 필수 안전·개인정보 확인의 서버 보존과 수업 시작 조건
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-2) |
+
+**결정 내용**
+BEFORE 확인 항목을 두 종류로 나눈다.
+
+| 구분 | 예 | P0 보존 | 수업 시작 조건 |
+|---|---|---|---|
+| **A. Optional preparation check** | 준비물 확인 | 사용자 편의 체크. 서버 감사기록 필수 아님 | 아님 |
+| **B. Required safety/privacy confirmation** | 안전 확인 · 사진/개인정보 확인 (원본 §4-C) | **서버에 확인 상태를 보존** — 최소 개념: who · when · session · confirmation state | **필수** — 완료되어야 Class Mode [수업 시작] 가능 |
+
+정확한 저장 구조는 PHASE 05에서 설계한다.
+
+**결정 이유**
+§4-C는 원본이 전 주차 고정문구로 지정한 안전·개인정보 확인이다. 사진 동의 확인이 기록으로 남지 않으면 사고 발생 시 확인 여부를 증명할 수 없다. 반면 준비물 체크까지 감사 대상으로 만들면 교사 입력 부담만 늘어난다.
+
+**관련**: DEC-014 · DEC-033 · [../02-ia/class-mode-flow.md](../02-ia/class-mode-flow.md)
+
+---
+
+### DEC-037 · Pilot 필수 커리큘럼 데이터 게이트
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+P0 Pilot(Week 1~4)에서는 필수 커리큘럼 데이터가 누락된 상태로 수업을 시작시키지 않는다.
+
+| 지점 | 동작 |
+|---|---|
+| Pilot Ready 점검 | Week 1~4 발행 커리큘럼 + 필수 수업 데이터 존재를 확인한다 |
+| Class Mode 직접 URL 접근 | 필수 데이터가 부족하면 "수업 내용이 아직 준비되지 않았습니다" 상태로 **차단**한다 |
+| 선택·부가 섹션 누락 | 해당 섹션만 숨기고 진행을 허용한다 |
+
+Required Content Set(어떤 섹션이 필수인가)은 PHASE 05에서 구체적으로 정의한다.
+
+**결정 이유**
+Class Mode의 가치는 교사가 종이 가이드 없이 수업하는 것이다. 핵심 단계·프롬프트가 빠진 상태로 진입시키면 수업 중에 교사가 막히고, V-1(화면으로 수업 진행) 검증이 콘텐츠 누락 때문에 실패한 것인지 제품 때문에 실패한 것인지 구분할 수 없다.
+
+**관련**: DEC-028 · DEC-032 · content-governance G-8
+
+---
+
+### DEC-038 · Observation Stage: 4-state 개념 / 3개 명시 선택 UX
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+Observation Stage의 **제품 개념은 4가지 그대로**다 (기록 없음 · 함께 · 보고 나서 · 스스로). 교사 UI는 다음과 같이 구성한다.
+
+| 항목 | 내용 |
+|---|---|
+| 기본 상태 | 모든 Growth 지표는 **기록 없음**이 기본값이다. 교사가 "기록 없음"을 매번 누르지 않는다 |
+| 명시 선택 | 교사가 관찰된 Growth 지표를 선택했을 때만 **함께 · 보고 나서 · 스스로** 3개 선택지를 보여준다 |
+| 요약 | Product Concept = 4 states · Explicit Teacher Choices after observation = 3 |
+| 표현 금지 | 숫자 · 상/중/하 · 화살표 · 진행바 · 점수 색 · 레이더차트 · 달성률 |
+
+이 결정은 DEC-007 · DEC-008을 **대체하지 않는다** (교사 직접 선택, AI 판정·추천 금지, 평가가 아님은 그대로다).
+
+저장 방식 — (A) 행 없음 = `NOT_OBSERVED` / (B) `NOT_OBSERVED` 명시 저장 — 은 PHASE 05 Architecture Decision으로 남긴다 (open-items AD-3 · 02-ia IA-3).
+
+**결정 이유**
+15명 × 5지표에서 "기록 없음"을 명시적으로 누르게 하면 최대 75회의 불필요한 탭이 생기고, "기록 없음" 버튼을 누르는 행위 자체가 결핍 판정처럼 느껴진다(U-2). 기본값으로 두면 입력 부담과 평가 인상이 함께 줄어든다.
+
+**관련**: DEC-005 · DEC-007 · DEC-008
+
+---
+
+### DEC-039 · Weekly Report = Child × Week · 반 단위 일괄 조립 · P0 AI 없음
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+
+| 항목 | 내용 |
+|---|---|
+| 단위 | **아동 × 주차(week_no)**. 자유 기간 입력을 쓰지 않는다. 분할 운영으로 한 주에 세션이 2개면 두 관찰을 모두 근거로 쓴다 |
+| 생성 | 교사가 반 × 주차 대기열에서 관찰 완료 아동의 draft를 **일괄 조립**한다 |
+| 교사 작업 | 아이의 말 · 교사 관찰 확인(관찰에서 복사된 값) + 사진 0~3장 선택 + 작성완료 |
+| 편집 범위 | 리포트에서 고친 문장은 리포트 사본에만 반영된다. 관찰 원문은 바뀌지 않는다 (AI-10 · AI-11) |
+| AI | **P0 Weekly에는 AI 기능이 없다.** 문장 다듬기는 P1 |
+| 비교 | Weekly는 지난주와 비교 표기를 하지 않는다 |
+| 관찰 없음 | 관찰이 complete가 아닌 아동은 draft를 만들지 않는다 (C-3) |
+
+**결정 이유**
+DEC-024가 교사 입력을 2항목으로 줄였으므로 남은 병목은 "15명을 하나씩 만드는 반복"이다. 일괄 조립과 완료 후 다음 아동 자동 이동이 V-3(아동당 3분)의 실질 수단이다. P0에서 AI를 빼면 V-7(AI 없이 운영)이 구조적으로 보장되고, 비교 표기를 빼면 PH3-1(시계열 표현)이 P0를 차단하지 않는다.
+
+**관련**: DEC-009 · DEC-010 · DEC-024 · DEC-030
+
+---
+
+### DEC-040 · Child Secure Portal 신규 route · 아동 단위 공유 활성
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-5) |
+
+**결정 내용**
+- 신규 route: **`/share/portal/[portalId]`** (+ 대응 resolve API). 토큰은 기존과 같이 `#fragment`로 전달한다.
+- 기존 `/share/growth-report/[shareId]`는 호환성을 위해 유지한다 (전환 정책은 DEC-041).
+- 공유 활성/중지는 **아동 단위**다. 원장이 아동 Portal을 한 번 활성화하면, 이후 Teacher Complete된 리포트는 원장 추가 조치 없이 Portal에 노출된다 (C-5: Teacher Complete ∧ Portal 공유 활성 ∧ 숨김 아님).
+
+**결정 이유**
+식별 대상이 리포트에서 아동으로 바뀌고, 노출 범위·DTO가 다르다. 같은 경로에 두 의미를 섞으면 resolve 로직과 로그 해석이 모호해진다. `/share/` 접두사는 유지해 기존 no-store · noindex · no-referrer 정책을 동일하게 적용한다. 아동 단위 활성은 DEC-030(원장 매 건 조치 없음)을 공유 단계에서도 성립시킨다.
+
+**관련**: DEC-013 · DEC-030 · DEC-041 · Invariant AI-14
+
+---
+
+### DEC-041 · Legacy report share — Production Cutover 정책
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-14 → IA-5 확정 시 함께) |
+
+**결정 내용**
+
+| 시점 | 기존 report share |
+|---|---|
+| 개발 중 | 신규 발급을 **중단하지 않는다** (운영 기능 유지) |
+| Child Secure Portal **Production Cutover** 시점 | 기존 report share **신규 발급 중단** |
+| Cutover 이후 | 이미 발급된 링크는 **만료 또는 revoked될 때까지 정상 동작**한다. 원장은 만료 전까지 기존 링크 조회·중지를 계속 할 수 있다 |
+
+**결정 이유**
+Portal이 운영 투입되기 전에 기존 공유를 끊으면 현재 이용 기관의 학부모 소통이 중단된다. 기존 링크는 트리거로 최대 30일이면 자연 소멸하므로, 강제 폐기 없이 전환할 수 있다.
+
+**관련**: DEC-040
+
+---
+
+### DEC-042 · Parent Portal P0 Navigation = 이번 주 / 지난 기록
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-4) |
+
+**결정 내용**
+P0 Portal Navigation은 **2개**만 둔다.
+
+1. **이번 주** — 오늘의 활동 · 아이의 작품 · 아이의 말 · 교사 관찰 · 가정연계 Tip · 다음 주 예고
+2. **지난 기록** — 노출 가능한 이전 리포트 목록 → 상세
+
+별도의 "활동" · "가정연계" P0 탭을 만들지 않는다. P1: 성장 · 작품 / P2: 학기 포트폴리오.
+
+**결정 이유**
+DEC-024의 Weekly 5항목이 이미 활동과 가정연계를 포함하므로 별도 탭은 같은 정보를 두 번 보여준다. 학부모는 모바일에서 링크를 한 번 열어 읽는 사용자이므로 탐색 단계가 적을수록 V-5(열람·이해) 가능성이 높다. product-definition §12-2의 P0 구성 요소(이번 주 · 활동 · 가정연계 · 지난 기록 · 인쇄)는 정보로서 모두 유지되며, 배치만 2개 화면으로 통합한다.
+
+**관련**: DEC-013 · DEC-024 · DEC-040
+
+---
+
+### DEC-043 · Report Emergency Hide (P0)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-7 수정 · P1 → P0) |
+
+**결정 내용**
+Portal에 노출된 리포트 **1건**을 즉시 숨기는 최소 Emergency Visibility Control을 P0에 둔다.
+
+| 항목 | 내용 |
+|---|---|
+| 사용 상황 | 공개 후 잘못된 사진 · 개인정보 문제 · 중대한 오타/내용 오류 발견 |
+| 권한 | Director · 권한 있는 HQ (admin. **sales 제외**) |
+| 범위 | 리포트 1건. **Portal 전체 revoke와 분리**한다 |
+| 필요 개념 | `visible / hidden` · hidden reason · hidden by · hidden at |
+| 학부모 화면 | 해당 리포트가 목록·이번 주에서 사라진다. 숨김 사유·흔적을 표시하지 않는다 |
+| 교사 | 자기 리포트가 숨겨졌다는 상태와 사유를 볼 수 있다 |
+
+**이것은 사전승인이 아니다.** 기본 흐름은 그대로 Teacher Complete → Publish Eligible → Portal 활성이면 자동 노출이다. 이 기능을 이유로 원장 사전승인을 추가하지 않는다.
+
+숨김 해제(재노출) 허용 여부와 숨긴 리포트의 정정 경로는 리포트 reopen 정책(open-items PH3-3)과 함께 PHASE 03에서 확정한다. 저장 구조는 PHASE 05.
+
+**결정 이유**
+DEC-030으로 사전승인을 없앴기 때문에, 공개 후 문제가 발견되었을 때 되돌릴 수단이 반드시 있어야 한다. Portal 전체 revoke는 정상 리포트까지 모두 끊고 링크 재발급을 강요하므로 사고 대응으로는 과하다. 사진 오노출은 개인정보 사고이므로 P1까지 기다릴 수 없다.
+
+**관련**: DEC-014 · DEC-030 · DEC-040
+
+---
+
+### DEC-044 · 접근 실패 UX: 404 / Not Entitled / 학부모 무구분
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+
+| 상황 | 보여주는 것 |
+|---|---|
+| 테넌트 · 역할 · 배정 범위 밖의 자원 | 기존과 같이 **"찾을 수 없거나 접근 권한이 없습니다"** (존재 여부 무구분) |
+| 콘텐츠 주차가 Entitlement 범위 밖 | 없는 것으로 보인다 (조회 0건) |
+| 기관이 보유한 기능이지만 **상품이 허용하지 않음** | **"현재 이용 상품에 포함되지 않은 기능"** 안내 화면 (404 아님) |
+| 학부모 링크 invalid · expired · revoked | **하나의 화면**. 사유를 구분하지 않는다 (Invariant AI-14). 사유 구분은 원장 화면에서만 한다 |
+| 정규 STARTER 원장 | `/director` 홈을 메뉴에서 숨기고, 로그인 착지를 `/director/sessions`로 한다. 직접 접근 시 Not Entitled 안내 |
+
+**결정 이유**
+존재 탐지를 막아야 하는 곳(테넌트 경계·학부모 링크)과, 숨길 이유가 없고 영업 경로를 안내해야 하는 곳(상품 기능 차이)은 목적이 다르다. 둘을 같은 404로 처리하면 원장은 "고장"으로 오해하고, 반대로 테넌트 경계에서 안내를 주면 존재 여부가 새어 나간다.
+
+**관련**: DEC-016 · DEC-031 · Invariant AI-9 · AI-14
+
+---
+
+### DEC-045 · P0 상품·계약 운영은 기관 상세 내부에서
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 검토) |
+
+**결정 내용**
+- P0에서는 별도 Product / Contract 관리 화면을 만들지 않는다. 상품(Pilot · STARTER · STANDARD · PREMIUM)은 기준 데이터로 두고, **기관 상세 안의 "계약·이용권" 섹션**과 **온보딩 0단계(상품·계약)**에서 Contract / Entitlement를 운영한다.
+- `/admin/products` · `/admin/contracts` 별도 관리 UI는 **P1**.
+- Pilot은 정규상품과 다른 별도 Entitlement로 프로비저닝한다 (DEC-031 · DEC-032).
+
+**결정 이유**
+Pilot은 1~2개 기관이다. 상품 편집 화면은 4개 상품을 바꿀 일이 거의 없는 단계에서 P0 화면 수만 늘린다. 계약은 기관 단위로 발생하므로 기관 상세에 두는 것이 운영 흐름과도 맞다.
+
+**관련**: DEC-016 · DEC-031 · DEC-032
+
+---
+
+### DEC-046 · Class Mode 적용 세션의 수업 시작은 BEFORE 필수 확인을 통과한 Teacher 경로로 단일화
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-18) |
+
+**결정 내용**
+P0 Pilot 및 Class Mode가 적용되는 세션에서 `scheduled → in_progress` 전환은 **Teacher가 Class Mode BEFORE의 필수 안전·개인정보 확인을 완료한 뒤 [수업 시작]을 눌렀을 때만** 발생한다.
+
+```
+scheduled
+  → BEFORE
+  → required safety/privacy confirmation   (DEC-036)
+  → Teacher [수업 시작]
+  → in_progress
+```
+
+| 경로 | CURRENT | TARGET (P0 · Class Mode 적용 세션) |
+|---|---|---|
+| Teacher `/teacher` 오늘 화면 [수업 시작] | 세션을 직접 `in_progress`로 전환 | **직접 전환하지 않는다.** `/teacher/sessions/[sessionId]` 또는 BEFORE로 이동시킨다 |
+| Director `/director/sessions` [수업 시작] | 세션을 직접 `in_progress`로 전환 | **직접 전환하지 않는다.** Director는 교사의 필수 확인을 대신하지 않는다. 운영 조회 · 출결 정정 · 취소 등 허용된 기능은 유지한다 |
+| HQ 프로그램 배정 화면의 상태 변경 | 세션을 `in_progress`로 전환 가능 | 필수 확인 없이 `in_progress`로 전환하는 경로를 두지 않는다 |
+| 우회 경로 | — | **P0에 두지 않는다** |
+
+HQ / Admin의 비상 강제 상태변경이 필요한 경우는 PHASE 05 Architecture에서 **audit log가 있는 별도 예외 경로**로 검토한다. 지금 구현하지 않는다.
+
+**결정 이유**
+DEC-036이 필수 안전·개인정보 확인을 수업 시작 조건으로 정했지만, CURRENT에는 교사 오늘 화면과 원장 수업 운영 화면에서 확인 없이 `in_progress`로 가는 버튼이 있다. 이 경로가 남으면 필수 확인은 선택 사항이 되고, 사진 동의 확인 여부를 증명할 수 없게 된다. 확인은 교실에 있는 교사만 할 수 있으므로 원장이 대신할 수 없다.
+
+**관련**: DEC-034 · DEC-036 · DEC-033 · [../02-ia/class-mode-flow.md](../02-ia/class-mode-flow.md)
+
+---
+
+### DEC-047 · Class Mode 적용 세션의 `scheduled → completed` 직접 전환 금지
+
+| | |
+|---|---|
+| 결정일 | 2026-09-26 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 02 IA-19) |
+
+**결정 내용**
+SaaS 2.0 Class Mode 적용 세션에서는 `scheduled → completed` 직접 전환(CURRENT "빠른 완료")을 제거하고, 다음 정상 흐름으로 단일화한다.
+
+```
+scheduled
+  → BEFORE
+  → required safety/privacy confirmation   (DEC-036)
+  → Teacher [수업 시작]                      (DEC-046)
+  → in_progress
+  → DURING
+  → Teacher [수업 마치기]
+  → completed
+```
+
+| 항목 | 결정 |
+|---|---|
+| Teacher 빠른 [완료] | Class Mode 적용 세션에서 **제거** |
+| Director `scheduled → completed` 직접 완료 | Class Mode 적용 세션에서 **제거** |
+| HQ / Admin 일반 운영 UI | `scheduled → completed` 직접 전환 **불허** |
+| 취소 | 기존 정책 유지 — `scheduled → cancelled` · `in_progress → cancelled` 허용 |
+| `completed`의 의미 | "교실 수업 진행이 종료되었다"만 뜻한다. Observation 완료 · Weekly 완료는 별도 상태다 (DEC-034 유지) |
+| 적용 범위 | SaaS 2.0 Class Mode 대상 세션의 TARGET FLOW. **1.0의 과거 `completed` 기록은 변경하지 않는다** |
+| Emergency Override | 데이터 복구 · 운영 오류 정정 · 마이그레이션 등으로 강제 상태변경이 필요한 경우 PHASE 05 Architecture에서 **admin only · explicit reason · actor · timestamp · audit log**를 갖춘 별도 예외 경로로 검토한다. **P0 일반 UI에는 구현하지 않는다** |
+
+**결정 이유**
+DEC-046으로 `in_progress` 진입을 필수 확인 경로로 단일화해도, `scheduled`에서 바로 `completed`로 가는 경로가 남으면 필수 안전·개인정보 확인 없이 "수업이 진행된 세션"이 기록된다. 이는 DEC-036 · DEC-046이 막으려는 결과를 옆 경로로 허용하는 것이다. 또한 `completed`가 원장 관찰 follow-up의 기준(`isObservationRecordTarget`)이므로, 실제 수업 흐름을 거치지 않은 `completed`는 운영 지표의 신뢰도도 떨어뜨린다.
+
+**관련**: DEC-034 · DEC-036 · DEC-046 · [../02-ia/state-error-model.md](../02-ia/state-error-model.md)
+
+---
+
+## 11. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
 |---|---|---|---|---|
@@ -877,14 +1286,29 @@ Week 1~4로 한정하는 이유는 원본 표준화 규격이 적용된 확정�
 | **DEC-030** | 리포트 | **Weekly 원장 사전승인 불필요** | ACTIVE | 사용자 (O-2) |
 | **DEC-031** | 상품 | **STARTER 대시보드 미포함 시스템 강제 · Pilot 별도 entitlement** | ACTIVE | 사용자 (O-3) |
 | **DEC-032** | Pilot | **Pilot 범위 확정 (1~2기관/4주/Week 1~4/Weekly)** | ACTIVE | 사용자 (O-4) |
+| DEC-033 | IA | 기존 URL 유지 · Class Mode 경로 구조 · AFTER 재사용 | ACTIVE | 사용자 (PHASE 02) |
+| DEC-034 | IA | Session / Observation / Report "완료" 의미 분리 | ACTIVE | 사용자 (PHASE 02) |
+| DEC-035 | 수업 | Quick Memo P0 교사 전용 서버 임시저장 | ACTIVE | 사용자 (IA-1) |
+| DEC-036 | 수업 | BEFORE 필수 안전·개인정보 확인 서버 보존 · 수업 시작 조건 | ACTIVE | 사용자 (IA-2) |
+| DEC-037 | 커리큘럼 | Pilot 필수 커리큘럼 데이터 게이트 | ACTIVE | 사용자 (PHASE 02) |
+| DEC-038 | 관찰 | Stage 4-state 개념 / 3개 명시 선택 UX | ACTIVE | 사용자 (PHASE 02) |
+| DEC-039 | 리포트 | Weekly = Child × Week · 일괄 조립 · P0 AI 없음 | ACTIVE | 사용자 (PHASE 02) |
+| DEC-040 | 학부모 | Child Portal 신규 route · 아동 단위 공유 활성 | ACTIVE | 사용자 (IA-5) |
+| DEC-041 | 학부모 | Legacy report share Production Cutover 정책 | ACTIVE | 사용자 (IA-14) |
+| DEC-042 | 학부모 | Portal P0 Navigation = 이번 주 / 지난 기록 | ACTIVE | 사용자 (IA-4) |
+| DEC-043 | 리포트 | Report Emergency Hide P0 | ACTIVE | 사용자 (IA-7) |
+| DEC-044 | 권한 | 404 / Not Entitled / 학부모 무구분 접근 실패 UX | ACTIVE | 사용자 (PHASE 02) |
+| DEC-045 | 상품 | P0 상품·계약 운영은 기관 상세 내부 · 관리 UI P1 | ACTIVE | 사용자 (PHASE 02) |
+| DEC-046 | 수업 | Class Mode 적용 세션의 수업 시작 = BEFORE 필수 확인 통과 Teacher 경로로 단일화 | ACTIVE | 사용자 (IA-18) |
+| DEC-047 | 수업 | Class Mode 적용 세션의 `scheduled → completed` 직접 전환 금지 · 정상 흐름 단일화 | ACTIVE | 사용자 (IA-19) |
 
-**총 32건 · ACTIVE 32 · SUPERSEDED 0 · WITHDRAWN 0**
+**총 47건 · ACTIVE 47 · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 
-## 11. 다음 Decision 예정 영역
+## 12. 다음 Decision 예정 영역
 
-아래는 아직 Decision이 아니다. [open-items.md](../01-product/open-items.md)에서 관리되며, 확정 시 DEC-033부터 부여한다.
+아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) 및 [../02-ia/open-items.md](../02-ia/open-items.md)에서 관리되며, 확정 시 DEC-048부터 부여한다.
 
 | 예정 영역 | 확정 PHASE |
 |---|---|
