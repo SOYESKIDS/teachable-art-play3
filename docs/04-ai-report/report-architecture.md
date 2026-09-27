@@ -85,7 +85,7 @@
 | 대표 작품 · 사진 | 교사 선택 |
 
 - 기존 3블록(`growth_changes` · `observation_summary` · `next_support`)은 DEC-011에 따라 "활동 이야기 · 관찰된 모습 · 다음 지원"에 재사용할 수 있다.
-- 서비스 내부 의미: **"월간 요약 리포트 = 4주 단위."** UI · 마케팅 문구도 "월간 요약 리포트 · 4주 단위"처럼 맞춘다 (Copy는 PHASE 06).
+- 서비스 내부 의미: **"월간 요약 리포트 = 4주 단위."** UI · 마케팅 문구도 "월간 요약 리포트 · 4주 단위"처럼 맞춘다 (Copy는 PHASE 06). *→ DEC-104 확정: "월간 요약 · 4주 단위" · block "월간 요약 · 1~4주" · 달력 월 이름 금지*
 - CO-11(계약 달력 기간)과 무관하게 동작한다.
 
 ---
@@ -113,7 +113,7 @@
 | 8주 Timeline · Week 번호 · 실제 날짜 · Weekly 제목 · Weekly에서 이미 선택된 아이의 말/선택 · 이미 선택된 대표 사진(있으면) · 각 Weekly 링크 | 새 성장 판정 · 새 AI Narrative · 새 Teacher Complete · 새 Revision |
 | 기존 Weekly **Snapshot에서만** deterministic 생성 | — |
 
-- UI 명칭 후보: "8주 기록 요약" / "8주 기록 모아보기" (Copy PHASE 06).
+- UI 명칭 후보: "8주 기록 요약" / "8주 기록 모아보기" (Copy PHASE 06). *→ DEC-104 확정: App UI "8주 기록 모아보기" · 마케팅 상품 설명의 "8주 요약"은 유지 가능*
 - **Regular STARTER Production Activation 전에 Service Ready** (DEC-063).
 - Weekly가 없는 주차는 Timeline에서 **표시하지 않거나 중립적으로 비워 두고**, 사유(결석 · 미작성 · 미공개)를 구분하지 않는다 (DEC-060).
 

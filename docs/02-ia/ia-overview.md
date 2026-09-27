@@ -101,20 +101,20 @@
 
 | Role | Primary Navigation (TARGET) | CURRENT 대비 |
 |---|---|---|
-| **Teacher** | 오늘의 수업 · 수업 이력 · 성장 리포트 | **변경 없음.** Class Mode 중에는 StaffShell 메뉴를 숨기고 "나가기"만 둔다 |
+| **Teacher** | 오늘의 수업 · 수업 이력 · 성장 리포트 (*DEC-097: 표시명 "리포트"*) | **변경 없음.** Class Mode 중에는 StaffShell 메뉴를 숨기고 "나가기"만 둔다 |
 | **Director (Pilot · STANDARD · PREMIUM)** | 홈 · 수업 운영 · 수업 이력 · 성장 리포트 · **학부모 공유** | 메뉴 1개 추가 |
 | **Director (정규 STARTER)** | 수업 운영 · 수업 이력 · 성장 리포트 · 학부모 공유 | "홈" 숨김 (HARD RULE) · 나머지 운영 화면 제공 · 집계/누락 탐지 우회 제공 금지 (*Updated by DEC-056*) |
 | **HQ admin** | 운영 대시보드 · 오픈 준비 · 새 기관 도입 · 기관 관리 · 수업 프로그램 · 문의 관리 (P1: 상품·계약 · 콘텐츠) | P0 메뉴 변경 없음. 계약은 기관 상세 내부 |
-| **HQ sales** | 문의 관리 · 기관 관리 (메타데이터만) | **신규 분기** (P0-15). 현재 로그인 착지 `/admin/leads`는 그대로 적합 |
+| **HQ sales** | 문의 관리 · 기관 관리 (메타데이터만) · *DEC-097: 별도 Sales Shell* | **신규 분기** (P0-15). 현재 로그인 착지 `/admin/leads`는 그대로 적합 |
 | **Parent** | 이번 주 · 지난 기록 | 신규 (DEC-042) |
 
-재사용 원칙: `StaffShell` · `AdminNav`를 유지하고 메뉴 배열에 역할 · Entitlement 필터만 적용한다. 신규 셸은 **Class Mode 전체화면 레이아웃 1개**뿐이다.
+재사용 원칙: `StaffShell` · `AdminNav`를 유지하고 메뉴 배열에 역할 · Entitlement 필터만 적용한다. 신규 셸은 **Class Mode 전체화면 레이아웃 1개**뿐이다. *Clarified by DEC-097 (PHASE 06): 역할별 Shell을 분리한다 — Teacher · Class Mode · Director · HQ Admin · **HQ Sales(별도 Shell)** · Parent. 기존 StaffShell · AdminNav는 재사용 · 조정 대상이다 ([../06-ux-design/navigation-screen-system.md](../06-ux-design/navigation-screen-system.md)).*
 
 ---
 
 ## 5. Responsive Usage Context
 
-> 레이아웃 디자인이 아니라 **정보 우선순위 차이**만 정의한다. 레이아웃은 PHASE 06.
+> 레이아웃 디자인이 아니라 **정보 우선순위 차이**만 정의한다. 레이아웃은 PHASE 06. *→ [../06-ux-design/design-system-accessibility.md](../06-ux-design/design-system-accessibility.md) §7 (DEC-110)*
 
 | 대상 | 기준 기기 | 정보 우선순위 |
 |---|---|---|

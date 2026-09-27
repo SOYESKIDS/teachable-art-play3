@@ -4,9 +4,9 @@
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
 | 최종 갱신 | 2026-09-26 |
-| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) · PHASE 05 (Data / Security) 확정 사항 |
-| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) · `1c7afe9` (PHASE 05 기준) |
-| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) · [../05-data-security/open-items.md](../05-data-security/open-items.md) |
+| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) · PHASE 05 (Data / Security) · PHASE 06 (UX / Design System) 확정 사항 |
+| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) · `1c7afe9` (PHASE 05 기준) · `dc5ba3d` (PHASE 06 기준) |
+| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) · [../05-data-security/open-items.md](../05-data-security/open-items.md) · [../06-ux-design/open-items.md](../06-ux-design/open-items.md) |
 
 ---
 
@@ -1083,7 +1083,7 @@ Portal이 운영 투입되기 전에 기존 공유를 끊으면 현재 이용 �
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-060 and DEC-066 (Weekly 섹션 순서는 DEC-066 · "이번 주" 판정은 DEC-060 · DEC-103 · 이번 주 / 지난 기록 navigation 의미는 유지) |
 | 출처 | 사용자 확정 (PHASE 02 IA-4) |
 
 **결정 내용**
@@ -1552,7 +1552,7 @@ Monthly · Semester는 Weekly와 같은 주차별 관찰 흐름 위에 있어 We
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-103 ("이번 주" = 현재 로컬 주간에 수업 일정이 잡힌 program week의 visible Weekly) |
 | 출처 | 사용자 확정 (PHASE 03 C-14 · IA-11) |
 | Clarifies | DEC-042 "이번 주" 탭의 빈 상태 동작 |
 
@@ -1728,7 +1728,7 @@ Product가 Catalog에 존재하거나 공개 사이트에 소개되어 있는 �
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-104 (UI 표기 "월간 요약 · 4주 단위" · "월간 요약 · 1~4주") |
 | 출처 | 사용자 확정 (PHASE 04 A-5) + SOURCE DOCUMENT 상품소개서 v4 ("월간 요약 리포트 · 월 1회 · STANDARD 이상" — PROJECT EXTERNAL SOURCE, verified during PHASE 04 review) |
 
 **결정 내용**
@@ -1769,7 +1769,7 @@ Weekly 식별자가 주차 기반이므로 달력 월을 쓰면 주차가 월 �
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-104 (App UI 명칭 "8주 기록 모아보기") |
 | 출처 | 사용자 확정 (PHASE 04 A-21 · CO-4) + SOURCE DOCUMENT 상품소개서 v4 (STARTER "주간 미니 리포트 + 8주 요약" — PROJECT EXTERNAL SOURCE) |
 
 **결정 내용**
@@ -1919,7 +1919,7 @@ Weekly 식별자가 주차 기반이므로 달력 월을 쓰면 주차가 월 �
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-100 · DEC-102 (Parent 설명 문구 · "업데이트됨 YYYY.MM.DD" 확정) |
 | 출처 | 사용자 확정 (PHASE 04 A-15 · IA-13 · AR-9 · AR-6 · AR-7) |
 
 **결정 내용**
@@ -2364,7 +2364,339 @@ PHASE 05 감사에서 현재 Sales가 모든 기관의 관찰 · 인용 · 사�
 
 ---
 
-## 14. 결정 요약표
+## 14. UX · Design System (PHASE 06)
+
+> PHASE 06 검토·승인(2026-09-27)에서 확정된 UX · 화면 상태 · 문구 · 디자인 시스템 결정. 상세는 [../06-ux-design/](../06-ux-design/). **구현(src · CSS · route)은 PHASE 07.** 원 분석의 UX-1 ~ UX-35 대응표는 [../06-ux-design/architecture-overview.md §6](../06-ux-design/architecture-overview.md). 법적 결론(CO-2 · CO-9 · CO-10 · CO-12)과 DB-9는 결정하지 않았다.
+
+### DEC-097 · Role Shell · Navigation · Context
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-1 ~ UX-4) |
+
+**결정 내용**
+- 역할별 App Shell을 분리한다: Teacher · Class Mode(전체 화면) · Director · HQ Admin · **HQ Sales(별도 Shell — Admin 메뉴를 숨기는 방식 아님)** · Parent. 하나의 Shell로 합치지 않는다.
+- 현재 context를 항상 표시한다 (예: `SOYE KIDS 본사` / `○○유치원 › 햇님반`). HQ 전역 역할과 기관 역할의 권한을 한 화면에 섞지 않으며, 전환은 명시적 행동으로만 한다.
+- Teacher P0 메뉴: **오늘의 수업 · 수업 이력 · 리포트**. 계약 · 상품 · Admin 메뉴 없음.
+- Director P0 메뉴: 홈(`director_dashboard` 권한 시) · 수업 운영 · 수업 이력 · 리포트 · 학부모 공유. **STARTER는 홈 제외 · 로그인 착지 = 수업 운영** (DEC-044 · DEC-056). "대시보드 없음"은 원장 화면 전체 없음이 아니다.
+- HQ Admin: 운영 · 서비스 준비 · 새 기관 도입 · 기관 관리(계약 포함) · 수업 프로그램 · 문의 관리. 민감 아동 기록을 자유 탐색하는 메뉴 없음.
+- HQ Sales: 문의 · 기관 영업 요약 · 상품 안내 · 준비 현황 요약. **아동 단위 경로 자체가 없다.**
+- Parent: **이번 주 · 지난 기록** (DEC-042).
+- 상품 미포함 기능: 메뉴 · 업무 버튼은 **숨김**, 직접 접근 시 상태 화면. 업그레이드 안내는 Director 상태 화면에서만 · Teacher에게 판매 UX 없음.
+
+**관련**: DEC-042 · DEC-044 · DEC-056 · DEC-058 · DEC-079
+
+---
+
+### DEC-098 · Class Mode · BEFORE · Session Action UX
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-5 · UX-6 · UX-20 · UI-7) |
+
+**결정 내용**
+- Class Mode는 **별도 immersive 전체 화면 layout**이다. 화면이 넓어져도 HQ/Desktop 고밀도 layout으로 바꾸지 않는다 (tablet portrait · landscape · desktop 모두 큰 action 유지).
+- scheduled 카드의 주 행동은 **[수업 준비]**(→ BEFORE)이며 **카드에서 직접 시작 · 완료하지 않는다.**
+- BEFORE는 modal이 아니라 한 화면 체크리스트다. 필수 확인(안전 · 사진/개인정보)이 남아 있으면 **[수업 시작] 비활성 + "필수 확인 N개 남음"**. 건너뛸 수 있는 것처럼 보이지 않게 하되 공포 UI는 쓰지 않는다.
+- DURING: 큰 글자 · 큰 touch target · 한 화면 한 행동. 하단 고정 action bar. 6단계에서 **[수업 마치기]** (그 전에는 더보기 + 확인 1회). 재생 UI 없음 (DEC-029).
+- 표시 문구: 버튼 "수업 시작" · "수업 마치기" / 상태 "수업 종료".
+- **scheduled → completed UX는 어디에도 없다.** Director · HQ에게 일반 finish action 없음.
+- Recovery (DEC-085): action **"복구 처리"** · dialog 제목 **"진행 중 수업 복구 처리"** · in_progress에서만 · Director · authorized HQ Admin · reason 필수 · audit · 결과 표시 **"수업 종료 · 복구 처리"** · 일반 action과 시각적으로 구분.
+- Offline (P0): 비파괴 banner "인터넷 연결이 끊겼습니다. 연결되면 다시 시도해 주세요." · 수업 시작 · 수업 마치기 · Observation Complete · Report Complete 같은 **서버 전환은 연결 복구 전 수행하지 않는다** · 비민감 navigation state는 유지 가능 · 완전 offline sync는 P2 (AD-12).
+
+**관련**: DEC-029 · DEC-034 · DEC-036 · DEC-046 · DEC-047 · DEC-085
+
+---
+
+### DEC-099 · Observation · Quick Memo · Save UX
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-7 · UX-8 · UX-28 수정) |
+
+**결정 내용**
+- Observation 버튼: Primary **[관찰 완료하고 다음 아이]** (= 현재 아동 Observation complete + 다음 아동 이동) · Secondary **[임시저장]** (= draft 저장) · Tertiary **[나중에 작성]**. "저장"과 "완료"를 같은 말로 쓰지 않는다.
+- 목록 하단 **[관찰 마무리]**는 일괄 complete가 아니다. AFTER 관찰 흐름을 끝내고 Weekly 대기열로 이동한다. 미작성 아동이 있으면 확인: "미작성 N명의 관찰은 작성 중으로 남습니다. 나중에 이어서 작성할 수 있습니다." 결석 아동을 자동 complete하지 않는다.
+- Observation complete ≠ AI 정리 확정. 둘을 같은 상태처럼 표시하지 않는다.
+- "아이의 말"은 실제 말만 · 빈 값 허용 · AI 결과가 채우는 경로 없음.
+- Quick Memo 이름 **"빠른 메모"** · 고정 도움말 **"나만 보는 메모입니다. 리포트·학부모 화면·AI에 자동으로 사용되지 않습니다."** · 상태 **저장 중 / 저장됨 / 저장 실패** (offline queue를 암시하는 표현 금지) · 실패 "저장하지 못했습니다. 연결을 확인하고 다시 시도해 주세요." · server autosave 가능 · Source of Truth는 server · P0 자동 Observation 반영 없음.
+- **P0 민감 텍스트(교사 관찰 · 아이의 말 · Growth5 · Report draft)를 localStorage · IndexedDB 등 지속 client storage에 기본 저장하지 않는다.** P0: explicit server save · dirty 표시 · 앱 내부 이동 시 미저장 경고 · 네트워크 실패 시 현재 화면 메모리에 입력 유지 · 재시도 · 복사 fallback · reload/기기 변경 후 복구는 약속하지 않음. 장기 local 보존이 필요하면 별도 Privacy/Security Decision.
+- Autosave: Quick Memo만. Observation · Report는 explicit save 중심. **Complete는 Save와 별도 action.**
+
+**관련**: DEC-034 · DEC-035 · DEC-087 · DEC-093
+
+---
+
+### DEC-100 · Growth5 Presentation
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-9 · UX-8 · IA-13 copy) |
+
+**결정 내용**
+- 명칭: Teacher **"관찰 포인트"** · Parent **"관찰된 모습"** · Marketing **"5가지 관찰 포인트"**. "발달 평가 · 성장 점수" 금지.
+- 입력: 기본 = 미선택 = 기록 없음(metric row 없음 · DEC-086). **"기록 없음" 버튼 없음.** metric 선택 시에만 Stage 3개. Stage 미선택이면 저장 불가 안내.
+- Stage 표시와 설명:
+  - **함께** — 교사나 친구와 함께, 또는 도움 속에서 나타난 모습
+  - **보고 나서** — 예시나 다른 사람의 모습을 본 뒤 이어 해 본 모습
+  - **스스로** — 추가적인 도움이나 예시 없이 아이가 스스로 시도하거나 이어간 모습
+- 상하 단계 · 능력 수준 · 1/2/3단계 · 진행 화살표 · 점수 색 · gauge · 진행바 · 순위 금지. 3개 선택지는 같은 크기 · 같은 중립색.
+- Metric card: 지표명 + 1줄 관찰 가이드 + 선택 상태 + Stage 선택. 별도 메모 칸 없음 (교사 관찰과 중복 금지).
+- Parent: **raw Stage label · chip 미노출.** "관찰된 모습" = 지표명 + 실제 장면 문장. 설명 문구 **"이 기록은 점수나 평가가 아니라, 이번 활동에서 보인 아이의 모습을 담은 것입니다."** (IA-13 copy 해소)
+
+**관련**: DEC-005 ~ DEC-008 · DEC-038 · DEC-065 · DEC-075 · DEC-086
+
+---
+
+### DEC-101 · Weekly Composer · Readiness · Complete
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-10 · UX-11) |
+
+**결정 내용**
+- Composer는 DEC-066 순서를 따르고 섹션마다 **출처와 수정 가능 여부**를 표시한다. "AUTO" 같은 기술 용어는 UI copy로 쓰지 않는다 (예: "수업 자료" · "관찰 기록에서" · "확인 후 수정").
+- 작품·활동 장면: **"사진 0~3장 선택 · 선택 사항"** (DEC-039). 0장도 정상이며 사진은 Report Complete의 필수 조건이 아니다. 4장 이상은 허용하지 않는다. PHASE 07은 0~3장 선택 UI와 검증을 구현하며 최대 장수를 다시 결정하지 않는다. 리포트에 사진을 선택하는 것과 Parent에게 실제 표시하는 것은 별개이며, Parent 사진 표시는 display eligibility와 CO-9 · CO-10 · DB-9 선행 조건을 따른다.
+- 아이의 말과 선택은 실제 quote 또는 구체적 choice evidence가 있을 때만. 없으면 가짜 문장을 만들지 않는다.
+- Teacher 대기열 상태: **관찰 필요 · 작성 가능 · 작성 중 · 완료 · 숨김 · 결석(작성 대상 아님)**. Parent에는 내부 상태 · 사유 비노출.
+- **[리포트 완료]** 전 필수 항목 누락은 구체적으로 안내하고, 교사가 해결할 수 없는 항목은 해결 주체를 표시한다. **AI 사용 여부는 완료 조건으로 표시하지 않는다.** Weekly에 AI 필수 없음.
+- 완료 확인: "완료하면 직접 수정할 수 없습니다. 수정이 필요하면 수정본을 만듭니다."
+
+**관련**: DEC-039 · DEC-066 · DEC-071 · DEC-091
+
+---
+
+### DEC-102 · Revision · Hide · Print UX
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-12 · UX-13 · UX-29 · AR-9 · UI-1) |
+
+**결정 내용**
+- 정정 CTA **[수정본 만들기]** · 사유 필수 ("수정 사유").
+- Internal 표시는 **"최근 완료본"**과 **"작성 중인 수정본"**으로 구분한다 (예: 최근 완료본 2026.09.20 완료 · 작성 중인 수정본 저장됨). 최근 완료본이 항상 학부모에게 보이는 것은 아니므로 **"학부모 화면에 표시 중"은 computed visibility가 TRUE일 때만** 표시한다. "published revision"을 저장 상태처럼 쓰지 않는다.
+- Parent: revision > 1이면 **"업데이트됨 YYYY.MM.DD"** (예: 업데이트됨 2026.09.27). 정정됨 · 오류 수정 · 수정본 v2 금지. **AR-9 copy까지 RESOLVED.**
+- Hide **[학부모 화면에서 숨기기]** · dialog "학부모 화면에서 이 기록을 즉시 숨깁니다. 내부 기록은 삭제되지 않습니다." · Unhide **[학부모 화면에 다시 공개]** · dialog "가장 최근에 완료된 기록을 학부모 화면에 다시 표시합니다." · 둘 다 reason 필수 · Hidden 중 새 revision Complete → 자동 공개 금지 (DEC-074).
+- Print: 완료된 visible · non-hidden report는 단건 인쇄 가능 · **Draft 인쇄 불가** · **Hidden은 internal 일반 인쇄 · 일괄 인쇄도 불가** (정정 + 권한자 unhide 후 가능) · Parent는 현재 표시 중인 latest completed만 · Bulk Print는 STARTER 제외 · STANDARD/PREMIUM은 P1 entitlement · Legacy는 기존 인쇄 유지 · 법적 export/보존은 CO-2 별도. (UI-1 해소)
+
+**관련**: DEC-043 · DEC-056 · DEC-073 · DEC-074 · DEC-075 · DEC-089
+
+---
+
+### DEC-103 · Parent Portal Experience
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-4 · UX-14 · UX-15 · UX-31 · UI-2 · UI-3) |
+| Clarifies | DEC-060 "이번 주" 판정 의미 · DEC-042 Weekly 섹션 순서(→ DEC-066) |
+
+**결정 내용**
+- **"이번 주"** = 현재 로컬 달력 주간에, 해당 아동의 Program Assignment에서 실제 수업 일정이 잡힌 program week의 **visible Weekly Report** (latest completed revision + visibility 규칙). "가장 최근 발행 리포트"도 아니고 "이번 주에 공개된 과거 리포트"도 아니다. 해당 visible Weekly가 없으면 **"현재 새로 공유된 기록이 없습니다."** · 이전 Week를 이번 주 탭으로 끌어올리지 않는다 · 최근 기록을 보조로 보여줄 때 Week 번호 + 실제 날짜 필수 · 복수의 현재 주 수업이면 visible Weekly가 여러 개일 수 있음을 막지 않는다 · timezone/date 구현은 PHASE 07.
+- 공유 기록 0건: **"아직 공유된 기록이 없습니다."** · 보조 영역 제목 "최근 공유 기록".
+- Weekly Parent 섹션 순서: 이번 주 활동 주제 → 아이의 말과 선택 → 교사 관찰 기록 → 작품·활동 장면 → 가정에서 나눌 이야기 → 다음 주 예고 (DEC-066). Growth5를 보여주는 "관찰된 모습"은 Teacher Evidence의 presentation인 별도 섹션이며 **교사 관찰 기록 뒤 · 작품·활동 장면 앞**을 권장한다. Weekly 5요소 source 구조는 바꾸지 않는다.
+- Invalid · wrong child · revoked · expired · hidden-only · access blocked를 구분하지 않는 단일 실패: **"이 링크로는 기록을 확인할 수 없습니다. 기관에 새 공유 링크를 요청해 주세요."** (기관 display name을 쓸 수 있으면 "○○유치원에 새 공유 링크를 요청해 주세요.") · CO-12 만료 정책을 문구로 확정하지 않는다.
+- 기관 호칭: "원"을 generic 용어로 hardcode하지 않는다. 실제 organization display name 우선 · fallback "기관". (UI-3 해소)
+- 사진 display eligibility가 false이면 **사진 영역 자체를 표시하지 않는다.** 사유 · placeholder 문구 없음. Internal 권한 화면만 "이 사진은 현재 학부모 화면에 표시되지 않습니다." (UI-2 해소)
+- Parent-facing 명칭: "Portal" 대신 **"아이 기록"** (제목 예: "○○의 기록"). Internal: 학부모 공유 · 아동별 공유 링크.
+- Parent는 내부 상태 · 초안 · raw Stage · consent · audit를 보지 않는다.
+
+**관련**: DEC-040 · DEC-041 · DEC-042 · DEC-044 · DEC-059 · DEC-060 · DEC-066 · DEC-074 · DEC-075 · DEC-092
+
+---
+
+### DEC-104 · Monthly · 8-week · Report Naming
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-16 · UX-17 · UX-30 일부 · UX-34) |
+| Clarifies | DEC-067 UI 문구 · DEC-069 UI 명칭 |
+
+**결정 내용**
+- Monthly: generic **"월간 요약 · 4주 단위"** · block **"월간 요약 · 1~4주"**, "월간 요약 · 5~8주", "월간 요약 · 9~12주" … · 달력 월 이름("9월 월간 리포트") 금지 · 최소 근거 기준 숫자는 AR-1 미정이라 UI에 쓰지 않는다.
+- 8주 Summary: App UI **"8주 기록 모아보기"** · Marketing 상품 설명 문맥의 "8주 요약"은 유지 가능 · 새 report type 아님 · AI summary 아님 · Teacher Complete 없음.
+- Semester: Internal "학기 리포트" · Parent "학기 포트폴리오"(P2) · Marketing "학기 성장 포트폴리오" · PREMIUM 24주 Reporting Term 경계를 UI에 hardcode하지 않는다 (AR-2).
+- Report 명칭 매핑: Weekly — Teacher "주간 리포트" / Parent "이번 주 기록" / Marketing "주간 미니 리포트"(상품 catalog 원문). 모든 화면에 같은 단어를 강제하지 않되 [../06-ux-design/copy-terminology.md](../06-ux-design/copy-terminology.md) 매핑을 따른다.
+- Legacy 리포트: 교직원 UI에 "이전 형식 리포트 (기간형)" 표시 · 새 Weekly/Monthly/Semester처럼 보이지 않게 · 새 Portal 미편입 (DEC-076).
+
+**관련**: DEC-067 · DEC-068 · DEC-069 · DEC-076
+
+---
+
+### DEC-105 · AI Assist Interaction
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-18) |
+
+**결정 내용**
+- C1 버튼 **"AI로 문장 정리하기"**. 구조 = **교사 원문 · AI 제안 · 교사 확정 문장**. AI 결과는 원문을 덮어쓰지 않는다.
+- AI 요청 중에도 교사의 일반 작성 화면 전체를 잠그지 않는다. AI trigger만 중복 실행을 막는다. 요청 취소는 P0 필수 요구가 아니다 (기술 지원 여부는 PHASE 07).
+- 실패: **"AI 정리를 지금 사용할 수 없습니다. 작성한 내용은 그대로 있으며, 직접 작성해 계속 진행할 수 있습니다."** Retry는 별도 버튼. AI 실패는 Observation/Report 작업을 막지 않는다.
+- 근거 부족: **"기록된 근거가 부족해 이 부분은 작성하지 않았습니다. 직접 작성하거나 관찰 기록을 추가해 주세요."**
+- C2 · C3(P1)는 섹션별 제안 영역 구조만. AI는 Growth5 · Stage 선택 · 진단 · 비교 · 자동 공개를 하지 않는다.
+- 금지 표현: AI 분석 · AI 평가 · AI 진단 · AI가 발견한 성장 · AI 성장 점수 · AI 자동 완성 · 스마트 · 인사이트 등. 반짝이(sparkle) 아이콘 남용 금지. STARTER · AI OFF 환경에서는 AI 버튼을 숨긴다.
+
+**관련**: DEC-070 · DEC-071 · DEC-078 · AR-8
+
+---
+
+### DEC-106 · Entitlement · Read-only · Readiness · Capacity UX
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-19 · UI-4) |
+
+**결정 내용**
+- 접근 불가 상태 구분 (Parent는 구분 없음):
+  - 없는 경로 · 다른 tenant · role 부족 → **SY-01 "찾을 수 없거나 접근 권한이 없습니다."** (존재 여부 무구분 · DEC-044)
+  - 상품 미포함 → **SY-02 "현재 이용 상품에 포함되지 않은 기능입니다."** Director: 포함 상품 + 도입 문의 / Teacher: 원장 문의 안내 (판매 CTA 없음)
+  - 계약 기간 외 → "이용 기간이 아닙니다." / "이용 기간이 종료되었습니다." + 읽기 전용
+  - 읽기 전용 banner → **"현재 읽기 전용 상태입니다. 기존 기록은 확인할 수 있지만 새 기록은 작성할 수 없습니다."** (사유 · CO-1 기간 비노출)
+  - 준비 안 됨 → "수업 내용이 아직 준비되지 않았습니다."
+- Service Readiness: 단일 red/green이 아니라 **requirement checklist**(콘텐츠 · 리포트 기능 · 포함 기능 · 계약 · 반 범위 · Pilot 조건) + 구체적 실패 이유 + 해결 링크. 모든 필수 항목 Ready일 때만 [활성화]. 최종 판정은 서버.
+- Pilot 16번째 원아: 등록 실패처럼 표현하지 않는다. "Pilot 기준 인원(반당 15명)을 넘었습니다. 원아 등록은 저장되었지만, 이 상태에서는 Pilot을 시작할 수 없습니다."
+- Regular 초과: Director · HQ에 "기준 인원 15명 · 현재 17명 · 초과 2명" 형태의 운영 정보 · 청구 표현 없음 · Teacher 비노출 · Sales는 숫자 aggregate만.
+- Contract는 두 축을 한 badge로 섞지 않는다: 계약 상태(초안 · 유효 · 일시 정지 · 종료) / 이용 기간(시작 전 · 이용 중 · 기간 만료).
+- Product Version: 초안 · 발행됨 · 신규 계약 중지(기존 계약 유지). 발행 버전 편집 버튼 없음 · [새 버전 만들기].
+- **P0 Contract UX 위치 = `/admin/organizations/[id]` 기관 상세 안 "계약 · 이용권" section + onboarding Contract step.** P0 Product Version은 기준 데이터 · published version 선택. 독립 Product Version / Contract 목록 · advanced commercial admin은 P1. (UI-4 해소)
+- STARTER Director에게 Dashboard aggregate · 누락 count를 우회 제공하지 않는다.
+
+**관련**: DEC-044 · DEC-050 · DEC-051 · DEC-052 · DEC-054 · DEC-056 · DEC-063 · DEC-081 · DEC-082 · DEC-083 · DEC-095
+
+---
+
+### DEC-107 · Consent · Media UX Boundary
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-21) |
+
+**결정 내용**
+- 운영 동의 표시 이름 **"사진 공유 기록"** · 값 **미확인 · 공유 안 함 · 공유 가능으로 기록됨**. "법적 동의 완료 · 보호자 승인 확정" 등 법적 확정 표현 금지 (CO-10).
+- Parent에게 consent 상태 · 철회 · 삭제 사유를 노출하지 않는다 (DEC-059 · DEC-103).
+- 사진 숨김/삭제 확인: "이 사진은 수업 기록과 학부모 공유 화면에서 더 이상 표시되지 않습니다." Physical cleanup 등 내부 기술 상태는 일반 사용자에게 보이지 않는다. 보존 · 법적 삭제는 CO-2.
+- Production Parent Photo는 CO-9 · CO-10 · DB-9 해결 전 enable하지 않는다.
+
+**관련**: DEC-014 · DEC-059 · DEC-088
+
+---
+
+### DEC-108 · HQ Sensitive Support · Sales UX Boundary
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-22) |
+
+**결정 내용**
+- HQ Admin의 민감 교육 콘텐츠 접근은 일반 browsing이 아니다: action **"지원 목적으로 열람"** · 열기 전 사유(문의 · case) 입력 · 열람 중 banner "지원 열람 중 · 사유가 기록됩니다" · audit (DEC-093). 정확한 화면은 PHASE 07.
+- HQ Sales에는 이 action 자체가 없다. Sales Shell은 아동 이름 · 상세 · 관찰 · 인용 · Growth5 · 사진 · 리포트 · Portal token · 아동별 consent를 표시하지 않는다. UI 숨김만이 아니라 data boundary(DEC-079)가 전제다.
+
+**관련**: DEC-058 · DEC-079 · DEC-093
+
+---
+
+### DEC-109 · Design Token · Brand Direction
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-23 · UX-24 · UX-32 · UI-5) |
+
+**결정 내용**
+- 방향: **Warm Premium Education SaaS**. 보라색 AI gradient · glass 과다 · neon · sparkle 남용 · 유아용 무지개 UI · Growth5 gauge/진행바/순위 · 완료 confetti 금지.
+- Target brand palette: Navy #142B4A · Green #2F8F6B · Coral #F1644B · Ivory #F8F5EE · Mint #EDF7F2 · Soft Blue #EDF5FA · Text #263238 · Border #E7E9EC.
+- **Yellow는 Target token이 아니다.** 현재 legacy Marketing의 Yellow는 PHASE 07 visual refactor에서 정리한다. App primary = Navy · Green = positive / brand secondary · Coral = accent (오류 색으로 자동 사용하지 않음). Semantic warning · danger는 별도 accessible token.
+- 파생 색(secondary-text · accent-text · warning · danger · control border 등)은 **PROPOSED token**이다. PHASE 06 분석의 대비 계산값은 인증된 사실이 아니며 **PHASE 07에서 실제 contrast tool로 검증**한다.
+- Typography: **Pretendard 중심** · **serif italic 제거** · 역할별 type scale · 새 font asset 추가 없음.
+- Brand color와 semantic color를 분리한다. 색상만으로 상태를 전달하지 않는다.
+
+**관련**: DEC-110 · DEC-111
+
+---
+
+### DEC-110 · Responsive · Accessibility Baseline
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-25 · UX-26) |
+
+**결정 내용**
+- 기기 우선순위: Teacher Class Mode = tablet first · Director = desktop first · HQ = desktop · Parent = mobile first(한 손 · 단일 열) · Public = mobile + desktop.
+- Breakpoint: Tailwind 기본(sm 640 · md 768 · lg 1024 · xl 1280)을 mobile / tablet / desktop 3단계로 매핑 · 새 custom breakpoint 없음. **Class Mode에는 "lg = desktop 고밀도" 규칙을 적용하지 않는다** (DEC-098).
+- 접근성: **WCAG 2.2 AA 수준을 실무 Target baseline**으로 한다. "인증 완료"라고 표현하지 않는다. visible focus · accessible dialog(focus trap · 초점 복귀 · Esc) · keyboard 조작 · form label · 오류 연결 · touch target · 색에만 의존하지 않는 상태 · table semantics · reduced motion.
+
+**관련**: DEC-098 · DEC-109
+
+---
+
+### DEC-111 · Status · Error · Empty · Loading · Concurrency · Confirmation
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-27 · UX-28 · UX-33) |
+
+**결정 내용**
+- 상태 어휘를 통일한다 ([../06-ux-design/copy-terminology.md](../06-ux-design/copy-terminology.md)). "published"를 리포트 저장 상태처럼 쓰지 않는다.
+- 주요 화면은 Loading · Loaded · Empty · Partial · Error · Permission Denied · Not Entitled · Read Only · Conflict (필요 시 Hidden · Revoked · Not Ready)를 정의한다. 빈 상태는 이유 · 다음 행동 · 해결 주체를 표시한다. 내부 DB error code를 노출하지 않는다.
+- 중요 전환(시작 · 마치기 · 완료 · 숨김 · 링크 발급)은 진행 중 중복 클릭을 막는다. 성공 알림을 남발하지 않는다.
+- 동시 수정 충돌: last-write-wins 금지 · "다른 선생님이 먼저 내용을 변경했습니다. 최신 내용을 다시 불러와 확인해 주세요." · [최신 내용 불러오기] + 현재 화면의 내 입력을 복사할 수 있게 유지 (지속 저장 아님 · DEC-099) · 비교 UI는 P1.
+- Confirmation 단계: **LEVEL 1** 결과 설명 + 명시적 action (예: 사진 숨김/삭제) · **LEVEL 2** 결과 설명 + reason 필수 (Report Hide · Report Unhide · Session Recovery · Contract Suspend · Contract End) · **LEVEL 3** 불변 · 고영향 action의 강한 확인 (Product Version Publish). **Typed-name 확인은 P0 필수 요구가 아니다** (PHASE 07 사용성 검토). Portal revoke는 확인 필수 · **reason은 현재 Decision에 없으므로 PHASE 06이 필수로 만들지 않는다.** "정말 하시겠습니까?" 남발 금지. Reason 요구를 Decision보다 넓히지 않는다.
+
+**관련**: DEC-073 · DEC-074 · DEC-085 · DEC-099
+
+---
+
+### DEC-112 · Terminology · Copy System · Modal Scope
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 06 UX-30 · UX-34 · UX-35 · UI-8) |
+
+**결정 내용**
+- 용어 사전 · 역할별 명칭 · 필수 microcopy는 [../06-ux-design/copy-terminology.md](../06-ux-design/copy-terminology.md)를 따른다. 톤: Teacher 업무형 · Parent 따뜻하되 사실 중심 · HQ 운영형. 평가 · 진단 · 능력 단정 어휘와 generic AI 문구 금지 (DEC-027).
+- "원아"(운영 · Admin · Teacher 목록) / "아이"(관찰 내용 · Parent · 리포트 서술)를 영역별로 사용한다.
+- 완료 구분: 수업 종료 · 관찰 완료 · 리포트 완료 (DEC-034).
+- Legacy 표시: "이전 형식 리포트 (기간형)".
+- Modal은 간단 확인 · reason 입력 · 작은 편집에만. Report composer · Contract · Readiness · Observation · Support access는 page 또는 drawer.
+- DEC-041 Cutover Director 안내: **"이제 아동별 공유 링크 하나에서 공개된 기록을 함께 확인할 수 있습니다. 기존 리포트별 공유 링크는 사용이 끝날 때까지 별도로 유지됩니다."** · 짧은 UI "새 공유는 아동별 링크로 관리합니다." · "만료일까지" 표현 금지 (CO-12). (UI-8 해소)
+- 법적 경계: "법적 동의 완료 · 법적으로 안전 · 영구 삭제 완료 · 보호자 승인 확정 · 30일 만료 · 학기까지 링크 유지" 등을 UX 문구로 확정하지 않는다.
+
+**관련**: DEC-027 · DEC-034 · DEC-041 · DEC-076
+
+---
+
+## 15. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
 |---|---|---|---|---|
@@ -2465,14 +2797,30 @@ PHASE 05 감사에서 현재 Sales가 모든 기관의 관찰 · 인용 · 사�
 | DEC-094 | 데이터 | Migration M0~M6 · Contract mapping gate · RPC 원칙 · pgTAP | ACTIVE | 사용자 (DBA-24 · 25 · 26 · 28 · 29 · DB-7) |
 | DEC-095 | 계약 | Regular 초과 인원 = 계산값 + 경계 이벤트 · 청구 없음 | ACTIVE | 사용자 (DBA-32) |
 | DEC-096 | 커리큘럼 | lesson section 최소 구조 · Required Content Set | ACTIVE | 사용자 (DBA-31 · AH-4) |
+| DEC-097 | UX | 역할별 App Shell · 메뉴 · context (Sales Shell 분리 · STARTER 홈 제외) | ACTIVE | 사용자 (UX-1~4) |
+| DEC-098 | UX | Class Mode · BEFORE · 수업 시작/마치기 · 복구 처리 · offline banner | ACTIVE | 사용자 (UX-5 · 6 · 20 · UI-7) |
+| DEC-099 | UX | 관찰 완료하고 다음 아이 · 빠른 메모 · 민감 텍스트 지속 client 저장 없음 | ACTIVE | 사용자 (UX-7 · 8 · 28) |
+| DEC-100 | UX | Growth5 표시: 관찰 포인트 / 관찰된 모습 · Stage 설명 · Parent raw Stage 없음 | ACTIVE | 사용자 (UX-9 · IA-13) |
+| DEC-101 | UX | Weekly composer · 대기열 상태 · 리포트 완료 · 사진 선택 사항 | ACTIVE | 사용자 (UX-10 · 11) |
+| DEC-102 | UX | 수정본 · 최근 완료본 vs 표시 중 · 숨김/다시 공개 · 인쇄 · 업데이트됨 | ACTIVE | 사용자 (UX-12 · 13 · 29 · AR-9 · UI-1) |
+| DEC-103 | 학부모 | Parent 이번 주 판정 · 빈/실패 문구 · 섹션 순서 · 사진 미표시 · 기관 호칭 (clarifies DEC-060 · DEC-042) | ACTIVE | 사용자 (UX-14 · 15 · 31 · UI-2 · 3) |
+| DEC-104 | UX | 월간 요약 · 4주 단위 · 8주 기록 모아보기 · 리포트 명칭 매핑 (clarifies DEC-067 · DEC-069) | ACTIVE | 사용자 (UX-16 · 17 · 34) |
+| DEC-105 | AI | AI로 문장 정리하기 · 원문/제안/확정 · 실패 · 근거 부족 문구 | ACTIVE | 사용자 (UX-18) |
+| DEC-106 | UX | 권한·상품·읽기 전용·준비·Pilot/초과 인원 상태 · P0 계약 UX 위치 | ACTIVE | 사용자 (UX-19 · UI-4) |
+| DEC-107 | 개인정보 | 사진 공유 기록 표시 · 사진 숨김/삭제 문구 · 법적 표현 금지 | ACTIVE | 사용자 (UX-21) |
+| DEC-108 | 보안 | HQ 지원 목적 열람 · Sales UX 경계 | ACTIVE | 사용자 (UX-22) |
+| DEC-109 | 디자인 | Warm Premium · Target palette · Yellow 제외 · Pretendard · serif 제거 · 파생 토큰 PROPOSED | ACTIVE | 사용자 (UX-23 · 24 · 32 · UI-5) |
+| DEC-110 | 디자인 | 반응형 우선순위 · Class Mode 고밀도 전환 없음 · WCAG 2.2 AA 실무 baseline | ACTIVE | 사용자 (UX-25 · 26) |
+| DEC-111 | UX | 상태 어휘 · 화면 상태 · 충돌 · 확인 단계 (typed-name 필수 아님) | ACTIVE | 사용자 (UX-27 · 28 · 33) |
+| DEC-112 | UX | 용어 사전 · copy 체계 · modal 범위 · Cutover 안내 · 법적 문구 경계 | ACTIVE | 사용자 (UX-30 · 34 · 35 · UI-8) |
 
-**총 96건 · ACTIVE 96 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-063 · DEC-071 · DEC-072) · SUPERSEDED 0 · WITHDRAWN 0**
+**총 112건 · ACTIVE 112 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-042 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-060 · DEC-063 · DEC-067 · DEC-069 · DEC-071 · DEC-072 · DEC-075) · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 
-## 15. 다음 Decision 예정 영역
+## 16. 다음 Decision 예정 영역
 
-아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md)에서 관리되며, 확정 시 DEC-097부터 부여한다. PHASE 05 DB 미결정은 [../05-data-security/open-items.md](../05-data-security/open-items.md).
+아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md)에서 관리되며, 확정 시 DEC-113부터 부여한다. PHASE 05 DB 미결정은 [../05-data-security/open-items.md](../05-data-security/open-items.md).
 
 | 예정 영역 | 확정 PHASE |
 |---|---|

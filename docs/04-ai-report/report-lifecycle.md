@@ -113,7 +113,7 @@ Logical Report  (type × child × assignment × period)
 | 규칙 |
 |---|
 | 이전 Revision history를 보여주지 않는다 |
-| 현재 표시 Revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 (Copy · 위치는 PHASE 06) |
+| 현재 표시 Revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 (Copy · 위치는 PHASE 06 → *DEC-102 확정: 제목 아래 날짜 정보 옆 · "업데이트됨 YYYY.MM.DD"*) |
 | Portal URL은 Revision마다 새로 만들지 않는다. **같은 Portal에서 latest completed revision을 표시** (Portal 만료 정책 CO-12와 분리) |
 
 ---

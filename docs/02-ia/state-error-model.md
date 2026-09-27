@@ -53,7 +53,7 @@ stateDiagram-v2
 ```mermaid
 stateDiagram-v2
   [*] --> draft: 임시저장
-  [*] --> complete: 저장하고 다음 아이
+  [*] --> complete: 관찰 완료하고 다음 아이
   draft --> complete: 작성완료
   complete --> draft: 교사 수정 (CURRENT: 잠금 아님)
   complete --> complete: 수정 저장
@@ -125,7 +125,7 @@ P0에서는 CURRENT 프로그램 · 차시 상태(`draft` / `published` / `archi
 
 ## 3. Error / Empty / Blocked States
 
-> 카피 세부는 PHASE 06. 여기서는 의도 · 노출 범위 · 주 행동만 정한다.
+> 카피 세부는 PHASE 06. 여기서는 의도 · 노출 범위 · 주 행동만 정한다. *→ PHASE 06 확정 문구: [../06-ux-design/copy-terminology.md](../06-ux-design/copy-terminology.md) §4 · 화면 상태 모델: [../06-ux-design/navigation-screen-system.md](../06-ux-design/navigation-screen-system.md) §4 (DEC-106 · DEC-111)*
 
 ### 3-1. Teacher
 
@@ -142,8 +142,8 @@ P0에서는 CURRENT 프로그램 · 차시 상태(`draft` / `published` / `archi
 | AI not configured | 직접 작성하면 된다 | 입력란 정상 | 설정 상세 | (AI 버튼 비활성) |
 | AI failure | 다시 시도하거나 직접 작성 | 입력 내용 보존 | 오류 원문 | 다시 시도 |
 | Photo upload failure | 이 사진만 실패 | 파일명 | — | 다시 올리기 |
-| Network interruption | 진행 위치 · 메모는 보존된다 | 미전송 표시 | — | 재연결 후 자동 재전송 · 수동 재시도 |
-| Quick Memo 저장 실패 | 메모가 아직 서버에 저장되지 않았다 | 미전송 메모 | — | 재시도 (메모 유지) |
+| Network interruption | 진행 위치 · 메모는 보존된다 | 미전송 표시 | — | 재연결 후 자동 재전송 · 수동 재시도 · *Clarified by DEC-098 · DEC-099: P0는 offline queue · 자동 재전송을 약속하지 않는다 — 빠른 메모 상태는 저장 중 · 저장됨 · 저장 실패 ("저장하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.") · 상단 banner "인터넷 연결이 끊겼습니다. 연결되면 다시 시도해 주세요." · 서버 전환은 연결 복구 후* |
+| Quick Memo 저장 실패 | 메모가 아직 서버에 저장되지 않았다 | 미전송 메모 → *DEC-099: 표시 "저장 실패"* | — | 재시도 (현재 화면에서 메모 유지) |
 | Stale update | 다른 곳에서 수정되었다 | 최신 내용 | — | 새로고침 후 다시 |
 | 리포트 숨김됨 | 학부모 화면에서 숨겨졌다 | 사유 · 처리 시각 | 처리자 신원 세부 (P) | 원장에게 확인 · 정정 경로는 PH3-3 · *Updated by DEC-073 · DEC-074: [정정 Revision 만들기] (사유 필수) → 완료 후 원장 · HQ가 해제* |
 | AI 초안 불가 · 거부 (*Updated by DEC-071*) | AI 없이 계속 작성할 수 있다 | 입력 내용 유지 · 일반화된 안내 | 오류 원문 · 모델 정보 | 직접 작성 |

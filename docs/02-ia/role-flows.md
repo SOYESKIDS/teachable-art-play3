@@ -168,7 +168,7 @@ flowchart TD
 | DURING | 6단계 진행 · 필요 시 Quick Memo | — |
 | [수업 마치기] | 확인 1회 — `completed`로 가는 정상 경로 (DEC-047) | **Session completed** = 교실 수업 종료 |
 | AFTER ① | 출결 | — |
-| AFTER ② | 아동별 기록 → [저장하고 다음 아이] | **Observation complete** (아동별) |
+| AFTER ② | 아동별 기록 → [관찰 완료하고 다음 아이] (*DEC-099*) | **Observation complete** (아동별) |
 | Weekly | 일괄 조립된 draft 검토 → 작성완료 | **Weekly complete** (아동별) |
 
 **Primary Navigation**: 오늘의 수업 · 수업 이력 · 성장 리포트 — CURRENT 유지 (DEC-033). Weekly 대기열은 "성장 리포트" 안에 있다.

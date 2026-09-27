@@ -37,7 +37,7 @@ flowchart TD
 |---|---|
 | 단위 | **아동 × 주차 (week_no)**. 자유 기간 입력 없음 |
 | 분할 운영 | 한 주에 세션 2개면 두 관찰을 모두 근거로 쓴다 |
-| 대기열 | 반 × 주차별 아동 행. 상태: **준비됨**(Observation complete) · **관찰 미완료** · **결석** · **작성 중** · **완료** · **숨김**(긴급 숨김된 완료 리포트) |
+| 대기열 | 반 × 주차별 아동 행. 상태: **준비됨**(Observation complete) · **관찰 미완료** · **결석** · **작성 중** · **완료** · **숨김**(긴급 숨김된 완료 리포트) · *Clarified by DEC-101: 표시 명칭 "작성 가능 · 관찰 필요 · 결석(작성 대상 아님) · 작성 중 · 완료 · 숨김"* |
 | 생성 | [이번 주 리포트 만들기 (N명)] — 준비됨 아동 draft를 한 번에 조립 |
 | AI | **P0 Weekly에는 AI 없음.** 문장 다듬기는 P1 · *Updated by DEC-070: 문장 다듬기(C3)는 `ai_assist` 포함 상품(STANDARD · PREMIUM)만* |
 | 비교 | 지난주 대비 표기 없음 |
@@ -53,6 +53,7 @@ flowchart TD
 | 가정연계 Tip | Lesson.FamilyConnection | 없음 |
 | 다음 주 예고 | 다음 Lesson 주제 · 성장키워드 | 없음 |
 
+- *Clarified by DEC-066 · DEC-103: 위 표는 DEC-024 시점 항목 목록이다. Weekly 섹션 **순서**는 DEC-066을 따른다 — 이번 주 활동 주제 → 아이의 말과 선택 → 교사 관찰 기록 → 작품·활동 장면 → 가정에서 나눌 이야기 → 다음 주 예고. 사진은 0~3장 선택 · 선택 사항 (DEC-039 · DEC-101).*
 - 리포트에서 고친 문장은 **리포트 사본에만** 반영된다. 관찰 원문은 바뀌지 않는다 (AI-10 · AI-11).
 - **목표**: 아동당 중위 3분 이내.
 
@@ -144,18 +145,18 @@ flowchart TD
 |---|---|---|
 | 최초 진입 | 불러오는 중 → 아동 이름 · 반 · 기관명 | — |
 | 유효 링크 | 이번 주 | 활성 · 만료일 |
-| **invalid / expired / revoked** | **단일 화면** — "링크를 열 수 없습니다. 원에 새 링크를 요청해 주세요." (DEC-044) | 사유 구분 표시: 미생성 · 활성 · 만료 · 중지 |
+| **invalid / expired / revoked** | **단일 화면** — *DEC-103 확정 문구:* "이 링크로는 기록을 확인할 수 없습니다. 기관에 새 공유 링크를 요청해 주세요." (기관 display name 사용 가능 시 "○○유치원에 새 공유 링크를 요청해 주세요.") · 구 후보 "원에 새 링크를 요청해 주세요."는 historical — "원" hardcode 금지 (DEC-044) | 사유 구분 표시: 미생성 · 활성 · 만료 · 중지 |
 | no reports | "아직 공유된 기록이 없습니다" | 활성 · 노출 리포트 0건 |
 | this week published | 이번 주 = **현재 주차에 공개된** Weekly (실제 week · date 표시) | — |
 | **this week not published** | **"현재 새로 공유된 기록이 없습니다."** + 필요 시 별도 카드 "최근 공유 기록 · Week N · 실제 날짜". **이전 리포트를 "이번 주"처럼 보여주지 않는다.** 결석 · 교사 미작성 · 미공개 사유를 **구분하지 않는다** (*Updated by DEC-060*. 구 서술 "이번 주 = 가장 최근 노출 Weekly"를 대체) | 사유 구분은 원장 화면에서만 |
-| week · date | 모든 리포트 표시에 실제 week · date 항상 표시 (DEC-060) · "현재 주차" 판정 기준은 PHASE 05 / 06 | — |
+| week · date | 모든 리포트 표시에 실제 week · date 항상 표시 (DEC-060) · "현재 주차" 판정 기준은 PHASE 05 / 06 → *DEC-103: 현재 로컬 주간에 수업 일정이 잡힌 program week의 visible Weekly* | — |
 | past reports | 지난 기록 목록 (주차 역순) → 상세 | — |
 | monthly | P1. 지난 기록에 유형 라벨로 표시 | — |
 | photo consent missing | 사진 영역 **미표시** · 동의 관련 문구도 없음 | 동의 미확인 경고 |
 | no selected photo | 작품명만 | — |
 | hidden report | 존재하지 않는 것처럼 제외 | 숨김 · 사유 · 처리자 |
 | correction in progress (*Updated by DEC-073*) | 정정 draft가 있어도 **기존 latest completed revision을 계속 표시** | 정정 진행 중 |
-| revised report (*Updated by DEC-075*) | 현재 revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 · 이전 revision history 비노출 (Copy PHASE 06) | revision 이력 |
+| revised report (*Updated by DEC-075*) | 현재 revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 · 이전 revision history 비노출 (Copy PHASE 06 → *DEC-102 확정: "업데이트됨 YYYY.MM.DD"*) | revision 이력 |
 | Growth 5 (*Updated by DEC-075*) | 지표명 + 구체적 Evidence 서술 · **Stage chip · raw label 미노출** · 고정 안내 문구 | 개별 기록 읽기 |
 | legacy report (*Updated by DEC-076*) | **신규 Portal에 자동 편입하지 않음** — 기존 Legacy Share Link로만 (DEC-041) | — |
 | print / PDF | 현재 보고 있는 리포트 인쇄 (기존 print CSS 재사용) · *Updated: 현재 표시 revision의 Final Content Snapshot만 · AI Draft 인쇄 금지* | — |
@@ -193,4 +194,4 @@ flowchart TD
 > *Updated by DEC-076*: Legacy 리포트(`legacy_period`)는 신규 Child Portal에 **자동 편입하지 않는다.** 향후 통합이 필요하면 새 Decision.
 
 - 기존 링크 최대 수명은 CURRENT 트리거 기준 30일이다.
-- Cutover 전 원장 안내: "앞으로는 아동별 링크 하나로 모든 리포트를 볼 수 있습니다" (카피 PHASE 06).
+- Cutover 전 원장 안내: "앞으로는 아동별 링크 하나로 모든 리포트를 볼 수 있습니다" (카피 PHASE 06). *→ DEC-112 확정: "이제 아동별 공유 링크 하나에서 공개된 기록을 함께 확인할 수 있습니다. 기존 리포트별 공유 링크는 사용이 끝날 때까지 별도로 유지됩니다." · 짧은 UI "새 공유는 아동별 링크로 관리합니다."*

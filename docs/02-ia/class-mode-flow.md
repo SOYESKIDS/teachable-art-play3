@@ -8,7 +8,7 @@
 | 관련 문서 | [role-flows.md](./role-flows.md) · [report-portal-flow.md](./report-portal-flow.md) · [state-error-model.md](./state-error-model.md) · [../01-product/product-definition.md §8 · §9](../01-product/product-definition.md) |
 | 관련 결정 | DEC-004 · DEC-007 · DEC-008 · DEC-023 · DEC-028 · DEC-029 · DEC-033 ~ DEC-038 · DEC-046 · DEC-047 |
 
-> 저장 구조 · RLS는 PHASE 05, 레이아웃 · 카피는 PHASE 06에서 정한다. 본 문서는 흐름과 정보 우선순위만 정한다.
+> 저장 구조 · RLS는 PHASE 05, 레이아웃 · 카피는 PHASE 06에서 정한다. 본 문서는 흐름과 정보 우선순위만 정한다. *→ PHASE 06 확정: [../06-ux-design/class-mode-observation.md](../06-ux-design/class-mode-observation.md) (DEC-098 · DEC-099 · DEC-100)*
 
 ---
 
@@ -149,7 +149,7 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 | 새로고침 · 재진입 | **Step 위치 · Timer 기준 시각**: 기기 로컬 보존으로 복원 (P0). 로컬 기록이 없으면 1단계 + 안내. **Quick Memo**: 서버에서 복원 (DEC-035) |
 | Session status | DURING 동안 `in_progress` |
 | **completed 전환** | **[수업 마치기]** (확인 1회) → `in_progress → completed` → AFTER ①. 6단계 전에도 가능 |
-| 네트워크 끊김 | Step 진행은 로컬로 계속된다. Quick Memo는 미전송 표시 후 재연결 시 전송. 상태 전환 실패 시 "연결 후 다시 시도" |
+| 네트워크 끊김 | Step 진행은 로컬로 계속된다. Quick Memo는 미전송 표시 후 재연결 시 전송. 상태 전환 실패 시 "연결 후 다시 시도" · *Clarified by DEC-098 · DEC-099: P0는 offline queue · 자동 재전송을 약속하지 않는다 — 빠른 메모 상태는 저장 중 · 저장됨 · 저장 실패 ("저장하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.") · 상단 banner "인터넷 연결이 끊겼습니다. 연결되면 다시 시도해 주세요." · 서버 전환은 연결 복구 후* |
 | 완전 Offline Sync | P2 (AD-12) |
 
 ---
@@ -159,7 +159,7 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 | 항목 | 내용 |
 |---|---|
 | 위치 | DURING 상시 버튼 → 짧은 입력. 아동 지정 없음 |
-| 저장 | **교사 전용 서버 임시저장** (자동 저장). 전송 전에는 "저장 중 / 미전송" 표시 |
+| 저장 | **교사 전용 서버 임시저장** (자동 저장). 전송 전에는 "저장 중 / 미전송" 표시 · *Clarified by DEC-099: 이름 "빠른 메모" · 상태 **저장 중 · 저장됨 · 저장 실패** (offline queue를 암시하는 "미전송" 표현은 쓰지 않음)* |
 | 접근 | **작성 교사 본인만** (같은 반 다른 교사에게도 비공유 · *Clarified by DEC-087*) |
 | 비노출 | Director · HQ · Parent · AI 입력 |
 | AFTER 연결 | AFTER ② 화면에 Quick Memo 패널로 **참고 표시**. 교사가 필요한 내용만 직접 Observation에 옮긴다. **자동 이관·자동 아동 배정 없음** |
@@ -185,7 +185,7 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 | ObservationFocus | 상단 1줄 "이번 차시에서는 이런 모습을 보세요" (§12). 펼침 상세. **입력 항목이 아니다** (DEC-025) |
 | 아동 카드 | 아이의 말 → 교사 관찰 → Growth 5 / Stage (§8) → 사진 → (보조) AI 정리 |
 | Quick Memo 패널 | DURING 메모 참고 (§5) |
-| 버튼 | **[저장하고 다음 아이]** (= Observation complete) · [임시저장] · [나중에 작성] · 이전 / 다음 |
+| 버튼 | **[관찰 완료하고 다음 아이]** (= Observation complete + 다음 아동) · [임시저장] (= draft 저장) · [나중에 작성] · 이전 / 다음 · *Clarified by DEC-099 (구 표기 "저장하고 다음 아이" — 저장과 완료를 구분). [관찰 마무리]는 일괄 complete가 아니며 결석 아동을 자동 complete하지 않는다* |
 | 하단 | **[관찰 마무리]** — 미작성 n명이면 "나중에 작성으로 두고 마무리" 확인 → Weekly 대기열 |
 | AI | optional. AI 없이 complete 가능 (DEC-009). AI 버튼은 카드 하단 보조 위치 |
 
@@ -198,10 +198,10 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 | 용어 | 의미 | 전환 | 주체 |
 |---|---|---|---|
 | **Session completed** | 교실 수업 진행 종료 | DURING [수업 마치기] · `in_progress → completed`. `scheduled → completed` 직접 전환 없음 (DEC-047) | 교사 (진행 중 세션의 운영 정정은 Director · authorized HQ Admin의 별도 Recovery — 사유 · audit · DEC-085) |
-| **Observation complete** | 아동 1명의 관찰 기록 완료 | AFTER ② [저장하고 다음 아이] · `record_status = complete` | 교사 |
+| **Observation complete** | 아동 1명의 관찰 기록 완료 | AFTER ② [관찰 완료하고 다음 아이] (DEC-099) · `record_status = complete` | 교사 |
 | **Weekly complete** | 아동 1명의 주간 리포트 작성 완료 · 잠금 | 리포트 검토 [작성완료] | 교사 |
 
-- UI 문구는 세 가지를 구분한다. 예: "수업 종료" / "관찰 완료" / "리포트 작성완료" (정확한 카피는 PHASE 06).
+- UI 문구는 세 가지를 구분한다. 예: "수업 종료" / "관찰 완료" / "리포트 작성완료" (정확한 카피는 PHASE 06). *→ PHASE 06 확정: 버튼 "수업 마치기" · "관찰 완료하고 다음 아이" · "리포트 완료" / 상태 "수업 종료" · "관찰 완료" · "완료" (DEC-098 · DEC-099 · DEC-101)*
 - Session completed 후 Observation 미작성이 Director follow-up("관찰 기록 없음")에 잡히는 것은 **의도된 동작**이다.
 
 ---
@@ -223,10 +223,10 @@ flowchart LR
 | Explicit Teacher Choices | 지표를 선택했을 때만 3개: **함께 · 보고 나서 · 스스로** |
 | 기본 상태 | 모든 지표 = 기록 없음. "기록 없음" 버튼을 누르게 하지 않는다 |
 | 지표 배치 | 5개를 같은 크기 · 같은 중립색 · 번호 없이. 필수 선택 아님 — 관찰된 것만 |
-| 선택지 배치 | 원본 정의 순서로 가로 균등 배치. 강조색은 "선택됨" 1가지. 서술형 보조 문구 가능 (예: 교사와 함께 참여 / 모습을 본 뒤 참여 / 스스로 시작) — 카피는 PHASE 06 |
+| 선택지 배치 | 원본 정의 순서로 가로 균등 배치. 강조색은 "선택됨" 1가지. 서술형 보조 문구 가능 (예: 교사와 함께 참여 / 모습을 본 뒤 참여 / 스스로 시작) — 카피는 PHASE 06 · *→ DEC-100 확정: 섹션 이름 "관찰 포인트" · 함께 = 교사나 친구와 함께, 또는 도움 속에서 나타난 모습 · 보고 나서 = 예시나 다른 사람의 모습을 본 뒤 이어 해 본 모습 · 스스로 = 추가적인 도움이나 예시 없이 아이가 스스로 시도하거나 이어간 모습 (예시의 "스스로 시작"은 historical)* |
 | 금지 | 1/2/3/4 · Low/Medium/High · ↑↓ · Progress Bar · 점수 색 · 레이더차트 · "스스로 달성률" · 합계 · 반 평균 |
 | AI | Growth 5 · Stage를 AI 입력에 포함하지 않고, AI 출력에서 파싱하지 않는다 (U-7) |
-| 저장 방식 | **DEC-086으로 확정** (IA-3 · AD-3 해소): 행 없음 = 기록 없음 · 행이 있으면 stage NOT NULL · 저장 코드 `together` · `after_modeling` · `independent`. 방식 미선택 상태의 안내 UX는 PHASE 06 |
+| 저장 방식 | **DEC-086으로 확정** (IA-3 · AD-3 해소): 행 없음 = 기록 없음 · 행이 있으면 stage NOT NULL · 저장 코드 `together` · `after_modeling` · `independent`. 방식 미선택 상태의 안내 UX는 PHASE 06 → *DEC-100: 저장 불가 · "방식을 선택하거나 이 관찰 포인트 선택을 해제해 주세요."* |
 
 ### 8-1. 고정 안내문 위치
 

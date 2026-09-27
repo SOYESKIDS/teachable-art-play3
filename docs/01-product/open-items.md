@@ -90,7 +90,7 @@
 | ID | 항목 | 상태 | Blocks |
 |---|---|---|---|
 | **BC-15** | **상품소개서 v4 원본** | ⚠️ 세션 첨부본. 현재 재판독 불가.<br>`src/data/packages.ts`가 대리 출처 역할<br>🟡 **Updated 2026-09-27**: `TeachAble_Art_Play_유치원_상품소개서_v4.pdf`는 **PROJECT EXTERNAL SOURCE**다 (source verified during PHASE 03 review · original PDF exists in Project materials · PDF is not versioned inside this Git repository). PHASE 03 review에서 확인된 항목은 [03-commerce/product-catalog.md §3](../03-commerce/product-catalog.md)에 `SOURCE(v4)`로 반영 | 상품 데이터 검증 (P0-14) · BP 항목 다수 |
-| **BC-16** | **샘플 주간 리포트 3페이지 PDF** | ⚠️ 세션 첨부본. 재판독 불가.<br>단 원본 §12가 5항목 서식을 교차 확인하여 설계 불확실성은 해소됨 | Weekly 리포트 레이아웃 상세 (PHASE 06) |
+| **BC-16** | **샘플 주간 리포트 3페이지 PDF** | ⚠️ 세션 첨부본. 재판독 불가.<br>단 원본 §12가 5항목 서식을 교차 확인하여 설계 불확실성은 해소됨 | Weekly 리포트 레이아웃 상세 (PHASE 06) → *DEC-101 · DEC-103 ([../06-ux-design/report-parent-experience.md](../06-ux-design/report-parent-experience.md))* |
 | **BC-17** | **연구자료 12종** (AI 아동발달 · 누리과정 · 벤치마킹 · 해외 플랫폼 사례) | ⚠️ 세션 첨부본. 재판독 불가.<br>AUDIT 1/2에 기록된 사실만 인용 가능 | 교육적 근거 문서화 · AI 원칙 근거 보강 |
 
 ---
@@ -182,7 +182,7 @@
 | **AD-9** | **Content Role 저장 위치** | `private.admin_users.role` 확장 (현재 `admin`/`sales`) vs 별도 role 테이블.<br>Content Editor / Education Reviewer / Content Approver 3종 추가 | **PHASE 05** → ◐ `private.admin_users` 역할 확장 방향 (DEC-079) · Content 역할 세부는 PHASE 07 |
 | **AD-10** | **리포트 Growth 5 / Stage 스냅샷 구조** | 현재 `child_growth_report_sources.domain_labels_snapshot text[]`로는 단계를 담을 수 없다.<br>`jsonb` 전환 vs 별도 컬럼 vs 별도 스냅샷 테이블. 이미 운영 데이터가 있으면 변환 마이그레이션 필요 | **PHASE 05** → ✅ **RESOLVED by DEC-090** (근거 정규화 행 · 본문 JSONB + template version · 사진 reference) |
 | **AD-11** | **주차(week_no) 비정규화 여부** | 시계열 집계 시 `class_sessions → curriculum_lessons.week_no` 3-hop 조인이 필요하다. 대시보드가 이미 N+1을 경계하는 구조이므로 캐시 컬럼을 둘지 | **PHASE 05** → ✅ **RESOLVED by DEC-085** (세션 생성 시 `week_no` 복사 · 불변) |
-| **AD-12** | **Class Mode 오프라인 전략** | 교실 네트워크가 불안정하다.<br>**(a)** 진행 상태만 로컬 보존 (P0)<br>**(b)** 완전 오프라인 + 동기화 (P2) — 충돌 해소 정책 필요.<br>현재 낙관적 동시성(`updated_at` 토큰)과 어떻게 조합할지 | **PHASE 05~06** |
+| **AD-12** | **Class Mode 오프라인 전략** | 교실 네트워크가 불안정하다.<br>**(a)** 진행 상태만 로컬 보존 (P0)<br>**(b)** 완전 오프라인 + 동기화 (P2) — 충돌 해소 정책 필요.<br>현재 낙관적 동시성(`updated_at` 토큰)과 어떻게 조합할지 | **PHASE 05~06** → *PHASE 06: P0 offline UX는 DEC-098 (banner · 서버 전환은 연결 복구 후 · 비민감 진행 상태만 유지 · 민감 텍스트 지속 client 저장 없음 DEC-099) · 완전 offline sync는 P2 유지* |
 | **AD-13** | **커리큘럼 이관 파이프라인 형태** | 원본 MD → DB. 스크립트(반복 가능, diff 리포트) vs Admin UI 수동 입력(검수 자연스러움).<br>규격 확정본이 구조화된 Markdown이므로 파싱 가능 | **PHASE 07** |
 | **AD-14** | **anon rate limit 구현 위치** | `lead_submissions` INSERT · `read_shared_growth_report`.<br>Vercel WAF / BotID vs DB 레벨(카운터 테이블) vs Route Handler 레벨 | **PHASE 05** |
 

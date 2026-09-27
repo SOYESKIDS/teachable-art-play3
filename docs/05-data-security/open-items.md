@@ -110,7 +110,7 @@ DB-9에서 정할 것:
 
 | ID | 상태 |
 |---|---|
-| IA-* | IA-3 RESOLVED (DEC-086) · IA 기준 Open 없음 (IA-13 Copy는 PHASE 06) |
+| IA-* | IA-3 RESOLVED (DEC-086) · IA 기준 Open 없음 (IA-13 Copy는 PHASE 06 → DEC-100 RESOLVED) |
 | AH-1 ~ AH-5 | 구조 확정 · 잔여: 보존 기간 CO-2 · Portal 만료 CO-12 · 사진 서명 DB-9 · rate limit AD-14 |
 | AD-1 | 잔여 = DB-9 |
 | AD-5 · AD-6 · AD-7 · AD-8 · AD-12 · AD-13 · AD-14 | PHASE 07 또는 콘텐츠 트랙 |
@@ -121,6 +121,8 @@ DB-9에서 정할 것:
 ---
 
 ## 5. PHASE 06 Inputs (UX / Copy)
+
+> *2026-09-27 PHASE 06 처리: #1 · #2 → DEC-100 · #3 · #17 → DEC-099 · #4 → DEC-101 · #5 · #6 · #7 → DEC-102 · #8 · #9 → DEC-103 · #10 → DEC-107 · #11 · #12 · #13 → DEC-104 · #14 · #15 → DEC-106 · #16 → DEC-098 · DEC-108. 상세 [../06-ux-design/](../06-ux-design/)*
 
 | # | 입력 | 근거 |
 |---|---|---|

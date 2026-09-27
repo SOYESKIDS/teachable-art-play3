@@ -193,9 +193,9 @@ meta: { outputSchemaVersion }
 
 | 실패 | 교사 경험 |
 |---|---|
-| 미설정 · 제공자 장애 · 타임아웃 · rate limit | "AI 초안을 만들 수 없습니다 — 직접 작성해 주세요." 입력 유지 |
+| 미설정 · 제공자 장애 · 타임아웃 · rate limit | "AI 정리를 지금 사용할 수 없습니다. 작성한 내용은 그대로 있으며, 직접 작성해 계속 진행할 수 있습니다." 입력 유지 · AI 실패는 Observation · Weekly Report 작업을 막지 않음 · 직접 작성 경로 항상 가능 · 다시 시도는 AI 기능에만 · 작성 화면 전체를 잠그지 않음 (*UX copy updated by DEC-105 — Historical / earlier copy: "AI 초안을 만들 수 없습니다 — 직접 작성해 주세요."*) |
 | 스키마 오류 · unsafe output · 검증 실패 | 초안 미저장 또는 해당 섹션 제외 · 일반화된 안내 문구 · **raw output은 DB · 로그에 저장하지 않고** attempt · provider/model · 시각 · sanitized error code · validation result만 기록 (DEC-078) |
-| insufficient evidence | 해당 섹션 비움 + 안내 |
+| insufficient evidence | 해당 섹션 비움 + 안내 "기록된 근거가 부족해 이 부분은 작성하지 않았습니다. 직접 작성하거나 관찰 기록을 추가해 주세요." (DEC-105 · §5 No-Invention과 일치 — AI가 내용을 채워 넣지 않음) |
 
 | 규칙 | 내용 |
 |---|---|

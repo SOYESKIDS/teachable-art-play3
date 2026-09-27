@@ -534,7 +534,7 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 | (행 없음) | **기록 없음** | 이번 활동에서 그 모습이 나오지 않았거나 관찰하지 못했다 |
 | `together` | **함께** | 교사 또는 친구와 함께, 도움이나 공동 참여 속에서 참여했다 |
 | `after_modeling` | **보고 나서** | 교사·친구의 모습을 본 뒤에 참여했다 |
-| `independent` | **스스로** | 스스로 시작해서 참여했다 |
+| `independent` | **스스로** | 스스로 시작해서 참여했다 · *Clarified by DEC-100: UI 설명은 "추가적인 도움이나 예시 없이 아이가 스스로 시도하거나 이어간 모습" — 반드시 먼저 시작했다는 뜻이 아니다* |
 
 > *Historical baseline — clarified by DEC-086*: PHASE 01 초안의 code 표기(`NOT_OBSERVED` · 교사 한정 의미의 code · 대문자 code)는 사용하지 않는다. "함께"는 교사와 함께만을 뜻하지 않으므로 교사 한정 내부 code를 두지 않는다. **기록 없음은 저장값이 아니라 metric row 없음**이며, row가 있으면 stage는 NOT NULL이다. 숫자 변환 없음.
 

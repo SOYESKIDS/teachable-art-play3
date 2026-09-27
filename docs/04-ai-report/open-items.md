@@ -44,7 +44,7 @@
 | **CO-5** | "AI 성장기록 플랫폼 Full" · `ai_assist` | ✅ **RESOLVED by DEC-070** — STARTER 제외 · STANDARD/PREMIUM 포함(C1+C2+C3) · PILOT C1 |
 | **PH3-3** | 리포트 reopen · 숨김 해제 | ✅ **RESOLVED by DEC-073 · DEC-074** — 새 Revision · 사유 필수 · 논리 리포트 단위 hide/unhide · 자동 해제 없음 |
 | **PH3-1** | Growth 5 시계열 표현 | ✅ **RESOLVED by DEC-065 · DEC-075** — 같은 아이 시간순 사례 · 단계 증감 표기 없음 |
-| **IA-13** | Parent Weekly Stage 표현 | 🟡 **Architecture RESOLVED by DEC-075** (Stage chip · raw label 미노출 · 사례 서술) / **Copy → PHASE 06** |
+| **IA-13** | Parent Weekly Stage 표현 | 🟡 **Architecture RESOLVED by DEC-075** (Stage chip · raw label 미노출 · 사례 서술) / **Copy → PHASE 06** → ✅ **RESOLVED by DEC-100** |
 | AR-3 | Weekly 교사 관찰 기본 채움 규칙 | ✅ **RESOLVED by DEC-066** — Note prefill · Complete 행위가 확인 · 별도 체크박스 없음 |
 | AR-4 | Legacy Report의 신규 Portal 표시 | ✅ **RESOLVED by DEC-076** — 자동 편입 없음 · Legacy Share Link로만 |
 | AR-6 | AI Stage 추천 | ⏸ **DEFERRED / NOT PLANNED BY DEFAULT** (DEC-075) — 도입 시 새 Product Decision |
@@ -78,7 +78,7 @@
 | AR-6 | AI Growth 5 Stage recommendation | ⏸ DEFERRED / EXCLUDED BY DEFAULT (DEC-075) |
 | AR-7 | Director Growth 5 Stage distribution | ⏸ DEFERRED / EXCLUDED BY DEFAULT (DEC-075) |
 | AR-8 | 자유 텍스트 개인정보 최소화 | **OPEN** — Required before external P0 AI use |
-| AR-9 | Parent revision update label structure | ✅ RESOLVED by DEC-075 · Copy → PHASE 06 |
+| AR-9 | Parent revision update label structure | ✅ RESOLVED by DEC-075 · **Copy RESOLVED by DEC-102 ("업데이트됨 YYYY.MM.DD")** |
 | AR-10 | AI usage limit | **OPEN** — P1+ business decision |
 
 ---
@@ -134,6 +134,8 @@
 ---
 
 ## 6. PHASE 06 Inputs (UX Copy)
+
+> *2026-09-27 PHASE 06 처리: Parent Growth5 문구 DEC-100 · "업데이트됨" DEC-102 · 8주 명칭 · 월간 표기 DEC-104 · AI 실패 · 근거 부족 DEC-105 · 숨김 사유 DEC-102. 정정 사유 선택지는 PHASE 07 구현 시 확정 — [../06-ux-design/copy-terminology.md](../06-ux-design/copy-terminology.md)*
 
 | 항목 |
 |---|
