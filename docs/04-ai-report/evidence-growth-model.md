@@ -71,7 +71,7 @@ Evidence의 기본 단위는 **관찰 1건 (세션 × 아동)**이며, 그 안�
 | S-2 | **0/1/2 변환 · 평균 · 합계 · 백분율 · 등급 · 반 평균 · 순위 금지** — 모든 계층 |
 | S-3 | 순서 표현(→) · 진행바 · 색 그라데이션 금지 |
 | S-4 | 교사가 지표를 "관찰했다"고 선택한 뒤 명시 선택지는 3개(함께 · 보고 나서 · 스스로). 미선택 = 기록 없음 (DEC-038) |
-| S-5 | absent vs explicit NOT_OBSERVED 저장 방식은 PHASE 05 (IA-3) |
+| S-5 | absent vs explicit NOT_OBSERVED 저장 방식은 PHASE 05 (IA-3) · ✅ *Resolved by DEC-086 / PHASE 05: "기록 없음"은 explicit NOT_OBSERVED row가 아니라 metric selection row 없음으로 저장한다. metric row가 존재하면 stage는 NOT NULL이며 `together` · `after_modeling` · `independent` 중 하나다 (함께 · 보고 나서 · 스스로 · 점수 변환 없음)* |
 | S-6 | AI는 지표 · Stage를 선택 · 추천 · 검증하지 않는다. AI Stage 추천은 BASE PRODUCT 제외 (DEC-075) |
 
 ---

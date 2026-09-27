@@ -8,7 +8,7 @@
 | 관련 문서 | [product-catalog.md](./product-catalog.md) · [contract-policy.md](./contract-policy.md) · [../02-ia/permission-matrix.md](../02-ia/permission-matrix.md) · [../02-ia/state-error-model.md](../02-ia/state-error-model.md) |
 | 관련 결정 | DEC-031 · DEC-037 · DEC-044 · DEC-048 · DEC-052 · DEC-055 · DEC-056 · DEC-057 · DEC-060 · DEC-063 |
 
-> 정확한 RLS · 서버 게이트 구현 위치는 PHASE 05 (AD-2). 본 문서는 판정 규칙과 사용자 경험의 대응만 정한다.
+> 정확한 RLS · 서버 게이트 구현 위치는 PHASE 05 (AD-2). *→ DEC-083: runtime derive · 저장 안 함 · 기관 단위 `org_has_feature` + 반 단위 `class_has_feature` (계약 class scope 포함 — 다른 반의 계약으로 현재 반 기능이 열리지 않음) · [../05-data-security/rls-security-architecture.md](../05-data-security/rls-security-architecture.md)* 본 문서는 판정 규칙과 사용자 경험의 대응만 정한다.
 
 ---
 

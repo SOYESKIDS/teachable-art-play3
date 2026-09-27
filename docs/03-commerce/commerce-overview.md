@@ -21,7 +21,7 @@
 | 3계층 | Product (+ Version) → Contract → Entitlement. Entitlement는 Contract에서 파생되며 일반 운영자가 직접 수정하지 않는다 | DEC-048 |
 | 계약 단위 | Organization × Product Version × Contract Class Scope × Contract Period. **ONE EFFECTIVE CONTRACT AT A TIME** (미래 시작 후속 계약 · draft는 병존 가능) | DEC-049 |
 | 상태 · 활성화 | `draft` · `active` · `suspended` · `ended` + 날짜 파생(`before_start` · `in_service` · `expired`). 활성화 = HQ 확인 ∧ 시작일. **입금은 조건 아님** · Contract ≠ Organization 상태 | DEC-050 |
-| 한도 | 서비스 반 수 HARD · 16번째 이상 원아 ALLOW + OVERAGE RECORD · 자동 청구 없음 · Pilot 15명 초과 Ready 불가 | DEC-051 |
+| 한도 | 서비스 반 수 HARD · 16번째 이상 원아 ALLOW + OVERAGE RECORD · 자동 청구 없음 · Pilot 15명 초과 Ready 불가 · *OVERAGE RECORD = 현재 초과 인원은 계산값 + 경계 변화 이벤트 (DEC-095)* | DEC-051 · DEC-095 |
 | 정지 · 종료 | 새 작업 차단 · 기존 기록 Read-only · Portal 기존 링크 별도 정책 · 기관 정지 우선 · 기간 숫자 미확정 | DEC-052 |
 | 변경 | Upgrade · Renewal = 후속 계약 · Downgrade는 Renewal 시점만 · 날짜 조정은 수정 + 사유 · 기록 삭제·재생성 없음 | DEC-053 |
 | Pilot | 별도 Offer (STARTER 할인판 아님) · 전환 시 모든 데이터 유지 | DEC-054 |
@@ -143,7 +143,7 @@ flowchart LR
 | 약속한 report capability 전체 | 예: STANDARD = Weekly · Monthly · Semester |
 | 약속한 feature · entitlement dependency 전체 | 예: STANDARD · PREMIUM = Director Dashboard |
 
-계산 **방식**은 PHASE 05에서 정하되 "약속한 것 전체" 원칙은 바꾸지 않는다.
+계산 **방식**은 PHASE 05에서 정하되 "약속한 것 전체" 원칙은 바꾸지 않는다. *→ PHASE 05: 콘텐츠 Readiness는 데이터(발행 상태 + Required Content Set)에서 계산 · 코드 기능 출시는 최소 capability registry + audit · 수동 `is_ready` 없음 (DEC-082 · DEC-096)*
 
 **현재 상태 (2026-09-27 기준 자료)**
 

@@ -74,7 +74,7 @@ PATH B — OPTIONAL AI
 | AREA | CURRENT (파일 근거) | TARGET | GAP | PRI | PHASE |
 |---|---|---|---|---|---|
 | **AI dependency** | 리포트 근거 선택에 `review_status='accepted'` 필수 → 없으면 **GR003** (`M/20260901160000…` L1088-1116) · 근거 트리거 GR003 4종 (L697-715) | AI 없이 전 경로 완주 | **치명적 — P0 제거** | P0 | 05 · 07 |
-| AI NOT NULL | `child_growth_report_sources.ai_draft_id not null` (L259) · `source_ai_updated_at not null` (L271) · `reviewed_text_snapshot not null` (L287) | 필수 의존 제거 | P0 제거 | P0 | 05 |
+| AI NOT NULL | `child_growth_report_sources.ai_draft_id not null` (L259) · `source_ai_updated_at not null` (L271) · `reviewed_text_snapshot not null` (L287) | 필수 의존 제거 · *Clarified by PHASE 05 DB architecture (DEC-091): 신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 AI 필수 의존을 두지 않음으로써 달성한다. legacy 스키마는 Cutover까지 현재 제약 유지(운영 중 NOT NULL 부분 완화 · GR003 부분 제거 없음) → Cutover에서 legacy write 중지 · read-only* | P0 제거 | P0 | 05 |
 | Observation domain | 구 5영역 시드 (`M/20260831093000…` L255-287) · Growth 5는 마케팅 문구에만 (`site-copy.ts` L239-245) | 공식 Growth 5 | 신규 · 구 영역 historical | P0 | 05 |
 | Stage | 연결 테이블에 stage 없음 · 금지 주석 (`M/20260831094000…` L12-13) | 지표별 Stage | 신규 · IA-3 | P0 | 05 |
 | Quick Memo | 없음 | 교사 전용 서버 임시저장 · 원천 아님 | 신규 | P0 | 05 · 07 |

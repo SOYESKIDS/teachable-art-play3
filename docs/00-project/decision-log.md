@@ -4,9 +4,9 @@
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
 | 최종 갱신 | 2026-09-26 |
-| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) 확정 사항 |
-| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) |
-| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) |
+| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) · PHASE 05 (Data / Security) 확정 사항 |
+| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) · `1c7afe9` (PHASE 05 기준) |
+| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) · [../05-data-security/open-items.md](../05-data-security/open-items.md) |
 
 ---
 
@@ -317,7 +317,7 @@ AUDIT 3에서 관찰 관련 분류가 4개 체계로 갈라져 있음이 확인�
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-086 (DB 저장 코드 = together · after_modeling · independent · NOT_OBSERVED는 행 없음) |
 | 출처 | 사용자 확정 |
 
 **결정 내용**
@@ -531,7 +531,7 @@ draft·AI draft 비노출은 별개의 이유로 유지한다. 교사가 다듬�
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-091 (신규 2.0 리포트 경로에는 AI 필수 의존 없음 · legacy 1.0은 M5 Cutover까지 GR003 · `ai_draft_id` NOT NULL · `source_ai_updated_at` · `reviewed_text_snapshot` NOT NULL 유지 후 write 중단 · read-only · 운영 중 legacy 제약 부분 nullable 완화 없음) |
 | 출처 | 사용자 확정 |
 
 **결정 내용**
@@ -904,7 +904,7 @@ Teacher Primary Navigation은 현재 3개(오늘의 수업 · 수업 이력 · �
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-087 (P0 Quick Memo = 작성 교사 본인만) |
 | 출처 | 사용자 확정 (PHASE 02 IA-1) |
 
 **결정 내용**
@@ -984,7 +984,7 @@ Class Mode의 가치는 교사가 종이 가이드 없이 수업하는 것이다
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-086 (저장 방식 확정: 미선택 = row 없음 = 기록 없음 · row 존재 시 stage NOT NULL · 코드 together · after_modeling · independent = 함께 · 보고 나서 · 스스로 · 점수 변환 없음 · IA-3 RESOLVED) |
 | 출처 | 사용자 확정 (PHASE 02 검토) |
 
 **결정 내용**
@@ -1182,7 +1182,7 @@ Pilot은 1~2개 기관이다. 상품 편집 화면은 4개 상품을 바꿀 일�
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-085 (`scheduled → in_progress` 강제 경로 없음 · 진행 중 세션 정정은 별도 Recovery) |
 | 출처 | 사용자 확정 (PHASE 02 IA-18) |
 
 **결정 내용**
@@ -1217,7 +1217,7 @@ DEC-036이 필수 안전·개인정보 확인을 수업 시작 조건으로 정�
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-085 (Director · HQ admin의 in_progress→completed Recovery는 별도 경로 · 사유 · audit · P0 지원) |
 | 출처 | 사용자 확정 (PHASE 02 IA-19) |
 
 **결정 내용**
@@ -1330,7 +1330,7 @@ B2B/B2G에서는 서명·발주 후 입금 전에 서비스를 여는 것이 정
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-095 (현재 초과 인원은 저장값이 아니라 계산값 · 경계 변화만 이벤트 기록) |
 | 출처 | 사용자 확정 (PHASE 03 C-4 · IA-12) |
 
 **결정 내용**
@@ -1527,7 +1527,7 @@ Monthly · Semester는 Weekly와 같은 주차별 관찰 흐름 위에 있어 We
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-088 (consented 상태 ≠ 법적 공개 허가 · 외부 사진 공개는 CO-9 · CO-10 · DB-9 선행) |
 | 출처 | 사용자 확정 (PHASE 03 C-13 · IA-6 운영 부분) |
 
 **결정 내용** (제품 운영 책임만 정한다)
@@ -1825,7 +1825,7 @@ Weekly 식별자가 주차 기반이므로 달력 월을 쓰면 주차가 월 �
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-091 (신규 2.0 경로에 AI 필수 의존 없음 · legacy 스키마는 Cutover까지 유지 후 read-only · 운영 중 부분적 NOT NULL 또는 트리거 해제 안 함) |
 | 출처 | 사용자 확정 (PHASE 04 A-8 · A-9 · A-10 · A-19) |
 
 **결정 내용**
@@ -2006,7 +2006,365 @@ Production Application은 AI Provider의 **원본 Request Body와 원본 Respons
 
 ---
 
-## 13. 결정 요약표
+## 13. Data · Security Architecture (PHASE 05)
+
+> PHASE 05 검토·승인(2026-09-27)에서 확정된 DB · RLS · Migration 아키텍처 결정. 상세는 [../05-data-security/](../05-data-security/). **SQL · 테이블 · 컬럼 이름은 PROPOSED 개념**이며 실제 구현은 PHASE 07. 원 분석의 DBA-1 ~ DBA-32 대응표는 [../05-data-security/architecture-overview.md §4](../05-data-security/architecture-overview.md). **DBA-30(Portal 사진 서명)은 결정하지 않았다 → DB-9 OPEN.**
+
+### DEC-079 · Tenant · Role · Sales Security
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-1 · DBA-2 · DBA-23) |
+
+**결정 내용**
+- Role 모델 = **전역 HQ 역할**(`private.admin_users`: admin · sales, 향후 content 역할) **+ 기관 멤버십 역할**(director · teacher). 한 사용자가 여러 기관에 속할 수 있으며 HQ 범위와 기관 범위를 섞지 않는다.
+- **HQ Admin ≠ HQ Sales.** 현재 `is_soyes_admin()`(admin · sales 동일 판정)을 `is_hq_admin()` · `is_hq_sales()`로 분리한다.
+- **Sales에게 기관 · 아동 테이블 SELECT 정책을 주지 않는다.** Sales용 데이터는 집계 · 메타만 반환하는 제한 RPC로 제공한다 (DEC-058).
+- Tenant 격리 = **선택적 `organization_id` 비정규화 + `(id, organization_id[, class_id])` 복합 FK + `enforce_*` 트리거** (현재 패턴 유지 · 신규 테이블 동일 적용). Client가 보낸 organization_id · user_id를 권한 원천으로 신뢰하지 않는다.
+- 헬퍼는 신원 헬퍼(is_hq_admin · is_hq_sales · has_org_role · is_class_teacher · is_assigned_class_teacher)와 상태 · 권한 헬퍼(DEC-083)로 분리한다. 모두 `auth.uid()` 내부 사용 · user_id client 인자 없음 · SECURITY DEFINER는 `search_path` 고정 · private schema · EXECUTE 최소화 (Invariant AI-2).
+
+**결정 이유**
+PHASE 05 감사에서 현재 Sales가 모든 기관의 관찰 · 인용 · 사진 · 리포트를 읽을 수 있음이 확인되었다 (가장 큰 현재 보안 격차).
+
+**관련**: DEC-058 · P0-15 · Invariant AI-2 · AI-3
+
+---
+
+### DEC-080 · Class Assignment · Child Current Class
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-3 · DBA-4) |
+
+**결정 내용**
+- 교사 권한은 **배정된 반 기준**이다 (`class_teachers`). 기관 멤버라는 이유로 모든 반에 접근하지 않는다. 배정 해제는 audit 이벤트로 기록한다.
+- P0는 `children.class_id` **직접 연결을 유지**한다. 출결 · 관찰 · 사진 · 리포트가 기록 시점의 class를 보존하고 리포트 식별은 Program Assignment 기준이므로 반 이동이 과거 기록을 깨지 않는다.
+- 반 이동은 **RPC + audit**. Enrollment 이력 테이블은 필요 시 도입 (DB-1 · P2).
+
+**관련**: Invariant AI-7 · DEC-077
+
+---
+
+### DEC-081 · Product Version Immutability
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-5 수정) |
+
+**결정 내용**
+- Product Version lifecycle: **draft**(수정 가능) · **published**(**immutable**) · **retired**(신규 Contract 선택 불가 · 기존 Contract는 계속 참조).
+- **Contract는 published Product Version만 참조**한다.
+- published 이후 version row · promised content scope · feature inclusion · AI capability scope · report capability를 조용히 수정할 수 없다. 수정이 필요하면 **새 Product Version**.
+- 불변 시점은 `published_at`으로 표현하며 같은 의미의 `locked_at`을 중복 저장하지 않는다.
+- `ai_assist`는 Commerce Feature Code 하나다 (DEC-070). C1 · C2 · C3 capability scope는 **constrained rows 또는 고정 집합 검증**으로 저장하며 free-form text로 두지 않는다 (SQL 표현은 PHASE 07).
+- Pilot은 Offer 유형(regular · pilot)으로 구분한다 (DEC-054).
+
+**관련**: DEC-048 · DEC-054 · DEC-070
+
+---
+
+### DEC-082 · Contract · Class Scope · Activation
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-7 · DBA-6 일부) |
+
+**결정 내용**
+- `contracts` + **`contract_classes` junction**(복합 FK로 같은 기관 강제). 계약 반 수 = junction 행 수. 프로그램 배정은 **현재 유효 계약의 class scope에 속한 반**에만 가능하다 (DEC-051 서비스 반 수 HARD).
+- **ONE EFFECTIVE CONTRACT AT A TIME** (DEC-049) 유지. **Pilot도 같은 기관에서 정규 Contract와 동시에 effective하지 않는다.**
+- 기간 겹침 강제 방식(`btree_gist` exclusion 등)은 **후보**이며 Hard Requirement로 고정하지 않는다. PHASE 07에서 extension 가능성 · 동시성 · 활성화 트랜잭션을 보고 확정한다.
+- 날짜 파생 상태(before_start · in_service · expired)는 저장하지 않고 계산한다 (DEC-050).
+- 활성화는 **RPC 트랜잭션**: 상태 · 기간 · class scope · published version · Service Readiness (DEC-063) · Pilot 제약(반당 ≤15 · override 없음) · audit. **결제는 조건이 아니다.**
+- 코드로 구현된 기능의 출시 여부는 DB가 스스로 알 수 없으므로 **최소 범위의 capability release registry + audit**을 Readiness 입력으로 둔다. 콘텐츠 Readiness는 데이터에서 계산한다. 수동 `is_ready` boolean은 두지 않는다.
+
+**관련**: DEC-049 · DEC-050 · DEC-051 · DEC-054 · DEC-063
+
+---
+
+### DEC-083 · Class-aware Runtime Entitlement
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-6 수정 · DBA-23 · AD-2) |
+
+**결정 내용**
+- Entitlement는 **runtime derive**. 일반 운영용 result row를 materialize하지 않는다 (직접 편집할 행이 존재하지 않음 · DEC-048).
+- **Organization-level** 판정: `org_has_feature(org, feature)` — 예: director_dashboard.
+- **Class-scoped** 판정: `class_has_feature(class_id, feature)` / effective class entitlement — organization · effective contract · **contract class scope** · product version · product version feature · service mode를 **함께** 본다.
+- Teacher · Session · Observation · Weekly 같은 **반 단위 작업은 class-aware entitlement**를 사용한다. **다른 반의 계약으로 현재 반 기능이 열리면 안 된다.**
+- 서비스 모드 `org_service_mode(org)`(정상 · 읽기 전용 · 차단)를 쓰기 정책 WITH CHECK · 트리거 · RPC에서 검사한다. 읽기는 RLS + 서버 이중 (AD-2 해소).
+- STARTER 원장: 운영 데이터 RLS는 막지 않고 대시보드 **집계 RPC만** 기능 권한으로 차단한다 (DEC-056).
+
+**관련**: DEC-048 · DEC-052 · DEC-056 · DEC-082
+
+---
+
+### DEC-084 · Program Assignment Identity
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-8 수정) |
+
+**결정 내용**
+- `class_program_assignments.id`를 **stable Program Assignment identity**로 유지한다 (리포트 식별의 기준점).
+- 계약 연결은 **`origin_contract_id`** 성격 — "이 Assignment가 어떤 Contract 하에서 시작되었는가"의 provenance다.
+- **현재 runtime access를 origin_contract_id의 active 여부에 영구 종속시키지 않는다.** 현재 서비스 권한 = 현재 effective contract + class scope + feature entitlement (DEC-083). 갱신 · 후속 계약이 생겨도 과거 Assignment identity를 깨지 않는다.
+- Program 버전은 program 행 단위(lineage + version label · published 후 불변)로 표현한다.
+- 업그레이드 시 새 Assignment를 만들지 이어갈지는 **CO-7 Open 유지**.
+
+**관련**: DEC-066 · DEC-067 · DEC-068 · CO-7
+
+---
+
+### DEC-085 · Session Transaction · Normal vs Recovery
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-9 수정 · DB-3) |
+| Clarifies | DEC-046 (강제 시작 경로 없음) · DEC-047 Emergency Override 서술 (Recovery는 별도의 제한된 경로로 P0 지원) |
+
+**결정 내용**
+- 세션 상태값은 현재 4개(scheduled · in_progress · completed · cancelled)를 유지하고 UI 단계(BEFORE · DURING · AFTER)는 저장하지 않는다.
+- **정상 교사 경로**: `scheduled → BEFORE confirmation → start_session → in_progress → finish_session → completed`. **정상 start는 Teacher만** 수행한다. **scheduled → completed 직접 전환 금지.**
+- **Director · HQ Admin은 일반 finish 버튼으로 세션을 완료하지 않는다.**
+- **Recovery** (`recover_complete_session` 개념): `in_progress → completed`만 · 주체 Director · Authorized HQ Admin · **reason required · actor · timestamp · audit** · 정상 교사 Workflow와 UI · action 분리 · **P0 지원** (DB-3 해소).
+- 세션 status 전환은 RPC 전용으로 하고 client의 status 직접 UPDATE 권한은 회수한다 (Cutover와 함께).
+- **Cancel 권한은 현재 규칙을 유지**한다 (확대 · 축소 결정 없음).
+- `week_no`는 세션 생성 시 lesson에서 복사해 불변 비정규화한다 (AD-11 해소).
+
+**관련**: DEC-036 · DEC-046 · DEC-047
+
+---
+
+### DEC-086 · Observation · Growth 5 · Stage Storage (IA-3)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-11 · DBA-12 · DBA-13 수정 · IA-3 · AD-3) |
+| Clarifies | DEC-007의 code 표기 (저장 코드) |
+
+**결정 내용**
+- 관찰 단위는 세션 × 아동 — **기존 `class_session_observations`를 확장**한다. 기존 행은 taxonomy = legacy(사실 backfill) · 신규는 growth5. Complete = Report Evidence 후보 · Draft = 근거 아님 · **AI 수락 상태와 무관**.
+- Growth 5는 **카탈로그 테이블**(stable code + display label 분리)과 **관찰 × 지표 선택 테이블**로 저장한다. Observation row에 5개 컬럼을 두지 않는다.
+- **"기록 없음" = metric row 없음.** metric row가 있으면 **stage NOT NULL**. 관찰 × 지표 unique.
+- **Stage stable codes (PROPOSED): `together` · `after_modeling` · `independent`** — label: 함께 · 보고 나서 · 스스로. "함께"는 교사 **또는 친구**와 함께/도움 속에서 나타난 경우를 포함하므로 `with_teacher`로 저장하지 않는다.
+- 숫자 변환 · 점수 · 평균 없음. Child Quote는 기존 `child_voice` 단일 컬럼(원문) 유지.
+
+**관련**: DEC-005 · DEC-006 · DEC-007 · DEC-038 · DEC-065
+
+---
+
+### DEC-087 · Quick Memo — Author Only
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-10 수정 · DB-4) |
+| Clarifies | DEC-035 "교사 본인 / 담당 반 범위" |
+
+**결정 내용**
+- P0 Quick Memo는 **AUTHOR ONLY** — 작성한 Teacher만 read · create · update · delete.
+- 같은 반 다른 Teacher에게 원문을 자동 공유하지 않는다. 협업은 **Observation으로 옮긴 뒤** 정식 Evidence 흐름에서.
+- Director · HQ · Parent · AI: **no access**.
+- TTL은 확정하지 않는다 (CO-2).
+
+**관련**: DEC-035 · DEC-064
+
+---
+
+### DEC-088 · Media · Consent Operational Boundary
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-14 · DBA-15 수정) |
+| Clarifies | DEC-059 (consented 의미) |
+
+**결정 내용**
+- 사진 단위는 세션 × 아동 유지 · observation 직접 연결 없음 · 리포트는 media reference로 스냅샷.
+- **Metadata soft delete와 Storage physical delete는 하나의 PostgreSQL 트랜잭션이 아니다.** P0 동작: ① metadata를 deleted/hidden 전환 ② 즉시 Teacher · Parent 조회에서 제외 ③ Storage 객체 제거는 **server orchestration / cleanup job** ④ 실패 시 metadata는 hidden 유지 ⑤ 재시도 가능 ⑥ **signed URL 신규 발급 금지**. Physical deletion 시점 · 보존은 CO-2.
+- **Consent withdrawal ≠ media 삭제.** 철회는 display eligibility를 false로 만든다. 법적 physical deletion은 CO-2 · CO-9 · CO-10.
+- Operational consent 구조(아동별 status · recorded_by · recorded_at · 증빙 참조 · audit)를 저장한다. **`status = consented`가 "법적으로 Parent Portal 사진 공개 가능"을 의미하지 않는다.**
+- 안전 기본값: **unknown · declined는 공개 불가**. **External Parent Photo Publication의 Production Enablement는 CO-9 · CO-10 (및 DB-9) 해결이 선행 조건**이다.
+
+**관련**: DEC-014 · DEC-059 · P0-10 · CO-9 · CO-10
+
+---
+
+### DEC-089 · Logical Report · Revision Structure
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-16 · DBA-17 수정) |
+
+**결정 내용**
+- **신규** `reports`(논리 리포트: 유형 · 아동 · 배정 · 기간 discriminator · 숨김) + `report_revisions`(revision_no 1..N · draft/complete · 정정 사유 · template version · 동시성 토큰). Weekly · Monthly · Semester 식별자별 unique. **published boolean 없음** (visibility 계산 · DEC-074).
+- **`latest_completed_revision_id`** 개념의 포인터를 논리 리포트에 둔다. 같은 report의 **complete revision만** 가리켜야 한다 (FK 방식은 PHASE 07).
+- **Working revision은 포인터를 저장하지 않고 `status = draft` 부분 unique로 파생**한다 (리포트당 draft 최대 1).
+- revision_no는 revision 안에서 표시 · 순서용.
+- **Completed revision UPDATE · DELETE 금지.** 완료된 적 없는 draft만 삭제 가능. 전환(완료 · 정정 생성)은 RPC 트랜잭션.
+
+**관련**: DEC-073 · DEC-074
+
+---
+
+### DEC-090 · Report Snapshot Architecture
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-18 · AD-10) |
+
+**결정 내용**
+- **Evidence Snapshot = 정규화 행**(revision × 근거 관찰: 교사 노트 · 인용 원문 · Growth 5 선택 · 수업 맥락 · 원천 관찰 ref) — AI 컬럼 없음.
+- **Final Content Snapshot = JSONB + template version** (서버 스키마 검증).
+- **Media = reference 행** (표시 여부는 매번 동의 · 삭제 상태로 판단 · DEC-073).
+- 완료 revision의 스냅샷은 불변.
+
+**관련**: DEC-064 · DEC-073 · Invariant AI-11
+
+---
+
+### DEC-091 · AI Generation Storage · Legacy AI Dependency
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-19 · DBA-20 · DBA-27 수정) |
+| Clarifies | DEC-071 #2 (GR003 · `ai_draft_id` 필수 의존 제거의 구현 해석) |
+
+**결정 내용**
+- **AI Generation Attempt**: capability(C1 · C2 · C3) · 대상(관찰 또는 revision — nullable FK 2개 + 정확히 하나 CHECK · 약한 polymorphic 참조 없음) · 상태 · provenance · validated structured draft(JSONB) · sanitized error category. **원 payload 컬럼 없음** (DEC-078). 리포트는 AI를 참조하지 않는다.
+- **AI Source Refs = junction 테이블**. 섹션별 refs는 draft JSON 안에 두고 서버가 junction 부분집합인지 검증.
+- P0 C1은 기존 관찰 AI 초안 테이블 경로를 유지하고, attempt 테이블 이전은 P1.
+- **NEW 2.0 PATH** (`reports` · `report_revisions` · `report_revision_evidence`)에는 `ai_draft_id` · accepted AI draft · `reviewed_text_snapshot` · `source_ai_updated_at` **필수 의존이 없다.** AI 없이 Weekly create → Teacher Final → Complete → Portal 완주.
+- **LEGACY 1.0 PATH** (`child_growth_reports` · `child_growth_report_sources` · legacy AI drafts)는 **Cutover 전까지 현재 제약을 유지**한다. 운영 중 **NOT NULL만 임의 완화하지 않고 GR003만 일부 제거하지 않는다** (트리거 · RPC · AI 입력 · 앱 가정이 묶여 있어 부분 수정 시 legacy draft의 근거 집합이 달라진다).
+- **CUTOVER**: legacy report write RPC 중지 · legacy tables는 read-only compatibility.
+- 따라서 **"Target에서 AI dependency 제거"는 완전히 달성**되며, **"legacy schema column을 nullable로 변경"하는 것은 요구하지 않는다.**
+
+**관련**: DEC-071 · DEC-072 · DEC-076 · DEC-078 · P0-8
+
+---
+
+### DEC-092 · Child Portal · Token
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-21) |
+
+**결정 내용**
+- `child_portals`: **public portal id + token hash/verifier** · 아동당 활성 1개 · 재발급 = revoke + 신규를 한 RPC에서.
+- **raw token DB 저장 금지 · 로그 금지.**
+- Anon은 **`read_child_portal` RPC only**. 기관 테이블에 anon SELECT 정책 금지. 반환은 공개 대상(latest completed ∧ not hidden ∧ Portal 활성 ∧ 계약 정책 허용) 최소 데이터.
+- 만료 · 재발급 기간은 **CO-12 OPEN** (expires_at은 nullable 확장 지점).
+- **Legacy Share는 DEC-041 유지 · New Portal과 merge하지 않는다.**
+- Portal 사진 전달 방식(private bucket + 짧은 signed URL의 **발급 주체 · credential**)은 **결정하지 않았다 → DB-9**.
+
+**관련**: DEC-040 · DEC-041 · DEC-074 · Invariant AI-14 · DB-9
+
+---
+
+### DEC-093 · Audit · HQ Sensitive Support Access
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-22 수정 · DB-2) |
+
+**결정 내용**
+- **Hybrid Audit**: 도메인 행 행위자 컬럼(created_by · completed_by · hidden_by 등) + **append-only `audit_events`** (event type · actor · organization · target type/id · time · sanitized reason/category · safe before/after metadata 최소).
+- Audit에 넣지 않는다: child quote body · teacher observation body · AI raw output · photo binary · path secret · portal token · full prompt · guardian personal data.
+- **Director가 audit_events 전체를 직접 읽지 않는다.** 기관 운영에 필요한 제한된 audit만 향후 query/RPC로.
+- **HQ Admin은 P0부터 최소권한**: 운영 메타(organization · class · membership · child operational metadata · contract · program/session · readiness)는 직접 접근 · **민감 educational content(교사 관찰 텍스트 · 인용 · Growth 5 상세 · 사진 · 리포트 본문 · AI draft)는 blanket client-side SELECT를 기본 권한으로 두지 않는다.** 필요한 지원 접근은 **server/RPC + authorized HQ Admin + reason/context + audit**. 정확한 support UI는 PHASE 07 (DB-2 해소). 기존 Admin UI 호환은 Cutover 계획에서 확인한다.
+
+**관련**: DEC-058 · DEC-079 · DEC-078
+
+---
+
+### DEC-094 · Migration · Cutover · Transaction · Test Baseline
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-24 · DBA-25 · DBA-26 · DBA-28 · DBA-29 · DB-7 · AD-4) |
+
+**결정 내용**
+- **Additive first · backward compatible · forward-fix.** 초기 단계 destructive migration 금지 · **이미 적용된 migration 수정 금지**.
+- 단계: **M0** pgTAP · security baseline → **M1** additive schema only → **M2** fact-based backfill + **human verified Contract mapping** → **M3** Sales/Admin 분리 + entitlement write gates + 신규 operational write paths → **M4** 신규 report read + legacy adapter → **M5** 앱 cutover와 동시에 legacy write · 세션 direct transition 권한 회수 → **M6** CO-2 및 별도 승인 후 cleanup.
+- **영구 "legacy bypass" service mode를 만들지 않는다.** M3 전에 모든 active production Organization은 explicit valid Contract mapping 또는 service disabled / non-production 분류가 완료되어야 한다. **미등록 Production org가 있으면 M3를 강행하지 않는다. 가짜 Contract 자동 생성 금지** (DB-7 해소).
+- **No fake backfill**: 구 5영역 → Growth 5 · legacy period → Weekly/Monthly · legacy AI text → Teacher Final · unknown contract → 임의 Product Version 모두 금지. 사실 값(taxonomy legacy · session week_no)만 backfill.
+- Legacy observation 보존 · 구 영역 inactive. Legacy report는 기존 테이블 + 읽기 adapter · Cutover 후 쓰기 회수 · 신규 Portal 미편입.
+- **RPC 원칙**: 다중 테이블 불변식 · 보안 민감 전환 · 원자적 상태 변경 · 범위가 정해진 일괄 쓰기만 RPC. 나머지는 RLS CRUD. 동시성 = `clock_timestamp()` 토큰 (Invariant AI-6) · last-write-wins 금지 · 멱등성은 조건부 전환 · unique 제약으로.
+- **회귀테스트 도구 = pgTAP (`supabase test db`)** RLS · 음성 테스트 + PHASE 07 앱 통합 (AD-4 해소 · DEC-021 선행).
+
+**관련**: DEC-021 · DEC-041 · DEC-076 · Invariant AI-6 · AI-16 · AI-17
+
+---
+
+### DEC-095 · Regular Child Overage Tracking
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-32) |
+| Clarifies | DEC-051 OVERAGE RECORD의 저장 의미 |
+
+**결정 내용**
+- Regular Contract에서 16번째 이상 child **ALLOW** · **Auto Billing 없음** (DEC-018 · DEC-051).
+- **Current overage는 저장값을 Source of Truth로 두지 않는다.** runtime: `max(active children in contracted class − included children per class, 0)`.
+- included threshold를 넘는 변화는 operational/commercial **event로 기록**한다 (예: 15→16 overage_started · 18→15 overage_cleared · 필요 시 현재 count를 safe metadata로).
+- **별도 Billing Ledger를 만들지 않는다.** Sales · HQ readiness/summary에서 현재 overage count를 aggregate로 볼 수 있으며 **child identity는 Sales에 주지 않는다**.
+
+**관련**: DEC-018 · DEC-051 · DEC-058
+
+---
+
+### DEC-096 · Curriculum Section Boundary · Required Content Set
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 05 DBA-31 · AH-4) |
+
+**결정 내용**
+- CMS 전체를 만들지 않는다. P0 operational content delivery를 위한 최소 구조 = lesson × section(§1 ~ §15) 단위 content + source reference (`lesson_sections` 개념).
+- **Required Content Set**: §1 · §2 · §3 · §4-A · §4-C · §5 · §6 · §11 · §12 · **§13** · §15 (content-governance REVIEWED 게이트 목록 + Weekly 가정연계에 필요한 §13). DEC-037 · DEC-063 Readiness 판정 입력이다.
+- Published curriculum · version은 silent edit 금지 (수정 = 새 버전).
+- Source certainty(원본 확정도)는 메모할 수 있으나 **Service Ready 판정 입력은 발행 상태 + 필수 섹션**이다 (SOURCE EXISTS ≠ PRODUCTION READY).
+
+**관련**: DEC-028 · DEC-037 · DEC-063 · P0-2
+
+---
+
+## 14. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
 |---|---|---|---|---|
@@ -2089,14 +2447,32 @@ Production Application은 AI Provider의 **원본 Request Body와 원본 Respons
 | DEC-076 | 데이터 | Legacy Observation · Report · Portal 미편입 | ACTIVE | 사용자 (A-16 · AR-4) |
 | DEC-077 | 리포트 | Multi-teacher Authorship · 낙관적 동시성 | ACTIVE | 사용자 (A-18) |
 | DEC-078 | AI | Raw Payload 미저장 · Validated Draft + Provenance만 저장 · 로그 최소화 | ACTIVE | 사용자 (PH3-5) |
+| DEC-079 | 보안 | Tenant · Role · Sales ≠ Admin · 헬퍼 분리 | ACTIVE | 사용자 (DBA-1 · 2 · 23) |
+| DEC-080 | 데이터 | 교사 반 배정 · 원아 현재 반 직접 연결 | ACTIVE | 사용자 (DBA-3 · 4) |
+| DEC-081 | 상품 | Product Version published 후 불변 · Contract는 published만 | ACTIVE | 사용자 (DBA-5) |
+| DEC-082 | 계약 | Contract · class scope junction · 동시 효력 1개 (Pilot 포함) · 활성화 RPC | ACTIVE | 사용자 (DBA-7) |
+| DEC-083 | 권한 | Class-aware runtime Entitlement | ACTIVE | 사용자 (DBA-6 · AD-2) |
+| DEC-084 | 데이터 | Program Assignment identity · origin_contract_id | ACTIVE | 사용자 (DBA-8) |
+| DEC-085 | 수업 | 세션 정상 경로 vs Director/HQ Recovery (clarifies DEC-046 · DEC-047) | ACTIVE | 사용자 (DBA-9 · DB-3) |
+| DEC-086 | 관찰 | Growth 5 저장 · 행 없음 = 기록 없음 · Stage 코드 together (IA-3) | ACTIVE | 사용자 (DBA-11 · 12 · 13) |
+| DEC-087 | 수업 | Quick Memo author-only (clarifies DEC-035) | ACTIVE | 사용자 (DBA-10 · DB-4) |
+| DEC-088 | 개인정보 | Media 삭제 경계 · Consent 운영 상태 ≠ 법적 공개 허가 | ACTIVE | 사용자 (DBA-14 · 15) |
+| DEC-089 | 리포트 | 논리 리포트 · Revision · latest_completed_revision_id · working은 draft 파생 | ACTIVE | 사용자 (DBA-16 · 17) |
+| DEC-090 | 리포트 | 스냅샷: 근거 정규화 · 본문 JSONB · 사진 참조 | ACTIVE | 사용자 (DBA-18 · AD-10) |
+| DEC-091 | AI | AI attempt 저장 · 신규 경로 AI 무의존 · legacy는 동결 (clarifies DEC-071) | ACTIVE | 사용자 (DBA-19 · 20 · 27) |
+| DEC-092 | 학부모 | Child Portal · token hash · anon RPC only · legacy share 분리 | ACTIVE | 사용자 (DBA-21) |
+| DEC-093 | 보안 | Hybrid Audit · HQ Admin 민감 데이터 최소권한 | ACTIVE | 사용자 (DBA-22 · DB-2) |
+| DEC-094 | 데이터 | Migration M0~M6 · Contract mapping gate · RPC 원칙 · pgTAP | ACTIVE | 사용자 (DBA-24 · 25 · 26 · 28 · 29 · DB-7) |
+| DEC-095 | 계약 | Regular 초과 인원 = 계산값 + 경계 이벤트 · 청구 없음 | ACTIVE | 사용자 (DBA-32) |
+| DEC-096 | 커리큘럼 | lesson section 최소 구조 · Required Content Set | ACTIVE | 사용자 (DBA-31 · AH-4) |
 
-**총 78건 · ACTIVE 78 (clarified: DEC-010 · DEC-039 · DEC-043 · DEC-054 · DEC-055 · DEC-063 · DEC-072) · SUPERSEDED 0 · WITHDRAWN 0**
+**총 96건 · ACTIVE 96 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-063 · DEC-071 · DEC-072) · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 
-## 14. 다음 Decision 예정 영역
+## 15. 다음 Decision 예정 영역
 
-아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md)에서 관리되며, 확정 시 DEC-079부터 부여한다.
+아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md)에서 관리되며, 확정 시 DEC-097부터 부여한다. PHASE 05 DB 미결정은 [../05-data-security/open-items.md](../05-data-security/open-items.md).
 
 | 예정 영역 | 확정 PHASE |
 |---|---|
@@ -2104,12 +2480,12 @@ Production Application은 AI Provider의 **원본 Request Body와 원본 Respons
 | 환불 · 자동갱신 · 해지 · 결제주기 정책 | PHASE 03 (사업) |
 | PG 사업자 선정 | PHASE 03 (사업) |
 | ~~Growth 5 시계열 표현 방식~~ → **DEC-065 · DEC-075로 확정** (사례 중심 서술 · 단계 증감 표기 없음) | PHASE 02~04 (교육) |
-| 사진 anon 노출 방식 (service_role 확장 vs 별도 사본) | PHASE 05 (Architecture) |
+| 사진 anon 노출 방식 → private bucket + 짧은 signed URL 방향만 승인 · **발급 주체 · credential은 DB-9 OPEN** (05-data-security · AI-1 예외 여부 · CO-9 · CO-10 연계) | Parent 사진 Production 공개 전 |
 | Child Portal 링크 만료 · 재발급 정책 (03-commerce CO-12 · Production Blocker) | P0 Portal Production 전 |
 | ~~AI 원본 응답 저장 범위~~ → **DEC-078로 확정** (raw payload 미저장 · validated draft + provenance) | PHASE 04 |
-| Part 계층 도입 여부 | PHASE 05 |
-| Marketing↔DB 동기화 방식 (DB 직독 vs 빌드 검증) | PHASE 05 |
+| Part 계층 도입 여부 → PHASE 05는 lesson section 최소 구조만 확정 (DEC-096) · Part 계층은 미결정 이월 | PHASE 07 / 콘텐츠 트랙 |
+| Marketing↔DB 동기화 방식 (DB 직독 vs 빌드 검증) — PHASE 05 미결정 이월 | PHASE 07 |
 | ~~리포트 reopen · 숨김 해제 정책~~ → **DEC-073 · DEC-074로 확정** | PHASE 04 |
-| 원장에게 교사 초대·배정 권한 위임 여부 (PHASE 03에서 미처리 → 03-commerce §3 이월) | PHASE 05 전 |
-| 회귀테스트 도구 선정 | PHASE 05 |
+| 원장에게 교사 초대·배정 권한 위임 여부 (PHASE 03에서 미처리 → 03-commerce §3 이월 · PHASE 05는 배정 기반 권한 구조만 확정 DEC-080) | PHASE 07 전 |
+| ~~회귀테스트 도구 선정~~ → **DEC-094로 확정** (pgTAP · `supabase test db`) | PHASE 05 |
 | 16 · 24주 콘텐츠 제작 계획 | 콘텐츠 트랙 |

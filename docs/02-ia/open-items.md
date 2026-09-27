@@ -30,18 +30,18 @@
 | IA-5 | Portal 신규 route | → **DEC-040** (`/share/portal/[portalId]`) |
 | IA-7 | 원장의 리포트 1건 숨김 | → **DEC-043** (Emergency Hide **P0**) |
 | IA-14 | 기존 report share 퇴역 시점 | → **DEC-041** (Production Cutover 시 신규 발급 중단 · 기발급분은 만료/중지까지 동작) |
-| IA-18 | 오늘 보드 · 원장 [수업 시작]과 BEFORE 필수 확인의 관계 | → **DEC-046** (Class Mode 적용 세션의 `scheduled → in_progress`는 Teacher BEFORE 경로로 단일화 · 우회 경로 없음 · 비상 강제 경로는 PHASE 05 검토) |
-| IA-19 | `scheduled → completed` 직접 전환(빠른 완료) 유지 여부 | → **DEC-047** (Class Mode 적용 세션에서 교사 · 원장 · HQ 일반 UI 모두 금지 · 취소는 유지 · 1.0 과거 기록 불변 · Emergency Override는 PHASE 05 검토) |
+| IA-18 | 오늘 보드 · 원장 [수업 시작]과 BEFORE 필수 확인의 관계 | → **DEC-046** (Class Mode 적용 세션의 `scheduled → in_progress`는 Teacher BEFORE 경로로 단일화 · 우회 경로 없음 · 강제 경로 없음 — *clarified by DEC-085*) |
+| IA-19 | `scheduled → completed` 직접 전환(빠른 완료) 유지 여부 | → **DEC-047** (Class Mode 적용 세션에서 교사 · 원장 · HQ 일반 UI 모두 금지 · 취소는 유지 · 1.0 과거 기록 불변 · *PHASE 05: Director · authorized HQ Admin의 `in_progress → completed` Recovery (사유 · audit · P0) — DEC-085*) |
 
 ---
 
-## 2. Open Decisions (PHASE 02 종료 시 9건 → PHASE 03 이후 미해결 2건: IA-3 · IA-13 → PHASE 04 이후: IA-3만 Open · IA-13은 Copy만 PHASE 06)
+## 2. Open Decisions (PHASE 02 종료 시 9건 → PHASE 03 이후 미해결 2건: IA-3 · IA-13 → PHASE 04 이후: IA-3만 Open · IA-13은 Copy만 PHASE 06 → PHASE 05 이후: IA-3 RESOLVED by DEC-086 · IA 기준 Open 0건 · 잔여는 CO · DB 항목)
 
 > 2026-09-27 PHASE 03 상태 정합화: 해결 항목은 삭제하지 않고 상태를 표시한다. 잔여 부분은 [../03-commerce/open-items.md](../03-commerce/open-items.md)의 CO 항목으로 관리한다.
 
 | ID | 항목 | 현재 상태 / 논점 | 권고 (확정 아님) | Owner | 확정 PHASE |
 |---|---|---|---|---|---|
-| **IA-3** | Growth 지표 미선택 시 저장 방식 | (A) 행 없음 = NOT_OBSERVED / (B) NOT_OBSERVED 명시 저장. 제품 개념 4 states · UX 3 choices는 DEC-038로 확정. 지표만 선택하고 방식을 고르지 않은 경우의 저장 처리도 포함 | (A) | Architecture | PHASE 05 (AD-3 연동) |
+| **IA-3** | Growth 지표 미선택 시 저장 방식 | ✅ **RESOLVED by DEC-086** (행 없음 = 기록 없음 · 행이 있으면 stage NOT NULL · 저장 코드 `together` · `after_modeling` · `independent` · 숫자 변환 없음) · (이전 논점) (A) 행 없음 = NOT_OBSERVED / (B) NOT_OBSERVED 명시 저장. 제품 개념 4 states · UX 3 choices는 DEC-038로 확정. 지표만 선택하고 방식을 고르지 않은 경우의 저장 처리도 포함 | (A) | Architecture | PHASE 05 (AD-3 연동) |
 | **IA-6** | 사진 동의의 운영정책 · 법적 단위 | 🟡 **Resolved portion**: 운영 책임 (**DEC-059**) / **Remaining portion**: 법적 단위 · 문구 · 단체 사진 → **CO-9 · CO-10** · (이전 논점) 누가 입력하는가(원장 / HQ) · 단위(아동 단위 동의 여부 / 촬영 · 학부모 공유 분리 여부) · 철회 처리 · 증빙 보관. BEFORE 필수 확인 · Pilot Ready G-8 · Portal 사진 노출이 모두 의존 | 원장이 아동 단위로 입력 | Product + 법무 | PHASE 03 |
 | **IA-8** | HQ sales의 원아 명단 열람 | ✅ **RESOLVED by DEC-058** (원아 명단 불가) · (이전 논점) 관찰기록 · 사진 금지는 HARD. 기관 상세의 원아 이름 목록은 미정 | 불가 | Product + 보안 | PHASE 03 |
 | **IA-9** | 정규 STARTER 원장의 비대시보드 Feature 최종 목록 | ✅ **RESOLVED by DEC-056** · (이전 논점) `/director` 홈 미포함은 HARD. 수업 운영 · 이력 · 출결 · 리포트 조회 · 학부모 공유 허용 범위 | 허용 (C-5 성립 조건) | Product + 사업 | PHASE 03 (BP-11) |
@@ -55,15 +55,17 @@
 
 ## 3. Architecture Handoff → PHASE 05 (5)
 
+> *2026-09-27 PHASE 05 처리: AH-1 → DEC-087 · AH-2 → DEC-085 · AH-3 → DEC-089 · DEC-092 · AH-4 → DEC-096 · AH-5 → DEC-092. 잔여: Quick Memo 보존 기간(CO-2) · Portal 만료(CO-12) · Portal 사진 서명 주체(DB-9) · rate limit(AD-14) — [../05-data-security/open-items.md](../05-data-security/open-items.md)*
+
 > 제품 요구는 확정되었고, 저장 구조 · RLS · 구현 방식만 남은 항목. Invariant(AI-1 ~ AI-17) 준수가 전제다.
 
 | ID | 항목 | 확정된 제품 요구 | PHASE 05에서 정할 것 |
 |---|---|---|---|
-| **AH-1** | Quick Memo 저장 | DEC-035: 교사 전용 서버 임시저장 · Director/Parent/AI 비노출 · Observation 아님 | 저장 단위(세션 · 교사) · RLS · 보존 기간 · 삭제 · 동시 편집 · 오프라인 재전송 |
-| **AH-2** | BEFORE 필수 확인 기록 · 세션 상태 흐름 단일화 | DEC-036 · DEC-046 · DEC-047: who · when · session · confirmation state · `scheduled → in_progress`는 Teacher BEFORE 경로만 · `scheduled → completed` 직접 전환 없음 · 취소 유지 | 저장 구조 · 확인 항목 버전(커리큘럼 개정 대응) · 여러 교사 반의 귀속 · 원장/HQ 조회 여부 · 서버/DB에서 단일 흐름 강제 방법 · Class Mode 적용 세션과 1.0 과거 세션의 구분 · **Emergency Override (admin only · explicit reason · actor · timestamp · audit log) 필요 여부와 설계** |
-| **AH-3** | Report Emergency Hide | DEC-043: visible/hidden · reason · by · at · 원장 · HQ admin · Portal revoke와 분리 | 저장 위치 · Portal resolve 제외 조건 · 사진 스냅샷 노출 중단 · 감사 이력 · RLS(sales 제외) |
-| **AH-4** | Required Content Set | DEC-037: 필수 데이터 부족 시 Class Mode 차단 · 선택 섹션은 숨김 | 15섹션 중 필수 목록 · 판정 위치(발행 게이트 / 진입 시점) · Pilot Ready 점검 방식 |
-| **AH-5** | Child Portal resolve · DTO | DEC-040 · DEC-042 · DEC-044: 아동 단위 · 2탭 · 실패 무구분 · 노출 조건(complete ∧ 활성 ∧ visible) | 토큰 · 만료 · resolve RPC · DTO 필드 · 사진 anon 제공(AD-1) · rate limit(AD-14) · 조직 정지 시 동작 |
+| **AH-1** | Quick Memo 저장 | DEC-035: 교사 전용 서버 임시저장 · Director/Parent/AI 비노출 · Observation 아님 | 저장 단위(세션 · 교사) · RLS · 보존 기간 · 삭제 · 동시 편집 · 오프라인 재전송 → ✅ **DEC-087** (author only) · 보존 기간 CO-2 |
+| **AH-2** | BEFORE 필수 확인 기록 · 세션 상태 흐름 단일화 | DEC-036 · DEC-046 · DEC-047: who · when · session · confirmation state · `scheduled → in_progress`는 Teacher BEFORE 경로만 · `scheduled → completed` 직접 전환 없음 · 취소 유지 | 저장 구조 · 확인 항목 버전(커리큘럼 개정 대응) · 여러 교사 반의 귀속 · 원장/HQ 조회 여부 · 서버/DB에서 단일 흐름 강제 방법 · Class Mode 적용 세션과 1.0 과거 세션의 구분 · **Emergency Override (admin only · explicit reason · actor · timestamp · audit log) 필요 여부와 설계** → ✅ **DEC-085** (BEFORE 확인 행 · 전환 RPC · Director · authorized HQ Admin Recovery `in_progress → completed`만 · 사유 · audit) |
+| **AH-3** | Report Emergency Hide | DEC-043: visible/hidden · reason · by · at · 원장 · HQ admin · Portal revoke와 분리 | 저장 위치 · Portal resolve 제외 조건 · 사진 스냅샷 노출 중단 · 감사 이력 · RLS(sales 제외) → ✅ **DEC-089 · DEC-092 · DEC-093** (논리 리포트 단위 숨김 · Portal 조회 제외 · audit) · 사진 서명은 DB-9 |
+| **AH-4** | Required Content Set | DEC-037: 필수 데이터 부족 시 Class Mode 차단 · 선택 섹션은 숨김 | 15섹션 중 필수 목록 · 판정 위치(발행 게이트 / 진입 시점) · Pilot Ready 점검 방식 → ✅ **DEC-096** |
+| **AH-5** | Child Portal resolve · DTO | DEC-040 · DEC-042 · DEC-044: 아동 단위 · 2탭 · 실패 무구분 · 노출 조건(complete ∧ 활성 ∧ visible) | 토큰 · 만료 · resolve RPC · DTO 필드 · 사진 anon 제공(AD-1) · rate limit(AD-14) · 조직 정지 시 동작 → ✅ **DEC-092** (token hash · anon RPC only · 최소 DTO) · 만료 CO-12 · 사진 서명 DB-9 · rate limit AD-14 잔여 |
 
 ---
 
@@ -77,8 +79,8 @@
 | **PH3-2** | 원장에게 교사 초대·배정 위임 | 변경 없음 (HQ 전용 유지 가정) |
 | **BP-1 ~ BP-10** | 계약 · 결제 · 갱신 · 해지 · 단위 | Contract 상태 흐름(draft/active/suspended/ended)만 정의. 세부 정책은 PHASE 03 |
 | **BP-11 · BP-13** | Entitlement feature 목록 · STARTER Weekly 범위 | IA-9 · IA-15를 함께 넘김 |
-| **AD-2** | Entitlement 게이팅 구현 위치 | DEC-044의 404 / Not Entitled 구분을 만족해야 함 |
-| **AD-3** | Growth 5 / Stage 저장 구조 | IA-3과 함께 결정 |
+| **AD-2** | Entitlement 게이팅 구현 위치 | DEC-044의 404 / Not Entitled 구분을 만족해야 함 · *→ DEC-083 (PHASE 05)* |
+| **AD-3** | Growth 5 / Stage 저장 구조 | IA-3과 함께 결정 · *→ DEC-086 (PHASE 05)* |
 | **AD-12** | Class Mode 오프라인 전략 | P0: Step 위치 로컬 + Quick Memo 서버 (DEC-035) |
 
 ---

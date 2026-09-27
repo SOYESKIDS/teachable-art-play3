@@ -54,7 +54,7 @@
 
 | # | 항목 | 없으면 | 관련 |
 |---|---|---|---|
-| **P0-8** | **AI 필수 결합 해제** — `sources.ai_draft_id` nullable + 교사 직접 작성 근거 경로 + `.env.example` 정정 | AI 없이 리포트를 만들 수 없다. Pilot 검증 V-7이 불가능 | DEC-009 · *Updated by DEC-071: GR003 · `ai_draft_id` · `reviewed_text_snapshot` · `source_ai_updated_at` 필수 의존 · accepted 조건 모두 제거 대상. 외부 AI(C1) 사용은 AR-8 해결 후 — 미해결 시 Pilot AI OFF* |
+| **P0-8** | **AI 필수 결합 해제** — `sources.ai_draft_id` nullable + 교사 직접 작성 근거 경로 + `.env.example` 정정 | AI 없이 리포트를 만들 수 없다. Pilot 검증 V-7이 불가능 | DEC-009 · *Updated by DEC-071: GR003 · `ai_draft_id` · `reviewed_text_snapshot` · `source_ai_updated_at` 필수 의존 · accepted 조건 모두 제거 대상. 외부 AI(C1) 사용은 AR-8 해결 후 — 미해결 시 Pilot AI OFF* · *Clarified by PHASE 05 DB architecture (DEC-091): 신규 2.0 리포트 경로(`reports` · `report_revisions` · `report_revision_evidence`)를 AI 무의존으로 만들어 달성한다. 운영 중 legacy `ai_draft_id` nullable 변경 · GR003 부분 제거는 하지 않으며, Cutover 후 legacy 리포트는 read-only* |
 | **P0-9** | **Weekly Report** — 5항목 서식 · 자동 조립 · 교사 2필드 입력 · Teacher Review → Complete → Publish Eligible | STARTER 상품의 실체가 없다 | DEC-024 · DEC-030 · *Updated by DEC-066 · DEC-073 · DEC-074: Child × Assignment × Week · deterministic · 완료 조건 · Revision · Hide/Unhide · 이중 Snapshot 포함* |
 
 ### 1-5. 사진 · 개인정보
@@ -76,7 +76,7 @@
 | # | 항목 | 없으면 | 관련 |
 |---|---|---|---|
 | **P0-14** | **Product / Contract / Entitlement + Feature Gate** (Server/DB 수준) · **Pilot 별도 entitlement** | 상품 구분이 불가능하고, Pilot에 Director Dashboard를 허용할 수 없다 | DEC-016 · DEC-031 |
-| **P0-15** | **`sales` 권한 분리** — `is_soyes_admin()`에서 sales 제거 + `is_soyes_sales()` 신설 | 영업이 전 기관 아동 관찰기록·사진을 본다 | AUDIT 2 H3 |
+| **P0-15** | **`sales` 권한 분리** — `is_soyes_admin()`에서 sales 제거 + `is_soyes_sales()` 신설 | 영업이 전 기관 아동 관찰기록·사진을 본다 | AUDIT 2 H3 · *Clarified by DEC-079 · DEC-093: 헬퍼는 `is_hq_admin()` · `is_hq_sales()` (PROPOSED) · Sales는 기관 · 아동 테이블 SELECT 없음 · HQ Admin도 민감 교육 콘텐츠 blanket SELECT 없음* |
 
 ### 1-8. 고지 정합성
 

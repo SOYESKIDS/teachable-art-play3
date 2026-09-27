@@ -143,7 +143,7 @@
 | ID | 항목 | 현재 상태 / 논점 | Owner | 확정 PHASE |
 |---|---|---|---|---|
 | **PH3-1** | **Growth 5 시계열 표현 방식** | 🟠 **부분 차단 (PHASE 02 IA에 영향)**<br>샘플 주간 리포트의 "지난주 대비 ↑ 한 단계" 표기가 UX 원칙 **U-1**(단계는 순위가 아니다) · **U-3**("스스로"가 목표가 아니다)과 충돌한다.<br>선택지: (a) 변화 서술만 — "3월: 한두 가지 색 → 6월: 여러 색 조합" (b) 단계 증감 기호 병기 (c) 주차별 격자만 제시하고 증감 표기 없음 · ✅ **RESOLVED by DEC-065 · DEC-075** (같은 아이 시간순 사례 서술 · 단계 증감 표기 없음 · Stage chip 미노출) | Product (교육) | PHASE 02~04 |
-| **PH3-2** | **원장에게 교사 초대 · 배정 권한 위임 여부** | 현재 `organization_members` INSERT/UPDATE와 `class_teachers` INSERT/DELETE가 HQ 전용.<br>운영 편의 vs 통제. 위임하면 기관이 스스로 교사를 늘릴 수 있으나 좌석(seat) 관리와 충돌 가능 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-049 · DEC-051의 반 범위와 함께 검토) | Product + 사업 | PHASE 03 → PHASE 05 전 |
+| **PH3-2** | **원장에게 교사 초대 · 배정 권한 위임 여부** | 현재 `organization_members` INSERT/UPDATE와 `class_teachers` INSERT/DELETE가 HQ 전용.<br>운영 편의 vs 통제. 위임하면 기관이 스스로 교사를 늘릴 수 있으나 좌석(seat) 관리와 충돌 가능 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-049 · DEC-051의 반 범위와 함께 검토) | Product + 사업 | PHASE 03 → PHASE 05 전 → *PHASE 05 미처리 (배정 기반 권한 구조만 DEC-080) · PHASE 07 전* |
 | **PH3-3** | **리포트 reopen 정책** | `complete → draft` 전환 경로가 없다. 주간 다건 운영 시 오타 정정 수단이 필요.<br>논점: 권한(교사만/원장 승인) · 사유 기록 · 이력 보존 · 이미 학부모가 본 경우 처리 · ↪ PHASE 03에서 미처리 → [03-commerce §3](../03-commerce/open-items.md) 이월 (DEC-043 숨김 해제와 함께) · ✅ **RESOLVED by DEC-073 · DEC-074** (정정 = 새 Revision · 사유 필수 · 학부모는 기존 완료본 유지 · 논리 리포트 단위 hide/unhide · 자동 해제 없음) | Product | PHASE 03 → PHASE 04 |
 | **PH3-4** | **Child Portal 링크 만료 기간** | 현재 트리거가 30일로 설정. 아동 단위 링크는 학기(약 6개월) 필요.<br>논점: 보안(장기 링크 노출 위험) vs UX(학부모가 매번 새 링크를 받지 않아도 됨). 중간안으로 만료 시 원장 재발급 알림 · ↪ **MOVED → CO-12** (Production Blocker) | Security + Product | PHASE 03 → P0 Portal Production 전 |
 | **PH3-5** | **AI 원본 응답 저장 범위** | 현재 `response.output_text`만 취하고 `usage` · `finish_reason` · `response_id`를 버린다.<br>논점: 메타만 저장(비용·품질 추적) vs 본문까지 저장(사후 감사). 본문 저장은 아동 관련 문장을 추가 보관하는 것이므로 개인정보 검토 필요 · ✅ **RESOLVED by DEC-078** — raw provider request · response body · envelope · 전체 prompt · 실패/거부 raw output **미저장** · validated structured draft + provenance(response_id · usage 메타 포함 가능) + sanitized error만 저장 · 로그 최소화 (provenance 항목은 DEC-072) | Privacy + Product | PHASE 04 |
@@ -159,27 +159,29 @@
 
 > 기술 구조 결정. PHASE 05(DB / ERD / Security Architecture Freeze)에서 확정하는 것이 원칙.
 > **Architecture Invariants(project-charter §5)를 바꾸는 결정은 대체 방어 수단 · 회귀테스트 · 영향 RLS 정책 전수 재검토 결과를 함께 기록해야 한다.**
+>
+> *2026-09-27 PHASE 05 처리 상태: AD-2 · AD-3 · AD-4 · AD-10 · AD-11 확정 · AD-1 · AD-9 부분 확정(AD-1 잔여 = DB-9) · 나머지 AD-5 ~ AD-8 · AD-12 ~ AD-14는 PHASE 05에서 결정하지 않았으며 PHASE 07 또는 콘텐츠 트랙으로 이월 — [../05-data-security/open-items.md §3](../05-data-security/open-items.md)*
 
 ### 4-1. 🔴 Invariant에 영향을 주는 결정
 
 | ID | 항목 | 논점 | 영향 Invariant | 확정 PHASE |
 |---|---|---|---|---|
-| **AD-1** | **학부모(anon)에게 사진을 제공하는 방식** | `storage.objects` SELECT 정책은 `authenticated` 전용이고, SQL에서 Storage 서명을 만들 수 없다.<br>**(a)** `service_role`로 서명 — 현재 "Secret Key는 Auth Admin 전용" 원칙을 넓혀야 한다<br>**(b)** 발행 시 리사이즈 사본을 별도 public bucket에 생성 — 원본은 private 유지, 사본은 추측 불가 경로<br>**(c)** anon 전용 Storage 정책 — `share_id`+`token` 검증을 정책에서 받을 수 없어 실현 곤란 | **AI-1** (`service_role` 미사용) | **PHASE 05** |
-| **AD-2** | **Entitlement 게이팅을 RLS로 구현할지 Server 게이트로 구현할지** | DEC-031이 "Server / DB 수준"을 요구. RLS로 넣으면 모든 콘텐츠 조회 정책에 Entitlement 조건이 추가되어 정책 복잡도가 올라간다. Server 게이트만 두면 RLS 우회 경로가 남는다.<br>권고 방향: 읽기는 RLS + Server 이중, 쓰기는 트리거까지 | AI-3 · AI-4 · AI-9 | **PHASE 05** |
-| **AD-3** | **Growth 5 / Observation Stage 저장 구조** | 현재 `class_session_observation_domains`는 `(observation_id, domain_code)` 순수 태그 링크로 level 컬럼이 없다.<br>**(a)** 링크 테이블에 `stage` 컬럼 추가 — GRANT 목록·RPC 시그니처(`save_class_session_observation_atomic`의 `text[]` 인자) 변경 필요<br>**(b)** 별도 테이블 신설 — 기존 구조 보존, 조회 join 증가 | AI-5 (컬럼 GRANT) | **PHASE 05** |
+| **AD-1** | **학부모(anon)에게 사진을 제공하는 방식** | `storage.objects` SELECT 정책은 `authenticated` 전용이고, SQL에서 Storage 서명을 만들 수 없다.<br>**(a)** `service_role`로 서명 — 현재 "Secret Key는 Auth Admin 전용" 원칙을 넓혀야 한다<br>**(b)** 발행 시 리사이즈 사본을 별도 public bucket에 생성 — 원본은 private 유지, 사본은 추측 불가 경로<br>**(c)** anon 전용 Storage 정책 — `share_id`+`token` 검증을 정책에서 받을 수 없어 실현 곤란 | **AI-1** (`service_role` 미사용) | **PHASE 05** → ◐ **부분 확정**: private bucket + 짧은 TTL signed URL 방향만 승인 · 서명 주체 · credential은 **DB-9 OPEN** ([../05-data-security/open-items.md](../05-data-security/open-items.md)) · AI-1 미변경 |
+| **AD-2** | **Entitlement 게이팅을 RLS로 구현할지 Server 게이트로 구현할지** | DEC-031이 "Server / DB 수준"을 요구. RLS로 넣으면 모든 콘텐츠 조회 정책에 Entitlement 조건이 추가되어 정책 복잡도가 올라간다. Server 게이트만 두면 RLS 우회 경로가 남는다.<br>권고 방향: 읽기는 RLS + Server 이중, 쓰기는 트리거까지 | AI-3 · AI-4 · AI-9 | **PHASE 05** → ✅ **RESOLVED by DEC-083** (class-aware runtime entitlement · 쓰기 RLS/트리거/RPC gate + 서버 이중) |
+| **AD-3** | **Growth 5 / Observation Stage 저장 구조** | 현재 `class_session_observation_domains`는 `(observation_id, domain_code)` 순수 태그 링크로 level 컬럼이 없다.<br>**(a)** 링크 테이블에 `stage` 컬럼 추가 — GRANT 목록·RPC 시그니처(`save_class_session_observation_atomic`의 `text[]` 인자) 변경 필요<br>**(b)** 별도 테이블 신설 — 기존 구조 보존, 조회 join 증가 | AI-5 (컬럼 GRANT) | **PHASE 05** → ✅ **RESOLVED by DEC-086** (별도 선택 테이블 · 행 없음 = 기록 없음 · stage NOT NULL) |
 
 ### 4-2. 🟠 구조 선택
 
 | ID | 항목 | 논점 | 확정 PHASE |
 |---|---|---|---|
-| **AD-4** | **회귀테스트 도구 선정** | pgTAP (DB 내부) vs 통합 테스트 (앱 경유) vs 조합.<br>RLS 정책 66개를 역할별로 검증해야 하므로 여러 JWT 컨텍스트를 만들 수 있어야 한다.<br>**P0-1의 전제이므로 가장 먼저 결정해야 한다** | **PHASE 05 (조기)** |
+| **AD-4** | **회귀테스트 도구 선정** | pgTAP (DB 내부) vs 통합 테스트 (앱 경유) vs 조합.<br>RLS 정책 66개를 역할별로 검증해야 하므로 여러 JWT 컨텍스트를 만들 수 있어야 한다.<br>**P0-1의 전제이므로 가장 먼저 결정해야 한다** | **PHASE 05 (조기)** → ✅ **RESOLVED by DEC-094** (pgTAP · `supabase test db` + PHASE 07 앱 통합) |
 | **AD-5** | **Asset 저장 위치 및 전송 방식** | Supabase Storage vs 외부 CDN.<br>VOD 24편 + 음원 72곡 + EBOOK 24 + 워크북 24의 용량·대역폭·스트리밍 요구.<br>기관별 접근 제어가 필요한가 (published 프로그램이면 전 기관 공통인가) | **PHASE 05** |
 | **AD-6** | **Marketing ↔ DB 동기화 방식** | DEC-020이 "DB가 최종 출처"를 확정했으나 구현 방식은 미정.<br>**(a)** 홈페이지가 DB를 직접 읽음 — 공개 페이지 캐시·성능 설계 필요<br>**(b)** TS 파일 유지 + 빌드 시 DB 대조 검증 — 배포 파이프라인에 검증 단계 추가 | **PHASE 05** |
 | **AD-7** | **Part 계층 도입 여부** | 24주를 묶는 중간 계층(예: 1~8주 "적응·도전"). 8주 상품에는 불필요하고 24주에는 유용하다.<br>P0 모델에 넣을지, P2로 미룰지 | **PHASE 05** |
 | **AD-8** | **콘텐츠 거버넌스 상태 저장 구조** | 단일 `status` 컬럼 + 감사 컬럼 vs 별도 전이 이력 테이블.<br>Week 단위 부분 발행을 Program 상태와 어떻게 조합할지 | **PHASE 05** |
-| **AD-9** | **Content Role 저장 위치** | `private.admin_users.role` 확장 (현재 `admin`/`sales`) vs 별도 role 테이블.<br>Content Editor / Education Reviewer / Content Approver 3종 추가 | **PHASE 05** |
-| **AD-10** | **리포트 Growth 5 / Stage 스냅샷 구조** | 현재 `child_growth_report_sources.domain_labels_snapshot text[]`로는 단계를 담을 수 없다.<br>`jsonb` 전환 vs 별도 컬럼 vs 별도 스냅샷 테이블. 이미 운영 데이터가 있으면 변환 마이그레이션 필요 | **PHASE 05** |
-| **AD-11** | **주차(week_no) 비정규화 여부** | 시계열 집계 시 `class_sessions → curriculum_lessons.week_no` 3-hop 조인이 필요하다. 대시보드가 이미 N+1을 경계하는 구조이므로 캐시 컬럼을 둘지 | **PHASE 05** |
+| **AD-9** | **Content Role 저장 위치** | `private.admin_users.role` 확장 (현재 `admin`/`sales`) vs 별도 role 테이블.<br>Content Editor / Education Reviewer / Content Approver 3종 추가 | **PHASE 05** → ◐ `private.admin_users` 역할 확장 방향 (DEC-079) · Content 역할 세부는 PHASE 07 |
+| **AD-10** | **리포트 Growth 5 / Stage 스냅샷 구조** | 현재 `child_growth_report_sources.domain_labels_snapshot text[]`로는 단계를 담을 수 없다.<br>`jsonb` 전환 vs 별도 컬럼 vs 별도 스냅샷 테이블. 이미 운영 데이터가 있으면 변환 마이그레이션 필요 | **PHASE 05** → ✅ **RESOLVED by DEC-090** (근거 정규화 행 · 본문 JSONB + template version · 사진 reference) |
+| **AD-11** | **주차(week_no) 비정규화 여부** | 시계열 집계 시 `class_sessions → curriculum_lessons.week_no` 3-hop 조인이 필요하다. 대시보드가 이미 N+1을 경계하는 구조이므로 캐시 컬럼을 둘지 | **PHASE 05** → ✅ **RESOLVED by DEC-085** (세션 생성 시 `week_no` 복사 · 불변) |
 | **AD-12** | **Class Mode 오프라인 전략** | 교실 네트워크가 불안정하다.<br>**(a)** 진행 상태만 로컬 보존 (P0)<br>**(b)** 완전 오프라인 + 동기화 (P2) — 충돌 해소 정책 필요.<br>현재 낙관적 동시성(`updated_at` 토큰)과 어떻게 조합할지 | **PHASE 05~06** |
 | **AD-13** | **커리큘럼 이관 파이프라인 형태** | 원본 MD → DB. 스크립트(반복 가능, diff 리포트) vs Admin UI 수동 입력(검수 자연스러움).<br>규격 확정본이 구조화된 Markdown이므로 파싱 가능 | **PHASE 07** |
 | **AD-14** | **anon rate limit 구현 위치** | `lead_submissions` INSERT · `read_shared_growth_report`.<br>Vercel WAF / BotID vs DB 레벨(카운터 테이블) vs Route Handler 레벨 | **PHASE 05** |

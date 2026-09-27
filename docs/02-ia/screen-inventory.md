@@ -44,7 +44,7 @@
 | HQ-03 | 새 기관 도입 | admin | `/admin/onboarding` | + **0단계 상품·계약** · Pilot 분기 | PARTIAL | MODIFY | P0 | — |
 | HQ-04 | 기관 목록 | admin · sales(메타) | `/admin/organizations` | + 상품 · 계약 상태 컬럼 | PARTIAL | MODIFY | P0 | — |
 | HQ-05 | 기관 상세 | admin (sales 제한) | `/admin/organizations/[id]` | + **계약·이용권** · **학부모 공개 리포트 긴급 숨김** · sales 비노출 영역 (*Updated by DEC-058*: sales는 계약 metadata read-only · 원아/교사/초과 인원 집계만. 원아 명단 · 동의 · 리포트 · 긴급 숨김 · 계약 변경 불가) | PARTIAL | MODIFY | P0 | — |
-| HQ-06 | 프로그램 배정 · 세션 | admin | `/admin/organizations/[id]/program-assignments/[assignmentId]` | 세션 생성 시 Entitlement 주차 범위 제한 · **`in_progress` 직접 전환 제거** (DEC-046) · **`scheduled → completed` 불허** (DEC-047) | PARTIAL | MODIFY | P0 | 주차 범위 |
+| HQ-06 | 프로그램 배정 · 세션 | admin | `/admin/organizations/[id]/program-assignments/[assignmentId]` | 세션 생성 시 Entitlement 주차 범위 제한 · **`in_progress` 직접 전환 제거** (DEC-046) · **`scheduled → completed` 불허** (DEC-047) · 일반 finish 없음 · authorized HQ Admin의 `in_progress` 세션 **Recovery / 복구 처리**만 (사유 · audit 필수 · DEC-085) | PARTIAL | MODIFY | P0 | 주차 범위 |
 | HQ-07 | 프로그램 목록 | admin | `/admin/curriculum` | 프로그램 관리 | EXISTING | KEEP | — | — |
 | HQ-08 | 프로그램 상세 | admin | `/admin/curriculum/[id]` | 차시 목록 | EXISTING | KEEP | — | — |
 | HQ-09 | 차시 상세 | admin | `/admin/curriculum/[id]/lessons/[lessonId]` | **15섹션 표시 · 필수 데이터 검수** | PARTIAL | MODIFY | P0 | — |
@@ -56,7 +56,7 @@
 | HQ-15 | 배송 관리 | admin | `/admin/shipments` | KIT · 워크북 | NEW | CREATE | P2 | — |
 | HQ-16 | 지원 · 문의 이력 | admin | `/admin/support` | 기관 지원 | NEW | CREATE | P2 | — |
 | DR-01 | 대시보드 | 원장 | `/director` | 누락 발견 (내용 KEEP) + **Entitlement 게이트** | PARTIAL | MODIFY | P0 | **director_dashboard** (HARD) |
-| DR-02 | 수업 운영 | 원장 | `/director/sessions` | 오늘 수업 · 상태 변경. **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047)** — 조회 · 출결 정정 · 취소 · 진행 중 세션 완료 유지 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
+| DR-02 | 수업 운영 | 원장 | `/director/sessions` | 오늘 수업 · 상태 변경. **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047)** — 조회 · 출결 정정 · 취소 · **Teacher와 동일한 [수업 완료] 버튼 없음.** 필요 시 별도 **Recovery / 복구 처리** action (`in_progress` only · 사유 필수 · audit 필수 · 정상 운영 UX와 시각적으로도 구분 · 정확한 UX는 PHASE 06 · DEC-085). *Historical baseline("진행 중 세션 완료 유지") — clarified by DEC-085* | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
 | DR-03 | 수업 이력 | 원장 | `/director/sessions/history` | 이력 | EXISTING | KEEP | — | 전 상품 (DEC-056) |
 | DR-04 | 출결 관리 | 원장 | `/director/sessions/[sessionId]/attendance` | 출결 정정 | EXISTING | KEEP | — | 전 상품 (DEC-056) |
 | DR-05 | 관찰 조회 | 원장 | `/director/sessions/[sessionId]/observations` | + Growth 5 / Stage 읽기 · 고정 안내문 | PARTIAL | MODIFY | P0 | 전 상품 (DEC-056) |
@@ -135,8 +135,8 @@ Parent Account는 POST-2.0 (DEC-013).
 | `/teacher/sessions/[sessionId]/observations` | 관찰 | 동일 | MODIFY | AFTER ② | P0 | 기존 미술 5영역 기록은 historical 표시 (DEC-006) |
 | `/teacher/growth-reports` · `/[reportId]` | 3블록 기간 리포트 | 동일 | MODIFY | Weekly 대기열 · 5항목 | P0 | 기존 3블록 리포트는 조회 유지 · Monthly로 재사용 (DEC-011) |
 | `/director` | 대시보드 | 동일 | MODIFY | Entitlement 게이트 (DEC-031) | P0 | STARTER 원장 착지 변경 |
-| `/director/sessions` | 오늘 보드 · 시작/완료/취소 | 동일 | MODIFY | 원장 [수업 시작] 제거 (DEC-046) · `scheduled → completed` 제거 (DEC-047) | P0 | 원장 운영 습관 변경 — 수업 시작 · 종료는 교사가 한다는 안내 필요 |
-| `/admin/organizations/[id]/program-assignments/[assignmentId]` | 세션 생성 · 상태 변경 | 동일 | MODIFY | 주차 범위 · `in_progress` 직접 전환 제거 (DEC-046) · `scheduled → completed` 불허 (DEC-047) | P0 | Emergency Override 없음 (PHASE 05 검토) · 1.0 과거 `completed` 기록 불변 |
+| `/director/sessions` | 오늘 보드 · 시작/완료/취소 | 동일 | MODIFY | 원장 [수업 시작] 제거 (DEC-046) · `scheduled → completed` 제거 (DEC-047) · 일반 완료 버튼 제거 → 별도 Recovery / 복구 처리 (`in_progress` only · 사유 · audit · DEC-085) | P0 | 원장 운영 습관 변경 — 수업 시작 · 종료는 교사가 한다는 안내 필요 |
+| `/admin/organizations/[id]/program-assignments/[assignmentId]` | 세션 생성 · 상태 변경 | 동일 | MODIFY | 주차 범위 · `in_progress` 직접 전환 제거 (DEC-046) · `scheduled → completed` 불허 (DEC-047) | P0 | generic Emergency Override 없음 · authorized HQ Admin의 Session Recovery Completion만 (`in_progress → completed` · 사유 · audit · DEC-085) · 1.0 과거 `completed` 기록 불변 |
 | `/director/growth-reports/[reportId]` | 상세 + 리포트 공유 | 동일 | MODIFY | 긴급 숨김 · Cutover | P0 | 기존 링크는 만료까지 동작 (DEC-041) |
 | — | — | `/director/portal` | CREATE | 아동 단위 공유 · 동의 | P0 | — |
 | `/share/growth-report/[shareId]` | 리포트 1건 | 동일 | KEEP | 호환 | — | Cutover 후 신규 발급 중단 |

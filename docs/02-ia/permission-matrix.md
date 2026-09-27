@@ -8,7 +8,7 @@
 | 관련 문서 | [screen-inventory.md](./screen-inventory.md) · [state-error-model.md](./state-error-model.md) · [../01-product/content-governance.md §4 · §7](../01-product/content-governance.md) |
 | 관련 결정 | DEC-013 · DEC-016 · DEC-030 · DEC-031 · DEC-032 · DEC-035 · DEC-043 · DEC-044 · DEC-045 · DEC-046 · DEC-047 |
 
-> 본 문서는 **제품 권한 경험**을 정의한다. RLS 정책 · helper · 게이팅 구현 위치는 PHASE 05 (open-items AD-2)에서 정한다.
+> 본 문서는 **제품 권한 경험**을 정의한다. RLS 정책 · helper · 게이팅 구현 위치는 PHASE 05 (open-items AD-2)에서 정한다. → *PHASE 05 확정: [../05-data-security/rls-security-architecture.md](../05-data-security/rls-security-architecture.md) (DEC-079 · DEC-083 · DEC-085 · DEC-087 · DEC-093)*
 
 범례: ✅ ALLOW · ⛔ DENY · ◐ CONDITIONAL
 표시: **H** = HARD RULE (확정 결정) · **P** = PROVISIONAL (PHASE 03 확정 필요)
@@ -22,7 +22,7 @@
 | 항목 | CURRENT |
 |---|---|
 | Proxy | `/admin/*` · `/director/*` · `/teacher/*`에서 **세션 존재만** 확인. 역할 판정은 각 페이지 · Server Action · RLS |
-| HQ | `requireAdmin()` → `private.is_soyes_admin()` = `role in ('admin','sales')` → **sales가 admin과 동일 권한** (P0-15에서 분리) |
+| HQ | `requireAdmin()` → `private.is_soyes_admin()` = `role in ('admin','sales')` → **sales가 admin과 동일 권한** (P0-15에서 분리 · TARGET은 DEC-079) |
 | Director / Teacher | `requireDirector()` · `requireTeacher()` = 활성 멤버십 ∧ 활성 기관. 기관 정지 시 `no_access` |
 | 출결 쓰기 | `requireStaff()` — 원장도 정정 가능 |
 | 관찰 · 리포트 쓰기 | `requireTeacher()` — 원장 불가 |
@@ -47,16 +47,16 @@
 | 수업 운영 · 이력 · 출결 (원장) | — | ⛔ | ✅ 전 상품 (STARTER 포함) **H** (DEC-056) | ⛔ | ⛔ |
 | Teacher Today | ⛔ | ⛔ | ⛔ | ✅ 담당 반 | ⛔ |
 | Class Mode | ⛔ | ⛔ | ⛔ | ◐ 담당 반 · 발행 · 필수 데이터 · Entitlement · 이용 기간 | ⛔ |
-| 세션 `scheduled → in_progress` (수업 시작) | ⛔ **H** (비상 강제 경로는 PHASE 05 검토 · P0 없음) | ⛔ **H** | ⛔ **H** | ◐ BEFORE 필수 확인 완료 후 Class Mode [수업 시작]만 **H** | ⛔ |
+| 세션 `scheduled → in_progress` (수업 시작) | ⛔ **H** (강제 경로 없음 — DEC-085) | ⛔ **H** | ⛔ **H** | ◐ BEFORE 필수 확인 완료 후 Class Mode [수업 시작]만 **H** | ⛔ |
 | 세션 취소 (`scheduled → cancelled` · `in_progress → cancelled`) | ✅ (CURRENT 유지) | ⛔ | ✅ (CURRENT 유지) | ✅ (CURRENT 유지) | ⛔ |
-| 세션 `in_progress → completed` | ✅ (CURRENT) | ⛔ | ✅ (CURRENT) | ✅ DURING [수업 마치기] | ⛔ |
-| 세션 `scheduled → completed` 직접 전환 | ⛔ **H** (Emergency Override는 PHASE 05 검토 · P0 없음) | ⛔ **H** | ⛔ **H** | ⛔ **H** | ⛔ |
-| Quick Memo | ⛔ | ⛔ | ⛔ **H** | ✅ 본인 · 담당 반 **H** | ⛔ **H** |
+| 세션 `in_progress → completed` (*Clarified by DEC-085*) | ◐ **Recovery만** — 별도 action · 사유 필수 · audit **H** | ⛔ | ◐ **Recovery만** — 별도 action · 사유 필수 · audit **H** (일반 [수업 마치기] 없음) | ✅ DURING [수업 마치기] | ⛔ |
+| 세션 `scheduled → completed` 직접 전환 | ⛔ **H** (Recovery 포함 모든 경로 금지 — DEC-085) | ⛔ **H** | ⛔ **H** | ⛔ **H** | ⛔ |
+| Quick Memo (*Clarified by DEC-087*) | ⛔ | ⛔ | ⛔ **H** | ✅ **작성 교사 본인만** (같은 반 다른 교사도 불가) **H** | ⛔ **H** |
 | BEFORE 필수 확인 기록 | ◐ 조회 **P** | ⛔ | ◐ 조회 **P** | ✅ 작성 | ⛔ |
 | Observation 작성 | ⛔ | ⛔ | ⛔ **H** | ✅ | ⛔ |
-| Observation 조회 | ✅ (CURRENT admin) | ⛔ **H** | ◐ 읽기 | ✅ 담당 반 | ⛔ |
-| Growth Report — draft · AI draft | ✅ (CURRENT admin) | ⛔ **H** | ⛔ **H** | ✅ | ⛔ |
-| Growth Report — complete | ✅ | ⛔ **H** | ✅ | ✅ | ◐ Portal 경유 |
+| Observation 조회 | ◐ 운영 메타만 · 본문 · 인용 · Growth 5 상세는 server/RPC + 사유 + audit **H** (DEC-093 · CURRENT는 전체 조회) | ⛔ **H** | ◐ 읽기 | ✅ 담당 반 | ⛔ |
+| Growth Report — draft · AI draft | ◐ server/RPC + 사유 + audit만 **H** (DEC-093 · CURRENT는 전체 조회) | ⛔ **H** | ⛔ **H** | ✅ | ⛔ |
+| Growth Report — complete | ◐ 본문은 server/RPC + 사유 + audit **H** (DEC-093) | ⛔ **H** | ✅ | ✅ | ◐ Portal 경유 |
 | 학부모 공유 관리 (Portal 링크 · 사진 동의) | ◐ **P** | ⛔ | ✅ | ⛔ | ⛔ |
 | **Report Emergency Hide** | ✅ **H** | ⛔ **H** | ✅ **H** | ⛔ (상태 · 사유 조회만) | ⛔ |
 | Report Unhide (*Updated by DEC-074*) | ✅ **H** (사유 필수) | ⛔ **H** | ✅ **H** (사유 필수) | ⛔ | ⛔ |

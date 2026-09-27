@@ -147,7 +147,7 @@ Program  TAP-STARTER-08 v1.0        PUBLISHED
 | **Content Editor** | DRAFT 생성 · 수정 · 삭제 · REVIEWED 요청 | 🔴 신규 (HQ 내부) |
 | **Education Reviewer** | REVIEWED ↔ DRAFT · 교육 타당성 점검 · 금지표현 점검 | 🔴 신규 (교육 담당) |
 | **Content Approver** | APPROVED · PUBLISHED · ARCHIVED · 승인 철회 | 🔴 신규 (최종 책임자) |
-| **SOYES Admin** | 전체 (기존 `private.is_soyes_admin()`) | 🟢 기존 |
+| **SOYES Admin** | 전체 (CURRENT `private.is_soyes_admin()` → TARGET `is_hq_admin()` · DEC-079) | 🟢 기존 |
 | **SOYES Sales** | **PUBLISHED 읽기만** | ⚠️ 현재 `admin`과 동일 → **분리 필요** (P0-15) |
 | **Director** | PUBLISHED 읽기 (Entitlement 범위) | 🟢 기존 |
 | **Teacher** | PUBLISHED 읽기 (Entitlement + 배정 범위) | 🟢 기존 |
@@ -180,10 +180,12 @@ Program  TAP-STARTER-08 v1.0        PUBLISHED
 현재 `private.is_soyes_admin()`은 `role in ('admin', 'sales')`로 판정하여 **영업 담당자가 admin과 동일한 DB 권한**을 갖는다. 콘텐츠 거버넌스를 도입하면서 이 구조를 다음으로 분리한다.
 
 ```
-private.is_soyes_admin()        → role = 'admin' 만
-private.is_soyes_sales()        → role = 'sales'  (신규)
-private.has_content_role(role)  → Content Editor / Education Reviewer / Content Approver (신규)
+private.is_hq_admin()           → role = 'admin' 만        (TARGET · DEC-079)
+private.is_hq_sales()           → role = 'sales' 만        (TARGET · DEC-079)
+private.has_content_role(role)  → Content Editor / Education Reviewer / Content Approver (신규 · 세부 PHASE 07)
 ```
+
+> *Historical baseline — clarified by DEC-079*: PHASE 01 초안은 `is_soyes_admin()` 축소 + `is_soyes_sales()` 신설을 제안했다. TARGET 이름은 `is_hq_admin()` · `is_hq_sales()`이며 **admin과 sales를 같은 helper로 판정하지 않는다.** `is_soyes_admin()`은 admin + sales를 함께 판정하는 **legacy CURRENT helper**로, migration / cutover 동안 기존 정책 호환을 위해 일시적으로 존재할 수 있으나 새 정책에는 쓰지 않는다. Architecture Invariant 번호 · 의미는 변경하지 않는다.
 
 **Architecture Invariant 준수**: 신규 helper도 `SECURITY DEFINER` + `set search_path = ''` + `auth.uid()` 기반이며 **user_id를 인자로 받지 않는다** (AI-2).
 

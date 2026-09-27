@@ -40,9 +40,9 @@
 ```
 
 - 효력 기간이 겹치는 두 정규 계약은 허용하지 않는다 (날짜 조정으로 해소).
-- Pilot Offer는 별도 유형이다 (§9). Pilot과 정규 계약의 효력 기간 겹침 허용 여부는 PHASE 05에서 명시한다 (권고: 겹침 불가 — 전환일에 Pilot 종료).
+- Pilot Offer는 별도 유형이다 (§9). Pilot과 정규 계약의 효력 기간 겹침 허용 여부는 PHASE 05에서 명시한다 (권고: 겹침 불가 — 전환일에 Pilot 종료). *→ DEC-082: **Pilot도 같은 기관에서 정규 Contract와 동시에 effective하지 않는다** (ONE EFFECTIVE CONTRACT AT A TIME · 강제 방식은 PHASE 07)*
 - 한 기관 안에서 반별로 다른 상품을 동시에 계약하는 구조는 미결정 → **CO-6**.
-- **기존 1.0 운영 기관**은 Contract Record가 없다. Entitlement 기능 제한을 적용하기 전에 HQ가 기존 기관마다 계약을 소급 등록해야 한다 (PHASE 05 · 07 전환 과제).
+- **기존 1.0 운영 기관**은 Contract Record가 없다. Entitlement 기능 제한을 적용하기 전에 HQ가 기존 기관마다 계약을 소급 등록해야 한다 (PHASE 05 · 07 전환 과제). *→ DEC-094: 영구 bypass 모드 없음 · M3 전 모든 active production 기관은 사람이 검증한 Contract mapping 또는 service disabled / non-production 분류 · **가짜 Contract 자동 생성 금지***
 
 ---
 
@@ -55,7 +55,7 @@
 | `suspended` | 상업적 사유로 정지 (미납 · 분쟁 · 계약 위반 등) |
 | `ended` | 종료 (기간 만료 · 해지 · 후속 계약으로 대체) |
 
-| 날짜 파생 상태 (개념 · DB enum 여부 PHASE 05) | 조건 | 서비스 |
+| 날짜 파생 상태 (개념 · *DEC-082: 저장하지 않고 계산*) | 조건 | 서비스 |
 |---|---|---|
 | `before_start` | `active` ∧ 오늘 < Start Date | 로그인 · 준비(반 · 원아 · 배정) 가능. **수업 · Class Mode · 리포트 작성 불가** |
 | `in_service` | `active` ∧ Start Date ≤ 오늘 ≤ End Date | 정상 |
@@ -196,7 +196,7 @@ STARTER → STANDARD · STANDARD → PREMIUM · STARTER → PREMIUM 모두 같�
 | 대상 | 정규 상품 | Pilot |
 |---|---|---|
 | **서비스 반 수** (프로그램 배정 활성 반) | Contract Class Scope 초과 불가 → **프로그램 배정 HARD BLOCK**. 반 자체 생성은 가능 (준비 · 보관) | 최대 2 · HARD |
-| **반당 원아** | 16번째 이상 등록 허용 → **ALLOW + OVERAGE RECORD** | 준비 과정에서 16명 이상 등록은 가능(경고). 그러나 child count > 15이면 **Pilot Ready = FALSE · Pilot Activation BLOCK** — **P0에서 HQ reason으로 override 불가.** 15명 초과 Pilot 허용은 향후 별도 Business Decision 필요 |
+| **반당 원아** | 16번째 이상 등록 허용 → **ALLOW + OVERAGE RECORD** (*DEC-095: 현재 초과 = 계산값 · 15→16 · 16→15 경계만 이벤트 기록 · Billing Ledger 없음*) | 준비 과정에서 16명 이상 등록은 가능(경고). 그러나 child count > 15이면 **Pilot Ready = FALSE · Pilot Activation BLOCK** — **P0에서 HQ reason으로 override 불가.** 15명 초과 Pilot 허용은 향후 별도 Business Decision 필요 |
 | 교사 수 | 제한 없음 (근거 없음) | 2~4 · Pilot Ready 점검 |
 | 청구 | **자동 청구 없음** (DEC-018) · 산정 시점 · 방식은 BP-6 | — |
 

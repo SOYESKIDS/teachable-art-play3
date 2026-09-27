@@ -93,7 +93,7 @@
 | **CO-12** | Portal 만료 · 재발급 | 🔴 **Production Blocker** — Revision은 같은 Portal에서 표시 (정책 분리) |
 | CO-1 | Read-only 유예 기간 | Open · 계약 종료 후 리포트 조회 기간에 영향 |
 | CO-11 | 달력 계약 기간 vs 운영 주차 | Open · **리포트 기간 쪽 의존은 DEC-067로 해소** · 계약 기간 문제는 남음 |
-| IA-3 | Stage 저장 방식 (absent vs NOT_OBSERVED) | PHASE 05 |
+| IA-3 | Stage 저장 방식 (absent vs NOT_OBSERVED) | ✅ RESOLVED by DEC-086 (행 없음 = 기록 없음 · stage NOT NULL · `together`) |
 | PH3-9 | 워크북 optional evidence | PHASE 04 이후 (변경 없음) |
 
 ---
@@ -104,13 +104,15 @@
 |---|---|
 | **Production Blocker** | CO-2 · CO-9 · CO-10 · CO-12 |
 | **External P0 AI Use Blocker** | AR-8 (해결 전 Pilot은 AI OFF 운영) |
-| **Pilot 기능 전제 (P0)** | AI dependency 제거 (GR003 · `ai_draft_id` 등) — AI OFF 운영(V-7)을 위해 필수 |
+| **Pilot 기능 전제 (P0)** | AI dependency 제거 (GR003 · `ai_draft_id` 등) — AI OFF 운영(V-7)을 위해 필수 · *Clarified by PHASE 05 DB architecture (DEC-091): 신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 AI 필수 의존을 두지 않음으로써 달성한다. legacy 스키마는 Cutover까지 현재 제약 유지(운영 중 NOT NULL 부분 완화 · GR003 부분 제거 없음) → Cutover에서 legacy write 중지 · read-only* |
 | **STARTER Production Activation 전** | 8주 Summary View (DEC-069) · 목록 서버 페이징 |
 | **STANDARD · PREMIUM Production Activation 전** | Monthly · Semester · C1+C2+C3 AI capability · Week 9~24 production content (DEC-063 · DEC-070) |
 
 ---
 
 ## 5. PHASE 05 Inputs (DB / Security — 개념 요구, SQL 아님)
+
+> *2026-09-27 PHASE 05 처리: Growth 5 DEC-086 · Logical Report · Revision DEC-089 · Snapshot DEC-090 · Hide · Portal DEC-092 · AI generation · AI dependency DEC-091 · Audit DEC-093 · Entitlement DEC-083 · Legacy DEC-094. **working revision은 포인터를 저장하지 않고 `status = draft` 부분 unique로 파생 · 논리 리포트는 `latest_completed_revision_id` 개념 포인터 (DEC-089)**. 상세 [../05-data-security/](../05-data-security/)*
 
 | 영역 | 요구 |
 |---|---|
@@ -122,7 +124,7 @@
 | Hide | logical report 단위 hide state · hide/unhide audit (사유 · actor · 시각) |
 | Visibility | 계산 의존성: latest completed · hidden · Portal active · Contract policy (DEC-052) |
 | AI generation | attempt 단위. **저장**: validated structured draft · provenance · sourceRefs · validation metadata · status · sanitized error category · retry relation · (있으면) provider response_id · usage. **저장하지 않음**: raw provider request/response body · envelope · 전체 prompt · 실패/거부 raw output (DEC-078). **raw_response 같은 TEXT/JSONB 컬럼을 기본 설계에 두지 않는다** |
-| **AI dependency 제거** | **GR003 제거 · `ai_draft_id` 필수 의존 제거 · `reviewed_text_snapshot` · `source_ai_updated_at` NOT NULL 해제 · 근거 조건 = 완료된 관찰** |
+| **AI dependency 제거** | **GR003 제거 · `ai_draft_id` 필수 의존 제거 · `reviewed_text_snapshot` · `source_ai_updated_at` NOT NULL 해제 · 근거 조건 = 완료된 관찰** · *Clarified by PHASE 05 DB architecture (DEC-091): 신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 AI 필수 의존을 두지 않음으로써 달성한다. legacy 스키마는 Cutover까지 현재 제약 유지(운영 중 NOT NULL 부분 완화 · GR003 부분 제거 없음) → Cutover에서 legacy write 중지 · read-only* |
 | Legacy | `legacy_period` · read-only · 기존 unique와 공존 · 기존 AI 초안 보존 |
 | Concurrency | 낙관적 동시성 유지 (Invariant AI-6) |
 | Consent | 사진 표시 차단을 Snapshot 불변과 분리 |

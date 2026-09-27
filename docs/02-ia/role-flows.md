@@ -51,7 +51,7 @@ flowchart TD
 | ⑥ 교사 | CURRENT | 초대 + 담당 반 | 멤버십 · 반 배정 | admin | ⑦ | 원장 위임 여부 PH3-2 |
 | ⑦ 원아 | CURRENT | 일괄 등록 | 원아 등록 | admin | ⑧ | 반당 15명 초과 → 경고 (초과요금은 데이터로만, DEC-018) |
 | ⑧ 프로그램 배정 | CURRENT | 프로그램 · 버전 선택 | 배정 `active` | admin | ⑨ | 미발행 프로그램 · Entitlement 범위 밖 주차 → 선택 불가 |
-| ⑨ 세션 | 배정 상세 (CURRENT) | 차시별 일정 생성 · 일정 변경 · 취소 | `scheduled` | admin | ⑩ | 범위 밖 차시는 목록에 나타나지 않음. HQ 일반 UI는 세션을 `in_progress`로 직접 전환하지 않고 (DEC-046) `scheduled → completed`도 허용하지 않는다 (DEC-047). Emergency Override는 PHASE 05 검토 |
+| ⑨ 세션 | 배정 상세 (CURRENT) | 차시별 일정 생성 · 일정 변경 · 취소 | `scheduled` | admin | ⑩ | 범위 밖 차시는 목록에 나타나지 않음. HQ 일반 UI는 세션을 `in_progress`로 직접 전환하지 않고 (DEC-046) `scheduled → completed`도 허용하지 않는다 (DEC-047 · Recovery로도 불가). HQ 일반 finish action 없음 — Director / authorized HQ Admin은 복구가 필요한 `in_progress` 세션에 한해 사유와 audit를 남기는 **Recovery Completion** 수행 (DEC-085 · 일반 [수업 마치기]와 별도 action · 정확한 UX는 PHASE 06) |
 | ⑩ Readiness | `/admin/readiness` | 확인 | 항목별 충족/미충족 | admin | 서비스 시작 | 미충족 항목 링크 |
 | 운영 | `/admin` | 확인 | 확인 필요 기관 | admin | — | — |
 | 갱신 · 종료 | 기관 상세 | 새 계약 / 종료 | 이전 계약 `ended` | admin | — | 종료 후 접근 모드 IA-10 |
@@ -126,7 +126,7 @@ flowchart TD
 |---|---|---|---|
 | 로그인 착지 | 대시보드 권한 있음 → `/director` / 없음 → `/director/sessions` (DEC-044) | — | — |
 | 홈 대시보드 | **KEEP**: 오늘 수업 · 출결/관찰 follow-up · 최근 리포트 · `reliable` · `truncated` · 30일 창 | D-1 진행률 · D-2 리포트 누락 목록 · D-3 공유 현황 · D-4 동의 현황 카드 | D-6 콘텐츠 이용 · D-7 교사 부담 신호 |
-| 수업 운영 · 이력 · 출결 | 조회 · 출결 정정 · 취소 · 진행 중 세션 완료 유지. **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047)** — Class Mode 적용 세션 | — | — |
+| 수업 운영 · 이력 · 출결 | 조회 · 출결 정정 · 취소 · **일반 세션 완료(finish) action 없음** — Director / authorized HQ Admin은 복구가 필요한 `in_progress` 세션에 한해 사유와 audit를 남기는 **Recovery Completion** 수행 (DEC-085 · 일반 [수업 마치기]와 별도 action · 정확한 UX는 PHASE 06). **[수업 시작] 직접 전환 제거 (DEC-046) · `scheduled → completed` 직접 완료 제거 (DEC-047 · Recovery로도 불가)** — Class Mode 적용 세션. *Historical baseline("진행 중 세션 완료 유지") — clarified by DEC-085* | — | — |
 | 관찰 조회 | Growth 5 / Stage **읽기** + 고정 안내문 | — | — |
 | complete 리포트 | 유형 · 주차 필터 · Weekly 서식 상세 · **긴급 숨김** | 반 단위 일괄 인쇄 D-5 | — |
 | 학부모 공유 | **신규**: 아동별 Portal 링크 상태 · 사진 동의 상태 · 노출 리포트 목록 · 긴급 숨김 | — | — |

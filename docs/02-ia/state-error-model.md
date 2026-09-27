@@ -39,12 +39,12 @@ stateDiagram-v2
   cancelled --> [*]
 ```
 
-- **`scheduled → in_progress`는 Class Mode 적용 세션에서 Teacher BEFORE 경로로 단일화한다 (DEC-046).** 교사 오늘 화면 · 원장 수업 운영 · HQ 배정 화면은 이 전환을 직접 일으키지 않는다. 비상 강제 상태변경은 PHASE 05에서 audit log가 있는 예외 경로로 검토하며, P0에는 없다.
+- **`scheduled → in_progress`는 Class Mode 적용 세션에서 Teacher BEFORE 경로로 단일화한다 (DEC-046).** 교사 오늘 화면 · 원장 수업 운영 · HQ 배정 화면은 이 전환을 직접 일으키지 않는다. `scheduled → in_progress` 강제 경로는 두지 않는다 (DEC-085).
 - `in_progress` 전환 시 배정 · 반 · 프로그램 · 차시 유효성을 다시 확인한다 (CURRENT). TARGET은 BEFORE 필수 확인 · Entitlement · 이용 기간 · 필수 커리큘럼 데이터를 추가로 확인한다.
-- **`scheduled → completed` 직접 전환은 없다 (DEC-047).** CURRENT의 빠른 완료(교사 · 원장 · HQ)는 Class Mode 적용 세션에서 제거한다. `completed`는 `in_progress`에서 Teacher [수업 마치기]로만 도달하며 "교실 수업 진행 종료"만 뜻한다 (DEC-034).
+- **`scheduled → completed` 직접 전환은 없다 (DEC-047).** CURRENT의 빠른 완료(교사 · 원장 · HQ)는 Class Mode 적용 세션에서 제거한다. `completed`는 `in_progress`에서 Teacher [수업 마치기]로 도달하며 (예외: 아래 Recovery · DEC-085) "교실 수업 진행 종료"만 뜻한다 (DEC-034).
 - 취소는 유지한다: `scheduled → cancelled` · `in_progress → cancelled`.
 - 1.0의 과거 `completed` 기록은 변경하지 않는다. 이 상태도는 SaaS 2.0 Class Mode 대상 세션의 TARGET FLOW다.
-- 데이터 복구 · 운영 오류 정정 · 마이그레이션용 강제 상태변경은 PHASE 05 Emergency Override(admin only · reason · actor · timestamp · audit log)로 검토하며, P0 일반 UI에는 없다.
+- *Clarified by DEC-085*: 진행 중 세션의 운영 정정은 별도 **Recovery**(`in_progress → completed`만 · Director · authorized HQ Admin · reason 필수 · actor · timestamp · audit)로 **P0에서 지원**한다. 일반 [수업 마치기]와 UI · action을 분리한다. `scheduled → completed`는 Recovery로도 불가하다.
 - `completed` · `cancelled`는 종결 상태다 (CURRENT).
 - `completed` 후 Observation 미작성이 Director follow-up에 잡히는 것은 의도된 동작이다.
 

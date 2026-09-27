@@ -104,7 +104,7 @@ flowchart LR
 | 진입 (Director) | 리포트 상세 `/director/growth-reports/[reportId]` · 학부모 공유 화면 `/director/portal`의 아동별 노출 리포트 목록 |
 | 진입 (HQ) | 기관 상세 `/admin/organizations/[id]`의 "학부모 공개 리포트" 섹션 (admin만) |
 | 입력 | 사유 필수 (사진 오류 · 개인정보 · 내용 오류 · 기타 + 메모). 확인 1회 |
-| 개념 | `visible / hidden` · hidden reason · hidden by · hidden at (저장 구조 PHASE 05 · AH-3) |
+| 개념 | `visible / hidden` · hidden reason · hidden by · hidden at (저장 구조: 논리 리포트 단위 · DEC-089) |
 | 학부모 | 목록 · 이번 주에서 사라진다. 숨김 사유 · 흔적 표시 없음. 이번 주 리포트가 숨겨져 이번 주에 공개된 리포트가 없게 되면 **"현재 새로 공유된 기록이 없습니다."** + 필요 시 "최근 공유 기록 · Week N · 실제 날짜" — 이전 리포트를 "이번 주"로 보이지 않는다 (*Updated by DEC-060*) |
 | 교사 | 대기열·리포트 상세에 "학부모 화면에서 숨김 · 사유" 표시 |
 | 사진 | 숨김 리포트의 사진 스냅샷도 함께 노출 중단 |
@@ -120,7 +120,7 @@ flowchart LR
 |---|---|
 | 단위 | 아동 1명 = Portal 링크 1개 (DEC-013 · DEC-040) |
 | 경로 | `/share/portal/[portalId]#token` (신규) |
-| 조회 | fragment 토큰 → POST resolve → 결과. 보안 구현은 PHASE 05 (AI-14 유지) |
+| 조회 | fragment 토큰 → POST resolve → 결과. 보안 구조 DEC-092 · 구현 PHASE 07 (AI-14 유지) |
 | 생성 · 중지 · 재발급 | 원장 `/director/portal`. 재발급 시 기존 링크 무효 (CURRENT 동작 계승) |
 | 노출 대상 | Teacher Complete ∧ Portal 활성 ∧ 숨김 아님 인 리포트만 |
 

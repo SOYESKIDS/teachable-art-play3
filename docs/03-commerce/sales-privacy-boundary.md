@@ -24,8 +24,8 @@
 | Readiness summary | ✅ | ✅ |
 | **Child name list** | ✅ | **⛔** |
 | Child detail | ✅ | ⛔ |
-| Observation · Child Voice · Growth 5 · Stage | ✅ (CURRENT admin) | ⛔ |
-| Photo · Report | ✅ (CURRENT admin) | ⛔ |
+| Observation · Child Voice · Growth 5 · Stage | ◐ **blanket 조회 없음** — server/RPC + 사유 + audit (*DEC-093* · CURRENT는 전체 조회) | ⛔ |
+| Photo · Report | ◐ **blanket 조회 없음** — server/RPC + 사유 + audit (*DEC-093* · CURRENT는 전체 조회) | ⛔ |
 | Portal token / link | ⛔ (원장이 발급) | ⛔ |
 | Consent per child | ✅ 상태 확인만 (§2) | ⛔ |
 | Emergency Hide | ✅ (DEC-043) | ⛔ |
@@ -34,7 +34,7 @@
 
 **근거**: 영업에는 규모(수치)가 필요하고 아동 신원은 필요하지 않다. project-charter §3-1의 원칙을 원아 명단까지 확장한다.
 
-**CURRENT와의 차이**: 현재 `private.is_soyes_admin()`이 `role in ('admin','sales')`로 판정해 sales가 admin과 동일 권한이다. 분리는 P0-15 (구현 PHASE 05 · 07).
+**CURRENT와의 차이**: 현재 `private.is_soyes_admin()`이 `role in ('admin','sales')`로 판정해 sales가 admin과 동일 권한이다. 분리는 P0-15 (구조 DEC-079 · 구현 PHASE 07). *PHASE 05 추가 확정(DEC-093)*: HQ Admin도 민감 교육 콘텐츠를 client-side로 직접 조회하지 않는다.
 
 ---
 
@@ -51,8 +51,9 @@
 | 상황 | Product Requirement |
 |---|---|
 | 동의 미확인 · 비동의 | 해당 아동 사진은 리포트 선택 불가 · Portal 사진 영역 미표시 (사유 비노출) |
-| **Consent withdrawal** | 향후 해당 아동의 **공개 사진 노출 중단을 지원**해야 한다. 이미 공개된 리포트의 처리 범위 · 방식은 PHASE 05 (법무 검토 결과 반영) |
-| 기록 | 상태 변경의 who · when (구조는 PHASE 05) |
+| **Consent withdrawal** | 향후 해당 아동의 **공개 사진 노출 중단을 지원**해야 한다. 이미 공개된 리포트의 처리 범위 · 방식은 PHASE 05 (법무 검토 결과 반영) · *DEC-088: 철회 = 표시 적격 false (조회 시 계산 · 완료 리포트의 사진 reference도 표시 중단) · 삭제가 아님 · 물리 삭제는 CO-2 · CO-9 · CO-10* |
+| 기록 | 상태 변경의 who · when (구조는 DEC-088: 아동별 상태 · recorded_by · recorded_at · 증빙 참조 · audit) |
+| *운영 상태의 의미 (DEC-088)* | `consented`는 운영 기록이며 **법적 공개 허가를 의미하지 않는다.** `unknown` · `declined`는 공개 불가. 외부 학부모 사진 공개의 Production 활성화는 **CO-9 · CO-10 · DB-9 해결 후** |
 
 ---
 

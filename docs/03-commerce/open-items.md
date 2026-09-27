@@ -59,7 +59,7 @@
 
 | 원 ID | 항목 | Commerce 관련성 | 새 Required-by |
 |---|---|---|---|
-| **PH3-2** | 원장에게 교사 초대 · 배정 권한 위임 | DEC-049 · DEC-051 Class Scope · 좌석 관리와 연결 | PHASE 05 전 |
+| **PH3-2** | 원장에게 교사 초대 · 배정 권한 위임 | DEC-049 · DEC-051 Class Scope · 좌석 관리와 연결 | PHASE 05 전 → *PHASE 05 미처리 · PHASE 07 전* |
 | **PH3-3** | 리포트 reopen 정책 | DEC-043 Emergency Hide의 **숨김 해제 · 정정 경로**와 함께 결정 · ✅ **RESOLVED by DEC-073 · DEC-074** | PHASE 04 |
 | **PH3-6** | Asset 다운로드 허용 정책 | `content_playback` (P1) · 저작권 BC-14 · 계약 종료 후 잔존 | P1 콘텐츠 재생 전 |
 | **PH3-7** | Demo 계정 · 샘플 데이터 | Lead → Demo 영업 흐름 | P1 |
@@ -116,6 +116,8 @@
 | Usage Limit (AI 호출) — P1 이후 · *→ 04-ai-report **AR-10*** |
 
 **PHASE 05 (DB / ERD / Security)**
+
+> *2026-09-27 PHASE 05 처리: Product / Version / Contract 구조 DEC-081 · DEC-082 · ONE EFFECTIVE (Pilot 포함) DEC-082 · Entitlement 파생 DEC-083 · Read-only 쓰기 gate DEC-083 · 초과 원아 DEC-095 · Service Ready 계산 DEC-082 · DEC-096 · Consent 저장 DEC-088 · Portal DEC-092 · Sales 분리 DEC-079 · 1.0 기관 소급 DEC-094 · Emergency Override → Recovery DEC-085 · AD-2 DEC-083. 미처리: Program 구조 CO-7 · Week 9~24 승격(BC-1 · BC-2) · Portal 만료 CO-12 · 사진 서명 DB-9 — [../05-data-security/open-items.md](../05-data-security/open-items.md)*
 
 | 항목 |
 |---|

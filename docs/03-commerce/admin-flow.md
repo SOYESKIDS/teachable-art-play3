@@ -178,4 +178,6 @@ Commerce 관련 변경은 감사 추적 가능해야 한다. 실제 audit 구조
 | Pilot 반 15명 초과 등록 발생 (Ready 불가 상태 · override 아님) | ✅ | ✅ | ✅ | 선택 |
 | Consent state changed | ✅ | ✅ | ✅ | 선택 |
 | Emergency Hide (DEC-043) | ✅ | ✅ | ✅ | **필수** |
-| Emergency Override (DEC-047 · PHASE 05) | admin만 | ✅ | ✅ | **필수** |
+| **Session Recovery Completion** (DEC-085 · `in_progress → completed`만 · Teacher normal finish와 별개) | Director · authorized HQ Admin | ✅ | ✅ | **필수** |
+
+> *Clarified by DEC-085*: 이전 표기 "Emergency Override (admin만)"은 Session Recovery Completion으로 대체한다. PHASE 05는 **generic unrestricted Emergency Override(어떤 상태든 HQ가 강제 변경)를 정의하지 않는다.** `scheduled → completed`는 Recovery로도 불가하다.

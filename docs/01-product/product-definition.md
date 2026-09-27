@@ -53,7 +53,7 @@ TeachAble Art Play는 유치원 대상 예술·창의 교육 프로그램을 **�
 | **P3** | **주간 리포트 상품에 실체가 없다** | STARTER(99,000원)의 유일한 리포트. 원본이 5항목 서식을 확정했는데 구현은 3블록 서술형이고 사진·아이의 말·가정연계 Tip은 학부모 DTO에 필드조차 없다 |
 | **P4** | **상품 개념이 DB에 없다** | `organizations`는 `name · institution_type · status` 3필드. 계약·기간·좌석·기능권한이 표현되지 않아 "STARTER는 대시보드 제외"를 강제할 수단이 없다 |
 | **P5** | **지표 체계가 갈라져 있다** | DB(미술 5영역) ≠ 홈페이지(Growth 5) ≠ 교사가이드(주차별 관찰영역) ≠ 성장키워드 8개. 홈페이지는 이미 Growth 5를 공개했다 |
-| **P6** | **AI가 성장리포트의 단일 장애점** | `child_growth_report_sources.ai_draft_id NOT NULL` + `review_status='accepted'` 요구 → API 키 없으면 리포트 생성이 `GR003`으로 차단. `.env.example`은 "AI만 비활성"이라고 적혀 있어 사실과 다르다 |
+| **P6** | **AI가 성장리포트의 단일 장애점** | `child_growth_report_sources.ai_draft_id NOT NULL` + `review_status='accepted'` 요구 → API 키 없으면 리포트 생성이 `GR003`으로 차단. `.env.example`은 "AI만 비활성"이라고 적혀 있어 사실과 다르다 · *CURRENT 진단 (1c7afe9 기준) — 해결 전략은 DEC-091* |
 | **P7** | **사진을 삭제할 수 없다** | `class_session_observation_media`와 `storage.objects` 양쪽에 UPDATE·DELETE 정책 0개. 잘못 올린 아동 사진을 아무도 회수할 수 없다 |
 | **P8** | **16·24주 콘텐츠가 원본에도 없다** | `D:\소예키즈` 3단계 전수 탐색 결과 16주·24주 자료 0건 → `SOURCE NOT AVAILABLE`. STANDARD·PREMIUM은 판매 중이지만 제작 전이다 · *Updated 2026-09-27: 로컬 탐색 기준 판정이었다. 원본은 Project External Source로 존재 (Week 9~16 MIXED · 17~24 DRAFT/PROPOSAL). production-approved 운영 콘텐츠는 아직 없다 → DEC-063 · 03-commerce BC-1 · BC-2* |
 
@@ -127,7 +127,7 @@ TeachAble Art Play는 유치원 대상 예술·창의 교육 프로그램을 **�
 | **Primary Job** | 기관 프로비저닝 · Entitlement 설정 · 커리큘럼/콘텐츠 승인·발행 · 리드 처리 · 서비스 상태 점검 |
 | **Key Value** | "우리 기관이 지금 어디까지 준비됐는지"를 한 화면에서 판단 (기존 `/admin/readiness` 확장) |
 | **권한 원칙** | `admin`과 `sales`를 분리한다. 영업은 리드·기관 메타데이터만 보고 **아동 관찰기록·활동사진에 접근하지 않는다** |
-| 현재 상태 | `private.is_soyes_admin()`이 `role in ('admin','sales')`로 판정하여 영업이 전 기관 아동 기록에 접근 가능 → 분리 필요 |
+| 현재 상태 | `private.is_soyes_admin()`이 `role in ('admin','sales')`로 판정하여 영업이 전 기관 아동 기록에 접근 가능 → 분리 필요 (CURRENT · TARGET은 `is_hq_admin()` · `is_hq_sales()` — DEC-079) |
 
 ### 3-2. Director — 원장 / 원감
 
@@ -246,9 +246,9 @@ flowchart LR
 
 | # | 대상 | 변경 방향 | 근거 |
 |---|---|---|---|
-| I-1 | **AI 필수 결합 해제** | `sources.ai_draft_id` nullable + 교사 직접 작성 근거 경로 | DEC-009 · P6 |
-| I-2 | **미디어 삭제·파기 경로** | soft delete + `storage.objects` DELETE 정책 + 고아 정리 | DEC-014 · P7 |
-| I-3 | **`sales` 권한 분리** | `is_soyes_admin()`에서 sales 제거 + `is_soyes_sales()` 신설 | AUDIT 2 H3 |
+| I-1 | **AI 필수 결합 해제** | ~~`sources.ai_draft_id` nullable~~ + 교사 직접 작성 근거 경로 · *Historical baseline — clarified by DEC-091 (PHASE 05): 이 요구는 legacy 컬럼 nullable 전환이 아니라 **신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 `ai_draft_id` · `source_ai_updated_at` · `reviewed_text_snapshot` 같은 AI 필수 의존을 두지 않음**으로 달성한다. legacy 1.0 경로(`child_growth_reports` · `child_growth_report_sources` · legacy AI drafts)는 M5 Cutover 전까지 NOT NULL · GR003 · RPC 전제를 유지하며(운영 중 부분 완화 없음) M5 이후 write 중단 · read-only compatibility로 동결한다* | DEC-009 · P6 · DEC-091 |
+| I-2 | **미디어 삭제·파기 경로** | soft delete + `storage.objects` DELETE 정책 + 고아 정리 · *Historical baseline — clarified by DEC-088: metadata hide/soft delete 즉시 조회 제외 → Storage 물리 삭제는 서버 orchestration / cleanup job (한 DB 트랜잭션 아님 · 실패 시 hidden 유지 · 재시도) · 물리 삭제 시점은 CO-2* | DEC-014 · P7 · DEC-088 |
+| I-3 | **`sales` 권한 분리** | ~~`is_soyes_admin()`에서 sales 제거 + `is_soyes_sales()` 신설~~ · *Historical baseline — clarified by DEC-079: TARGET 헬퍼는 `is_hq_admin()` (HQ Admin만) · `is_hq_sales()` (HQ Sales만). `is_soyes_admin()`은 admin + sales를 함께 판정하는 legacy CURRENT 헬퍼이며 새 정책에 쓰지 않는다* | AUDIT 2 H3 · DEC-079 |
 | I-4 | **커리큘럼 모델 확장** | `story_title`·`growth_keyword`·`core_message`·Step·Prompt·Asset·Nuri·ObservationFocus·Family | DEC-028 |
 | I-5 | **교사에게 수업 정보 전달** | `objective`·`duration_minutes`·`lesson_activities`를 staff 질의에 포함 | DEC-003 · P2 |
 | I-6 | **관찰에 Growth 5 + Stage** | 지표·단계 표현 추가. 구 미술 5영역은 inactive·historical | DEC-005 · DEC-006 · DEC-007 |
@@ -529,12 +529,14 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 
 ### 9-3. Observation Stage — 제품 정의 (DEC-007 · DEC-008)
 
-| code | 한국어 UX | 의미 |
+| 저장 code (DEC-086) | 한국어 UX | 의미 |
 |---|---|---|
-| `NOT_OBSERVED` | **기록 없음** | 이번 활동에서 그 모습이 나오지 않았거나 관찰하지 못했다 |
-| `WITH_TEACHER` | **함께** | 교사와 함께하는 방식으로 참여했다 |
-| `AFTER_MODELING` | **보고 나서** | 교사·친구의 모습을 본 뒤에 참여했다 |
-| `INDEPENDENT` | **스스로** | 스스로 시작해서 참여했다 |
+| (행 없음) | **기록 없음** | 이번 활동에서 그 모습이 나오지 않았거나 관찰하지 못했다 |
+| `together` | **함께** | 교사 또는 친구와 함께, 도움이나 공동 참여 속에서 참여했다 |
+| `after_modeling` | **보고 나서** | 교사·친구의 모습을 본 뒤에 참여했다 |
+| `independent` | **스스로** | 스스로 시작해서 참여했다 |
+
+> *Historical baseline — clarified by DEC-086*: PHASE 01 초안의 code 표기(`NOT_OBSERVED` · 교사 한정 의미의 code · 대문자 code)는 사용하지 않는다. "함께"는 교사와 함께만을 뜻하지 않으므로 교사 한정 내부 code를 두지 않는다. **기록 없음은 저장값이 아니라 metric row 없음**이며, row가 있으면 stage는 NOT NULL이다. 숫자 변환 없음.
 
 > **이 값은 점수 · 등급 · 발달수준 · 또래평가가 아니다.**
 > 「이번 활동에서 관찰된 참여 / 지원 방식」이다.
@@ -648,7 +650,7 @@ Parent Publish Eligible
 | 사진 스냅샷 | 리포트 확정 후 사진 목록이 바뀌지 않게 |
 | 가정연계 스냅샷 | 커리큘럼 개정에도 발행본 불변 |
 | 다음 주 예고 스냅샷 | 발행 시점의 다음 Lesson 고정 |
-| `ai_draft_id` nullable | AI 없이 근거 등록 (DEC-009) |
+| AI 없이 근거 등록 | AI 없이 근거 등록 (DEC-009) · *Historical baseline — clarified by DEC-091 (PHASE 05): 이 요구는 legacy 컬럼 nullable 전환이 아니라 **신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 `ai_draft_id` · `source_ai_updated_at` · `reviewed_text_snapshot` 같은 AI 필수 의존을 두지 않음**으로 달성한다. legacy 1.0 경로(`child_growth_reports` · `child_growth_report_sources` · legacy AI drafts)는 M5 Cutover 전까지 NOT NULL · GR003 · RPC 전제를 유지하며(운영 중 부분 완화 없음) M5 이후 write 중단 · read-only compatibility로 동결한다* |
 | 기간 프리셋 | "이번 주" · "이번 달" · "이번 학기" 버튼 · *Updated by DEC-066 · DEC-067 · DEC-068: 자유 기간 입력 대신 논리 식별자 — Weekly = Assignment × Week · Monthly = Program 4-Week Block · Semester = Reporting Term* |
 | 목록 페이징 | 15명 × 24주 = 360건 > 현재 상한 200 |
 | 공유 단위 | 리포트당 → **아동당** (DEC-013) |
@@ -692,7 +694,9 @@ Parent Publish Eligible
 | Quota 소진 | 동일 |
 | 모델 폐기 | 동일 |
 
-**필요 변경**: `child_growth_report_sources.ai_draft_id` NOT NULL 해제 + `create_or_refresh_child_growth_report`의 `review_status='accepted'` 요구 완화 + 교사 직접 작성 근거 경로 + `.env.example` 주석 정정.
+**필요 변경** (*Historical baseline*): `child_growth_report_sources.ai_draft_id` NOT NULL 해제 + `create_or_refresh_child_growth_report`의 `review_status='accepted'` 요구 완화 + 교사 직접 작성 근거 경로 + `.env.example` 주석 정정.
+
+> *Historical baseline — clarified by DEC-091 (PHASE 05): 이 요구는 legacy 컬럼 nullable 전환이 아니라 **신규 2.0 경로(`reports` · `report_revisions` · `report_revision_evidence`)에 `ai_draft_id` · `source_ai_updated_at` · `reviewed_text_snapshot` 같은 AI 필수 의존을 두지 않음**으로 달성한다. legacy 1.0 경로(`child_growth_reports` · `child_growth_report_sources` · legacy AI drafts)는 M5 Cutover 전까지 NOT NULL · GR003 · RPC 전제를 유지하며(운영 중 부분 완화 없음) M5 이후 write 중단 · read-only compatibility로 동결한다*. `.env.example` 주석 정정은 유효하다.
 
 ### 11-4. Human-in-the-loop (6계층 · Invariant AI-10)
 

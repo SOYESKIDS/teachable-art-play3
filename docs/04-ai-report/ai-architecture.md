@@ -50,6 +50,12 @@
 | 근거 선택 = 완료된 관찰 (AI 상태와 무관) | 근거 조건 `review_status='accepted'` · stale 검사 · `reviewed_text` 비어 있지 않음 |
 | AI 필수 컬럼 없음 | `ai_draft_id NOT NULL` · `source_ai_updated_at NOT NULL` · `reviewed_text_snapshot NOT NULL` |
 
+> *Clarified by DEC-091 / PHASE 05*
+> - **TARGET REQUIREMENT**: AI가 없어도 새 2.0 Report 전체 경로(create → Teacher Final → Complete → Portal)를 완주한다.
+> - **IMPLEMENTATION STRATEGY**: 새 2.0 report schema(`reports` · `report_revisions` · `report_revision_evidence`)에는 mandatory AI FK · 컬럼 자체를 만들지 않는다.
+> - **LEGACY 1.0**: Cutover(M5) 전까지 GR003 · `ai_draft_id` NOT NULL · `source_ai_updated_at` · `reviewed_text_snapshot` NOT NULL 등 기존 invariant를 유지한다. 운영 중 일부 constraint만 부분 완화하지 않는다. Cutover 후 legacy write path disabled · read-only compatibility.
+> - 즉 위 표의 "CURRENT GAP (P0 제거 대상)"은 **legacy 스키마 변경이 아니라 새 구조에서 dependency가 존재하지 않음**으로 해소한다.
+
 AI 실패는 **리포트 작성 실패가 아니다.** 어떤 실패에서도 "AI 없이 계속 작성"이 가능하다.
 
 ---

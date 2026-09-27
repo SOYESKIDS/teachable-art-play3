@@ -49,8 +49,8 @@ Class Mode 중에는 StaffShell 메뉴를 숨기고 단계 표시(BEFORE · DURI
 | 유효 세션 · 취소 아님 | `private.is_recordable_session` | 취소 안내 → 오늘로 |
 | 활성 반 | `parentsActive` | 보관 반: BEFORE / DURING 진입 불가, AFTER에서 기존 기록 수정만 (AI-7) |
 | 발행 프로그램 · 차시 | `parentsActive` | "수업 내용이 아직 준비되지 않았습니다" |
-| 유효 Entitlement · 이용 기간 | **신규** (PHASE 05 · AD-2) | 이용 기간 외 안내 ([permission-matrix.md §4](./permission-matrix.md#4-entitlement-ux)) |
-| **필수 커리큘럼 데이터** | **신규** (Required Content Set, PHASE 05) | **차단**: "수업 내용이 아직 준비되지 않았습니다" (DEC-037) |
+| 유효 Entitlement · 이용 기간 | **신규** (class-aware · DEC-083) | 이용 기간 외 안내 ([permission-matrix.md §4](./permission-matrix.md#4-entitlement-ux)) |
+| **필수 커리큘럼 데이터** | **신규** (Required Content Set, DEC-096) | **차단**: "수업 내용이 아직 준비되지 않았습니다" (DEC-037) |
 | 선택 · 부가 섹션 | — | 해당 섹션만 숨기고 진행 |
 
 ---
@@ -83,7 +83,7 @@ Class Mode 중에는 StaffShell 메뉴를 숨기고 단계 표시(BEFORE · DURI
 | 필수 확인 미완료 | [수업 시작] 비활성 · 남은 필수 항목 수 표시 |
 | 필수 확인 완료 | [수업 시작] 활성 → `scheduled → in_progress` (기존 `transitionStaffSessionAction` 재사용) → DURING 1단계 |
 | 재진입 | 필수 확인 상태는 서버에서 복원한다. 선택 체크는 복원되지 않을 수 있다 |
-| 다른 교사 · 다른 기기 | 필수 확인은 세션 단위로 공유된다 (정확한 귀속은 PHASE 05) |
+| 다른 교사 · 다른 기기 | 필수 확인은 세션 단위로 공유된다 (세션 단위 확인 기록 · who · when — DEC-085) |
 | 오늘 보드 · 원장 화면의 [수업 시작] | 직접 전환하지 않는다 → §3-2 (DEC-046) |
 
 ### 3-2. 수업 시작 경로 단일화 (DEC-046)
@@ -103,7 +103,7 @@ scheduled
 | `/teacher` 오늘 화면 [수업 시작] | 직접 `in_progress` 전환 | **전환하지 않는다.** `/teacher/sessions/[sessionId]` (→ BEFORE)로 이동 |
 | `/director/sessions` 원장 [수업 시작] | 직접 `in_progress` 전환 | **전환하지 않는다.** 원장은 교사의 필수 확인을 대신하지 않는다. 조회 · 출결 정정 · 취소는 유지 |
 | HQ 프로그램 배정 화면 상태 변경 | `in_progress` 전환 가능 | 필수 확인 없는 `in_progress` 전환 경로를 두지 않는다 |
-| 비상 강제 상태변경 | — | **P0 구현 없음.** PHASE 05에서 audit log가 있는 별도 예외 경로로 검토 |
+| 비상 강제 상태변경 | — | **없음.** `scheduled → in_progress` 강제 경로는 두지 않는다 (DEC-085) |
 
 ### 3-3. 수업 완료 경로 단일화 (DEC-047)
 
@@ -121,7 +121,7 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 | HQ 프로그램 배정 화면 `scheduled → completed` | 가능 | **불허** |
 | 취소 (`scheduled → cancelled` · `in_progress → cancelled`) | 가능 | **유지** |
 | 1.0 과거 `completed` 기록 | — | **변경하지 않는다** |
-| Emergency Override | — | P0 없음. PHASE 05에서 admin only · reason · actor · timestamp · audit log 예외 경로로 검토 |
+| Recovery (*Clarified by DEC-085*) | — | `in_progress → completed`만 · Director · authorized HQ Admin · 사유 필수 · actor · timestamp · audit · **P0 지원** · 일반 [수업 마치기]와 분리. `scheduled → completed`는 Recovery로도 불가 |
 
 ---
 
@@ -160,11 +160,11 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 |---|---|
 | 위치 | DURING 상시 버튼 → 짧은 입력. 아동 지정 없음 |
 | 저장 | **교사 전용 서버 임시저장** (자동 저장). 전송 전에는 "저장 중 / 미전송" 표시 |
-| 접근 | 작성 교사 본인 · 담당 반 범위 |
-| 비노출 | Director · Parent · AI 입력 |
+| 접근 | **작성 교사 본인만** (같은 반 다른 교사에게도 비공유 · *Clarified by DEC-087*) |
+| 비노출 | Director · HQ · Parent · AI 입력 |
 | AFTER 연결 | AFTER ② 화면에 Quick Memo 패널로 **참고 표시**. 교사가 필요한 내용만 직접 Observation에 옮긴다. **자동 이관·자동 아동 배정 없음** |
 | 지위 | 최종 Observation이 아니다. 리포트 근거가 되지 않는다 |
-| 보존 기간 · 삭제 | PHASE 05 (AH-1) |
+| 보존 기간 · 삭제 | CO-2 (저장 단위 · 접근은 DEC-087) |
 
 ---
 
@@ -197,7 +197,7 @@ scheduled → BEFORE → required safety/privacy confirmation → Teacher [수�
 
 | 용어 | 의미 | 전환 | 주체 |
 |---|---|---|---|
-| **Session completed** | 교실 수업 진행 종료 | DURING [수업 마치기] · `in_progress → completed`. `scheduled → completed` 직접 전환 없음 (DEC-047) | 교사 (진행 중 세션의 완료는 원장도 CURRENT 권한으로 가능) |
+| **Session completed** | 교실 수업 진행 종료 | DURING [수업 마치기] · `in_progress → completed`. `scheduled → completed` 직접 전환 없음 (DEC-047) | 교사 (진행 중 세션의 운영 정정은 Director · authorized HQ Admin의 별도 Recovery — 사유 · audit · DEC-085) |
 | **Observation complete** | 아동 1명의 관찰 기록 완료 | AFTER ② [저장하고 다음 아이] · `record_status = complete` | 교사 |
 | **Weekly complete** | 아동 1명의 주간 리포트 작성 완료 · 잠금 | 리포트 검토 [작성완료] | 교사 |
 
@@ -213,7 +213,7 @@ flowchart LR
   A[아동 카드] --> G{관찰된 Growth 지표<br/>선택}
   G -->|선택 안 함| N[기록 없음<br/>= 기본 상태]
   G -->|선택| S[함께 · 보고 나서 · 스스로<br/>3개 명시 선택지]
-  S -->|아직 고르지 않음| U[지표 선택됨 · 방식 미선택<br/>저장 처리 PHASE 05]
+  S -->|아직 고르지 않음| U[지표 선택됨 · 방식 미선택<br/>행 저장 안 됨 · DEC-086]
   S --> OK[저장]
 ```
 
@@ -226,7 +226,7 @@ flowchart LR
 | 선택지 배치 | 원본 정의 순서로 가로 균등 배치. 강조색은 "선택됨" 1가지. 서술형 보조 문구 가능 (예: 교사와 함께 참여 / 모습을 본 뒤 참여 / 스스로 시작) — 카피는 PHASE 06 |
 | 금지 | 1/2/3/4 · Low/Medium/High · ↑↓ · Progress Bar · 점수 색 · 레이더차트 · "스스로 달성률" · 합계 · 반 평균 |
 | AI | Growth 5 · Stage를 AI 입력에 포함하지 않고, AI 출력에서 파싱하지 않는다 (U-7) |
-| 저장 방식 | (A) 행 없음 = NOT_OBSERVED / (B) 명시 저장 → **IA-3 · AD-3 (PHASE 05)** |
+| 저장 방식 | **DEC-086으로 확정** (IA-3 · AD-3 해소): 행 없음 = 기록 없음 · 행이 있으면 stage NOT NULL · 저장 코드 `together` · `after_modeling` · `independent`. 방식 미선택 상태의 안내 UX는 PHASE 06 |
 
 ### 8-1. 고정 안내문 위치
 

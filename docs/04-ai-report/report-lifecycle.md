@@ -23,8 +23,8 @@ Logical Report  (type × child × assignment × period)
 
 | 개념 | 의미 |
 |---|---|
-| **working_revision** | 지금 교사가 작성 · 정정 중인 draft Revision (없을 수 있음) |
-| **latest_completed_revision** | 가장 최근 complete된 Revision. 학부모에게 보일 수 있는 유일한 Revision |
+| **working_revision** | 지금 교사가 작성 · 정정 중인 draft Revision (없을 수 있음) · *DB: 포인터 저장 없이 `status = draft` 부분 unique로 파생 (DEC-089)* |
+| **latest_completed_revision** | 가장 최근 complete된 Revision. 학부모에게 보일 수 있는 유일한 Revision · *DB: `latest_completed_revision_id` 개념 포인터 · 같은 리포트의 complete revision만 (DEC-089)* |
 
 | 순서 | working | latest_completed |
 |---|---|---|
@@ -147,7 +147,7 @@ Logical Report  (type × child × assignment × period)
 | Portal share activated · revoked | ✅ | ✅ | revoke 시 선택 |
 | draft deleted | ✅ | — | — |
 
-실제 audit 구조는 PHASE 05.
+실제 audit 구조는 PHASE 05. *→ DEC-093: domain 행위자 컬럼 + append-only `audit_events` · 본문 · 인용 · AI raw output · token · 보호자 개인정보 미기록 · Director는 audit_events 전체 직접 조회 없음*
 
 ---
 
