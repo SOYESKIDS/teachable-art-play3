@@ -27,8 +27,13 @@
 | `semester_report` (P2) | ✖ | ✅ | ✅ | ✖ |
 | `director_dashboard` | **✖** | ✅ | ✅ | **✅** |
 | `parent_portal` | ✅ | ✅ | ✅ | ✅ |
+| `ai_assist` (*Updated by DEC-070*) | **✖** | ✅ C1+C2+C3 | ✅ C1+C2+C3 | ◐ 특수: **C1만** |
 
-`semester_report`는 `monthly_report`를 필수 dependency로 두지 않는다. Observation · Weekly · Monthly 등 허용된 Evidence Source에서 독립 생성할 수 있어야 한다 (source aggregation은 PHASE 04/05).
+`semester_report`는 `monthly_report`를 필수 dependency로 두지 않는다. Observation · Weekly · Monthly 등 허용된 Evidence Source에서 독립 생성할 수 있어야 한다 (source aggregation은 PHASE 04/05). *Updated by DEC-068: Semester 식별자 = Child × Assignment × **Reporting Term** (flexible period).*
+
+**AI capability 사용 가능 = `ai_assist` ∧ 해당 Report Entitlement ∧ 해당 기능 Service Ready** (DEC-070). 예: C2 Monthly Draft는 `monthly_report`가 없는 상품에서 쓸 수 없다. AI 생성 권한은 담당 반 Teacher만. 외부 AI 사용은 AR-8 해결 후 (DEC-071).
+
+**Monthly 기간** (*Updated by DEC-067*): Program 4-Week Block (Week 1~4 · 5~8 · …) — 달력 월 아님.
 
 ---
 
@@ -165,7 +170,7 @@ flowchart TD
 
 | 판정 지점 | 규칙 |
 |---|---|
-| Contract 활성화 | Product Version이 **계약상 INCLUDED로 약속한 Content · Report capability · Feature · Entitlement dependency 전체**가 Service Ready가 아니면 활성화 불가. **후반 기능 자동 예외 없음** |
+| Contract 활성화 | Product Version이 **계약상 INCLUDED로 약속한 Content · Report capability · Feature · Entitlement dependency 전체**가 Service Ready가 아니면 활성화 불가. **후반 기능 자동 예외 없음** · *Updated: STARTER는 8주 Summary View 포함 (DEC-069) · STANDARD · PREMIUM은 AI C1+C2+C3 포함 (DEC-070)* |
 | Pilot | Pilot Ready (DEC-037 필수 데이터 · DEC-051 반당 ≤ 15명 · **HQ override 없음**) |
 | Class Mode 진입 | 필수 수업 데이터 부족 시 차단 (DEC-037) — 활성화 이후에도 차시 단위로 유지 |
 | Upgrade | 대상 상품이 Service Ready여야 후속 계약 활성화 가능 |

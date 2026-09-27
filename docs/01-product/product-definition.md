@@ -589,10 +589,10 @@ Product            STARTER / STANDARD / PREMIUM              판매 단위
 | **주 사용자** | 학부모 | 학부모 + 원장 | 학부모 + 원장 + (평가·장학) |
 | **발행 주기** | 주 1회 | 월 1회 | 학기 1회 |
 | **포함 상품** | STARTER 이상 (= STARTER · STANDARD · PREMIUM · PILOT) · *Updated by DEC-057: STANDARD Weekly 포함 확정* | STANDARD 이상 | STANDARD 이상 · *DEC-055: Monthly Entitlement를 필수 dependency로 두지 않음* |
-| **입력 (근거)** | 해당 주 관찰 1~2건 + Growth 5/Stage + 선별 사진 + 아이의 말 + §13 가정연계 + 다음 주 Lesson | 4~5주 관찰 + Growth 5 흐름 + 대표 활동 | 16~24주 전체 + Growth 5 누적 + 대표 작품·발화 + Nuri |
+| **입력 (근거)** | 해당 주 관찰 1~2건 + Growth 5/Stage + 선별 사진 + 아이의 말 + §13 가정연계 + 다음 주 Lesson | 4~5주 관찰 + Growth 5 흐름 + 대표 활동 · *Updated by DEC-067: 기간 = **Program 4-Week Block** (Week 1~4 · 5~8 …) · 달력 월 아님* | 16~24주 전체 + Growth 5 누적 + 대표 작품·발화 + Nuri · *Updated by DEC-068: Child × Assignment × **Reporting Term** · Monthly 비의존* |
 | **출력** | 이번 주 활동 / Growth 5 / 관찰단계 / 아이의 말 / 교사 관찰 / 선택된 사진 / 가정연계 / 다음 주 예고 | 이번 달 성장 변화 / 대표 관찰 / Growth 5 흐름 / 대표 활동 / 교사 서술 / 가정연계 | 학기 성장 이야기 / 주차별 변화 / Growth 5 누적 흐름 / 대표 작품 / 대표 발화 / 누리과정 연결 / 교사 종합기록 |
 | **교사 작업량 목표** | **3분 이내 / 아동** | 10분 이내 | 20분 이내 |
-| **AI 역할** | ⚪ 거의 없음 (구조가 정해져 있다). 필요 시 문장 다듬기 | 🟡 초안 생성 (3블록 재사용) | 🟡 초안 생성 + 주차별 요약 |
+| **AI 역할** | ⚪ 거의 없음 (구조가 정해져 있다). 필요 시 문장 다듬기 · *Updated by DEC-066 · DEC-070: P0 Generative AI 없음 · 문장 다듬기(C3)는 P1 · `ai_assist` 포함 상품(STANDARD · PREMIUM)만* | 🟡 초안 생성 (3블록 재사용) · *C2 · `ai_assist` 필요* | 🟡 초안 생성 + 주차별 요약 · *C2 · `ai_assist` 필요* |
 | **3블록 재사용** | ❌ (5항목 서식) | ✅ `growth_changes`·`observation_summary`·`next_support` | ✅ + 확장 |
 | **Parent UX** | 짧게 읽고 사진 보고 가정연계 실천 | 변화를 이해 | 보관·공유하고 싶은 산출물 |
 
@@ -649,10 +649,10 @@ Parent Publish Eligible
 | 가정연계 스냅샷 | 커리큘럼 개정에도 발행본 불변 |
 | 다음 주 예고 스냅샷 | 발행 시점의 다음 Lesson 고정 |
 | `ai_draft_id` nullable | AI 없이 근거 등록 (DEC-009) |
-| 기간 프리셋 | "이번 주" · "이번 달" · "이번 학기" 버튼 |
+| 기간 프리셋 | "이번 주" · "이번 달" · "이번 학기" 버튼 · *Updated by DEC-066 · DEC-067 · DEC-068: 자유 기간 입력 대신 논리 식별자 — Weekly = Assignment × Week · Monthly = Program 4-Week Block · Semester = Reporting Term* |
 | 목록 페이징 | 15명 × 24주 = 360건 > 현재 상한 200 |
 | 공유 단위 | 리포트당 → **아동당** (DEC-013) |
-| reopen | 주간 24건 중 오타 정정 경로 + 사유 → 정책 미확정 |
+| reopen | 주간 24건 중 오타 정정 경로 + 사유 → 정책 미확정 · *Updated by DEC-073 · DEC-074: 정정 = 새 Revision (사유 필수 · 완료본 직접 수정 · rollback 금지) · working vs latest completed revision · Evidence + Final Content 이중 Snapshot* |
 
 ---
 
@@ -665,6 +665,8 @@ Parent Publish Eligible
 | 1 | **관찰 메모 정리** — 교사가 적은 문장을 읽기 쉽게 다듬음 | 관찰기록 |
 | 2 | **리포트 초안 작성** — 근거 스냅샷을 바탕으로 서술 초안 | 월간 · 학기 (주간은 최소) |
 | 3 | **문장 보조** — 표현 다듬기 | 교사 요청 시 |
+
+> *Updated by DEC-070 (PHASE 04)*: 위 1 · 2 · 3은 각각 **C1 Observation Cleanup · C2 Period Narrative Draft · C3 Writing Assist**다. 판매 권한은 `ai_assist` 1개 — STARTER **EXCLUDED** · STANDARD · PREMIUM **INCLUDED** (C1+C2+C3 = 상품소개서 "AI 성장기록 플랫폼 Full") · PILOT **C1만**. 사용 가능 = `ai_assist` ∧ 해당 Report Entitlement ∧ Service Ready. 상세: [../04-ai-report/ai-architecture.md](../04-ai-report/ai-architecture.md)
 
 ### 11-2. AI가 하지 않는 것
 

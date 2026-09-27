@@ -35,7 +35,7 @@
 
 ---
 
-## 2. Open Decisions (PHASE 02 종료 시 9건 → PHASE 03 이후 미해결 2건: IA-3 · IA-13)
+## 2. Open Decisions (PHASE 02 종료 시 9건 → PHASE 03 이후 미해결 2건: IA-3 · IA-13 → PHASE 04 이후: IA-3만 Open · IA-13은 Copy만 PHASE 06)
 
 > 2026-09-27 PHASE 03 상태 정합화: 해결 항목은 삭제하지 않고 상태를 표시한다. 잔여 부분은 [../03-commerce/open-items.md](../03-commerce/open-items.md)의 CO 항목으로 관리한다.
 
@@ -48,7 +48,7 @@
 | **IA-10** | 계약 종료 후 Read-only 기간 | 🟡 **Resolved portion**: 접근 모델 (**DEC-052**) / **Remaining portion**: 유예 기간 → **CO-1** · 보관·파기 → **CO-2** · (이전 논점) 종료 후 기록 열람 · 학부모 Portal 유지 · 이관/파기 시점 | 일정 기간 읽기 전용 | 사업 + 법무 | PHASE 03 (BP-17) |
 | **IA-11** | 결석 주차의 Parent 표시 | ✅ **RESOLVED by DEC-060** (결석 표시 없음 · 사유 무구분 · 이전 리포트를 "이번 주"로 보이지 않음 · 실제 week/date 표시) · (이전 논점) 리포트는 만들지 않는다(확정). Portal에 "이번 주 결석" 흔적을 둘지 | 표시 안 함 | Product (교육) | PHASE 03 |
 | **IA-12** | 좌석 초과 정책 최종 | ✅ **RESOLVED by DEC-051** (반 수 HARD · 원아 ALLOW + OVERAGE RECORD · Pilot 15명 초과 Ready 불가) · 청구 방식은 BP-6 유지 · (이전 논점) 반 수 · 반당 원아 수 초과 시 경고 / 차단. 초과요금 자동청구는 없음(DEC-018) | 경고 | 사업 | PHASE 03 (BP-6 · BP-7) |
-| **IA-13** | Parent Weekly의 Stage 최종 표현 | Stage 라벨을 그대로 노출할지, 서술문으로 풀어 쓸지. U-1 · U-3 · PH3-1과 연결 | 서술문 | Product (교육) | PHASE 04 · 06 |
+| **IA-13** | Parent Weekly의 Stage 최종 표현 | 🟡 **Architecture RESOLVED by DEC-075** (Stage chip · raw label 미노출 · 지표명 + 구체적 Evidence 서술 · 고정 안내 문구 · Monthly/Semester는 사례 narrative만) / **Remaining: 한국어 Copy → PHASE 06** · (이전 논점) Stage 라벨을 그대로 노출할지, 서술문으로 풀어 쓸지. U-1 · U-3 · PH3-1과 연결 | 서술문 | Product (교육) | PHASE 04 · 06 |
 | **IA-15** | STANDARD의 Weekly 포함 여부 | ✅ **RESOLVED by DEC-057** (STANDARD Weekly 포함) · (이전 논점) PHASE 02 HARD RULE 목록에는 STANDARD Weekly가 없고, DEC-010 비교표는 "STARTER 이상"으로 기재. 문서 간 차이 | — (추측 금지) | 사업 | PHASE 03 (BP-11 · BP-13) |
 
 ---

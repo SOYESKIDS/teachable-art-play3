@@ -4,9 +4,9 @@
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
 | 최종 갱신 | 2026-09-26 |
-| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) 확정 사항 |
-| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) |
-| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) |
+| 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) 확정 사항 |
+| Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) |
+| 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) |
 
 ---
 
@@ -1013,7 +1013,7 @@ Observation Stage의 **제품 개념은 4가지 그대로**다 (기록 없음 ·
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-066 (Weekly 식별자 · 완료 조건) · DEC-070 (P1 문장 다듬기 = C3, `ai_assist` 포함 상품에서만) |
 | 출처 | 사용자 확정 (PHASE 02 검토) |
 
 **결정 내용**
@@ -1106,7 +1106,7 @@ DEC-024의 Weekly 5항목이 이미 활동과 가정연계를 포함하므로 �
 | | |
 |---|---|
 | 결정일 | 2026-09-26 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-074 (숨김 단위 = 논리 리포트 · 해제 권한 · 자동 해제 없음) · DEC-073 (정정 = 새 Revision) |
 | 출처 | 사용자 확정 (PHASE 02 IA-7 수정 · P1 → P0) |
 
 **결정 내용**
@@ -1404,7 +1404,7 @@ B2B/B2G에서는 서명·발주 후 입금 전에 서비스를 여는 것이 정
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-070 (Pilot 특수 Entitlement에 C1 Observation Cleanup만 포함) |
 | 출처 | 사용자 확정 (PHASE 03 C-7) |
 
 **결정 내용**
@@ -1425,7 +1425,7 @@ Pilot에는 STARTER에 없는 대시보드가 있고 한도가 검증 조건이�
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-070 (`ai_assist` 상품 배분 확정) · DEC-068 (Semester 원천 · Reporting Term) |
 | 출처 | 사용자 확정 (PHASE 03 C-8 · BP-11) |
 
 **결정 내용**
@@ -1612,7 +1612,7 @@ Monthly · Semester는 Weekly와 같은 주차별 관찰 흐름 위에 있어 We
 | | |
 |---|---|
 | 결정일 | 2026-09-27 |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE` · clarified by DEC-069 (STARTER "8주 요약" = Summary View · 활성화 전 Ready 필요) · DEC-070 (STANDARD · PREMIUM AI capability Ready 필요) |
 | 출처 | 사용자 확정 (PHASE 03 C-17) |
 
 **결정 내용**
@@ -1641,7 +1641,372 @@ Product가 Catalog에 존재하거나 공개 사이트에 소개되어 있는 �
 
 ---
 
-## 12. 결정 요약표
+## 12. AI Growth · Report (PHASE 04)
+
+> PHASE 04 검토·승인(2026-09-27)에서 확정된 결정. 상세는 [../04-ai-report/](../04-ai-report/). 상태 값 · 필드 이름은 제품 개념이며 DB 구조는 PHASE 05에서 정한다.
+
+### DEC-064 · Evidence 모델과 사실 우선순위
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-1 · A-3 · A-20) |
+
+**결정 내용**
+1. **FACT / EVIDENCE PRIORITY**: **Teacher Evidence > Structured Curriculum Context > AI Draft.** AI Draft는 사실의 원천이 아니다.
+2. **Teacher Final은 upstream Evidence가 아니다.** 교사가 검토 · 확정한 리포트의 최종 출력이다. 흐름은 `Teacher Evidence → (optional) AI Draft → Teacher Review/Edit → Teacher Final`.
+3. Monthly · Semester는 완료된 Weekly의 Teacher Final을 **secondary source**로 쓸 수 있으나, underlying Evidence를 **canonical source**로 함께 유지한다.
+4. **Child Quote는 원 Evidence의 verbatim text가 항상 우선**한다. AI도 Teacher Final도 인용 원문을 바꾸지 않는다.
+5. Curriculum은 **맥락(context)**이며 아이에 대한 사실이 아니다. **Goal ≠ Observed Outcome.**
+6. **Quick Memo는 Report Evidence가 아니다.** Observation 자동 전환 · Report 유입 · AI 입력을 모두 금지한다. 교사가 직접 옮긴 경우에만 Teacher Observation Note가 된다 (P0 수동 복사 · P1 "관찰로 옮기기" 후보).
+7. **사진은 Display Asset이며 AI Evidence가 아니다.** AI 입력 금지 · 사진 없이도 리포트 완료 가능 · 동의 가능한 사진만 학부모에게 표시.
+
+**결정 이유**
+리포트의 모든 문장은 "교사가 그 자리에서 본 것"으로 설명될 수 있어야 한다. 교사의 최종 문장까지 원천으로 올리면 AI가 다듬은 문장이 다음 기간의 사실로 재사용되는 순환이 생긴다.
+
+**관련**: DEC-009 · DEC-014 · DEC-035 · Invariant AI-10 · [../04-ai-report/evidence-growth-model.md](../04-ai-report/evidence-growth-model.md)
+
+---
+
+### DEC-065 · Growth 5 · Stage 의미와 추세 규칙
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-2) |
+
+**결정 내용**
+- 공식 Growth 5: 표현 다양성 · 형태·공간 구성 · 창의적 시도 · 활동 참여·몰입 · 자기 설명·소통. 지표별 의미 · 기록 기준 · 기록 금지 항목은 [../04-ai-report/evidence-growth-model.md §3](../04-ai-report/evidence-growth-model.md).
+- Stage: 기록 없음 · 함께 · 보고 나서 · 스스로 — **이 활동의 이 지표에서 관찰된 참여·지원 방식**이다. 점수 · 발달단계 · Quality가 아니다.
+- **0/1/2 변환 · 평균 · 합계 · 백분율 · 반 평균 · 순위를 어떤 계층에서도 만들지 않는다.**
+- 추세는 **같은 아이의 시간순 사례**만 본다. "스스로가 늘었으므로 발달했다" 같은 인과 · 발달 판정은 금지한다.
+- DEC-007 · DEC-008 · DEC-038을 유지하며 대체하지 않는다.
+
+**관련**: DEC-005 · DEC-007 · DEC-008 · DEC-038
+
+---
+
+### DEC-066 · Weekly Report 구조와 완료 조건
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-4 · AR-3) |
+
+**결정 내용**
+- 식별자: **Child × Program Assignment × Week.**
+- P0 **Generative AI 없음.** System + Teacher 입력으로 **deterministic assemble**.
+
+| 섹션 | 출처 | 방식 |
+|---|---|---|
+| 1 이번 주 활동 주제 | Published Curriculum Context | AUTO |
+| 2 아이의 실제 말과 선택 | Child Quote 또는 Teacher Evidence에 기록된 구체적 선택 | TEACHER SELECT |
+| 3 교사 관찰 기록 | Teacher Observation 기반 Teacher Final sentence | TEACHER WRITE (prefill → 확인·수정) |
+| 4 작품 · 활동 장면 | consent-eligible selected media | AUTO + TEACHER SELECT |
+| 5 가정연계 대화 제안 | curriculum family connection | AUTO |
+| + 다음 주 예고 | next published curriculum | SYSTEM ASSEMBLE |
+
+| 완료 조건 | 항목 |
+|---|---|
+| **HARD REQUIRED** | child · program assignment · week · 완료된 관찰 1건 이상 · activity topic · **teacher final observation sentence** · family connection source |
+| **RECOMMENDED** | child quote 또는 구체적 선택 · Growth 5 selection |
+| **OPTIONAL** | photo · next week preview |
+
+- Quote · 사진 · Growth 5가 없어도 차단하지 않는다.
+- "아이의 말과 선택"에 실제 근거가 없으면 **AI나 시스템이 내용을 만들어 넣지 않는다.** 빈 사실을 채우는 placeholder narrative도 만들지 않는다.
+- 교사 관찰 문장은 선택한 Teacher Observation Note로 **prefill할 수 있고**, 교사가 Complete 전에 확인 · 수정한다. **별도 승인 체크박스 없음 — Complete 행위 자체가 Teacher Final 확인이다** (AR-3 해소).
+
+**관련**: DEC-024 · DEC-039 · DEC-064
+
+---
+
+### DEC-067 · Monthly = Program 4-Week Block
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-5) + SOURCE DOCUMENT 상품소개서 v4 ("월간 요약 리포트 · 월 1회 · STANDARD 이상" — PROJECT EXTERNAL SOURCE, verified during PHASE 04 review) |
+
+**결정 내용**
+- Monthly의 SaaS 내부 기간은 **Calendar Month가 아니라 Program Month**다: Block 1 = Week 1~4 · Block 2 = 5~8 · Block 3 = 9~12 · Block 4 = 13~16 · Block 5 = 17~20 · Block 6 = 21~24.
+- 식별자: **Child × Program Assignment × Program Month Index.**
+- 원천: underlying Evidence(canonical) + 완료된 Weekly Teacher Final(secondary) + Curriculum Context. Weekly 문자열만 AI가 재요약하는 구조는 금지.
+- 서비스 내부 의미를 **"월간 요약 리포트 = 4주 단위"**로 명확히 한다. 향후 Marketing · UI 문구도 "월간 요약 리포트 · 4주 단위"처럼 오해 없게 맞춘다.
+- CO-11(계약의 달력 기간)은 별도 Open으로 유지한다. **리포트 기간 쪽 의존만 해소**한다.
+
+**결정 이유**
+Weekly 식별자가 주차 기반이므로 달력 월을 쓰면 주차가 월 경계에서 쪼개지고 휴원 달은 빈 리포트가 된다. 상품 가격 근거도 4주 = 1개월이다.
+
+**관련**: DEC-010 · DEC-011 · DEC-057 · CO-11
+
+---
+
+### DEC-068 · Semester = Child × Program Assignment × Reporting Term
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-6) |
+
+**결정 내용**
+- 식별자: **Child × Program Assignment × Reporting Term.** Assignment 하나로 고정하지 않는다.
+- STANDARD 16주는 기본적으로 하나의 Reporting Term이 될 수 있다. PREMIUM 24주가 1회인지 별도 학기 경계가 있는지는 **P2 제품 설정**으로 확정한다 (AR-2).
+- Architecture는 **처음부터 flexible reporting period**를 지원한다.
+- Semester는 Monthly Entitlement에 의존하지 않고 Observation · Weekly · Monthly · Child Quote · Growth 5 · Teacher Final 등 허용된 Source를 독립적으로 사용한다 (DEC-055).
+- Semester Portfolio는 **아이의 활동 · 표현 기록 모음**이며 발달 평가서 · 진단서 · 성적표가 아니다.
+
+**관련**: DEC-015 · DEC-055 · DEC-065
+
+---
+
+### DEC-069 · STARTER "8주 요약" = Program Completion Summary View
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-21 · CO-4) + SOURCE DOCUMENT 상품소개서 v4 (STARTER "주간 미니 리포트 + 8주 요약" — PROJECT EXTERNAL SOURCE) |
+
+**결정 내용**
+"8주 요약" = **8주 동안 완료된 Weekly Report를 시스템이 규칙적으로 모아서 보여주는 Program Completion Summary View.**
+
+| 이다 | 아니다 |
+|---|---|
+| 8주 Timeline · Week 번호 · 실제 날짜 · Weekly 제목 · Weekly에서 이미 선택된 아이의 말/선택 · 이미 선택된 대표 사진(있으면) · 각 Weekly 링크 | **새 report_type** · Monthly · Semester-lite · AI Report |
+| 기존 Weekly Snapshot에서만 deterministic하게 생성 | 새 성장 판정 · 새 AI Narrative · 새 Teacher Complete · 새 Revision |
+
+- UI 명칭 후보 "8주 기록 요약" / "8주 기록 모아보기" — Copy는 PHASE 06.
+- STARTER Product Version이 이를 계약상 약속하므로 **DEC-063에 따라 Regular STARTER Production Activation 전에 Service Ready**여야 한다 (기존 "P1" 표현 대신 이 기준을 쓴다).
+
+**관련**: DEC-057 · DEC-063 · DEC-066
+
+---
+
+### DEC-070 · AI Product Capability와 `ai_assist` 배분 (CO-5)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-7 · CO-5) + SOURCE DOCUMENT 상품소개서 v4 (STANDARD "AI 성장기록 플랫폼 Full" · PREMIUM "STANDARD 모든 구성 포함" · STARTER 구성에 AI 항목 명시 없음 — PROJECT EXTERNAL SOURCE, verified during PHASE 04 review) |
+
+**결정 내용**
+- Feature Code는 **`ai_assist` 하나**를 유지한다. `ai_observation` · `ai_monthly` · `ai_writing` 같은 판매 Entitlement Code를 만들지 않는다.
+
+| Capability | 의미 |
+|---|---|
+| **C1 Observation Cleanup** | 관찰 1건의 문장 정리 초안 |
+| **C2 Period Narrative Draft** | Monthly · Semester 섹션 초안 |
+| **C3 Writing Assist** | 교사가 쓴 문장의 가독성 보조 |
+
+| 상품 | `ai_assist` | 근거 |
+|---|---|---|
+| STARTER | **EXCLUDED** | PHASE 04 Product Decision (Source는 AI 항목을 명시하지 않음) |
+| STANDARD | **INCLUDED** — "AI Growth Platform Full" = C1 + C2 + C3 | SOURCE(v4) + Decision |
+| PREMIUM | **INCLUDED** | SOURCE(v4) "STANDARD 모든 구성 포함" |
+| PILOT | **특수 Entitlement: C1 Observation Cleanup만** | Decision |
+
+- 실제 사용 가능 여부 = **`ai_assist` ∧ 해당 Report Entitlement ∧ 해당 기능 Service Ready.** 예: C2 Monthly Draft는 `monthly_report`가 없는 상품에서 쓸 수 없다.
+- STARTER에 향후 AI를 추가하려면 현재 Product Version을 조용히 바꾸지 않고 **새 Product Version · Decision**으로 처리한다.
+- **DEC-063 유지**: STANDARD · PREMIUM이 AI를 계약상 약속하므로 해당 AI capability도 Product Activation 전에 필요한 수준으로 Ready여야 한다. "AI optional"은 교사가 쓰지 않아도 된다는 뜻이지, 약속한 기능이 없어도 된다는 뜻이 아니다.
+- DEC-039의 Weekly P1 문장 다듬기는 C3이며 `ai_assist` 포함 상품에서만 쓸 수 있다.
+
+**관련**: DEC-009 · DEC-039 · DEC-054 · DEC-055 · DEC-063
+
+---
+
+### DEC-071 · AI Independence · Input 최소화 · No-Invention · 검증
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-8 · A-9 · A-10 · A-19) |
+
+**결정 내용**
+1. **AI 없이 전 경로 완주 필수**: `Evidence → Teacher Writing → Teacher Final → Complete → Visible when eligible`. AI Draft가 없어도 Report create · Complete · Parent visibility가 가능해야 한다.
+2. 현재 코드의 **GR003 · `ai_draft_id NOT NULL` · `reviewed_text_snapshot NOT NULL` · accepted draft 조건은 P0 제거 대상**이다.
+3. AI 호출은 **server-only**. 호출 전 auth · role · tenant · assigned class · child scope · entitlement를 서버에서 재검증한다.
+4. AI Input Allowlist / Denylist를 따른다 ([../04-ai-report/ai-architecture.md §4](../04-ai-report/ai-architecture.md)). 이름 · 식별자는 가능하면 placeholder. 사진 · 얼굴 · consent · guardian · roster · token 입력 금지.
+5. **자유 텍스트 속 개인정보 최소화(AR-8)는 EXTERNAL P0 AI USE 이전 요구사항**이다. 해결 전에는 Pilot을 **AI OFF**로 운영할 수 있어야 한다. 법무 판단(CO-10)과 구분한다.
+6. **No-Invention Contract**: Evidence 안에서만 작성 · Quote 원문 유지 · Goal ≠ Observed Outcome · 일반화 금지 · 없는 사실 생성 금지 · insufficient evidence 명시 · sourceRefs · rule-based validation 우선 · **자동 공개 금지** · AI Judge 필수 아님.
+7. Monthly · Semester Evidence 부족 시 AI는 빈 기간을 채우지 않는다. 근거가 있는 섹션만 생성하고 부족한 섹션은 비운다. Evidence coverage 숫자는 **Teacher operational UI에만** 표시한다 (Parent 금지 · Director Dashboard에서 평가 수치처럼 노출 금지). 최소 기준 숫자는 AR-1.
+
+**관련**: DEC-009 · DEC-027 · DEC-064 · P0-8
+
+---
+
+### DEC-072 · AI Provenance · Retry · Prompt/Model/Template Versioning
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` · clarified by DEC-078 (raw provider payload 미저장 · 저장 대상 명확화) |
+| 출처 | 사용자 확정 (PHASE 04 A-11 · A-17) |
+
+**결정 내용**
+- AI generation provenance 개념: provider · model · promptTemplateId · promptVersion · outputSchemaVersion · reportType · period · requestedBy · generatedAt · inputEvidenceRefs · validationStatus · attemptNo.
+- Retry는 **새 generation attempt**다. 기본 자동 retry 없음.
+- Prompt · model · Growth 5 문구 · Report Template이 바뀌어도 **Complete된 Revision을 소급 재생성 · 자동 변경하지 않는다.** 새 Revision에만 새 규칙이 적용된다.
+- **Report Template Version ≠ Product Version.** Revision마다 Template Version을 추적 가능하게 한다.
+- 특정 모델 이름 · 모델 파라미터는 Product Decision으로 고정하지 않는다.
+
+**관련**: Invariant AI-13 · DEC-071
+
+---
+
+### DEC-073 · Report Revision · Snapshot · 정정 (PH3-3)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-12 · A-13 · A-14 · PH3-3) |
+
+**결정 내용**
+- Logical Report(유형 × 아동 × 배정 × 기간) : Revision = 1 : N.
+- 개념적으로 **working_revision**과 **latest_completed_revision**을 구분한다 (이름은 PHASE 05).
+  - v1 complete → latest_completed = v1
+  - v2 draft 생성 → working = v2, latest_completed는 여전히 v1
+  - v2 complete → latest_completed = v2, working 종료
+- **Completed Report 직접 수정 금지 · complete → draft rollback 금지.** 정정은 **새 Revision**이며 **정정 사유 필수**. P0는 minor/major를 나누지 않는다.
+- visible v1 + draft v2 상태에서 **학부모는 계속 v1을 본다.**
+- Complete Revision마다 **Evidence Snapshot**과 **Final Content Snapshot**(Teacher Final text · curriculum context snapshot · selected child quote · media references · template version 등)을 **둘 다** 보존한다.
+- **Immutable content snapshot ≠ 영구 photo visibility.** 사진 참조가 스냅샷에 있어도 학부모 노출은 현재 consent · privacy 정책으로 동적으로 차단될 수 있다. Consent withdrawal 때문에 과거 스냅샷을 삭제 · 재작성하는 구조를 기본값으로 두지 않는다 (법적 삭제 · 보존은 CO-2 · CO-9 · CO-10).
+- 완료된 적 없는 draft만 삭제할 수 있다. 완료 Revision은 hard delete하지 않는다 (파기는 CO-2).
+
+**관련**: DEC-043 · Invariant AI-11 · DEC-074
+
+---
+
+### DEC-074 · Report State Axes · Emergency Hide/Unhide · Computed Visibility
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-13 · A-14) |
+
+**결정 내용**
+
+| 축 | 값 |
+|---|---|
+| REPORT TYPE | weekly · monthly · semester · legacy_period |
+| CONTENT REVISION | draft · complete |
+| HIDE (Logical Report 단위) | visible · hidden |
+| AI GENERATION (attempt 단위) | requested · generated · failed · rejected + applied 여부 |
+| PARENT VISIBILITY | **계산값** — 별도 "published" 상태를 저장하지 않는다 |
+
+**Parent visibility = latest_completed_revision 존재 ∧ report not hidden ∧ Child Portal active ∧ Portal/Contract access policy 허용.**
+
+- Teacher Complete = Publish Eligible. Director 사전승인 · 별도 publish 조치 없음 (DEC-030 · DEC-040).
+- 잘못된 사진 · privacy · 중대한 사실 오류는 **먼저 Emergency Hide**. Hide 단위 = **Logical Report.**
+- **hide · unhide는 Director · Authorized HQ(admin)만** 가능하며 사유 · actor · timestamp · audit 필수. Teacher는 Correction Revision을 작성한다.
+- **Hidden 중 v2가 complete돼도 자동 unhide하지 않는다.** Director · HQ가 사유와 함께 unhide해야 한다.
+- CO-1 · CO-12(계약 종료 · Portal 기간)는 별도 Open 유지.
+
+**관련**: DEC-030 · DEC-040 · DEC-043 · DEC-052 · DEC-073
+
+---
+
+### DEC-075 · Parent · Director용 Growth 5 표현과 Revision 표시
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-15 · IA-13 · AR-9 · AR-6 · AR-7) |
+
+**결정 내용**
+- **Parent Weekly**: 지표명 + 구체적 Evidence 중심 서술. **Stage chip · raw label을 표시하지 않는다.** 고정 안내 문구(취지: "Growth 5는 아이의 능력이나 발달 단계를 평가하는 점수가 아니라 활동에서 관찰된 참여·표현 방식을 기록한 것입니다")를 둔다.
+- **Parent Monthly · Semester**: raw Stage를 표 · chip으로 보여주지 않는다. 사례 중심 narrative만.
+- **Director (P0 · P1)**: Growth 5 평균 · Stage 분포 · 점수 · 순위 · 그래프 없음. 기록 있음/없음 · 개별 기록 읽기만.
+- **AI Stage 추천(구 AR-6)**과 **Director Stage 분포(구 AR-7)**는 **BASE PRODUCT에서 제외**(DEFERRED / NOT PLANNED BY DEFAULT). 도입하려면 새 Product Decision이 필요하다.
+- **Parent에게 이전 Revision history를 보여주지 않는다.** 현재 표시 Revision이 revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 (AR-9 해소).
+- 정확한 한국어 Copy · 위치는 PHASE 06.
+
+**관련**: DEC-008 · DEC-038 · DEC-056 · DEC-065 · PH3-1
+
+---
+
+### DEC-076 · Legacy Observation · Legacy Report
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-16 · AR-4) |
+
+**결정 내용**
+- Legacy Observation(구 5영역 태그 포함)은 **그대로 보존**한다. 공식 Growth 5는 새 기록부터 사용한다.
+- **구 5영역 → Growth 5 자동 매핑 금지 · AI 자동 변환 금지.**
+- Legacy Report는 `legacy_period` · **read-only** · 자동 변환 없음.
+- Legacy share는 DEC-041을 유지한다.
+- **Legacy Report를 신규 Child Portal에 자동 편입하지 않는다** (AR-4 해소). 기존 Legacy Share Link로만 Cutover 정책에 따라 유지한다. 향후 통합이 필요하면 새 Decision.
+
+**관련**: DEC-006 · DEC-011 · DEC-041
+
+---
+
+### DEC-077 · Multi-teacher Authorship · Concurrency
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 A-18) |
+
+**결정 내용**
+- 리포트 접근 · 편집 권한은 해당 **Class Assignment에 연결된 Teacher**가 가진다. Logical Report identity는 Child / Assignment / Period 기준이다.
+- Authorship 추적: Observation author · Revision creator · Last editor · Completer.
+- 같은 반 담당 Teacher는 다른 담당 Teacher의 Evidence를 사용할 수 있다.
+- **낙관적 동시성 유지 · last-write-wins 금지** (Invariant AI-6).
+
+**관련**: Invariant AI-6 · AI-7 · DEC-073
+
+---
+
+### DEC-078 · AI Raw Payload Retention and Generation Record Policy
+
+| | |
+|---|---|
+| 결정일 | 2026-09-27 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 04 최종 검토 · PH3-5) |
+| Clarifies | DEC-072 (provenance는 유지하고, **저장하지 않는 것**을 명확히 한다) |
+
+**결정 내용**
+Production Application은 AI Provider의 **원본 Request Body와 원본 Response Body / Envelope를 영구 저장하지 않는다.**
+
+| NOT PERSISTED | PERSISTED (가능 / 필수) |
+|---|---|
+| raw provider request body | **validated structured AI draft** |
+| raw provider response body | input Evidence references · sourceRefs |
+| raw provider response envelope | provider · model · promptTemplateId · promptVersion · outputSchemaVersion |
+| complete prompt text copy | reportType / capability · requestedBy · requestedAt / generatedAt |
+| raw child evidence text의 별도 AI 로그 복제 | validationStatus · generation attempt number · application status |
+| failed / rejected raw model output | provider response_id / request id (있으면) · token / usage metadata (있으면) |
+| | sanitized error category / code · retry relation |
+
+- **RAW AI RESPONSE ≠ VALIDATED STRUCTURED AI DRAFT.** Validated structured draft는 교사가 검토하기 위한 Application Data이므로 저장할 수 있다. Raw provider payload 전체는 장기 저장하지 않는다.
+- **Teacher Final은 AI Structured Draft와 별개**다 (DEC-064 · DEC-073).
+- **Failure / Rejection** (timeout · provider failure · schema invalid · safety rejection · source ref invalid · quote mismatch · validation failure)에도 raw response body를 DB나 일반 로그에 저장하지 않는다. 저장은 attempt · provider/model · time · sanitized error code/category · validation result · (안전하고 가능한 경우) request/response id만. Teacher는 항상 manual path로 계속 작업한다 (DEC-071).
+- **Logging**: Production log에 API key · full prompt · child quote body · teacher note body · AI raw output · parent data · Portal token을 남기지 않는다. 필요한 경우 opaque ids · event ids · error category · duration · status만 사용한다.
+- **Future Diagnostic Mode**: 향후 AI Provider 장애 분석을 위해 raw payload 보존이 필요해지면 **이 결정을 조용히 바꾸지 않고 별도 Security / Privacy Decision**을 만든다. 그 결정은 최소 explicit enablement · restricted authorized access · encryption · short retention · deletion · audit · production child data handling · legal/privacy review를 정의해야 한다. **기본 제품에는 raw retention을 넣지 않는다.**
+
+**결정 이유**
+원본 요청 · 응답에는 교사 노트와 아이의 말이 그대로 들어 있어, 저장하면 아동 관련 문장이 리포트 외부에 한 벌 더 보관된다. 감사와 재현에 필요한 것은 "어떤 근거로 어떤 규칙에서 무엇이 나왔는가"이며, 이는 Evidence refs · provenance · validated draft로 충분하다 (Invariant AI-10 ~ AI-13 유지).
+
+**관련**: DEC-071 · DEC-072 · DEC-073 · Invariant AI-10 ~ AI-13 · PH3-5
+
+---
+
+## 13. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
 |---|---|---|---|---|
@@ -1709,26 +2074,42 @@ Product가 Catalog에 존재하거나 공개 사이트에 소개되어 있는 �
 | DEC-062 | 상품 | 현판 · 상담자료 팩 = Contract Deliverable · 시스템 Branding P2 | ACTIVE | 사용자 (C-16) |
 | DEC-063 | 상품 | Commercial Activation Readiness Gate · 약속한 것 전체 Ready · 후반 기능 예외 없음 | ACTIVE | 사용자 (C-17) |
 
-**총 63건 · ACTIVE 63 (clarified 1: DEC-010) · SUPERSEDED 0 · WITHDRAWN 0**
+| DEC-064 | AI · 리포트 | Evidence 모델 · 사실 우선순위 (Teacher Final은 upstream 아님) · Quick Memo · 사진 경계 | ACTIVE | 사용자 (A-1 · A-3 · A-20) |
+| DEC-065 | 관찰 | Growth 5 · Stage 의미 · 추세는 같은 아이 시간순 사례만 | ACTIVE | 사용자 (A-2) |
+| DEC-066 | 리포트 | Weekly 구조 · deterministic · 완료 조건 · 교사 관찰 prefill | ACTIVE | 사용자 (A-4 · AR-3) |
+| DEC-067 | 리포트 | Monthly = Program 4-Week Block | ACTIVE | 사용자 (A-5) + SOURCE |
+| DEC-068 | 리포트 | Semester = Child × Assignment × Reporting Term | ACTIVE | 사용자 (A-6) |
+| DEC-069 | 리포트 | STARTER 8주 요약 = Summary View (새 report_type 아님) | ACTIVE | 사용자 (A-21 · CO-4) + SOURCE |
+| DEC-070 | AI · 상품 | `ai_assist` 1개 · STARTER 제외 · STANDARD/PREMIUM 포함 · PILOT C1 | ACTIVE | 사용자 (A-7 · CO-5) + SOURCE |
+| DEC-071 | AI | AI Independence · 입력 최소화 · No-Invention · AR-8은 외부 AI 사용 전 | ACTIVE | 사용자 (A-8 · A-9 · A-10 · A-19) |
+| DEC-072 | AI | Provenance · Retry · Prompt/Model/Template Versioning | ACTIVE | 사용자 (A-11 · A-17) |
+| DEC-073 | 리포트 | Revision · 이중 Snapshot · 정정 (PH3-3) | ACTIVE | 사용자 (A-12 · A-13 · A-14) |
+| DEC-074 | 리포트 | State Axes · Hide/Unhide · Computed Visibility | ACTIVE | 사용자 (A-13 · A-14) |
+| DEC-075 | 학부모 · 원장 | Growth 5 표현 · Stage 미노출 · "업데이트됨" · AR-6/7 제외 | ACTIVE | 사용자 (A-15 · AR-9) |
+| DEC-076 | 데이터 | Legacy Observation · Report · Portal 미편입 | ACTIVE | 사용자 (A-16 · AR-4) |
+| DEC-077 | 리포트 | Multi-teacher Authorship · 낙관적 동시성 | ACTIVE | 사용자 (A-18) |
+| DEC-078 | AI | Raw Payload 미저장 · Validated Draft + Provenance만 저장 · 로그 최소화 | ACTIVE | 사용자 (PH3-5) |
+
+**총 78건 · ACTIVE 78 (clarified: DEC-010 · DEC-039 · DEC-043 · DEC-054 · DEC-055 · DEC-063 · DEC-072) · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 
-## 13. 다음 Decision 예정 영역
+## 14. 다음 Decision 예정 영역
 
-아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md)에서 관리되며, 확정 시 DEC-064부터 부여한다.
+아래는 아직 Decision이 아니다. [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md)에서 관리되며, 확정 시 DEC-079부터 부여한다.
 
 | 예정 영역 | 확정 PHASE |
 |---|---|
 | ~~Entitlement feature 목록 최종 확정~~ → **DEC-055로 확정** (`ai_assist` 배분은 03-commerce CO-5) | PHASE 03 |
 | 환불 · 자동갱신 · 해지 · 결제주기 정책 | PHASE 03 (사업) |
 | PG 사업자 선정 | PHASE 03 (사업) |
-| Growth 5 시계열 표현 방식 (변화 서술 vs 단계 증감 표기) | PHASE 02~04 (교육) |
+| ~~Growth 5 시계열 표현 방식~~ → **DEC-065 · DEC-075로 확정** (사례 중심 서술 · 단계 증감 표기 없음) | PHASE 02~04 (교육) |
 | 사진 anon 노출 방식 (service_role 확장 vs 별도 사본) | PHASE 05 (Architecture) |
 | Child Portal 링크 만료 · 재발급 정책 (03-commerce CO-12 · Production Blocker) | P0 Portal Production 전 |
-| AI 원본 응답 저장 범위 | PHASE 04 |
+| ~~AI 원본 응답 저장 범위~~ → **DEC-078로 확정** (raw payload 미저장 · validated draft + provenance) | PHASE 04 |
 | Part 계층 도입 여부 | PHASE 05 |
 | Marketing↔DB 동기화 방식 (DB 직독 vs 빌드 검증) | PHASE 05 |
-| 리포트 reopen · 숨김 해제 정책 (PHASE 03에서 미처리 → 03-commerce §3 이월) | PHASE 04 |
+| ~~리포트 reopen · 숨김 해제 정책~~ → **DEC-073 · DEC-074로 확정** | PHASE 04 |
 | 원장에게 교사 초대·배정 권한 위임 여부 (PHASE 03에서 미처리 → 03-commerce §3 이월) | PHASE 05 전 |
 | 회귀테스트 도구 선정 | PHASE 05 |
 | 16 · 24주 콘텐츠 제작 계획 | 콘텐츠 트랙 |

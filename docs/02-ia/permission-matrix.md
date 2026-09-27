@@ -59,7 +59,10 @@
 | Growth Report — complete | ✅ | ⛔ **H** | ✅ | ✅ | ◐ Portal 경유 |
 | 학부모 공유 관리 (Portal 링크 · 사진 동의) | ◐ **P** | ⛔ | ✅ | ⛔ | ⛔ |
 | **Report Emergency Hide** | ✅ **H** | ⛔ **H** | ✅ **H** | ⛔ (상태 · 사유 조회만) | ⛔ |
-| Child Portal | — | — | — | — | ◐ 유효 링크 · 해당 아동 · 노출 리포트만 |
+| Report Unhide (*Updated by DEC-074*) | ✅ **H** (사유 필수) | ⛔ **H** | ✅ **H** (사유 필수) | ⛔ | ⛔ |
+| Report 정정 Revision 생성 · 편집 · 완료 (*Updated by DEC-073 · DEC-077*) | ⛔ | ⛔ **H** | ⛔ **H** | ✅ 담당 반 (사유 필수) | ⛔ |
+| AI 초안 생성 (C1 · C2 · C3) (*Updated by DEC-070 · DEC-071*) | ⛔ | ⛔ | ⛔ | ◐ 담당 반 ∧ `ai_assist` ∧ Report Entitlement ∧ Service Ready | ⛔ |
+| Child Portal | — | — | — | — | ◐ 유효 링크 · 해당 아동 · 노출 리포트만 (latest completed revision · Legacy 리포트 미편입 — DEC-074 · DEC-076) |
 
 - HQ SALES의 "아동 관찰기록 · 활동사진 접근 금지"는 **HARD** (project-charter §3-1 · P0-15).
 - *Updated by DEC-058*: HQ SALES는 원아 이름 · 명단 · 상세 · Observation · Child Voice · Growth 5 · Stage · Photo · Report · Portal token/link · Consent per child · Emergency Hide · Contract 상태 변경 **모두 불가**. Lead · 기관 metadata · Contact · Product/Contract metadata(read-only) · 계약 기간/상태 · 반 수 · 원아 수/교사 수/초과 인원 **집계** · Readiness summary만 허용.

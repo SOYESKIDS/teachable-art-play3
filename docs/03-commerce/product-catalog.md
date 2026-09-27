@@ -78,7 +78,7 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | Additional Child | 월 6,600원 "부터" / 명 · SOURCE(v4) | 동일 · SOURCE(v4) | 동일 · SOURCE(v4) | 해당 없음 (최대 15명) |
 | 3개 반 이상 | 별도 상담 · SOURCE(v4) | 동일 · SOURCE(v4) | 동일 · SOURCE(v4) | 해당 없음 (최대 2반) |
 | 키트 배송비 | 포함 · SOURCE(v4) | 포함 · SOURCE(v4) | 포함 · SOURCE(v4) | UNKNOWN |
-| **Reports** | **Weekly** · SOURCE(v4) + DECISION (DEC-057) · "8주 요약" UNKNOWN (CO-4) | **Weekly · Monthly · Semester Portfolio** · SOURCE(v4) + DECISION (DEC-057) | Weekly · Monthly · Semester · SOURCE(v4) ("STANDARD 모든 구성 포함") + DECISION | Weekly · DECISION |
+| **Reports** | **Weekly** · SOURCE(v4) + DECISION (DEC-057) · "8주 요약" SOURCE(v4) → *Updated by DEC-069: Program Completion Summary View (새 report_type 아님)* | **Weekly · Monthly · Semester Portfolio** · SOURCE(v4) + DECISION (DEC-057) | Weekly · Monthly · Semester · SOURCE(v4) ("STANDARD 모든 구성 포함") + DECISION | Weekly · DECISION |
 | Director Dashboard | **EXCLUDED** · DECISION (DEC-031) | INCLUDED · SOURCE(v4) + DECISION | INCLUDED · SOURCE(v4) ("STANDARD 모든 구성 포함") | INCLUDED · DECISION (검증용) |
 | Class Mode | INCLUDED · DECISION (DEC-004) | INCLUDED | INCLUDED | INCLUDED |
 | Parent Portal | INCLUDED · DECISION (DEC-055) | INCLUDED | INCLUDED | INCLUDED |
@@ -86,7 +86,7 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | Branding | — | — | "원 브랜딩 지원" · CODE · 시스템 기능 UNKNOWN (CO-8) | — |
 | Contract Deliverable | 창의활동 키트 2회 · CODE | 키트 4회 · CODE | 키트 6회 · 도입원 현판 · 상담자료 팩 · CODE (DEC-062) | UNKNOWN |
 | In-app Media | P1 · DECISION (DEC-029) | P1 | P1 | 없음 |
-| AI (`ai_assist`) | **UNKNOWN** (CO-5) | "AI 성장기록 플랫폼 Full" · CODE · 의미 UNKNOWN | UNKNOWN (추정 포함) | 관찰 AI optional (CURRENT) |
+| AI (`ai_assist`) | **EXCLUDED** · DECISION (DEC-070) — SOURCE(v4)는 STARTER 구성에 AI 항목을 명시하지 않음 | **INCLUDED** · SOURCE(v4) "AI 성장기록 플랫폼 Full" + DECISION (DEC-070: C1+C2+C3) | **INCLUDED** · SOURCE(v4) "STANDARD 모든 구성 포함" + DECISION | **특수 Entitlement: C1 Observation Cleanup만** · DECISION (DEC-070) |
 | Support | UNKNOWN | UNKNOWN | UNKNOWN | 지원 채널 확보 (G-11) |
 | Contract Type | regular | regular | regular | pilot offer |
 
@@ -102,8 +102,8 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | # | 항목 | 출처 A | 출처 B | 상태 |
 |---|---|---|---|---|
 | X-2 | 대상 연령 | 판매 사이트 4~6세 / 4~7세 (CODE) | STARTER 표준화 규격 전 주차 미표기 (BC-4) | OPEN — 원본 우선(R-1). v4 기재 여부 미확인 |
-| X-5 | STARTER "8주 요약" | `packages.ts` STARTER 구성 (CODE) | DEC-010 3계층에 없음 | OPEN → **CO-4** (DEC-063 STARTER Readiness에 영향) |
-| X-6 | "AI 성장기록 플랫폼 Full" | STANDARD 구성에만 기재 (CODE) | DEC-009 AI optional · STARTER 기재 없음 | OPEN → **CO-5** |
+| X-5 | STARTER "8주 요약" | `packages.ts` STARTER 구성 (CODE) · SOURCE(v4) STARTER "주간 미니 리포트 + 8주 요약" | DEC-010 3계층에 없음 | ✅ **RESOLVED by DEC-069** — Summary View로 operationalize (새 report_type 아님) |
+| X-6 | "AI 성장기록 플랫폼 Full" | SOURCE(v4) STANDARD "AI 성장기록 플랫폼 Full" (PROJECT EXTERNAL SOURCE · verified during PHASE 04 review) · 코드에도 동일 문구 | DEC-009 AI optional · STARTER 기재 없음 | ✅ **RESOLVED by DEC-070** — "Full" = C1+C2+C3 · STARTER 제외(Decision) |
 | X-8 | 포트폴리오 | STANDARD "학기 성장 포트폴리오" | DEC-015 Semester Portfolio | 충돌 아님 — **포트폴리오 = Semester 산출물** |
 
 ### 4-2. CURRENT CODE / MARKETING DRIFT (원본 · 결정이 옳다)
@@ -157,7 +157,7 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | `parent_portal` | Child Secure Portal | ✅ | ✅ | ✅ | ✅ | P0 | HARD (DEC-055) | 리포트 기능 1개 이상 |
 | `bulk_print` | 반 단위 리포트 일괄 인쇄 | ✖ | ✅ | ✅ | ✖ | P1 | STARTER 제외 HARD (DEC-056) · 포함은 PROVISIONAL | — |
 | `content_playback` | 콘텐츠 인앱 재생 | ✅ | ✅ | ✅ | ✖ | P1 | PROVISIONAL | Content Delivery Layer · 자산 권리 (BC-14) |
-| `ai_assist` | AI 관찰 정리 · 리포트 초안 | UNKNOWN | ✅ 추정 | ✅ 추정 | ✅ (CURRENT 관찰 AI) | P0 (기존) | **UNKNOWN** (CO-5) | AI 설정 |
+| `ai_assist` | AI 보조 — C1 Observation Cleanup · C2 Period Narrative Draft · C3 Writing Assist | **✖** | ✅ (C1+C2+C3) | ✅ (C1+C2+C3) | ◐ **특수: C1만** | C1 P0(기존) · C2/C3 P1 | **HARD (DEC-070)** — *Updated: 구 CO-5 해소* | 사용 = `ai_assist` ∧ 해당 Report Entitlement ∧ Service Ready (C2는 monthly/semester 필요) · 외부 사용은 AR-8 해결 후 |
 | `branding` | 시스템 브랜딩 | ✖ | ✖ | ✅ | ✖ | P2 | 존재 HARD · 범위 UNKNOWN (CO-8) | — |
 
 **Feature가 아닌 것**
@@ -167,6 +167,7 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | 콘텐츠 주차 범위 | Entitlement 매개변수 ([entitlement-policy.md §2](./entitlement-policy.md#2-content-entitlement)) |
 | 사진 공유 | 기관 설정 + 아동별 동의 (DEC-059). 상품으로 사고파는 기능이 아님 |
 | 현판 · 상담자료 팩 · 키트 | Contract Deliverable (DEC-062) |
+| STARTER 8주 요약 | **View** (DEC-069) — 새 report_type · 새 Feature Code 아님. `weekly_report`의 완료 Weekly Snapshot에서 deterministic 생성 |
 
 ---
 
@@ -191,6 +192,10 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 | Content Playback | P1 (PROVISIONAL) | P1 (PROVISIONAL) | P1 (PROVISIONAL) | EXCLUDED |
 | Branding | EXCLUDED | EXCLUDED | P2 (범위 UNKNOWN) | EXCLUDED |
 | Portfolio (= Semester) | EXCLUDED | P2 | P2 | EXCLUDED |
+| 8주 요약 View (DEC-069) | **INCLUDED** (활성화 전 Ready) | — | — | — |
+| AI C1 Observation Cleanup (DEC-070) | EXCLUDED | INCLUDED | INCLUDED | INCLUDED (특수) |
+| AI C2 Period Narrative Draft | EXCLUDED | P1 (Monthly) · P2 (Semester) | P1 · P2 | EXCLUDED |
+| AI C3 Writing Assist | EXCLUDED | P1 | P1 | EXCLUDED |
 
 ---
 
@@ -200,10 +205,10 @@ Product Version: P0는 각 상품 **v1** 하나. 상품 정의 변경 시 새 �
 
 | 상품 | Service Ready 요건 (약속한 것 전체) |
 |---|---|
-| PILOT | 기존 P0 Ready 조건 — Week 1~4 필수 수업 데이터 (DEC-037) · Class Mode · Weekly · Portal · Dashboard · 반당 ≤ 15명 (DEC-051) |
-| STARTER | Week 1~8 필수 수업 데이터 · Class Mode · Weekly · Portal · (구성으로 약속된다면) "8주 요약" — CO-4 해결 전 영향 |
-| STANDARD | Week 1~16 필수 수업 데이터 · Class Mode · Weekly · **Monthly · Semester** · Director Dashboard · Portal |
-| PREMIUM | Week 1~24 필수 수업 데이터 · STANDARD 전체 · (Branding은 CO-8에서 계약상 약속 범위가 정해진 뒤 요건에 반영) |
+| PILOT | 기존 P0 Ready 조건 — Week 1~4 필수 수업 데이터 (DEC-037) · Class Mode · Weekly · Portal · Dashboard · 반당 ≤ 15명 (DEC-051). C1은 특수 Entitlement이나 **AR-8 해결 전에는 AI OFF로 운영 가능** (DEC-071) |
+| STARTER | Week 1~8 필수 수업 데이터 · Class Mode · Weekly · Portal · **8주 Summary View** (*Updated by DEC-069: CO-4 해소 — Regular STARTER Production Activation 전 Ready*) |
+| STANDARD | Week 1~16 필수 수업 데이터 · Class Mode · Weekly · **Monthly (4주 블록) · Semester** · Director Dashboard · Portal · **AI C1+C2+C3** (*Updated by DEC-070*) |
+| PREMIUM | Week 1~24 필수 수업 데이터 · STANDARD 전체 (AI 포함) · (Branding은 CO-8에서 계약상 약속 범위가 정해진 뒤 요건에 반영) |
 
 - 일부 기능을 나중에 제공하는 상품을 판매하려면 **기존 Product Version을 불완전하게 활성화하지 않고**, 향후 별도 결정으로 별도 Product Version 또는 명시적으로 축소된 계약 Offer를 정의한다.
 - 준비되지 않은 상품: marketing · consultation · quote는 가능할 수 있으나 **production service activation은 차단**.

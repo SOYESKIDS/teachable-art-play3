@@ -26,8 +26,10 @@ flowchart TD
   SH -->|아니오| WAIT[원장 학부모 공유 화면에<br/>공유 대기로 표시]
   PT -.->|문제 발견| HD[Emergency Hide<br/>리포트 1건]
   CP --> NX[다음 아동 자동 이동]
-  CP -.->|PROPOSED · 미확정| RO[reopen — PH3-3]
+  CP -.->|정정 · DEC-073| RO[새 Revision v n+1<br/>사유 필수 · 학부모는 기존 완료본 유지]
 ```
+
+> *Updated by DEC-073 · DEC-074 (PHASE 04)*: 위 도식의 구 "reopen (PROPOSED)"는 **새 Revision**으로 확정되었다. Complete = 교사 확인 · Revision Snapshot 확정이며, 학부모 노출은 **계산값**(latest completed revision ∧ not hidden ∧ Portal active ∧ 계약 허용)이다. 상세: [../04-ai-report/report-lifecycle.md](../04-ai-report/report-lifecycle.md)
 
 ### 1-1. 단위와 대기열 (DEC-039)
 
@@ -37,7 +39,7 @@ flowchart TD
 | 분할 운영 | 한 주에 세션 2개면 두 관찰을 모두 근거로 쓴다 |
 | 대기열 | 반 × 주차별 아동 행. 상태: **준비됨**(Observation complete) · **관찰 미완료** · **결석** · **작성 중** · **완료** · **숨김**(긴급 숨김된 완료 리포트) |
 | 생성 | [이번 주 리포트 만들기 (N명)] — 준비됨 아동 draft를 한 번에 조립 |
-| AI | **P0 Weekly에는 AI 없음.** 문장 다듬기는 P1 |
+| AI | **P0 Weekly에는 AI 없음.** 문장 다듬기는 P1 · *Updated by DEC-070: 문장 다듬기(C3)는 `ai_assist` 포함 상품(STANDARD · PREMIUM)만* |
 | 비교 | 지난주 대비 표기 없음 |
 
 ### 1-2. 5항목 + 다음 주 예고 (DEC-024)
@@ -66,7 +68,7 @@ flowchart TD
 | 자동 조립 결과 확인 | 읽기 전용 블록. 커리큘럼 오류 신고는 P1 |
 | 수정 | 아이의 말 · 교사 관찰 문장 · 사진 선택만 수정 가능 |
 | Complete | 확인 1회 → 잠금 → 다음 아동 자동 이동 |
-| 완료 후 정정 | **PROPOSED placeholder** — "정정 요청" 자리만. 정책은 PH3-3 |
+| 완료 후 정정 | **PROPOSED placeholder** — "정정 요청" 자리만. 정책은 PH3-3 · *Updated by DEC-073: **새 Revision**(사유 필수). 정정 draft 작성 중 학부모는 기존 완료본을 계속 본다. 완료본 직접 수정 · rollback 금지* |
 
 ---
 
@@ -91,7 +93,7 @@ flowchart LR
   H --> P[학부모 화면에서 즉시 제외<br/>흔적 없음]
   H --> T[교사 화면: 숨김 상태 · 사유 표시]
   H --> L[who · when · reason 기록]
-  H -.->|해제 · 정정 경로| X[PH3-3 reopen과 함께<br/>PHASE 03 확정]
+  H -.->|정정 · 해제 — DEC-073 · DEC-074| X[Teacher: 새 Revision<br/>Director/HQ: 사유와 함께 unhide<br/>자동 해제 없음]
 ```
 
 | 항목 | 내용 |
@@ -106,7 +108,7 @@ flowchart LR
 | 학부모 | 목록 · 이번 주에서 사라진다. 숨김 사유 · 흔적 표시 없음. 이번 주 리포트가 숨겨져 이번 주에 공개된 리포트가 없게 되면 **"현재 새로 공유된 기록이 없습니다."** + 필요 시 "최근 공유 기록 · Week N · 실제 날짜" — 이전 리포트를 "이번 주"로 보이지 않는다 (*Updated by DEC-060*) |
 | 교사 | 대기열·리포트 상세에 "학부모 화면에서 숨김 · 사유" 표시 |
 | 사진 | 숨김 리포트의 사진 스냅샷도 함께 노출 중단 |
-| 해제 · 정정 | 미확정 — PH3-3(reopen)과 함께 (*Updated: PHASE 03에서 미처리 → PHASE 04로 이월*, 03-commerce open-items §3) |
+| 해제 · 정정 | 미확정 — PH3-3(reopen)과 함께 (*Updated: PHASE 03에서 미처리 → PHASE 04로 이월*, 03-commerce open-items §3) · *Updated by DEC-073 · DEC-074: 숨김 단위 = **Logical Report**(모든 Revision) · 정정 = Teacher의 새 Revision · **unhide = Director · HQ admin + 사유** · Hidden 중 새 Revision이 complete돼도 **자동 해제 없음** · 재발행 = unhide (새 URL 없음)* |
 
 ---
 
@@ -152,7 +154,11 @@ flowchart TD
 | photo consent missing | 사진 영역 **미표시** · 동의 관련 문구도 없음 | 동의 미확인 경고 |
 | no selected photo | 작품명만 | — |
 | hidden report | 존재하지 않는 것처럼 제외 | 숨김 · 사유 · 처리자 |
-| print / PDF | 현재 보고 있는 리포트 인쇄 (기존 print CSS 재사용) | — |
+| correction in progress (*Updated by DEC-073*) | 정정 draft가 있어도 **기존 latest completed revision을 계속 표시** | 정정 진행 중 |
+| revised report (*Updated by DEC-075*) | 현재 revision > 1이면 **"업데이트됨 YYYY.MM.DD"** 표시 · 이전 revision history 비노출 (Copy PHASE 06) | revision 이력 |
+| Growth 5 (*Updated by DEC-075*) | 지표명 + 구체적 Evidence 서술 · **Stage chip · raw label 미노출** · 고정 안내 문구 | 개별 기록 읽기 |
+| legacy report (*Updated by DEC-076*) | **신규 Portal에 자동 편입하지 않음** — 기존 Legacy Share Link로만 (DEC-041) | — |
+| print / PDF | 현재 보고 있는 리포트 인쇄 (기존 print CSS 재사용) · *Updated: 현재 표시 revision의 Final Content Snapshot만 · AI Draft 인쇄 금지* | — |
 
 만료 기간은 미확정 (PH3-4 · CURRENT 30일). 학기 단위 링크 유지 가능성은 PHASE 03 / 05에서 확정. *Updated: → 03-commerce **CO-12** (Production Blocker)*
 
@@ -183,6 +189,8 @@ flowchart TD
 | **Portal Production Cutover** | **신규 발급 중단** | 리포트 상세에서 "새 링크 만들기" 제거. 기존 링크 조회 · 중지는 유지 |
 | Cutover 이후 | 기발급 링크는 **만료 또는 revoked될 때까지 정상 동작** | 기존 링크가 모두 만료되면 공유 섹션 제거 |
 | 경로 폐기 | 모든 기존 링크 소멸 후 별도 결정 | — |
+
+> *Updated by DEC-076*: Legacy 리포트(`legacy_period`)는 신규 Child Portal에 **자동 편입하지 않는다.** 향후 통합이 필요하면 새 Decision.
 
 - 기존 링크 최대 수명은 CURRENT 트리거 기준 30일이다.
 - Cutover 전 원장 안내: "앞으로는 아동별 링크 하나로 모든 리포트를 볼 수 있습니다" (카피 PHASE 06).

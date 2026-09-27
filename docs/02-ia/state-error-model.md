@@ -63,30 +63,32 @@ stateDiagram-v2
 
 ### C. Report
 
+> *Updated by DEC-073 · DEC-074 (PHASE 04)*: PHASE 02 초안의 "PROPOSED — reopen"과 "PROPOSED — 숨김 해제"는 **새 Revision**과 **Director · HQ admin unhide**로 확정되었다. 아래 도식은 확정 모델이다. 상세: [../04-ai-report/report-lifecycle.md](../04-ai-report/report-lifecycle.md)
+
+**Revision (Logical Report 1 : N)**
+
 ```mermaid
 stateDiagram-v2
-  [*] --> draft: Weekly 일괄 조립 / Monthly 생성
-  draft --> draft: 교사 편집 · 사진 선택
-  draft --> complete: 작성완료 · 스냅샷 동결 · 잠금
+  [*] --> draft: Revision 생성 (Weekly 일괄 조립 / Monthly · Semester 생성 / 정정)
+  draft --> draft: 교사 편집 · 사진 · 인용 선택
+  draft --> complete: Teacher Complete · Evidence + Final Content Snapshot
   complete --> [*]
-  state "PROPOSED — reopen (PH3-3 미확정)" as reopen
-  complete --> reopen: 정정 요청 (PROPOSED)
-  reopen --> draft: 허용 시 (PROPOSED)
+  note right of complete: 완료본 직접 수정 · rollback 금지\n정정 = 새 Revision (사유 필수)\nworking_revision ≠ latest_completed_revision
 ```
 
-**Portal Visibility (complete 리포트에만 적용 · DEC-043)**
+**Hide (Logical Report 단위 · DEC-043 · DEC-074)**
 
 ```mermaid
 stateDiagram-v2
-  [*] --> visible: Teacher Complete (Publish Eligible)
-  visible --> hidden: Emergency Hide (원장 · HQ admin · 사유)
-  state "PROPOSED — 숨김 해제 (PH3-3과 함께 PHASE 03)" as unhide
-  hidden --> unhide: (PROPOSED)
-  unhide --> visible: (PROPOSED)
+  [*] --> visible_state
+  visible_state --> hidden: Emergency Hide (Director · HQ admin · 사유)
+  hidden --> visible_state: Unhide (Director · HQ admin · 사유)
+  note right of hidden: 새 Revision이 complete돼도 자동 해제 없음
 ```
 
-- 학부모 노출 = Report `complete` ∧ visibility `visible` ∧ 아동 Portal 활성.
-- visibility는 리포트 내용 상태(draft/complete)와 별개 축이다.
+- **학부모 노출 = latest_completed_revision 존재 ∧ not hidden ∧ 아동 Portal 활성 ∧ Portal / Contract 정책 허용** — **계산값**이며 별도 "published" 상태를 저장하지 않는다.
+- 정정 draft 작성 중에도 학부모는 **기존 latest completed revision**을 본다.
+- hide는 리포트 내용 상태(draft/complete)와 별개 축이다.
 
 ### D. Contract (TARGET)
 
@@ -143,7 +145,8 @@ P0에서는 CURRENT 프로그램 · 차시 상태(`draft` / `published` / `archi
 | Network interruption | 진행 위치 · 메모는 보존된다 | 미전송 표시 | — | 재연결 후 자동 재전송 · 수동 재시도 |
 | Quick Memo 저장 실패 | 메모가 아직 서버에 저장되지 않았다 | 미전송 메모 | — | 재시도 (메모 유지) |
 | Stale update | 다른 곳에서 수정되었다 | 최신 내용 | — | 새로고침 후 다시 |
-| 리포트 숨김됨 | 학부모 화면에서 숨겨졌다 | 사유 · 처리 시각 | 처리자 신원 세부 (P) | 원장에게 확인 · 정정 경로는 PH3-3 |
+| 리포트 숨김됨 | 학부모 화면에서 숨겨졌다 | 사유 · 처리 시각 | 처리자 신원 세부 (P) | 원장에게 확인 · 정정 경로는 PH3-3 · *Updated by DEC-073 · DEC-074: [정정 Revision 만들기] (사유 필수) → 완료 후 원장 · HQ가 해제* |
+| AI 초안 불가 · 거부 (*Updated by DEC-071*) | AI 없이 계속 작성할 수 있다 | 입력 내용 유지 · 일반화된 안내 | 오류 원문 · 모델 정보 | 직접 작성 |
 
 ### 3-2. Director
 

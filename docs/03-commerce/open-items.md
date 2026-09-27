@@ -40,8 +40,8 @@
 | **CO-1** | 계약 종료 후 Staff Read-only 유예 기간 | 기간 길이 · Pilot 동일 여부 · 계약서 조정 범위 (DEC-052 모델은 확정) | 사업 + 법무 | 계약서 서식 확정 전 · 첫 계약 종료 전 | — |
 | **CO-2** | 데이터 보관 · 파기 · Export | 보관 기간 · 파기 시점 · 파기 확인 절차 · Export 형식 · 법령상 보존 요구 여부 확인 (BP-17 잔여) | 법무 + Privacy | **P0 Production 전** | **YES** |
 | **CO-3** | Pilot 가격 · 무료 여부 · 계약서 형태 | 공개 문구 "파일럿 운영 조건은 담당자 상담". 무료로 가정하지 않는다 | 사업 | Pilot 영업 전 | — |
-| **CO-4** | STARTER "8주 요약"의 실체 | `packages.ts` STARTER 구성에만 존재 · DEC-010 3계층에 없음. 별도 산출물인가, Weekly 누적 보기인가 | 사업 + 교육 | STARTER 정식 판매(P1) 전 · DEC-063 STARTER Service Ready 판단 전 | — |
-| **CO-5** | "AI 성장기록 플랫폼 Full" 의미 · `ai_assist` 상품 배분 | STANDARD에만 기재. STARTER AI 포함 여부 UNKNOWN. DEC-009 AI optional과의 관계 | 사업 | PHASE 04 | — |
+| ~~CO-4~~ | ~~STARTER "8주 요약"의 실체~~ | ✅ **RESOLVED by DEC-069 (PHASE 04)** — 상품소개서 v4(PROJECT EXTERNAL SOURCE)의 STARTER "주간 미니 리포트 + 8주 요약"을 **Program Completion Summary View**로 정의 (새 report_type 아님 · AI 없음 · 기존 Weekly Snapshot에서 deterministic). **Regular STARTER Production Activation 전 Service Ready** · (이전 논점) packages.ts STARTER 구성에만 존재 · DEC-010 3계층에 없음 | — | — | — |
+| ~~CO-5~~ | ~~"AI 성장기록 플랫폼 Full" 의미 · `ai_assist` 상품 배분~~ | ✅ **RESOLVED by DEC-070 (PHASE 04)** — Source: 상품소개서 v4(PROJECT EXTERNAL SOURCE, verified during PHASE 04 review) STANDARD "AI 성장기록 플랫폼 Full" · PREMIUM "STANDARD 모든 구성 포함" · STARTER AI 항목 명시 없음. Decision: `ai_assist` 1개 · STARTER **EXCLUDED** · STANDARD/PREMIUM **INCLUDED** (C1+C2+C3) · PILOT 특수(C1만) · 사용 = `ai_assist` ∧ Report Entitlement ∧ Service Ready | — | — | — |
 | **CO-6** | 한 기관 다중 상품 (반별 상품) | site-copy 시나리오 A→B (1~2반 STARTER → 전 학급 STANDARD). DEC-049는 동시 효력 정규 계약 1개 | 사업 + 제품 | P2 | — |
 | **CO-7** | Upgrade 시 Program 구조 | 상품별 Program(TAP-STARTER-08 등) vs 24주 단일 계열 + 주차 범위. Pilot → STARTER Week 5 연속 · Upgrade 연속에 영향 | Architecture + 콘텐츠 | PHASE 05 | — |
 | **CO-8** | 시스템 Branding 범위 | PREMIUM "원 브랜딩 지원"의 시스템 기능 (로고 · Portal 헤더 · 인쇄 표지 등). SOURCE 없음 · 화이트라벨 근거 없음 | 사업 | P2 전 | — |
@@ -60,7 +60,7 @@
 | 원 ID | 항목 | Commerce 관련성 | 새 Required-by |
 |---|---|---|---|
 | **PH3-2** | 원장에게 교사 초대 · 배정 권한 위임 | DEC-049 · DEC-051 Class Scope · 좌석 관리와 연결 | PHASE 05 전 |
-| **PH3-3** | 리포트 reopen 정책 | DEC-043 Emergency Hide의 **숨김 해제 · 정정 경로**와 함께 결정 | PHASE 04 |
+| **PH3-3** | 리포트 reopen 정책 | DEC-043 Emergency Hide의 **숨김 해제 · 정정 경로**와 함께 결정 · ✅ **RESOLVED by DEC-073 · DEC-074** | PHASE 04 |
 | **PH3-6** | Asset 다운로드 허용 정책 | `content_playback` (P1) · 저작권 BC-14 · 계약 종료 후 잔존 | P1 콘텐츠 재생 전 |
 | **PH3-7** | Demo 계정 · 샘플 데이터 | Lead → Demo 영업 흐름 | P1 |
 | **PH3-8** | 학기 전환 절차 | DEC-053 Renewal (반 재편성 · 원아 진급 · 프로그램 재배정) | 첫 Renewal 사례 전 |
@@ -103,7 +103,7 @@
 
 ## 6. PHASE 04 / 05 Inputs
 
-**PHASE 04 (AI Growth)**
+**PHASE 04 (AI Growth)** — *Updated 2026-09-27: PHASE 04에서 처리됨 → [../04-ai-report/](../04-ai-report/) · DEC-064 ~ DEC-077. PH3-3 → DEC-073 · DEC-074 해소 (§3 이월 목록의 PH3-3 포함)*
 
 | 항목 |
 |---|
@@ -113,7 +113,7 @@
 | 결석 · 미공개 주차는 Monthly · Semester 서술에서 "기록 없는 주"로만 다룸 · 사유 추정 금지 (DEC-060) |
 | 사진 · Consent 정보는 AI 입력에서 제외 |
 | 리포트 reopen · 숨김 해제 (PH3-3) |
-| Usage Limit (AI 호출) — P1 이후 |
+| Usage Limit (AI 호출) — P1 이후 · *→ 04-ai-report **AR-10*** |
 
 **PHASE 05 (DB / ERD / Security)**
 

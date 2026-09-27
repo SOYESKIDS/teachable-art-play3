@@ -57,7 +57,7 @@ Product "STARTER"              — 판매 정의
 | Product · Product Version · Offer | 판매 정의 | ✅ (기준 데이터 · Version v1) |
 | Contract · Contract Scope | **계약상 사실** | ✅ |
 | Entitlement · Seat/Class Limit | **운영 권한** (계약에서 파생) | ✅ |
-| Usage Limit (AI 호출 · 용량) | 운영 권한 | ⛔ P1+ (근거 없음) |
+| Usage Limit (AI 호출 · 용량) | 운영 권한 | ⛔ P1+ (근거 없음) · *AI 한도는 [04-ai-report AR-10](../04-ai-report/open-items.md)* |
 | Add-on · Discount | 계약상 사실 | ⛔ (계약 반 수 · 외부 견적으로 대체) |
 | Payment Status | **회계 사실 · 권한과 분리** | ⛔ P1 (manual) |
 | Organization Status | 테넌트 보안 상태 | ✅ (CURRENT) |

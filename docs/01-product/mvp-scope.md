@@ -54,8 +54,8 @@
 
 | # | 항목 | 없으면 | 관련 |
 |---|---|---|---|
-| **P0-8** | **AI 필수 결합 해제** — `sources.ai_draft_id` nullable + 교사 직접 작성 근거 경로 + `.env.example` 정정 | AI 없이 리포트를 만들 수 없다. Pilot 검증 V-7이 불가능 | DEC-009 |
-| **P0-9** | **Weekly Report** — 5항목 서식 · 자동 조립 · 교사 2필드 입력 · Teacher Review → Complete → Publish Eligible | STARTER 상품의 실체가 없다 | DEC-024 · DEC-030 |
+| **P0-8** | **AI 필수 결합 해제** — `sources.ai_draft_id` nullable + 교사 직접 작성 근거 경로 + `.env.example` 정정 | AI 없이 리포트를 만들 수 없다. Pilot 검증 V-7이 불가능 | DEC-009 · *Updated by DEC-071: GR003 · `ai_draft_id` · `reviewed_text_snapshot` · `source_ai_updated_at` 필수 의존 · accepted 조건 모두 제거 대상. 외부 AI(C1) 사용은 AR-8 해결 후 — 미해결 시 Pilot AI OFF* |
+| **P0-9** | **Weekly Report** — 5항목 서식 · 자동 조립 · 교사 2필드 입력 · Teacher Review → Complete → Publish Eligible | STARTER 상품의 실체가 없다 | DEC-024 · DEC-030 · *Updated by DEC-066 · DEC-073 · DEC-074: Child × Assignment × Week · deterministic · 완료 조건 · Revision · Hide/Unhide · 이중 Snapshot 포함* |
 
 ### 1-5. 사진 · 개인정보
 
@@ -99,7 +99,7 @@
 | Nuri 평가·장학 산출물 | Pilot 4주에는 필요 없다 | P2 |
 | 원장 대시보드 확장 카드 | 기존 대시보드로 V-6 검증 가능 | P1 |
 | AI Structured Outputs | 기존 파서로 동작. optional 기능 | P1 |
-| 리포트 reopen | 정책 미확정 | P1 |
+| 리포트 reopen | 정책 미확정 | P1 · *Updated by DEC-073 · DEC-074 (PHASE 04): 정정 = 새 Revision · Emergency Hide/Unhide와 한 흐름이므로 안전 · 정정 경로는 **P0**로 이동. 고급 Revision 관리(history UI · diff · filters · bulk)는 P1+* |
 | 오프라인 완전 지원 | 로컬 보존만으로 4주 검증 | P2 |
 
 ---
@@ -111,12 +111,12 @@
 | **P1-1** | **Content Delivery Layer** — 자산 메타 · 버전 · 버킷/CDN · 서명 URL · 권한 · 이용로그 | 콘텐츠가 플랫폼 밖에 있음 (DEC-002) |
 | **P1-2** | **콘텐츠 인앱 재생** — EBOOK 뷰어 · VOD/MV 플레이어 · 오디오 플레이어 · 워크북 뷰어 | DEC-029의 P1 이관분 |
 | **P1-3** | **Content Governance** — DRAFT→REVIEWED→APPROVED→PUBLISHED→ARCHIVED + 승인 Role | DEC-001 |
-| **P1-4** | **STARTER Week 5~8 이관** (7·8주 규격화 선행) | STARTER 완성 |
-| **P1-5** | **Monthly Report** — 기존 3블록 재사용 | DEC-010 · DEC-011 |
-| **P1-6** | **AI 개선** — Structured Outputs (`json_schema` `strict:true`) · 재생성 보호 · 응답 메타 저장 | AUDIT 2 M1 · M2 · M7 |
+| **P1-4** | **STARTER Week 5~8 이관** (7·8주 규격화 선행) | STARTER 완성 · *Updated by DEC-069: **8주 Summary View**도 Regular STARTER Production Activation 전 Service Ready 필요* |
+| **P1-5** | **Monthly Report** — 기존 3블록 재사용 | DEC-010 · DEC-011 · *Updated by DEC-067: 기간 = **Program 4-Week Block** · 원천 = Evidence(canonical) + Weekly Teacher Final(secondary)* |
+| **P1-6** | **AI 개선** — Structured Outputs (`json_schema` `strict:true`) · 재생성 보호 · 응답 메타 저장 | AUDIT 2 M1 · M2 · M7 · *Updated by DEC-070 · DEC-071 · DEC-072: C2 · C3 structured output · sourceRefs · 규칙 기반 검증 · generation attempt 이력 · STANDARD · PREMIUM만 (`ai_assist`)* |
 | **P1-7** | **원장 대시보드 확장** — 커리큘럼 진행률 · 리포트 발행 누락 · 공유 현황 · 동의 현황 | product-definition §13-2 D-1~D-4 |
 | **P1-8** | **리포트 출력** — 원장·교사 · 반 단위 일괄 인쇄/PDF | AUDIT 3 M3 |
-| **P1-9** | **리포트 reopen** (+ 사유 · 권한 · 이력) | 주간 다건 운영 시 오타 정정 |
+| **P1-9** | **리포트 reopen** (+ 사유 · 권한 · 이력) | 주간 다건 운영 시 오타 정정 · *Updated by DEC-073 · DEC-074 (PHASE 04 · 승인): **SAFETY / CORRECTION PATH = P0** — correction revision 생성 · 사유 필수 · 이전 complete revision 불변 · working / latest completed revision · v2 draft 중 Parent는 v1 유지 · hide/unhide · actor/time/reason audit. **ADVANCED REVISION MANAGEMENT = P1+** — rich history UI · side-by-side diff · advanced filters · bulk correction tools ([../04-ai-report/architecture-overview.md §5-1](../04-ai-report/architecture-overview.md))* |
 | **P1-10** | **Nuri Mapping 이관** — 원본 §3 실데이터 (5영역 × 교육목표 × 교사가 볼 행동) | DEC-019 |
 | **P1-11** | **Portal 성장 · 작품 탭** | product-definition §12-2 |
 | **P1-12** | **anon rate limit** — `lead_submissions` INSERT · share resolve | AUDIT 2 M3 · M4 |
