@@ -1,0 +1,46 @@
+-- PHASE 09A · Staging inventory (READ ONLY · 개수 · 상태만 · 이름 · 본문 · token 출력 없음)
+select
+  (select count(*) from auth.users) as auth_users,
+  (select count(*) from auth.users where email like '%@example.test') as synthetic_users,
+  (select count(*) from auth.users where email not like '%@example.test') as non_synthetic_users,
+  (select count(*) from private.admin_users where is_active and role = 'admin') as active_hq_admin,
+  (select count(*) from private.admin_users where is_active and role = 'sales') as active_hq_sales,
+  (select count(*) from public.organizations) as orgs,
+  (select count(*) from public.organization_members where status = 'active') as active_members,
+  (select count(*) from public.classes) as classes,
+  (select count(*) from public.children) as children,
+  (select count(*) from public.children where status = 'active') as active_children,
+  (select count(*) from public.curriculum_lessons where status = 'published') as published_lessons,
+  (select count(*) from public.lesson_sections) as lesson_sections,
+  (select count(*) from public.class_sessions) as sessions_total,
+  (select count(*) from public.class_sessions where status = 'scheduled') as sessions_scheduled,
+  (select count(*) from public.class_sessions where status = 'in_progress') as sessions_in_progress,
+  (select count(*) from public.class_sessions where status = 'completed') as sessions_completed,
+  (select count(*) from public.contracts where status = 'active') as active_contracts,
+  (select string_agg(distinct p.code, ',') from public.contracts c
+     join public.product_versions pv on pv.id = c.product_version_id join public.products p on p.id = pv.product_id
+    where c.status = 'active') as active_contract_products,
+  (select string_agg(f.feature_code, ',' order by f.feature_code) from public.contracts c
+     join public.product_version_features f on f.product_version_id = c.product_version_id
+    where c.status = 'active') as active_contract_features,
+  (select count(*) from public.class_session_attendance) as attendance_rows,
+  (select count(*) from public.class_session_observations) as observations,
+  (select count(*) from public.observation_growth_selections) as growth_selections,
+  (select count(*) from public.quick_memos) as quick_memos,
+  (select count(*) from public.reports) as reports,
+  (select count(*) from public.report_revisions where status = 'complete') as completed_revisions,
+  (select count(*) from public.child_portals) as child_portals,
+  (select count(*) from public.child_media_consents) as consent_rows,
+  (select count(*) from public.class_session_observation_media) as media_rows,
+  (select count(*) from public.child_growth_reports) as legacy_reports,
+  (select count(*) from public.audit_events) as audit_events,
+  (select count(*) from public.platform_capabilities where cardinality(blocked_by) > 0) as blocked_capabilities,
+  (select string_agg(code || ':' || array_to_string(blocked_by, '|'), ',' order by code)
+     from public.platform_capabilities where cardinality(blocked_by) > 0) as capability_blockers,
+  pg_catalog.pg_get_functiondef('private.is_soyes_admin()'::regprocedure) like '%''sales''%' as pre_g2_is_soyes_admin_includes_sales,
+  (select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%') as g2_ai_release_gates,
+  has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT') as pre_g2_member_direct_insert_open,
+  (select count(*) from pg_catalog.pg_trigger where tgname like '%entitlement_gate%' or tgname like '%\_g1\_gate') as g1_gates,
+  has_column_privilege('authenticated', 'public.class_sessions', 'status', 'UPDATE') as pre_m5_session_status_update_open,
+  to_regprocedure('private.gate_growth5_observation_write()') is not null as phase08_gates_present,
+  (select count(*) from public.audit_events where event_type like 'cutover.%') as cutover_audit_events

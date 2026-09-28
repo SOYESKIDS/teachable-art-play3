@@ -1,0 +1,403 @@
+// PHASE 09A — role E2E (CDP · 새 의존성 없음) — PRE-CUTOVER (G-2 · G-1 · M5 미적용) 기대값
+// ---------------------------------------------------------------------
+// 사용:
+//   node supabase/validation/staging_e2e/e2e_roles.mjs --target local-rehearsal [--allow-writes --session <uuid>]
+//   node supabase/validation/staging_e2e/e2e_roles.mjs --target staging [--allow-staging-writes]
+//        (staging 쓰기 대상 수업은 env SOYE_STAGING_E2E_SESSION_ID 로만 · 사람이 승인한 합성 수업 1건)
+//
+// 기본 = 읽기 전용 (로그인 · 이동 · 화면 확인). 쓰기 단계는 아래를 **모두** 만족할 때만 (실패 시 브라우저를 띄우기 전에 REFUSE TO RUN):
+//   staging: --allow-staging-writes · Supabase ref = Staging (+ CLI 대상 env 없음) · Preview alias 정확히 일치 ·
+//            SOYE_STAGING_E2E_SESSION_ID (UUID) · 대상 범위가 합성(기관 · 반 · 원아 · 구성원 · DB 지문)이고 수업이 아직
+//            scheduled (소비 안 됨 · e2e_target_scope.sql 읽기 전용 확인) · 교사 · 원장 비밀번호 PRESENT
+//   local-rehearsal: --allow-writes · --session <uuid> · 127.0.0.1 앱 · 번들에 remote Supabase 없음
+// 수업을 자동으로 고르지 않는다 (지정된 수업의 카드만 연다). 같은 수업을 다시 쓰면 scope 확인에서 거부된다 (idempotence).
+// 초대(원장 · 교사) 화면은 열거나 제출하지 않는다. screenshot · HTML dump 없음. portal token 은 메모리에만.
+
+import { launchEphemeral } from "./browser.mjs";
+import {
+  ACCOUNTS,
+  assertBundleProjectRef,
+  assertLocalBaseUrl,
+  assertOnOrigin,
+  assertPreviewBaseUrl,
+  assertStagingProjectRef,
+  assertSyntheticScope,
+  E2E_SESSION_ENV,
+  getSecret,
+  isUuid,
+  PREVIEW_ALIAS,
+  redact,
+  refuse,
+  runMain,
+  secretPresence,
+  TEST_PREFIX,
+} from "./guards.mjs";
+
+const args = process.argv.slice(2);
+
+
+const stamp = new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12);
+
+/** 실행 조건 판정 — 네트워크 · 브라우저 전에 끝난다 */
+export async function resolvePlan({ argv = args, env = process.env, queryScope } = {}) {
+  const has = (f) => argv.includes(f);
+  const val = (f) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : undefined);
+  const tgt = val("--target") ?? "staging";
+
+  if (tgt === "local-rehearsal") {
+    if (has("--allow-staging-writes")) refuse("local-rehearsal 에 staging 쓰기 flag");
+    const base = assertLocalBaseUrl("http://127.0.0.1:3100");
+    const { SMOKE_PASSWORD } = await import("../browser_smoke/accounts.mjs");
+    const roles = {
+      teacher: { email: "smoke-v2-teacher@example.test", password: SMOKE_PASSWORD },
+      director: { email: "smoke-v2-director@example.test", password: SMOKE_PASSWORD },
+      hqAdmin: { email: "smoke-hq-admin@example.test", password: SMOKE_PASSWORD },
+      hqSales: { email: "smoke-hq-sales@example.test", password: SMOKE_PASSWORD },
+    };
+    const allowWrites = has("--allow-writes");
+    const sessionId = val("--session");
+    if (allowWrites && !isUuid(sessionId)) refuse("쓰기에는 --session <uuid> 가 필요하다 (자동 선택 없음)");
+    return { target: tgt, base, roles, allowWrites, sessionId: sessionId ?? null, org: null, local: true };
+  }
+
+  if (tgt !== "staging") refuse(`알 수 없는 target (${tgt})`);
+  if (has("--allow-writes")) refuse("staging 에는 --allow-writes 대신 --allow-staging-writes 만 쓴다");
+  const base = assertPreviewBaseUrl(PREVIEW_ALIAS);
+  assertStagingProjectRef({ env });
+  const p = secretPresence(env);
+  const allowWrites = has("--allow-staging-writes");
+  const sessionId = env[E2E_SESSION_ENV] ?? "";
+
+  if (allowWrites) {
+    if (!isUuid(sessionId)) refuse(`${E2E_SESSION_ENV} (UUID) 가 필요하다 — 쓰기 대상 수업을 자동으로 고르지 않는다`);
+    if (p.teacher !== "PRESENT" || p.director !== "PRESENT") refuse("쓰기 E2E 에는 교사 · 원장 비밀번호가 모두 필요하다");
+    if (p.vercelBypass !== "PRESENT") refuse("쓰기 E2E 에는 Preview bypass 가 필요하다");
+  }
+  if (p.vercelBypass === "MISSING" || ["teacher", "director", "hqAdmin", "hqSales"].every((k) => p[k] === "MISSING")) {
+    return { blocked: { target: tgt, status: "BLOCKED_PENDING_LOCAL_SECRETS", secrets: p } };
+  }
+
+  let org = null;
+  if (allowWrites) {
+    const rows = await queryScope(sessionId);
+    assertSyntheticScope(rows?.[0]);
+    org = rows[0].organization_id;
+  }
+  const roles = Object.fromEntries(
+    ["teacher", "director", "hqAdmin", "hqSales"]
+      .filter((k) => p[k] === "PRESENT")
+      .map((k) => [k, { email: ACCOUNTS[k], password: getSecret(k, env) }]),
+  );
+  return { target: tgt, base, roles, allowWrites, sessionId: isUuid(sessionId) ? sessionId : null, org, local: false };
+}
+
+async function stagingScope(sessionId) {
+  const { queryReadOnly } = await import("./remote_readonly_query.mjs");
+  const [res] = queryReadOnly("supabase/validation/staging_e2e/sql/e2e_target_scope.sql", { session_id: sessionId });
+  if (!res || res.error) refuse(`대상 범위 확인 실패 (${res?.error ?? "no result"})`);
+  return res.rows;
+}
+
+async function main() {
+  const plan = await resolvePlan({ queryScope: stagingScope });
+  if (plan.blocked) {
+    console.log(JSON.stringify(plan.blocked));
+    return;
+  }
+  const { base, roles, allowWrites } = plan;
+  const staging = !plan.local;
+
+  const results = [];
+  const record = (role, step, status, note = "") => {
+    results.push({ role, step, status, note: redact(note).slice(0, 200) });
+    console.error(`${status.padEnd(7)} [${role}] ${step}${note ? ` — ${redact(note).slice(0, 160)}` : ""}`);
+  };
+  async function step(role, name, fn, { write = false } = {}) {
+    if (write && !allowWrites) return record(role, name, "SKIP", "write step (쓰기 조건 없음)");
+    try {
+      const r = await fn();
+      // true = PASS · "CUTOVER_PENDING: …" = 기대된 cutover 전 상태 · 그 밖의 문자열 · false · undefined = FAIL
+      const status = r === true ? "PASS" : typeof r === "string" && r.startsWith("CUTOVER_PENDING") ? "CUTOVER_PENDING" : "FAIL";
+      record(role, name, status, typeof r === "string" ? r : "");
+      return r === true || status === "CUTOVER_PENDING";
+    } catch (e) {
+      if (e?.name === "RefuseToRun") throw e;
+      record(role, name, "FAIL", String(e?.message ?? e));
+      return false;
+    }
+  }
+
+  const { page, close } = await launchEphemeral({ port: 9345 });
+  const bodyHas = (text) => page.eval(`document.body.innerText.includes(${JSON.stringify(text)})`);
+  const h1 = () => page.eval(`(document.querySelector('h1')?.innerText || '').trim()`);
+  const path = async () => new URL(await page.url()).pathname;
+  const onBase = async () => assertOnOrigin(await page.url(), base);
+  const go = async (p) => {
+    await page.goto(`${base}${p}`);
+    await onBase();
+  };
+  const noAlert = async () => {
+    const t = await page.eval(`[...document.querySelectorAll('[role=alert]')].map((a) => (a.innerText||'').trim()).filter(Boolean).join(' | ')`);
+    return !t || `alert: ${t}`;
+  };
+  const noErrors = () => {
+    const d = page.drain();
+    const bad = d.badResponses.filter((r) => !/favicon/.test(r));
+    if (d.consoleErrors.length || bad.length) return `console=${d.consoleErrors.length} bad=${bad.map((r) => r.replace(/\?.*$/, "").replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, ":id")).join(",")}`;
+    return true;
+  };
+  async function setBypass() {
+    if (!staging) return;
+    // bypass 는 Preview alias 에만 · URL 은 기록하지 않는다 · 임시 profile 은 종료 시 삭제
+    await page.goto(`${base}/login?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=${encodeURIComponent(getSecret("vercelBypass"))}`);
+    await onBase(); // SSO(vercel.com) · 다른 host 로 가면 REFUSE
+  }
+  async function login(role, admin = false) {
+    await page.clearCookies();
+    await setBypass();
+    await go(admin ? "/admin/login" : "/login");
+    if (!(await page.type('input[name="email"]', roles[role].email))) throw new Error("email field not found");
+    if (!(await page.type('input[name="password"]', roles[role].password))) throw new Error("password field not found");
+    await page.eval(`(() => { const b = document.querySelector('form button[type="submit"]'); b && b.click(); })()`);
+    const left = await page.waitFor(`!location.pathname.endsWith('/login')`, 30000);
+    await page.idle();
+    await onBase();
+    if (!left) throw new Error("login did not leave the login page");
+    return path();
+  }
+  async function clickInDialog(text) {
+    const ok = await page.eval(`(() => {
+      const d = [...document.querySelectorAll('[role=dialog], dialog[open]')].pop(); if (!d) return false;
+      const b = [...d.querySelectorAll('button')].find((x) => (x.innerText || '').trim() === ${JSON.stringify(text)} && !x.disabled);
+      if (!b) return false; b.click(); return true; })()`);
+    if (ok) await page.idle();
+    return ok;
+  }
+
+  const ctx = { sessionId: plan.sessionId, org: plan.org };
+  let closeInfo = {};
+  try {
+    await setBypass();
+    await go("/login");
+    const texts = await page.eval(`(async () => { const srcs = [...document.scripts].map((s) => s.src).filter((s) => s.startsWith(location.origin + '/_next/')).slice(0, 40); const t = [document.documentElement.outerHTML]; for (const s of srcs) { try { t.push(await (await fetch(s)).text()); } catch {} } return t; })()`);
+    assertBundleProjectRef(texts, { expectLocal: !staging });
+
+    // ── Teacher ─────────────────────────────────────────────
+    if (roles.teacher) {
+      await step("teacher", "login → /teacher", async () => (await login("teacher")) === "/teacher" || `landed ${await path()}`);
+      await step("teacher", "today board h1 = 오늘의 수업", async () => (await h1()) === "오늘의 수업" || `h1=${await h1()}`);
+      await step("teacher", "no AI UI on V2 teacher screen", async () => !(await bodyHas("AI 정리")) && !(await bodyHas("AI 초안")));
+      if (ctx.sessionId) {
+        await step("teacher", "target session card present on today board (no auto-pick)", async () => {
+          const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/${ctx.sessionId}/before"]')][0]; return a ? a.getAttribute('href') : null; })()`);
+          if (!href) return "target session card not on today board";
+          const org = new URL(href, base).searchParams.get("org");
+          if (ctx.org && org !== ctx.org) return "card organization differs from verified scope";
+          ctx.org = org;
+          ctx.beforeHref = href;
+          return true;
+        });
+      } else record("teacher", "session flow", "SKIP", "no target session (read-only run · 자동 선택 없음)");
+
+      if (ctx.beforeHref) {
+        await step("teacher", "BEFORE: start disabled until required checks", async () => {
+          await go(ctx.beforeHref);
+          return page.eval(`(() => { const b = [...document.querySelectorAll('button')].find((x) => (x.innerText||'').includes('수업 시작')); return !!b && b.disabled; })()`);
+        });
+        await step("teacher", "BEFORE → DURING (필수 확인 · 수업 시작)", async () => {
+          if (!(await page.click('input[name="safetyConfirmed"]')) || !(await page.click('input[name="privacyConfirmed"]'))) return "required checkbox not found";
+          if (!(await page.clickText("수업 시작"))) return "start button not found";
+          return (await page.waitFor(`location.pathname.endsWith('/during')`, 30000)) || "did not reach DURING";
+        }, { write: true });
+        await step("teacher", "quick memo autosave (author)", async () => {
+          if (!(await page.clickText("빠른 메모"))) return "memo toggle not found";
+          if (!(await page.type("#quick-memo-body", `${TEST_PREFIX}MEMO_${stamp}`))) return "memo field not found";
+          return (await page.waitFor(`document.body.innerText.includes('저장됨')`, 15000)) || "memo not saved";
+        }, { write: true });
+        await step("teacher", "quick memo cleanup (empty = delete)", async () => {
+          const ok = await page.eval(`(() => { const t = document.querySelector('#quick-memo-body'); if (!t) return false; t.focus(); t.select(); return true; })()`);
+          if (!ok) return "memo field not found";
+          await page.key("Backspace", "Backspace", 8);
+          await page.idle(2500);
+          return (await page.waitFor(`document.body.innerText.includes('저장됨') && document.querySelector('#quick-memo-body').value === ''`, 15000)) || "memo not cleared";
+        }, { write: true });
+        await step("teacher", "finish (수업 마치기)", async () => {
+          if (!(await page.clickText("지금 수업 마치기")) && !(await page.clickText("수업 마치기"))) return "finish button not found";
+          await clickInDialog("수업 마치기");
+          return (await page.waitFor(`location.pathname.endsWith('/attendance')`, 30000)) || "did not reach attendance";
+        }, { write: true });
+        await step("teacher", "attendance (출석 · 출결 저장)", async () => {
+          const n = await page.eval(`(() => { let n = 0; for (const g of document.querySelectorAll('[role=group]')) { const b = [...g.querySelectorAll('button')].find((x) => (x.innerText||'').trim() === '출석'); if (b) { b.click(); n++; } } return n; })()`);
+          if (!n) return "no attendance groups";
+          if (!(await page.clickText("출결 저장"))) return "save button not found";
+          await page.idle(1500);
+          // 성공 문구도 role=alert 로 렌더된다 (A11Y-1) → 성공 문구를 확인
+          return (await bodyHas("출결을 저장했습니다")) || (await noAlert());
+        }, { write: true });
+        await step("teacher", "Growth5 observation (창의적 시도 · 스스로)", async () => {
+          await go(`/teacher/sessions/${ctx.sessionId}/observations?org=${ctx.org}`);
+          if (!(await page.fill('textarea[id^="note-"]', `${TEST_PREFIX}OBS_${stamp} 색을 섞어 보았다`))) return "note field not found";
+          if (!(await page.clickText("창의적 시도", { scope: "label", exact: false }))) return "metric label not found";
+          if (!(await page.waitFor(`!!document.querySelector('[role=radiogroup][aria-label^="창의적 시도"]')`, 10000))) return "stage group not shown";
+          const stage = await page.eval(`(() => { const g = document.querySelector('[role=radiogroup][aria-label^="창의적 시도"]'); const l = g && [...g.querySelectorAll('label')].find((x) => (x.innerText||'').includes('스스로')); if (!l) return false; l.click(); return true; })()`);
+          if (!stage) return "stage option not found";
+          await page.idle();
+          if (!(await page.clickText("관찰 완료하고 다음 아이"))) return "save button not found";
+          await page.idle(1500);
+          return noAlert();
+        }, { write: true });
+        await step("teacher", "Weekly draft → edit → complete", async () => {
+          await go(`/teacher/growth-reports?org=${ctx.org}`);
+          if (!(await page.clickText("작성하기"))) return "no '작성하기' row";
+          if (!(await page.waitFor(`location.pathname.includes('/growth-reports/weekly/')`, 30000))) return "composer not opened";
+          ctx.reportPath = await path();
+          if (!(await page.type("#weekly-teacher_observation", `${TEST_PREFIX}WEEKLY_${stamp} 두 색을 섞어 보았다`))) return "observation field not found";
+          if (!(await page.clickText("임시저장"))) return "save draft not found";
+          await page.idle(1500);
+          if (!(await page.clickText("리포트 완료"))) return "complete button not found";
+          await clickInDialog("리포트 완료");
+          return (await page.waitFor(`document.body.innerText.includes('수정본 만들기')`, 30000)) || "not completed";
+        }, { write: true });
+      }
+      await step("teacher", "no console errors / failed requests", async () => noErrors());
+    } else record("teacher", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+
+    // ── Director ────────────────────────────────────────────
+    if (roles.director) {
+      await step("director", "login → /director/sessions (STARTER · no dashboard)", async () => (await login("director")) === "/director/sessions" || `landed ${await path()}`);
+      await step("director", "nav has no 홈 (director_dashboard)", async () =>
+        !(await page.eval(`[...document.querySelectorAll('nav a')].some((a) => (a.innerText||'').trim() === '홈')`)));
+      await step("director", "/director shows not-entitled (no aggregates)", async () => {
+        await go("/director");
+        return bodyHas("현재 이용 상품에 포함되지 않은 기능입니다.");
+      });
+      await step("director", "no bulk print UI", async () => !(await bodyHas("일괄 인쇄")));
+      await step("director", "session history h1", async () => { await go("/director/sessions/history"); return (await h1()) === "수업 이력" || `h1=${await h1()}`; });
+      if (ctx.sessionId) {
+        await step("director", "attendance page loads", async () => { await go(`/director/sessions/${ctx.sessionId}/attendance`); return (await path()).endsWith("/attendance"); });
+        await step("director", "observation read-only", async () => { await go(`/director/sessions/${ctx.sessionId}/observations`); return bodyHas("원장은 조회만 할 수 있습니다"); });
+      }
+      await step("director", "completed Weekly list", async () => { await go("/director/growth-reports"); return bodyHas("주간 리포트 (완료)"); });
+      await step("director", "portal page · consent select present", async () => {
+        await go("/director/portal");
+        return page.eval(`!!document.querySelector('select[id^="consent-"]')`);
+      });
+      await step("director", "issue child portal link", async () => {
+        if (!(await page.clickText("링크 만들기")) && !(await page.clickText("새 링크 발급"))) return "no issue button";
+        if (!(await page.waitFor(`!!document.querySelector('input[aria-label="공유 링크 주소"]')`, 20000))) return "link not shown";
+        ctx.portalUrl = await page.eval(`document.querySelector('input[aria-label="공유 링크 주소"]').value`); // 메모리에만
+        return /#[A-Za-z0-9_-]{43}$/.test(ctx.portalUrl) || "unexpected link shape";
+      }, { write: true });
+      await step("director", "no console errors / failed requests", async () => noErrors());
+    } else record("director", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+
+    // ── Parent Portal (계정 없음 · token 링크) ─────────────
+    await step("parent", "invalid token → generic message", async () => {
+      await page.clearCookies();
+      await setBypass();
+      await go(`/share/portal/00000000-0000-4000-8000-000000000000#${"E".repeat(43)}`);
+      return page.waitFor(`document.body.innerText.includes('이 링크로는 기록을 확인할 수 없습니다.')`, 20000);
+    });
+    if (ctx.portalUrl) {
+      // 발급된 링크의 origin 을 버리고 검증된 base 에 붙인다 (token 은 메모리에만)
+      const portalPath = ctx.portalUrl.replace(/^https?:\/\/[^/]+/, "");
+      const openPortal = async () => {
+        await page.clearCookies();
+        await setBypass();
+        await go(portalPath);
+        return page.waitFor(`document.body.innerText.includes('의 기록') || document.body.innerText.includes('이 링크로는')`, 20000);
+      };
+      await step("parent", "valid token → portal view · no photos · no raw stage codes", async () => {
+        await openPortal();
+        if (!(await bodyHas("의 기록"))) return "portal view not shown";
+        const r = await page.eval(`({ imgs: document.querySelectorAll('main img, article img').length, raw: /\\b(together|after_modeling|independent)\\b/.test(document.body.innerText) })`);
+        return (r.imgs === 0 && !r.raw) || `imgs=${r.imgs} raw_stage=${r.raw}`;
+      });
+      await step("parent", "latest completed report content visible", async () => (await bodyHas("교사 관찰 기록")) || "report section not shown");
+      if (roles.director && ctx.reportPath) {
+        const directorReport = ctx.reportPath.replace("/teacher/", "/director/");
+        await step("director", "emergency hide (E2E reason)", async () => {
+          await login("director");
+          await go(directorReport);
+          if (!(await page.clickText("학부모 화면에서 숨기기"))) return "no hide control";
+          await page.clickText("기타", { scope: "label, button, option" });
+          if (!(await page.type('textarea[id^="visibility-reason-"], input[id^="visibility-reason-"]', `${TEST_PREFIX}HIDE_${stamp}`))) return "reason field not found";
+          if (!(await clickInDialog("숨기기"))) await page.clickText("숨기기");
+          return (await page.waitFor(`document.body.innerText.includes('학부모 화면에 다시 공개')`, 20000)) || "not hidden";
+        }, { write: true });
+        await step("parent", "hidden report not shown in portal (empty state)", async () => {
+          await openPortal();
+          const empty = (await bodyHas("아직 공유된 기록이 없습니다.")) || (await bodyHas("현재 새로 공유된 기록이 없습니다."));
+          return (empty && !(await bodyHas("교사 관찰 기록"))) || "hidden report still visible";
+        }, { write: true });
+        await step("director", "cleanup: unhide report", async () => {
+          await login("director");
+          await go(directorReport);
+          if (!(await page.clickText("학부모 화면에 다시 공개"))) return "no unhide control";
+          if (!(await page.type('textarea[id^="visibility-reason-"], input[id^="visibility-reason-"]', `${TEST_PREFIX}UNHIDE_${stamp}`))) return "reason field not found";
+          if (!(await clickInDialog("다시 공개"))) await page.clickText("다시 공개");
+          return (await page.waitFor(`document.body.innerText.includes('학부모 화면에서 숨기기')`, 20000)) || "not unhidden";
+        }, { write: true });
+      }
+      if (roles.director) {
+        await step("director", "cleanup: revoke portal link", async () => {
+          await login("director");
+          await go("/director/portal");
+          if (!(await page.clickText("공유 링크 중지"))) return "no revoke button";
+          if (!(await clickInDialog("공유 링크 중지"))) await clickInDialog("중지");
+          await page.idle(1500);
+          return true;
+        }, { write: true });
+        await step("parent", "revoked token → generic message", async () => {
+          await openPortal();
+          return (await bodyHas("이 링크로는 기록을 확인할 수 없습니다.")) || "revoked link still shows records";
+        }, { write: true });
+      }
+      ctx.portalUrl = null;
+    } else record("parent", "valid / hidden / revoked token", "SKIP", "portal link not issued (쓰기 조건 없음)");
+
+    // ── HQ Admin (읽기 · 초대 화면 열지 않음) ────────────────
+    if (roles.hqAdmin) {
+      await step("hqAdmin", "login → /admin/leads", async () => (await login("hqAdmin", true)) === "/admin/leads" || `landed ${await path()}`);
+      for (const [name, p] of [
+        ["organization list", "/admin/organizations"],
+        ["readiness", "/admin/readiness"],
+        ["products · capabilities", "/admin/products"],
+      ]) {
+        await step("hqAdmin", name, async () => { await go(p); return ((await path()) === p && (await h1()).length > 0) || `path=${await path()} h1=${await h1()}`; });
+      }
+      await step("hqAdmin", "organization detail (first)", async () => {
+        await go("/admin/organizations");
+        const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href^="/admin/organizations/"]')].find((x) => /\\/admin\\/organizations\\/[0-9a-f-]{36}$/.test(x.getAttribute('href'))); return a ? a.getAttribute('href') : null; })()`);
+        if (!href) return "no org link";
+        await go(href);
+        return (await path()) === href;
+      });
+      await step("hqAdmin", "no console errors / failed requests", async () => noErrors());
+    } else record("hqAdmin", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+
+    // ── HQ Sales PRE-G2 (읽기만 · 넓은 권한은 CUTOVER PENDING 으로 기록) ──
+    if (roles.hqSales) {
+      await step("hqSales", "login → /sales/leads", async () => (await login("hqSales", true)) === "/sales/leads" || `landed ${await path()}`);
+      await step("hqSales", "/sales/organizations commercial summary (no child names column)", async () => {
+        await go("/sales/organizations");
+        return ((await bodyHas("원아 수")) && (await bodyHas("계약 상태"))) || "summary table not shown";
+      });
+      await step("hqSales", "PRE-G2: /admin/organizations reachable (target = redirect to /sales)", async () => {
+        await go("/admin/organizations");
+        const p = await path();
+        return p.startsWith("/admin") ? "CUTOVER_PENDING: sales can open /admin before G-2" : p.startsWith("/sales") ? true : `landed ${p}`;
+      });
+    } else record("hqSales", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+  } finally {
+    closeInfo = await close();
+  }
+
+  const summary = results.reduce((a, r) => ((a[r.status] = (a[r.status] ?? 0) + 1), a), {});
+  console.log(redact(JSON.stringify({ target: plan.target, allowWrites, summary, browserProfileRemoved: closeInfo.profileRemoved, results }, null, 1)));
+  if (summary.FAIL) process.exit(1);
+}
+
+if (process.argv[1] && process.argv[1].endsWith("e2e_roles.mjs")) {
+  await runMain(main);
+}
