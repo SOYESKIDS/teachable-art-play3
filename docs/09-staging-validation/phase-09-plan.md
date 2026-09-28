@@ -18,6 +18,21 @@
 | Harness | guard · read-only SQL · probe · UI audit · role E2E 작성 · local-rehearsal 로 전 흐름 검증 (40 PASS · 1 CUTOVER_PENDING · DB 전후 비교 일치) |
 | remote 쓰기 · cutover · Production 변경 | 0 |
 
+## 1-1. PHASE 09B 접근 전략 변경 — Preview Deployment Protection Exception
+
+**saas-v2 Preview uses a Vercel Deployment Protection Exception. Automation bypass secrets are not part of the PHASE 09 workflow.**
+
+| | |
+|---|---|
+| 이유 | 프로젝트 소유자가 개발자가 아니고, "Protection Bypass for Automation" 비밀을 만들고 · 로컬 env 로 넣는 흐름이 복잡하고 실수가 잦았다 |
+| 범위 | Exception 은 **saas-v2 Preview alias 하나만** (`https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app`) |
+| Production | 이 결정으로 Production 을 공개하거나 Production 보호 · 설정을 바꾸지 않는다 |
+| 데이터 | Preview 는 Staging Supabase(`itcddooiuqsqingfhxkk`)의 **합성 데이터만** 가리킨다 (번들 ref · DB 지문 guard 그대로) |
+| 종료 | Staging 검증이 끝나면 **Exception 을 제거**한다 (사람이 Vercel 설정에서) |
+| harness | `SOYE_STAGING_VERCEL_BYPASS` · bypass header · bypass query · bypass cookie 설정 제거. `/login` 이 여전히 vercel.com SSO 로 가면 `BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION` 으로 멈춘다 (우회 시도 없음). 역할 비밀번호 4개만 로컬 env · 없으면 `AUTHENTICATED_E2E = BLOCKED_PENDING_LOCAL_PASSWORDS`. 그 밖의 guard(alias 정확히 하나 · Production host · project ref · 번들 ref · DB 지문 · 읽기 전용 SQL · 합성 범위 · 쓰기 gate)는 그대로 |
+
+아래 §1 · 다른 문서의 `BLOCKED_PENDING_LOCAL_SECRETS` 는 PHASE 09A 당시 결과 기록이다.
+
 ## 2. 검증 방식의 한계 (솔직히)
 
 - Preview 가 SSO 뒤에 있어 **remote 앱 수준 E2E · responsive · a11y · 성능은 이번에 Preview 에서 실행하지 못했다.** 같은 커밋(153a413) 코드를

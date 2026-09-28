@@ -1,7 +1,7 @@
 // PHASE 09A — staging_e2e 전용 브라우저 실행 (browser_smoke/cdp.mjs 의 Page 재사용)
 // ---------------------------------------------------------------------
 // · 매 실행마다 새 임시 profile 을 만들고 close() 에서 **삭제**한다
-//   (Vercel bypass cookie · 방문 URL · cache 가 디스크에 남지 않게)
+//   (로그인 session cookie · 방문 URL · cache 가 디스크에 남지 않게)
 // · screenshot · HTML dump 를 만들지 않는다 (Page.screenshot 은 쓰지 않는다)
 // · 브라우저 console / network 기록은 메모리에만 있고, 결과에는 개수 · 경로(파라미터 · id 제거)만 쓴다
 

@@ -225,7 +225,6 @@ test("cli parse G: JSON with an error field fails", () => {
 const FAKE = {
   SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_teacher",
   SOYE_STAGING_DIRECTOR_PASSWORD: "FAKE_TEST_ONLY_director",
-  SOYE_STAGING_VERCEL_BYPASS: "FAKE_TEST_ONLY_bypass",
 };
 const neverQuery = async () => { throw new Error("remote query must not run in this test"); };
 test("write gate: read-only is the default (no flag = no writes)", async () => {
@@ -239,8 +238,10 @@ test("write gate: invalid session id refused", async () => {
   await refusesAsync(resolvePlan({ argv: ["--target", "staging", "--allow-staging-writes"], env: { ...FAKE, SOYE_STAGING_E2E_SESSION_ID: "latest" }, queryScope: neverQuery }));
 });
 test("write gate: missing teacher or director credential refused", async () => {
-  const env = { SOYE_STAGING_VERCEL_BYPASS: "FAKE_TEST_ONLY_bp", SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_pw", SOYE_STAGING_E2E_SESSION_ID: "00000000-0000-4000-8000-000000000001" };
+  const env = { SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_pw", SOYE_STAGING_E2E_SESSION_ID: "00000000-0000-4000-8000-000000000001" };
   await refusesAsync(resolvePlan({ argv: ["--target", "staging", "--allow-staging-writes"], env, queryScope: neverQuery }));
+  const env2 = { SOYE_STAGING_DIRECTOR_PASSWORD: "FAKE_TEST_ONLY_pw", SOYE_STAGING_E2E_SESSION_ID: "00000000-0000-4000-8000-000000000001" };
+  await refusesAsync(resolvePlan({ argv: ["--target", "staging", "--allow-staging-writes"], env: env2, queryScope: neverQuery }));
 });
 test("write gate: local flag on staging refused · staging flag on local refused", async () => {
   await refusesAsync(resolvePlan({ argv: ["--target", "staging", "--allow-writes"], env: { ...FAKE }, queryScope: neverQuery }));
@@ -253,11 +254,87 @@ test("write gate: CLI target env override refused", async () => {
 test("write gate: unknown target refused", async () => {
   await refusesAsync(resolvePlan({ argv: ["--target", "production"], env: {}, queryScope: neverQuery }));
 });
-test("missing secrets: BLOCKED_PENDING_LOCAL_SECRETS (no fallback / default password)", async () => {
+test("missing passwords: AUTHENTICATED_E2E = BLOCKED_PENDING_LOCAL_PASSWORDS (no fallback / default password)", async () => {
   const plan = await resolvePlan({ argv: ["--target", "staging"], env: {}, queryScope: neverQuery });
-  assert.equal(plan.blocked.status, "BLOCKED_PENDING_LOCAL_SECRETS");
-  assert.deepEqual(G.secretPresence({}), { hqAdmin: "MISSING", hqSales: "MISSING", director: "MISSING", teacher: "MISSING", vercelBypass: "MISSING" });
+  assert.equal(plan.blocked.status, "BLOCKED_PENDING_LOCAL_PASSWORDS");
+  assert.equal(plan.blocked.AUTHENTICATED_E2E, "BLOCKED_PENDING_LOCAL_PASSWORDS");
+  assert.deepEqual(G.secretPresence({}), { hqAdmin: "MISSING", hqSales: "MISSING", director: "MISSING", teacher: "MISSING" });
   assert.equal(G.getSecret("teacher", {}), "");
+});
+
+// ── PHASE 09B · Vercel bypass 비밀 제거 (Preview alias = Deployment Protection Exception) ──
+// 검사 문자열은 조각으로 만든다 (이 파일 자체가 걸리지 않게)
+const BYPASS_ENV = ["SOYE", "STAGING", "VERCEL", "BYPASS"].join("_");
+const BYPASS_HEADER = ["x-vercel", "protection", "bypass"].join("-");
+const BYPASS_COOKIE_QUERY = ["x-vercel", "set", "bypass", "cookie"].join("-");
+const SCOPE_UUID = "00000000-0000-4000-8000-000000000001";
+test("09B-1: bypass secret is not required — read-only plan and write plan resolve without it", async () => {
+  assert.ok(!Object.values(G.SECRET_NAMES).includes(BYPASS_ENV));
+  assert.deepEqual(Object.values(G.SECRET_NAMES).sort(), [
+    "SOYE_STAGING_DIRECTOR_PASSWORD", "SOYE_STAGING_HQ_ADMIN_PASSWORD", "SOYE_STAGING_HQ_SALES_PASSWORD", "SOYE_STAGING_TEACHER_PASSWORD",
+  ]);
+  const ro = await resolvePlan({ argv: ["--target", "staging"], env: { ...FAKE }, queryScope: neverQuery });
+  assert.equal(ro.blocked, undefined);
+  assert.deepEqual(Object.keys(ro.roles).sort(), ["director", "teacher"]);
+  const w = await resolvePlan({
+    argv: ["--target", "staging", "--allow-staging-writes"],
+    env: { ...FAKE, SOYE_STAGING_E2E_SESSION_ID: SCOPE_UUID },
+    queryScope: async (id) => { assert.equal(id, SCOPE_UUID); return [OK_SCOPE]; },
+  });
+  assert.equal(w.allowWrites, true);
+  assert.equal(w.sessionId, SCOPE_UUID);
+});
+test("09B-2 · 3: no bypass header · bypass query · bypass env anywhere in harness code", () => {
+  for (const { f, src } of harnessSources) {
+    if (f === "harness_safety.test.mjs") continue;
+    assert.ok(!src.toLowerCase().includes(BYPASS_HEADER), `${f}: header`);
+    assert.ok(!src.toLowerCase().includes(BYPASS_COOKIE_QUERY), `${f}: cookie query`);
+    assert.ok(!src.includes(BYPASS_ENV) && !/vercelBypass/.test(src), `${f}: env`);
+  }
+});
+test("09B-4: vercel.com SSO redirect → BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION (no bypass attempt) · other external refused", () => {
+  assert.equal(G.classifyPreviewAccess({ status: 302, externalUrl: "https://vercel.com/sso-api?url=x&nonce=y" }), "BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION");
+  assert.equal(G.PREVIEW_BLOCKED, "BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION");
+  assert.equal(G.isVercelSso("https://vercel.com/sso-api?x=1"), true);
+  assert.equal(G.isVercelSso(G.PREVIEW_ALIAS + "/login"), false);
+  assert.equal(G.classifyPreviewAccess({ status: 200 }), "REACHABLE");
+  assert.equal(G.classifyPreviewAccess({ status: 500 }), "UNREACHABLE_STATUS_500");
+  refuses(() => G.classifyPreviewAccess({ status: 302, externalUrl: "https://teachable-art-play3.vercel.app/login" }));
+  refuses(() => G.classifyPreviewAccess({ status: 302, externalUrl: "https://evil.example/login" }));
+  refuses(() => G.classifyPreviewAccess({ status: 302, externalUrl: "https://vercel.com.evil.example/sso-api" }));
+});
+test("09B-5 · 6: exact saas-v2 Preview alias allowed · Production host · deployment URL · localhost refused", () => {
+  assert.equal(G.assertPreviewBaseUrl("https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app"), G.PREVIEW_ALIAS);
+  assert.equal(G.assertPreviewBaseUrl(`${G.PREVIEW_ALIAS}/login`), G.PREVIEW_ALIAS);
+  for (const u of [
+    "https://teachable-art-play3.vercel.app",
+    "https://teachable-art-play3-soyeskids-projects.vercel.app",
+    "https://teachable-art-play3-abc123xyz-soyeskids-projects.vercel.app",
+    "http://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app",
+    "https://localhost",
+    "http://127.0.0.1:3100",
+  ]) refuses(() => G.assertPreviewBaseUrl(u));
+  const src = readFileSync(join(HERE, "preview_probe.mjs"), "utf8");
+  assert.match(src, /assertPreviewBaseUrl\(/);
+  assert.match(src, /classifyPreviewAccess\(/);
+});
+test("09B-7: role passwords remain redacted", () => {
+  const env = {
+    SOYE_STAGING_HQ_ADMIN_PASSWORD: "FAKE_TEST_ONLY_admin_pw",
+    SOYE_STAGING_HQ_SALES_PASSWORD: "FAKE_TEST_ONLY_sales_pw",
+    SOYE_STAGING_DIRECTOR_PASSWORD: "FAKE_TEST_ONLY_director_pw",
+    SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_teacher_pw",
+  };
+  const out = G.redact(`a=${Object.values(env).join(" b=")}`, env);
+  for (const v of Object.values(env)) assert.ok(!out.includes(v), v);
+  assert.deepEqual(G.secretPresence(env), { hqAdmin: "PRESENT", hqSales: "PRESENT", director: "PRESENT", teacher: "PRESENT" });
+});
+test("09B-8: write mode still requires session id and synthetic scope (no bypass shortcut)", async () => {
+  const argv = ["--target", "staging", "--allow-staging-writes"];
+  await refusesAsync(resolvePlan({ argv, env: { ...FAKE }, queryScope: neverQuery }));
+  await refusesAsync(resolvePlan({ argv, env: { ...FAKE, SOYE_STAGING_E2E_SESSION_ID: SCOPE_UUID }, queryScope: async () => [{ ...OK_SCOPE, session_status: "completed" }] }));
+  await refusesAsync(resolvePlan({ argv, env: { ...FAKE, SOYE_STAGING_E2E_SESSION_ID: SCOPE_UUID }, queryScope: async () => [{ ...OK_SCOPE, children_synthetic: 2 }] }));
+  await refusesAsync(resolvePlan({ argv, env: { ...FAKE, SOYE_STAGING_E2E_SESSION_ID: SCOPE_UUID }, queryScope: async () => [] }));
 });
 
 // ── REVIEW 6 · synthetic scope ───────────────────────────────
@@ -277,14 +354,13 @@ test("synthetic scope: each violation refused", () => {
 });
 
 // ── REVIEW 4 · 9 · redaction ────────────────────────────────
-test("redact: secret values · bypass query · portal token fragment · token json", () => {
-  const env = { SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_Teacher_Value", SOYE_STAGING_VERCEL_BYPASS: "FAKE_TEST_ONLY_Bypass_Value" };
+test("redact: secret values · portal token fragment · token json", () => {
+  const env = { SOYE_STAGING_TEACHER_PASSWORD: "FAKE_TEST_ONLY_Teacher_Value" };
   const out = G.redact(
-    "pw FAKE_TEST_ONLY_Teacher_Value url https://a/login?x-vercel-protection-bypass=FAKE_TEST_ONLY_Bypass_Value&x=1 portal https://a/share/portal/00000000-0000-4000-8000-000000000000#AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcd body {\"token\":\"AbCdEf\"}",
+    "pw FAKE_TEST_ONLY_Teacher_Value portal https://a/share/portal/00000000-0000-4000-8000-000000000000#AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcd body {\"token\":\"AbCdEf\"}",
     env,
   );
   assert.ok(!out.includes("FAKE_TEST_ONLY_Teacher_Value"));
-  assert.ok(!out.includes("FAKE_TEST_ONLY_Bypass_Value"));
   assert.ok(!out.includes("AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcd"));
   assert.ok(!out.includes('"token":"AbCdEf"'));
 });

@@ -31,8 +31,34 @@ export const SECRET_NAMES = {
   hqSales: "SOYE_STAGING_HQ_SALES_PASSWORD",
   director: "SOYE_STAGING_DIRECTOR_PASSWORD",
   teacher: "SOYE_STAGING_TEACHER_PASSWORD",
-  vercelBypass: "SOYE_STAGING_VERCEL_BYPASS",
 };
+
+// PHASE 09B: saas-v2 Preview alias 는 Vercel Deployment Protection Exception 으로 열린다 (그 alias 하나만 · Production 설정은 그대로).
+// 자동화 bypass 비밀은 쓰지 않는다 — 여전히 SSO 로 가면 우회하지 않고 이 상태로 멈춘다.
+export const PREVIEW_BLOCKED = "BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION";
+export const PASSWORDS_BLOCKED = "BLOCKED_PENDING_LOCAL_PASSWORDS";
+
+/** Vercel SSO(Deployment Protection) 로그인 쪽으로 보내졌는지 */
+export function isVercelSso(raw) {
+  try {
+    const url = new URL(raw);
+    return url.hostname === "vercel.com" || url.hostname.endsWith(".vercel.com");
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Preview `/login` 접근 판정 (redirect 는 Preview origin 안에서만 따라간 결과).
+ * vercel.com SSO → PREVIEW_BLOCKED (우회 시도 없음) · 그 밖의 외부 host → REFUSE · 앱 응답 200 → "REACHABLE"
+ */
+export function classifyPreviewAccess({ status, externalUrl = null }) {
+  if (externalUrl) {
+    if (isVercelSso(externalUrl)) return PREVIEW_BLOCKED;
+    refuse(`Preview 가 허용 origin 밖으로 redirect 했다 (${new URL(externalUrl).host})`);
+  }
+  return status === 200 ? "REACHABLE" : `UNREACHABLE_STATUS_${status}`;
+}
 
 // remote 쓰기 E2E 가 소비할 수업 (사람이 승인한 합성 수업 1건 · 자동 선택 없음)
 export const E2E_SESSION_ENV = "SOYE_STAGING_E2E_SESSION_ID";
@@ -182,7 +208,6 @@ export function redact(text, env = process.env) {
     if (value && value.length >= 4) out = out.split(value).join("<redacted>");
   }
   return out
-    .replace(/x-vercel-protection-bypass=[^&\s"']+/gi, "x-vercel-protection-bypass=<redacted>")
     .replace(/#[A-Za-z0-9_-]{32,}/g, "#<token>")
     .replace(/("token"\s*:\s*")[^"]+/g, "$1<token>");
 }

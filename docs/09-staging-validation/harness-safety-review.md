@@ -46,6 +46,16 @@ remote 쓰기 · cutover · Production 접근 없이 local 로만 검증했다.
 | 테스트 | +9 (명령 구성 · 단일 spawn 경로 · A 표 출력 실패 · B JSON 성공 · C 앞 안내 줄 · D 빈 stdout · E exit ≠ 0 · F rows 없음 · G error 필드) → **39/39 PASS** |
 | remote 재확인 (읽기 전용 1회) | linked ref `itcddooiuqsqingfhxkk` · DB 지문 통과 (비합성 사용자 0) · `staging_inventory.sql` 1 문장 → 1 행 · 39 열 · 오류 0 · exit 0 · 쓰기 0 · cutover 0 |
 
+## 3-1. PHASE 09B — Vercel bypass 비밀 의존 제거 (652e9df 이후)
+
+| | |
+|---|---|
+| 결정 | saas-v2 Preview alias = Vercel Deployment Protection Exception (alias 하나만 · Production 그대로 · 검증 후 제거) · 자동화 bypass 비밀은 PHASE 09 workflow 에서 뺀다 |
+| 제거 | `SECRET_NAMES.vercelBypass` · bypass header · bypass query · bypass cookie 설정(`setBypass`) · 쓰기 gate 의 bypass 조건 · bypass query redaction 규칙 (#5 의 bypass 부분은 더 이상 해당 없음 · 임시 profile 삭제는 유지) |
+| 추가 | `classifyPreviewAccess` · `isVercelSso`: `/login` 이 vercel.com SSO 로 가면 `BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION` (우회 없음) · 다른 외부 host 면 REFUSE · 비밀번호 없음 = `AUTHENTICATED_E2E = BLOCKED_PENDING_LOCAL_PASSWORDS` |
+| 유지 | alias 정확히 하나 · Production host · deployment URL · http · userinfo · port 거부 · project ref · CLI 대상 env · 번들 ref · DB 지문 · 읽기 전용 SQL · 합성 범위 · 쓰기 gate(flag ∧ ref ∧ alias ∧ 수업 UUID ∧ 합성 범위 ∧ 교사 · 원장 비밀번호) · 비밀번호 redaction |
+| 테스트 | +6 (bypass 불필요 · bypass header/query/env 없음 · SSO → BLOCKED · alias 허용 / Production 거부 · 비밀번호 redaction · 쓰기 gate) → **45/45 PASS** |
+
 ## 4. 남은 한계
 
 - remote SQL 실행 경로(지문 확인 · `queryReadOnly`)는 hotfix 에서 `staging_inventory.sql` 로 remote 확인했다. `e2e_target_scope.sql`(쓰기 gate) 은 아직 remote 에서 실행하지 않았다.

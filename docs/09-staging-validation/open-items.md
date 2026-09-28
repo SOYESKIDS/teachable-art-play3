@@ -15,12 +15,12 @@
 
 harness 결함 2건은 발견 · 수정 (role-e2e-matrix.md §2). pre-commit 안전 검토에서 harness 안전 결함 12건을 추가로 수정 ([harness-safety-review.md](./harness-safety-review.md)).
 
-## 2. BLOCKED (사람이 로컬 env 로 준비할 것 · 값 공유 금지)
+## 2. BLOCKED (사람이 준비할 것 · 값 공유 금지)
 
 | 필요 | 이유 |
 |---|---|
-| `SOYE_STAGING_VERCEL_BYPASS` | Preview 가 Vercel Deployment Protection(SSO) 뒤 — Vercel 프로젝트 설정의 "Protection Bypass for Automation" 값 (생성 · 조회는 사람이 · 이번 작업은 Vercel 설정을 바꾸지 않음) |
-| `SOYE_STAGING_{HQ_ADMIN,HQ_SALES,DIRECTOR,TEACHER}_PASSWORD` | 역할별 로그인 |
+| saas-v2 Preview alias 의 Vercel Deployment Protection Exception | PHASE 09B 결정 — bypass 비밀 대신 alias 하나만 보호 예외 (Production 은 그대로) · 검증 후 제거 ([phase-09-plan.md §1-1](./phase-09-plan.md)). 없으면 `BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION` |
+| `SOYE_STAGING_{HQ_ADMIN,HQ_SALES,DIRECTOR,TEACHER}_PASSWORD` | 역할별 로그인 (로컬 env · 없으면 `BLOCKED_PENDING_LOCAL_PASSWORDS`) |
 | `SOYE_STAGING_E2E_SESSION_ID` | 쓰기 E2E 가 소비할 합성 수업 (자동 선택 없음 · 쓰기 실행 때만) |
 
 준비 후 실행 순서: `preview_probe.mjs` → `ui_audit.mjs --target staging` → `remote_readonly_query.mjs sql/e2e_effects.sql` (전) →

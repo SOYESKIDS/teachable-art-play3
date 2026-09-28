@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | 도구 | `supabase/validation/staging_e2e/ui_audit.mjs` (CDP · 새 의존성 없음) |
-| Preview | **BLOCKED_PENDING_LOCAL_SECRETS** (Vercel SSO · `SOYE_STAGING_VERCEL_BYPASS` MISSING) |
+| Preview | PHASE 09A: **BLOCKED_PENDING_LOCAL_SECRETS** (Vercel SSO) · PHASE 09B: bypass 비밀 대신 alias Deployment Protection Exception 으로 `ui_audit.mjs --target staging` 실행 ([phase-09-plan.md §1-1](./phase-09-plan.md)) |
 | 기준선 | local-rehearsal — HEAD `153a413` 코드 · local Supabase · saas_v2 · 합성 계정 |
 | 뷰포트 | desktop 1366×768 · tablet 768×1024 · mobile 390×844 |
 

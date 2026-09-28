@@ -1,23 +1,16 @@
-// PHASE 09A — Preview HTTP baseline probe (READ ONLY · GET 만)
+// PHASE 09 — Preview HTTP baseline probe (READ ONLY · GET 만)
 // ---------------------------------------------------------------------
 // 사용:  node supabase/validation/staging_e2e/preview_probe.mjs [--base <preview url>]
 //
-// · base 는 saas-v2 Preview alias 또는 그 Preview deployment URL 만 (guards.assertPreviewBaseUrl)
-// · Vercel Deployment Protection(SSO) 이 켜져 있으면 앱 응답을 볼 수 없다:
-//     SOYE_STAGING_VERCEL_BYPASS (Vercel "Protection Bypass for Automation" 값) 가 있으면 그 값을 요청 header 로
-//     Preview origin 에만 보낸다 (제3자 · Supabase 로 보내지 않는다 · 출력하지 않는다)
-//     없으면 edge 수준(상태 · redirect · 보안 header · 응답 시간)만 기록하고 앱 수준 점검은
-//     BLOCKED_PENDING_LOCAL_SECRETS 로 표시한다
-// · bypass 가 있으면 /login HTML 과 JS chunk 에서 Supabase project ref 를 찾아 Staging 인지 확인한다 (아니면 REFUSE)
-// · 응답 본문은 저장 · 출력하지 않는다 (alert 여부 · 크기 · 시간만)
+// · base 는 saas-v2 Preview alias 정확히 하나만 (guards.assertPreviewBaseUrl)
+// · PHASE 09B: 그 alias 는 Vercel Deployment Protection Exception 으로 열려 있어야 한다. 자동화 bypass 비밀은 쓰지 않는다.
+//   `/login` 이 여전히 vercel.com SSO 로 redirect 하면 app_level = BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION 으로 멈춘다 (우회 시도 없음)
+// · 앱 응답을 볼 수 있으면 /login HTML 과 JS chunk 에서 Supabase project ref 를 찾아 Staging 인지 확인한다 (아니면 REFUSE)
+// · redirect 는 Preview origin 안에서만 따라간다 · 응답 본문은 저장 · 출력하지 않는다 (alert 여부 · 크기 · 시간만)
 
-import { assertBundleProjectRef, assertPreviewBaseUrl, getSecret, PREVIEW_ALIAS, redact, runMain, secretPresence } from "./guards.mjs";
-
-await runMain(async () => {
-const baseArg = process.argv.indexOf("--base");
-const base = assertPreviewBaseUrl(baseArg >= 0 ? process.argv[baseArg + 1] : PREVIEW_ALIAS);
-const bypass = getSecret("vercelBypass");
-const presence = secretPresence();
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { assertBundleProjectRef, assertPreviewBaseUrl, classifyPreviewAccess, PREVIEW_ALIAS, PREVIEW_BLOCKED, redact, runMain } from "./guards.mjs";
 
 const PATHS = [
   "/login",
@@ -40,21 +33,20 @@ const SECURITY_HEADERS = [
 ];
 
 async function get(url) {
-  const headers = bypass ? { "x-vercel-protection-bypass": bypass } : {};
   const chain = [];
   let current = url;
   const started = performance.now();
   for (let hop = 0; hop < 6; hop += 1) {
     const t0 = performance.now();
-    const res = await fetch(current, { redirect: "manual", headers });
+    const res = await fetch(current, { redirect: "manual" });
     const ttfb = Math.round(performance.now() - t0);
     const location = res.headers.get("location");
-    chain.push({ status: res.status, ttfb_ms: ttfb, location: location ? redact(location).replace(/nonce=[^&]+/, "nonce=…") : null });
+    chain.push({ status: res.status, ttfb_ms: ttfb, location: location ? redact(location).replace(/\?.*$/, "?…") : null });
     if (res.status >= 300 && res.status < 400 && location) {
       const next = new URL(location, current);
       // Preview origin 밖으로 나가면 따라가지 않는다 (SSO · 외부)
       if (next.origin !== new URL(url).origin) {
-        return { chain, final: { status: res.status, external: next.host }, headers: res.headers, body: "", total_ms: Math.round(performance.now() - started) };
+        return { chain, final: { status: res.status, externalUrl: next.href }, headers: res.headers, body: "", total_ms: Math.round(performance.now() - started) };
       }
       current = next.href;
       continue;
@@ -65,45 +57,53 @@ async function get(url) {
   return { chain, final: { status: "too_many_redirects" }, headers: new Headers(), body: "", total_ms: Math.round(performance.now() - started) };
 }
 
-const report = { base, secrets: presence, bypass_used: Boolean(bypass), results: [] };
+async function main() {
+  const baseArg = process.argv.indexOf("--base");
+  const base = assertPreviewBaseUrl(baseArg >= 0 ? process.argv[baseArg + 1] : PREVIEW_ALIAS);
+  const report = { base, results: [] };
 
-for (const path of PATHS) {
-  const r = await get(base + path);
-  const sso = r.final.external === "vercel.com";
-  const row = {
-    path: path.replace(/\?t=.*/, "?t=<invalid>"),
-    chain: r.chain,
-    final_status: r.final.status,
-    total_ms: r.total_ms,
-    deployment_protection_sso: sso,
-    security_headers: Object.fromEntries(SECURITY_HEADERS.map((h) => [h, r.headers.get(h) ? "present" : "missing"])),
-  };
-  if (!sso && r.body) {
-    row.html_bytes = r.body.length;
-    row.alert_in_initial_html = /role="alert"/.test(r.body);
-    row.error_500_marker = /Application error|Internal Server Error/i.test(r.body);
+  for (const path of PATHS) {
+    const r = await get(base + path);
+    const access = classifyPreviewAccess(r.final);
+    const row = {
+      path: path.replace(/\?t=.*/, "?t=<invalid>"),
+      chain: r.chain,
+      final_status: r.final.status,
+      total_ms: r.total_ms,
+      access,
+      security_headers: Object.fromEntries(SECURITY_HEADERS.map((h) => [h, r.headers.get(h) ? "present" : "missing"])),
+    };
+    if (access !== PREVIEW_BLOCKED && r.body) {
+      row.html_bytes = r.body.length;
+      row.alert_in_initial_html = /role="alert"/.test(r.body);
+      row.error_500_marker = /Application error|Internal Server Error/i.test(r.body);
+    }
+    report.results.push(row);
   }
-  report.results.push(row);
+
+  // 앱이 가리키는 Supabase project 확인 (/login 이 앱 응답일 때만)
+  const login = report.results[0];
+  report.preview_access = login.access;
+  if (login.access !== "REACHABLE") {
+    report.app_level = login.access === PREVIEW_BLOCKED ? PREVIEW_BLOCKED : `UNREACHABLE (${login.access})`;
+  } else {
+    const html = (await get(base + "/login")).body;
+    const chunks = [...html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map((m) => m[1]).slice(0, 40);
+    const texts = [html];
+    let assetsOk = 0;
+    for (const c of chunks) {
+      const res = await fetch(base + c, { redirect: "manual" });
+      if (res.ok) assetsOk += 1;
+      texts.push(await res.text());
+    }
+    report.static_assets = { checked: chunks.length, ok: assetsOk };
+    report.bundle_supabase_project = assertBundleProjectRef(texts);
+    report.app_level = "CHECKED";
+  }
+
+  console.log(redact(JSON.stringify(report, null, 1)));
 }
 
-// 앱이 가리키는 Supabase project 확인 (bypass 로 앱 응답을 볼 수 있을 때만)
-const login = report.results[0];
-if (login.deployment_protection_sso) {
-  report.app_level = "BLOCKED_PENDING_LOCAL_SECRETS (Vercel Deployment Protection · SOYE_STAGING_VERCEL_BYPASS MISSING)";
-} else {
-  const html = (await get(base + "/login")).body;
-  const chunks = [...html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map((m) => m[1]).slice(0, 40);
-  const texts = [html];
-  let assetsOk = 0;
-  for (const c of chunks) {
-    const res = await fetch(base + c, { headers: bypass ? { "x-vercel-protection-bypass": bypass } : {} });
-    if (res.ok) assetsOk += 1;
-    texts.push(await res.text());
-  }
-  report.static_assets = { checked: chunks.length, ok: assetsOk };
-  report.bundle_supabase_project = assertBundleProjectRef(texts);
-  report.app_level = "CHECKED";
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await runMain(main);
 }
-
-console.log(redact(JSON.stringify(report, null, 1)));
-});

@@ -25,7 +25,10 @@ import {
   E2E_SESSION_ENV,
   getSecret,
   isUuid,
+  isVercelSso,
+  PASSWORDS_BLOCKED,
   PREVIEW_ALIAS,
+  PREVIEW_BLOCKED,
   redact,
   refuse,
   runMain,
@@ -71,10 +74,9 @@ export async function resolvePlan({ argv = args, env = process.env, queryScope }
   if (allowWrites) {
     if (!isUuid(sessionId)) refuse(`${E2E_SESSION_ENV} (UUID) 가 필요하다 — 쓰기 대상 수업을 자동으로 고르지 않는다`);
     if (p.teacher !== "PRESENT" || p.director !== "PRESENT") refuse("쓰기 E2E 에는 교사 · 원장 비밀번호가 모두 필요하다");
-    if (p.vercelBypass !== "PRESENT") refuse("쓰기 E2E 에는 Preview bypass 가 필요하다");
   }
-  if (p.vercelBypass === "MISSING" || ["teacher", "director", "hqAdmin", "hqSales"].every((k) => p[k] === "MISSING")) {
-    return { blocked: { target: tgt, status: "BLOCKED_PENDING_LOCAL_SECRETS", secrets: p } };
+  if (["teacher", "director", "hqAdmin", "hqSales"].every((k) => p[k] === "MISSING")) {
+    return { blocked: { target: tgt, status: PASSWORDS_BLOCKED, AUTHENTICATED_E2E: PASSWORDS_BLOCKED, passwords: p } };
   }
 
   let org = null;
@@ -146,15 +148,8 @@ async function main() {
     if (d.consoleErrors.length || bad.length) return `console=${d.consoleErrors.length} bad=${bad.map((r) => r.replace(/\?.*$/, "").replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, ":id")).join(",")}`;
     return true;
   };
-  async function setBypass() {
-    if (!staging) return;
-    // bypass 는 Preview alias 에만 · URL 은 기록하지 않는다 · 임시 profile 은 종료 시 삭제
-    await page.goto(`${base}/login?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=${encodeURIComponent(getSecret("vercelBypass"))}`);
-    await onBase(); // SSO(vercel.com) · 다른 host 로 가면 REFUSE
-  }
   async function login(role, admin = false) {
     await page.clearCookies();
-    await setBypass();
     await go(admin ? "/admin/login" : "/login");
     if (!(await page.type('input[name="email"]', roles[role].email))) throw new Error("email field not found");
     if (!(await page.type('input[name="password"]', roles[role].password))) throw new Error("password field not found");
@@ -177,8 +172,13 @@ async function main() {
   const ctx = { sessionId: plan.sessionId, org: plan.org };
   let closeInfo = {};
   try {
-    await setBypass();
-    await go("/login");
+    // Preview 가 아직 Deployment Protection(SSO) 뒤면 우회하지 않고 멈춘다 (쓰기 전 · 로그인 전)
+    await page.goto(`${base}/login`);
+    if (staging && isVercelSso(await page.url())) {
+      console.log(JSON.stringify({ target: plan.target, status: PREVIEW_BLOCKED }));
+      return;
+    }
+    await onBase();
     const texts = await page.eval(`(async () => { const srcs = [...document.scripts].map((s) => s.src).filter((s) => s.startsWith(location.origin + '/_next/')).slice(0, 40); const t = [document.documentElement.outerHTML]; for (const s of srcs) { try { t.push(await (await fetch(s)).text()); } catch {} } return t; })()`);
     assertBundleProjectRef(texts, { expectLocal: !staging });
 
@@ -260,7 +260,7 @@ async function main() {
         }, { write: true });
       }
       await step("teacher", "no console errors / failed requests", async () => noErrors());
-    } else record("teacher", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+    } else record("teacher", "all", "BLOCKED", PASSWORDS_BLOCKED);
 
     // ── Director ────────────────────────────────────────────
     if (roles.director) {
@@ -289,12 +289,11 @@ async function main() {
         return /#[A-Za-z0-9_-]{43}$/.test(ctx.portalUrl) || "unexpected link shape";
       }, { write: true });
       await step("director", "no console errors / failed requests", async () => noErrors());
-    } else record("director", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+    } else record("director", "all", "BLOCKED", PASSWORDS_BLOCKED);
 
     // ── Parent Portal (계정 없음 · token 링크) ─────────────
     await step("parent", "invalid token → generic message", async () => {
       await page.clearCookies();
-      await setBypass();
       await go(`/share/portal/00000000-0000-4000-8000-000000000000#${"E".repeat(43)}`);
       return page.waitFor(`document.body.innerText.includes('이 링크로는 기록을 확인할 수 없습니다.')`, 20000);
     });
@@ -303,7 +302,6 @@ async function main() {
       const portalPath = ctx.portalUrl.replace(/^https?:\/\/[^/]+/, "");
       const openPortal = async () => {
         await page.clearCookies();
-        await setBypass();
         await go(portalPath);
         return page.waitFor(`document.body.innerText.includes('의 기록') || document.body.innerText.includes('이 링크로는')`, 20000);
       };
@@ -374,7 +372,7 @@ async function main() {
         return (await path()) === href;
       });
       await step("hqAdmin", "no console errors / failed requests", async () => noErrors());
-    } else record("hqAdmin", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+    } else record("hqAdmin", "all", "BLOCKED", PASSWORDS_BLOCKED);
 
     // ── HQ Sales PRE-G2 (읽기만 · 넓은 권한은 CUTOVER PENDING 으로 기록) ──
     if (roles.hqSales) {
@@ -388,7 +386,7 @@ async function main() {
         const p = await path();
         return p.startsWith("/admin") ? "CUTOVER_PENDING: sales can open /admin before G-2" : p.startsWith("/sales") ? true : `landed ${p}`;
       });
-    } else record("hqSales", "all", "BLOCKED", "BLOCKED_PENDING_LOCAL_SECRETS");
+    } else record("hqSales", "all", "BLOCKED", PASSWORDS_BLOCKED);
   } finally {
     closeInfo = await close();
   }

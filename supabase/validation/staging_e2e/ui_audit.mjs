@@ -5,8 +5,9 @@
 //   node supabase/validation/staging_e2e/ui_audit.mjs --target local-rehearsal    (127.0.0.1:3100 · harness 자체 검증)
 //
 // · staging: Supabase ref = Staging · Preview alias 정확히 일치 · 앱 번들 Supabase ref = Staging ·
-//            Vercel bypass 는 alias 에만 · 이동할 때마다 origin 재확인 (SSO · 다른 host 로 가면 REFUSE) ·
-//            역할 비밀번호는 env 만 · 없으면 BLOCKED_PENDING_LOCAL_SECRETS
+//            bypass 비밀 없음 (alias 는 Deployment Protection Exception) · 처음 /login 이 SSO 면 BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION ·
+//            이동할 때마다 origin 재확인 (SSO · 다른 host 로 가면 REFUSE) ·
+//            역할 비밀번호는 env 만 · 없으면 로그인 화면만 점검하고 인증 화면 = BLOCKED_PENDING_LOCAL_PASSWORDS
 // · 읽기만 한다 (로그인 · 화면 이동 · 측정). 쓰기 흐름은 e2e_roles.mjs.
 // · 결과에 화면 본문 · 아동 이름 · screenshot 없음 (개수 · 크기 · 위반 목록만) · 임시 브라우저 profile 은 종료 시 삭제
 
@@ -19,7 +20,10 @@ import {
   assertPreviewBaseUrl,
   assertStagingProjectRef,
   getSecret,
+  isVercelSso,
+  PASSWORDS_BLOCKED,
   PREVIEW_ALIAS,
+  PREVIEW_BLOCKED,
   redact,
   refuse,
   runMain,
@@ -82,10 +86,6 @@ async function main() {
     base = assertPreviewBaseUrl(PREVIEW_ALIAS);
     assertStagingProjectRef();
     const p = secretPresence();
-    if (p.vercelBypass === "MISSING") {
-      console.log(JSON.stringify({ target, status: "BLOCKED_PENDING_LOCAL_SECRETS", secrets: p }));
-      return;
-    }
     roles = Object.fromEntries(
       ["teacher", "director", "hqAdmin"]
         .filter((k) => p[k] === "PRESENT")
@@ -102,14 +102,8 @@ async function main() {
     await page.goto(`${base}${p}`);
     await onBase();
   };
-  const setBypass = async () => {
-    if (!staging) return;
-    await page.goto(`${base}/login?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=${encodeURIComponent(getSecret("vercelBypass"))}`);
-    await onBase();
-  };
   const login = async (role) => {
     await page.clearCookies();
-    await setBypass();
     await go(role.admin ? "/admin/login" : "/login");
     if (!(await page.type('input[name="email"]', role.email)) || !(await page.type('input[name="password"]', role.password))) {
       throw new Error("login fields not found");
@@ -130,11 +124,16 @@ async function main() {
     return { tabbed: seen.length, withoutVisibleFocus: seen.filter((s) => !s.visibleFocus).map((s) => s.tag) };
   };
 
-  const out = { target, base, secrets: secretPresence(), pages: [] };
+  const out = { target, base, passwords: secretPresence(), pages: [] };
+  if (staging && Object.keys(roles).length === 0) out.AUTHENTICATED_E2E = PASSWORDS_BLOCKED;
   let closeInfo = {};
   try {
-    await setBypass();
-    await go("/login");
+    await page.goto(`${base}/login`);
+    if (staging && isVercelSso(await page.url())) {
+      console.log(JSON.stringify({ target, base, status: PREVIEW_BLOCKED }));
+      return;
+    }
+    await onBase();
     const texts = await page.eval(`(async () => { const srcs = [...document.scripts].map((s) => s.src).filter((s) => s.startsWith(location.origin + '/_next/')).slice(0, 40); const t = [document.documentElement.outerHTML]; for (const s of srcs) { try { t.push(await (await fetch(s)).text()); } catch {} } return t; })()`);
     out.bundle_supabase_project = assertBundleProjectRef(texts, { expectLocal: !staging });
 
@@ -150,7 +149,6 @@ async function main() {
         if (t.path) landing = t.path;
       } else {
         await page.clearCookies();
-        await setBypass();
       }
       for (const vp of VIEWPORTS) {
         await page.viewport(vp.width, vp.height, vp.mobile);
