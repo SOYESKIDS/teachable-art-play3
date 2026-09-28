@@ -38,7 +38,7 @@ export function StaffShell({
 }: StaffShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-surface-soft">
-      <header className="sticky top-0 z-30 border-b border-line-soft bg-white">
+      <header className="print:hidden sticky top-0 z-30 border-b border-line-soft bg-white">
         <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
           <div className="min-w-0 leading-tight">
             <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
@@ -72,7 +72,7 @@ export function StaffShell({
 
         <nav
           aria-label="교직원 메뉴"
-          className="border-t border-line-soft bg-white"
+          className="print:hidden border-t border-line-soft bg-white"
         >
           {/*
             ★ 좁은 화면에서 메뉴가 잘리지 않게 한다.
@@ -82,7 +82,7 @@ export function StaffShell({
               그보다 더 좁은 기기를 위해 overflow-x-auto 를 안전망으로 둔다.
               nav 안에서만 밀리므로 본문이 가로로 스크롤되는 일은 없다.
           */}
-          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 overflow-x-auto px-5 lg:px-8">
+          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 overflow-x-auto overflow-y-hidden px-5 lg:px-8">
             {navItems.map((item) => {
               const isCurrent = item.href === currentHref;
 

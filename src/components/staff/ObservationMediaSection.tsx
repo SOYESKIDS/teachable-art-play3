@@ -2,6 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
+import { appButtonDangerOutline, appButtonSecondary } from "@/components/ui/app-button";
+import { hideObservationMediaAction } from "@/lib/staff/observation-media-hide-actions";
 import { createClient } from "@/lib/supabase/client";
 import {
   finalizeObservationMediaUpload,
@@ -23,6 +26,8 @@ interface ObservationMediaSectionProps {
   canUpload: boolean;
   /** 업로드가 막힌 이유 (있으면 안내로 표시) */
   uploadBlockedReason: string | null;
+  /** 사진 숨기기 가능 (담당 교사 · 원장). 최종 판정은 RPC 다 (DEC-088). */
+  canHide?: boolean;
 }
 
 const MAX_MB = Math.floor(
@@ -51,8 +56,23 @@ export function ObservationMediaSection({
   media,
   canUpload,
   uploadBlockedReason,
+  canHide = false,
 }: ObservationMediaSectionProps) {
   const router = useRouter();
+  const [hideTargetId, setHideTargetId] = useState<string | null>(null);
+  const [isHiding, setIsHiding] = useState(false);
+
+  async function confirmHide() {
+    if (!hideTargetId) return;
+    setIsHiding(true);
+    const result = await hideObservationMediaAction({ mediaId: hideTargetId });
+    setIsHiding(false);
+    setHideTargetId(null);
+    setExpandedId(null);
+    setIsError(!result.ok);
+    setMessage(result.message);
+    if (result.ok) router.refresh();
+  }
 
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -225,13 +245,24 @@ export function ObservationMediaSection({
                 </p>
               )}
 
-              <button
-                type="button"
-                onClick={() => setExpandedId(null)}
-                className="mt-2 min-h-11 w-full rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:bg-navy/5"
-              >
-                닫기
-              </button>
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => setExpandedId(null)}
+                  className={`${appButtonSecondary} flex-1`}
+                >
+                  닫기
+                </button>
+                {canHide ? (
+                  <button
+                    type="button"
+                    onClick={() => setHideTargetId(expanded.id)}
+                    className={`${appButtonDangerOutline} flex-1`}
+                  >
+                    사진 숨기기
+                  </button>
+                ) : null}
+              </div>
             </div>
           ) : null}
 
@@ -334,6 +365,27 @@ export function ObservationMediaSection({
           {uploadBlockedReason}
         </p>
       ) : null}
+
+      <Dialog
+        open={hideTargetId !== null}
+        onClose={() => setHideTargetId(null)}
+        title="사진 숨기기"
+        busy={isHiding}
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-[15px] leading-relaxed text-ink">
+            이 사진은 수업 기록과 학부모 공유 화면에서 더 이상 표시되지 않습니다.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row-reverse">
+            <button type="button" onClick={confirmHide} disabled={isHiding} className={`${appButtonDangerOutline} sm:flex-1`}>
+              {isHiding ? "처리 중…" : "사진 숨기기"}
+            </button>
+            <button type="button" onClick={() => setHideTargetId(null)} disabled={isHiding} className={`${appButtonSecondary} sm:flex-1`}>
+              돌아가기
+            </button>
+          </div>
+        </div>
+      </Dialog>
 
       {message ? (
         <p

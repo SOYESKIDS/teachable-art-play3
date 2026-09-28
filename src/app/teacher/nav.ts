@@ -1,6 +1,6 @@
-/** 교사 화면 상단 메뉴. 셋까지는 모바일에서도 한 줄에 들어간다. */
+/** 교사 메뉴 (DEC-097): 오늘의 수업 · 수업 이력 · 리포트. 계약 · 상품 메뉴 없음. */
 export const TEACHER_NAV = [
   { href: "/teacher", label: "오늘의 수업" },
   { href: "/teacher/history", label: "수업 이력" },
-  { href: "/teacher/growth-reports", label: "성장 리포트" },
+  { href: "/teacher/growth-reports", label: "리포트" },
 ] as const satisfies readonly { href: string; label: string }[];

@@ -462,6 +462,8 @@ function ObservationChildCard({
         관찰기록 → 활동 사진 → AI 기록정리 순서로 둔다.
         AI는 교사가 이미 쓴 문장만 읽는다 — 사진은 입력에 들어가지 않는다.
       */}
+      {/* DEC-093: 원장에게 AI 초안 · 정리 문장을 보여 주지 않는다 (담당 교사만). */}
+      {role === "teacher" ? (
       <ObservationAiDraftSection
         sessionId={sessionId}
         childId={child.childId}
@@ -473,6 +475,7 @@ function ObservationChildCard({
         recordStatus={child.recordStatus}
         draft={child.aiDraft}
       />
+      ) : null}
     </li>
   );
 }

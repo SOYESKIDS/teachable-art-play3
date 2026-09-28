@@ -8,7 +8,8 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { TodaySessionBoardView } from "@/components/staff/TodaySessionBoard";
-import { DIRECTOR_NAV } from "../nav";
+import { directorNavFor } from "../nav";
+import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 export const metadata: Metadata = {
   title: "수업 운영 | TeachAble Art Play",
@@ -82,7 +83,7 @@ export default async function DirectorSessionsPage({
       email={email}
       roleLabel="원장"
       organizationName={membership.organizationName}
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions"
     >
       <h1 className="text-[22px] font-bold text-navy">수업 운영</h1>
@@ -92,11 +93,13 @@ export default async function DirectorSessionsPage({
 
       <div className="mt-5">
         <TodaySessionBoardView
+          appRouting={staffAppRouting()}
           board={board}
           showClassName
           hasError={!result.ok}
           attendanceBasePath="/director/sessions"
           observationBasePath="/director/sessions"
+          actorRole="director"
         />
       </div>
     </StaffShell>

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { hasSoyesAdminAccess } from "@/lib/auth/admin";
+import { getHqRole, type HqRole } from "@/lib/auth/admin";
 import type { LoginState } from "./login-state";
 
 /**
@@ -30,6 +30,8 @@ export async function signInAction(
   }
 
   // redirect()는 내부적으로 예외를 던지므로 try 바깥에서 호출해야 한다.
+  let role: HqRole | null = null;
+
   try {
     const supabase = await createClient();
 
@@ -42,10 +44,10 @@ export async function signInAction(
       return { error: MESSAGES.invalidCredentials };
     }
 
-    // 인증만으로는 부족하다. 관리자 여부는 반드시 DB에 물어본다.
-    const isAdmin = await hasSoyesAdminAccess(supabase);
+    // 인증만으로는 부족하다. HQ 역할은 반드시 DB에 물어본다 (admin ≠ sales · DEC-079).
+    role = await getHqRole(supabase);
 
-    if (!isAdmin) {
+    if (role === null) {
       // 관리자가 아닌 계정이 세션만 가진 채 Admin 영역에 남지 않도록 즉시 세션을 파기한다.
       await supabase.auth.signOut();
       return { error: MESSAGES.notAdmin };
@@ -55,5 +57,6 @@ export async function signInAction(
     return { error: MESSAGES.unexpected };
   }
 
-  redirect("/admin/leads");
+  // HQ Admin → 운영 Shell · HQ Sales → 영업 Shell (DEC-097)
+  redirect(role === "sales" ? "/sales" : "/admin/leads");
 }

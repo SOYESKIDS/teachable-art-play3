@@ -4,11 +4,10 @@ import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
   parseSessionScheduledDate,
-  parseSessionTransitionStatus,
-  requiresActiveParents,
 } from "@/lib/admin/class-session";
 import type { ClassSessionStatus } from "@/types/class-session";
 import type { ClassSessionFormState } from "./class-session-state";
+import { logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
 
 /**
  * 수업 실행(class_sessions) Server Action.
@@ -414,11 +413,15 @@ export async function transitionClassSessionAction(
     return error(MESSAGES.invalidRequest);
   }
 
-  const nextStatus = parseSessionTransitionStatus(
-    String(formData.get("status") ?? ""),
-  );
+  // ★ PHASE 07 (DEC-085 · DEC-098): HQ 는 일반 시작 · 완료를 하지 않는다.
+  //   취소(현재 규칙) · 복구 처리(in_progress 만 · 사유 필수 · audit)만 RPC 로 한다.
+  //   scheduled → completed 는 어떤 경로도 없다. status 를 직접 UPDATE 하지 않는다.
+  const kind = String(formData.get("action") ?? "");
+  const reason = String(formData.get("reason") ?? "").trim();
 
-  if (nextStatus === null) return error(MESSAGES.invalidStatus);
+  if (kind !== "cancel" && kind !== "recovery") return error(MESSAGES.invalidStatus);
+  if (kind === "recovery" && !reason) return error("복구 처리 사유를 입력해 주세요.");
+  if (reason.length > 500) return error("사유는 500자 이내로 입력해 주세요.");
 
   const { supabase } = await requireAdmin();
 
@@ -436,57 +439,32 @@ export async function transitionClassSessionAction(
 
   const { session } = loadedSession;
 
-  // 완료·취소된 수업은 어떤 방향으로도 다시 바꾸지 않는다.
   if (session.status === "completed" || session.status === "cancelled") {
     return error(MESSAGES.sessionTerminal);
   }
 
-  // in_progress → in_progress 같은 무의미한 전이와
-  // in_progress → 되돌리기를 여기서 막는다.
-  const allowed =
-    session.status === "scheduled"
-      ? ["in_progress", "completed", "cancelled"]
-      : ["completed", "cancelled"];
+  const { error: rpcError } =
+    kind === "recovery"
+      ? await supabase.rpc("recover_complete_class_session", {
+          p_session_id: sessionId,
+          p_reason: reason,
+        })
+      : await supabase.rpc("cancel_class_session", {
+          p_session_id: sessionId,
+          p_reason: reason || null,
+        });
 
-  if (!allowed.includes(nextStatus)) {
-    return error(MESSAGES.invalidTransition);
+  if (rpcError) {
+    logRpcFailure("admin/class-session transition", rpcError);
+    return error(toUserFacingError(rpcError, MESSAGES.updateFailure).message);
   }
-
-  // 진행 상태로 올릴 때만 부모를 다시 본다.
-  if (requiresActiveParents(nextStatus)) {
-    const valid = await parentsStillValid(supabase, session);
-
-    if (!valid) return error(MESSAGES.parentsInactive);
-  }
-
-  // payload는 status 하나뿐이다.
-  // 구조 컬럼과 scheduled_date는 여기 들어가지 않는다.
-  //
-  // ★ .select().maybeSingle()이 반드시 필요하다.
-  //   PostgREST의 PATCH는 return=representation이 없으면 204를 돌려주고,
-  //   postgrest-js는 조건에 맞는 행이 0개여도 { data: null, error: null }을 준다.
-  //   즉 error만 보면 "다른 관리자가 먼저 정리해서 아무것도 안 바뀐 경우"를
-  //   성공으로 착각한다. 실제로 바뀐 행을 돌려받아 확인한다.
-  const { data: updated, error: updateError } = await supabase
-    .from("class_sessions")
-    .update({ status: nextStatus })
-    .eq("id", sessionId)
-    .eq("class_program_assignment_id", assignmentId)
-    // 조회~UPDATE 사이에 다른 관리자가 먼저 정리했을 수 있어 조건을 한 번 더 건다.
-    .in("status", ["scheduled", "in_progress"])
-    .select("id")
-    .maybeSingle();
-
-  if (updateError) {
-    return mapWriteError(updateError, MESSAGES.updateFailure);
-  }
-
-  // 0행 = 그 사이에 누군가 이 수업을 이미 완료/취소했다.
-  if (!updated) return error(MESSAGES.staleSession);
 
   refresh();
 
-  return { phase: "success", message: MESSAGES.transitioned };
+  return {
+    phase: "success",
+    message: kind === "recovery" ? "복구 처리했습니다. 수업 종료 · 복구 처리로 기록되었습니다." : "수업을 취소했습니다.",
+  };
 }
 
 // =========================================================

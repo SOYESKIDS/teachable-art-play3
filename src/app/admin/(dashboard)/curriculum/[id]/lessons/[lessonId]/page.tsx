@@ -16,6 +16,8 @@ import {
   SEQUENCE_NO_MAX,
 } from "@/lib/admin/curriculum";
 import { ActivityFormDialog } from "./ActivityFormDialog";
+import { LessonSectionEditor } from "./LessonSectionEditor";
+import { isLessonSectionCode, type LessonSectionCode } from "@/lib/curriculum/lesson-sections";
 
 export const metadata: Metadata = {
   title: "차시 상세 | SOYESKIDS Admin",
@@ -76,7 +78,19 @@ export default async function LessonDetailPage({
     notFound();
   }
 
-  const activityResult = await fetchLessonActivities(supabase, lesson.id);
+  const [activityResult, sectionResult] = await Promise.all([
+    fetchLessonActivities(supabase, lesson.id),
+    supabase.from("lesson_sections").select("section_code, body, source_ref").eq("lesson_id", lesson.id),
+  ]);
+
+  if (sectionResult.error) {
+    console.error(`[admin/lesson] sections load failed: code=${sectionResult.error.code ?? "unknown"}`);
+  }
+
+  const sections: Partial<Record<LessonSectionCode, { body: string; sourceRef: string | null }>> = {};
+  for (const row of (sectionResult.data ?? []) as { section_code: string; body: string; source_ref: string | null }[]) {
+    if (isLessonSectionCode(row.section_code)) sections[row.section_code] = { body: row.body, sourceRef: row.source_ref };
+  }
   const activities = activityResult.ok ? activityResult.activities : [];
 
   // 등록 폼에 제안할 다음 순서 번호(마지막 + 1, 상한을 넘지 않게 자른다).
@@ -308,6 +322,19 @@ export default async function LessonDetailPage({
           )}
         </section>
       </div>
+
+      {sectionResult.error ? (
+        <p className="mt-6 rounded-lg border border-danger/20 bg-danger-soft px-4 py-6 text-center text-[14px] text-danger">
+          수업 섹션을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
+        </p>
+      ) : (
+        <LessonSectionEditor
+          programId={program.id}
+          lessonId={lesson.id}
+          editable={lesson.status === "draft"}
+          sections={sections}
+        />
+      )}
     </div>
   );
 }

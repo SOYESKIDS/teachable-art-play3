@@ -27,6 +27,35 @@ import type { ObservationMediaItem } from "./staff-observation-media";
  */
 export type ObservationRecordStatus = "draft" | "complete";
 
+/** 관찰 기록 형식 (DEC-086): 구 5영역(legacy) · Growth5 */
+export type ObservationTaxonomy = "legacy_domains" | "growth5";
+
+/** Stage 저장 코드. 표시: 함께 · 보고 나서 · 스스로 (코드 노출 금지 · DEC-100) */
+export type GrowthStage = "together" | "after_modeling" | "independent";
+
+export interface GrowthMetric {
+  code: string;
+  label: string;
+  guide: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface GrowthSelection {
+  metricCode: string;
+  stage: GrowthStage;
+}
+
+export const GROWTH_STAGE_OPTIONS: { value: GrowthStage; label: string; help: string }[] = [
+  { value: "together", label: "함께", help: "교사나 친구와 함께, 또는 도움 속에서 나타난 모습" },
+  { value: "after_modeling", label: "보고 나서", help: "예시나 다른 사람의 모습을 본 뒤 이어 해 본 모습" },
+  {
+    value: "independent",
+    label: "스스로",
+    help: "추가적인 도움이나 예시 없이 아이가 스스로 시도하거나 이어간 모습",
+  },
+];
+
 /**
  * public.observation_domains 대응 타입.
  *
@@ -101,6 +130,11 @@ export interface StaffObservationChild {
   /** observation_domains.sort_order 순으로 정렬된 code 목록 */
   domainCodes: string[];
 
+  /** 기존 관찰의 형식 (없으면 null) */
+  taxonomy: ObservationTaxonomy | null;
+  /** 관찰 포인트 선택 (행 없음 = 기록 없음) */
+  growth: GrowthSelection[];
+
   hasExistingObservation: boolean;
   isCurrentClassMember: boolean;
 
@@ -136,6 +170,7 @@ export interface StaffObservationChild {
 export interface StaffObservationPageData {
   session: StaffObservationSession;
   domains: ObservationDomain[];
+  growthMetrics: GrowthMetric[];
   children: StaffObservationChild[];
 }
 

@@ -42,7 +42,7 @@ export function OrganizationEditForm({
           maxLength={100}
           disabled={isPending}
           defaultValue={organization.name}
-          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function OrganizationEditForm({
           name="institution_type"
           disabled={isPending}
           defaultValue={organization.institution_type ?? ""}
-          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
         >
           <option value="">미지정</option>
           {INSTITUTION_TYPES.map((type) => (

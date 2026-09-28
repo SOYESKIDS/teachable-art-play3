@@ -46,6 +46,9 @@ import { fetchAdminOrganizationSummary } from "@/lib/admin/admin-dashboard-queri
 import { todayInSeoul } from "@/lib/staff/class-session-queries";
 import { AdminOrganizationOperationsSummary } from "@/components/admin/AdminOrganizationOperationsSummary";
 import { OrganizationEditForm } from "./OrganizationEditForm";
+import { ContractSection } from "./ContractSection";
+import { fetchOrganizationContracts } from "@/lib/admin/contract-queries";
+import { seoulToday } from "@/lib/entitlement/labels";
 
 export const metadata: Metadata = {
   title: "기관 상세 | SOYESKIDS Admin",
@@ -194,6 +197,9 @@ export default async function OrganizationDetailPage({
   const activeProgramCountByClassId =
     buildActiveProgramCountByClassId(programAssignmentRows);
 
+  // 계약 · 이용권 (DEC-106). 실패해도 다른 영역은 보여 준다.
+  const contractResult = await fetchOrganizationContracts(supabase, id);
+
   // 등록 폼의 학년도 기본값. Client에서 계산하면 Hydration 불일치 위험이 있어 서버에서 정한다.
   const defaultSchoolYear = new Date().getFullYear();
 
@@ -325,6 +331,19 @@ export default async function OrganizationDetailPage({
             </ul>
           )}
         </section>
+
+        <ContractSection
+          organizationId={organization.id}
+          today={seoulToday()}
+          contracts={contractResult.ok ? contractResult.contracts : []}
+          versions={contractResult.ok ? contractResult.versions : []}
+          classes={classListItems.map((classRow) => ({
+            id: classRow.id,
+            name: classRow.name,
+            status: classRow.status,
+          }))}
+          hasError={!contractResult.ok}
+        />
 
         <ClassManagementSection
           organizationId={organization.id}

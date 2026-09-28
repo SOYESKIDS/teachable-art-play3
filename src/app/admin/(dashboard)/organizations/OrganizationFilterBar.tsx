@@ -48,7 +48,7 @@ export function OrganizationFilterBar({ filters }: OrganizationFilterBarProps) {
               name="q"
               defaultValue={filters.q}
               placeholder="기관명"
-              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none sm:w-[260px]"
+              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
             />
             <button
               type="submit"
@@ -74,7 +74,7 @@ export function OrganizationFilterBar({ filters }: OrganizationFilterBarProps) {
                 status: event.target.value as OrganizationStatus | "all",
               })
             }
-            className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue focus:outline-none sm:w-[160px]"
+            className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-[160px]"
           >
             <option value="all">전체</option>
             {ORGANIZATION_STATUSES.map((status) => (

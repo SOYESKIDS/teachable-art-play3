@@ -320,7 +320,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
 }
 
 function inputClass(error?: string) {
-  return `min-h-12 w-full rounded-xl border bg-white px-4 py-3 text-base text-navy transition-colors duration-200 placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-trust-blue/20 ${
+  return `min-h-12 w-full rounded-xl border bg-white px-4 py-3 text-base text-navy transition-colors duration-200 placeholder:text-navy/30 focus:ring-2 focus:ring-trust-blue/20 ${
     error ? "border-red-300" : "border-navy/15 focus:border-trust-blue"
   }`;
 }

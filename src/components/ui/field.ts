@@ -19,19 +19,19 @@
 
 /** 대화상자 안의 한 줄 입력칸 (44px) */
 export const fieldInput =
-  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[14px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-soft disabled:opacity-70";
+  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[14px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:bg-surface-soft disabled:opacity-70";
 
 /** 목록 위 필터·선택 (44px) — 예전 h-10 을 대체한다 */
 export const fieldControl =
-  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[13px] font-medium text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:opacity-70";
+  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[13px] font-medium text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-70";
 
 /** 로그인·비밀번호 등 인증 화면의 입력칸 (48px) */
 export const fieldAuth =
-  "min-h-12 w-full rounded-[var(--radius-lg)] border border-line-strong bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:opacity-60";
+  "min-h-12 w-full rounded-[var(--radius-lg)] border border-line-strong bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-60";
 
 /** 여러 줄 입력칸. 높이는 쓰는 곳에서 min-h 로 덮어쓴다. */
 export const fieldTextarea =
-  "min-h-[110px] rounded-lg border border-line-strong bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:opacity-70";
+  "min-h-[110px] rounded-lg border border-line-strong bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-70";
 
 /** 입력칸 위의 라벨 */
 export const fieldLabel = "block text-[13px] font-semibold text-navy/70";

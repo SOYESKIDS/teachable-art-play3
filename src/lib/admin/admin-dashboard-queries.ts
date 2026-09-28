@@ -490,14 +490,30 @@ export async function fetchAdminDashboard(
     }>(
       activeOrgIds,
       "reports",
+      // ★ DEC-093: HQ Admin 은 리포트 본문을 직접 SELECT 하지 않는다.
+      //   메타데이터 전용 RPC 로 id · 기간 · 완료 시각만 받는다.
       (chunk) =>
         supabase
-          .from("child_growth_reports")
-          .select("id, organization_id, period_start, period_end, completed_at")
-          .in("organization_id", chunk)
-          .eq("status", "complete")
-          .order("completed_at", { ascending: false, nullsFirst: false })
-          .limit(MAX_ADMIN_RECENT_ITEMS),
+          .rpc("hq_completed_legacy_report_meta", {
+            p_organization_ids: chunk,
+            p_limit: MAX_ADMIN_RECENT_ITEMS,
+          })
+          .then(({ data, error }) => ({
+            data: ((data ?? []) as {
+              report_id: string;
+              organization_id: string;
+              period_start: string;
+              period_end: string;
+              completed_at: string | null;
+            }[]).map((row) => ({
+              id: row.report_id,
+              organization_id: row.organization_id,
+              period_start: row.period_start,
+              period_end: row.period_end,
+              completed_at: row.completed_at,
+            })),
+            error,
+          })),
       // 이 조회는 애초에 상위 N 건만 원하므로 절단 여부를 보지 않는다.
       Number.MAX_SAFE_INTEGER,
     ),
@@ -505,10 +521,14 @@ export async function fetchAdminDashboard(
     // 완료 리포트 총계는 행을 받지 않고 정확히 센다.
     countExactByOrgChunks(activeOrgIds, "kpi:reports", (chunk) =>
       supabase
-        .from("child_growth_reports")
-        .select("id", { count: "exact", head: true })
-        .in("organization_id", chunk)
-        .eq("status", "complete"),
+        .rpc("hq_completed_legacy_report_counts", { p_organization_ids: chunk })
+        .then(({ data, error }) => ({
+          count: ((data ?? []) as { completed_count: number }[]).reduce(
+            (sum, row) => sum + Number(row.completed_count),
+            0,
+          ),
+          error,
+        })),
     ),
   ]);
 
@@ -535,12 +555,8 @@ export async function fetchAdminDashboard(
     fetchByIdChunks<SessionIdLite>(
       observationTargets.map((s) => s.id),
       "observations",
-      (chunk) =>
-        supabase
-          .from("class_session_observations")
-          .select("class_session_id")
-          .in("class_session_id", chunk)
-          .limit(MAX_ADMIN_RECORD_ROWS),
+      // ★ 관찰 본문 대신 "관찰이 있는 수업 id" 만 받는다 (DEC-093).
+      (chunk) => supabase.rpc("hq_observed_session_ids", { p_session_ids: chunk }),
       MAX_ADMIN_RECORD_ROWS,
     ),
   ]);
@@ -848,10 +864,14 @@ export async function fetchAdminOrganizationSummary(
     ),
     countExact(supabase, "org:reports", (c) =>
       c
-        .from("child_growth_reports")
-        .select("id", { count: "exact", head: true })
-        .eq("organization_id", organizationId)
-        .eq("status", "complete"),
+        .rpc("hq_completed_legacy_report_counts", { p_organization_ids: [organizationId] })
+        .then(({ data, error }) => ({
+          count: ((data ?? []) as { completed_count: number }[]).reduce(
+            (sum, row) => sum + Number(row.completed_count),
+            0,
+          ),
+          error,
+        })),
     ),
 
     fetchBounded<SessionLite>(
@@ -917,12 +937,7 @@ export async function fetchAdminOrganizationSummary(
     fetchByIdChunks<SessionIdLite>(
       observationTargets.map((s) => s.id),
       "org:observations",
-      (chunk) =>
-        supabase
-          .from("class_session_observations")
-          .select("class_session_id")
-          .in("class_session_id", chunk)
-          .limit(MAX_ADMIN_RECORD_ROWS),
+      (chunk) => supabase.rpc("hq_observed_session_ids", { p_session_ids: chunk }),
       MAX_ADMIN_RECORD_ROWS,
     ),
   ]);

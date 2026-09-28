@@ -112,7 +112,7 @@ export function DirectorInviteDialog({
                   maxLength={50}
                   disabled={isPending}
                   placeholder="예) 김소예"
-                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue disabled:opacity-60"
                 />
               </div>
 
@@ -131,7 +131,7 @@ export function DirectorInviteDialog({
                   maxLength={255}
                   disabled={isPending}
                   placeholder="director@example.com"
-                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue disabled:opacity-60"
                 />
               </div>
 

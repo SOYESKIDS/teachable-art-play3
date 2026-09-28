@@ -301,7 +301,7 @@ export function ObservationAiDraftSection({
                     readOnly={isPending}
                     maxLength={MAX_AI_DRAFT_TEXT}
                     rows={5}
-                    className="mt-1.5 min-h-32 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60 focus:outline-none"
+                    className="mt-1.5 min-h-32 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60"
                   />
                 </>
               )}

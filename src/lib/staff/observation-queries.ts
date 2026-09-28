@@ -14,8 +14,12 @@ import {
 } from "@/types/staff-observation-media";
 import {
   MAX_OBSERVATION_ROSTER,
+  type GrowthMetric,
+  type GrowthSelection,
+  type GrowthStage,
   type ObservationDomain,
   type ObservationRecordStatus,
+  type ObservationTaxonomy,
   type StaffObservationChild,
   type StaffObservationLoadResult,
 } from "@/types/staff-observation";
@@ -110,6 +114,7 @@ interface ObservationLookupRow {
   record_status: ObservationRecordStatus;
   /** timestamptz 원본 문자열 — 가공하지 않는다 */
   updated_at: string;
+  taxonomy: ObservationTaxonomy;
 }
 
 interface ObservationDomainLinkRow {
@@ -237,7 +242,7 @@ export async function fetchStaffObservations(
     supabase
       .from("class_session_observations")
       .select(
-        "id, child_id, child_voice, teacher_note, record_status, updated_at",
+        "id, child_id, child_voice, teacher_note, record_status, updated_at, taxonomy",
       )
       .eq("organization_id", organizationId)
       .eq("class_session_id", session.id)
@@ -260,6 +265,8 @@ export async function fetchStaffObservations(
       )
       .eq("organization_id", organizationId)
       .eq("class_session_id", session.id)
+      // DEC-088: 숨긴 사진은 즉시 조회 · 서명 대상에서 빠진다.
+      .is("hidden_at", null)
       .order("created_at", { ascending: true })
       .limit(MAX_OBSERVATION_MEDIA_LOOKUP),
 
@@ -400,6 +407,60 @@ export async function fetchStaffObservations(
 
   // 3. 관찰영역 연결을 observation_id 목록 기준으로 한 번에 읽는다 (원아별 N+1 금지).
   const observationIds = observationRows.map((row) => row.id);
+
+  // 3-1. Growth5 (관찰 포인트) — 카탈로그 + 선택 행 (행 없음 = 기록 없음 · DEC-086)
+  const growthCatalogResult = await supabase
+    .from("growth_metrics")
+    .select("code, label, guide, sort_order, is_active")
+    .order("sort_order", { ascending: true });
+
+  if (growthCatalogResult.error) {
+    logQueryFailure("growth metrics", growthCatalogResult.error.message);
+    return { ok: false, reason: "load_failed" };
+  }
+
+  const growthMetrics: GrowthMetric[] = (
+    (growthCatalogResult.data ?? []) as {
+      code: string;
+      label: string;
+      guide: string;
+      sort_order: number;
+      is_active: boolean;
+    }[]
+  ).map((row) => ({
+    code: row.code,
+    label: row.label,
+    guide: row.guide,
+    sortOrder: row.sort_order,
+    isActive: row.is_active,
+  }));
+
+  const growthByObservationId = new Map<string, GrowthSelection[]>();
+
+  if (observationIds.length > 0) {
+    const { data, error } = await supabase
+      .from("observation_growth_selections")
+      .select("observation_id, metric_code, stage")
+      .in("observation_id", observationIds)
+      .limit(DOMAIN_LINK_LIMIT);
+
+    if (error) {
+      logQueryFailure("growth selections", error.message);
+      return { ok: false, reason: "load_failed" };
+    }
+
+    const metricOrder = new Map(growthMetrics.map((metric) => [metric.code, metric.sortOrder]));
+
+    for (const row of (data ?? []) as { observation_id: string; metric_code: string; stage: GrowthStage }[]) {
+      const list = growthByObservationId.get(row.observation_id) ?? [];
+      list.push({ metricCode: row.metric_code, stage: row.stage });
+      growthByObservationId.set(row.observation_id, list);
+    }
+
+    for (const list of growthByObservationId.values()) {
+      list.sort((a, b) => (metricOrder.get(a.metricCode) ?? 99) - (metricOrder.get(b.metricCode) ?? 99));
+    }
+  }
 
   let domainLinks: ObservationDomainLinkRow[] = [];
 
@@ -613,6 +674,9 @@ export async function fetchStaffObservations(
           ? (codesByObservationId.get(observation.id) ?? [])
           : [],
 
+        taxonomy: observation?.taxonomy ?? null,
+        growth: observation ? (growthByObservationId.get(observation.id) ?? []) : [],
+
         hasExistingObservation: observation !== null,
         isCurrentClassMember: child?.class_id === session.class_id,
 
@@ -657,6 +721,7 @@ export async function fetchStaffObservations(
       },
 
       domains,
+      growthMetrics,
       children,
     },
   };

@@ -9,7 +9,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { SessionHistoryBoard } from "@/components/staff/SessionHistoryBoard";
-import { DIRECTOR_NAV } from "../../nav";
+import { directorNavFor } from "../../nav";
 
 export const metadata: Metadata = {
   title: "수업 이력 | TeachAble Art Play",
@@ -57,7 +57,7 @@ export default async function DirectorHistoryPage({
       email={email}
       roleLabel="원장"
       organizationName={membership.organizationName}
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions/history"
     >
       <h1 className="text-[22px] font-bold text-navy">수업 이력</h1>

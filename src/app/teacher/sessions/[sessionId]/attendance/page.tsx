@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchStaffAttendance } from "@/lib/staff/attendance-queries";
 import { resolveMembership } from "@/lib/staff/membership";
@@ -87,13 +88,24 @@ export default async function TeacherAttendancePage({
           </p>
         </div>
       ) : (
-        <AttendanceEditor
-          data={result.data}
-          role="teacher"
-          backHref={`/teacher?org=${encodeURIComponent(
-            membership.organizationId,
-          )}`}
-        />
+        <>
+          <AttendanceEditor
+            data={result.data}
+            role="teacher"
+            backHref={`/teacher?org=${encodeURIComponent(
+              membership.organizationId,
+            )}`}
+          />
+          {/* AFTER ① → ② (class-mode-flow §6 · DEC-099) */}
+          <div className="mt-6 flex justify-end">
+            <Link
+              href={`/teacher/sessions/${sessionId}/observations?org=${encodeURIComponent(membership.organizationId)}`}
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-brand-navy px-5 text-[15px] font-bold text-white hover:bg-navy-deep"
+            >
+              관찰 기록으로
+            </Link>
+          </div>
+        </>
       )}
     </StaffShell>
   );

@@ -5,7 +5,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { AttendanceEditor } from "@/components/staff/AttendanceEditor";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { DIRECTOR_NAV } from "../../../nav";
+import { directorNavFor } from "../../../nav";
 
 export const metadata: Metadata = {
   title: "출결 관리 | TeachAble Art Play",
@@ -70,7 +70,7 @@ export default async function DirectorAttendancePage({
       organizationName={
         membership.organizationName
       }
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions"
     >
       {!result.ok ? (

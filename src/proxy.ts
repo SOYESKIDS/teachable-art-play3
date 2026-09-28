@@ -21,5 +21,5 @@ export const config = {
   // 세 경로는 "아직 세션이 없거나 지금 막 세션을 만드는" 흐름이라
   // 비로그인 리다이렉트가 끼어들면 초대 수락이 깨진다.
   // 해당 Route들은 각자 @supabase/ssr 서버 Client로 쿠키를 직접 다룬다.
-  matcher: ["/admin/:path*", "/director/:path*", "/teacher/:path*"],
+  matcher: ["/admin/:path*", "/sales/:path*", "/director/:path*", "/teacher/:path*"],
 };

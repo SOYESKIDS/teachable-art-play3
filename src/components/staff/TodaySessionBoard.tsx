@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { StaffSessionItem, TodaySessionBoard } from "@/types/staff-session";
 import { SessionCard } from "./SessionCard";
+import type { SessionActorRole } from "./SessionActions";
+import type { StaffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 interface TodaySessionBoardProps {
   board: TodaySessionBoard;
@@ -18,6 +20,12 @@ interface TodaySessionBoardProps {
    *   08B에서는 교사 화면만 넘긴다 — 원장 화면(08C)은 그대로 둔다.
    */
   observationBasePath?: string;
+  /** 교사 = Class Mode 진입 · 원장 = 복구 처리 · 취소 (DEC-046 · DEC-085) */
+  actorRole: SessionActorRole;
+  /** 교사 Class Mode 기준 경로 (예: /teacher/sessions) */
+  classModeBasePath?: string;
+  /** 기본 화면 계열 (G-2 rollout · 서버가 정해 내려준다 · 권한과 무관) */
+  appRouting?: StaffAppRouting;
 }
 
 function KpiItem({ label, value }: { label: string; value: number }) {
@@ -63,6 +71,9 @@ function Section({
   emptyText,
   attendanceBasePath,
   observationBasePath,
+  actorRole,
+  classModeBasePath,
+  appRouting,
 }: {
   title: string;
   description?: string;
@@ -71,6 +82,9 @@ function Section({
   emptyText?: string;
   attendanceBasePath?: string;
   observationBasePath?: string;
+  actorRole: SessionActorRole;
+  classModeBasePath?: string;
+  appRouting?: StaffAppRouting;
 }) {
   if (sessions.length === 0 && !emptyText) return null;
 
@@ -104,6 +118,9 @@ function Section({
                 observationBasePath,
                 session,
               )}
+              actorRole={actorRole}
+              classModeBasePath={classModeBasePath}
+              appRouting={appRouting}
             />
           ))}
         </ul>
@@ -129,6 +146,9 @@ export function TodaySessionBoardView({
   hasError,
   attendanceBasePath,
   observationBasePath,
+  actorRole,
+  classModeBasePath,
+  appRouting,
 }: TodaySessionBoardProps): ReactNode {
   if (hasError) {
     return (
@@ -164,24 +184,33 @@ export function TodaySessionBoardView({
         emptyText="오늘 예정된 수업이 없습니다."
         attendanceBasePath={attendanceBasePath}
         observationBasePath={observationBasePath}
+        actorRole={actorRole}
+        classModeBasePath={classModeBasePath}
+              appRouting={appRouting}
       />
 
       <Section
         title="진행 중인 다른 날 수업"
-        description="아직 완료·취소 처리하지 않은 수업입니다."
+        description="아직 마치지 않은 수업입니다. 담당 교사는 [수업 이어서]에서 마칠 수 있습니다."
         sessions={board.ongoingFromOtherDays}
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
         observationBasePath={observationBasePath}
+        actorRole={actorRole}
+        classModeBasePath={classModeBasePath}
+              appRouting={appRouting}
       />
 
       <Section
         title="지난 예정 수업"
-        description="예정일이 지났지만 아직 시작하지 않은 수업입니다. 진행했다면 완료로, 하지 않았다면 취소로 정리해주세요."
+        description="예정일이 지났지만 아직 시작하지 않은 수업입니다. 진행할 수업은 [수업 준비]에서 시작하고, 진행하지 않은 수업은 취소로 정리해 주세요."
         sessions={board.overdueSessions}
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
         observationBasePath={observationBasePath}
+        actorRole={actorRole}
+        classModeBasePath={classModeBasePath}
+              appRouting={appRouting}
       />
 
       <Section
@@ -191,6 +220,9 @@ export function TodaySessionBoardView({
         showClassName={showClassName}
         attendanceBasePath={attendanceBasePath}
         observationBasePath={observationBasePath}
+        actorRole={actorRole}
+        classModeBasePath={classModeBasePath}
+              appRouting={appRouting}
       />
     </>
   );

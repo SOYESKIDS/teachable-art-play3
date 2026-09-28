@@ -10,7 +10,7 @@ import { GrowthReportShareSection } from "@/components/staff/GrowthReportShareSe
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { formatReportPeriod } from "@/types/staff-growth-report";
-import { DIRECTOR_NAV } from "../../nav";
+import { directorNavFor } from "../../nav";
 
 export const metadata: Metadata = {
   title: "성장 리포트 | TeachAble Art Play",
@@ -71,7 +71,7 @@ export default async function DirectorGrowthReportDetailPage({
       email={email}
       roleLabel="원장"
       organizationName={membership.organizationName}
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/growth-reports"
     >
       {!result.ok ? (

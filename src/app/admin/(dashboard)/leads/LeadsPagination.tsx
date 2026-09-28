@@ -7,6 +7,7 @@ import {
 
 interface LeadsPaginationProps {
   filters: LeadListFilters;
+  basePath?: string;
   page: number;
   pageCount: number;
   total: number;
@@ -33,6 +34,7 @@ function visiblePages(page: number, pageCount: number): number[] {
 
 export function LeadsPagination({
   filters,
+  basePath = "/admin/leads",
   page,
   pageCount,
   total,
@@ -54,7 +56,7 @@ export function LeadsPagination({
         <div className="flex items-center gap-1.5">
           {page > 1 ? (
             <Link
-              href={buildLeadsHref(filters, { page: page - 1 })}
+              href={buildLeadsHref(filters, { page: page - 1 }, basePath)}
               className={linkClasses}
               rel="prev"
             >
@@ -76,7 +78,7 @@ export function LeadsPagination({
             ) : (
               <Link
                 key={current}
-                href={buildLeadsHref(filters, { page: current })}
+                href={buildLeadsHref(filters, { page: current }, basePath)}
                 className={`${linkClasses} tabular-nums`}
               >
                 {current}
@@ -86,7 +88,7 @@ export function LeadsPagination({
 
           {page < pageCount ? (
             <Link
-              href={buildLeadsHref(filters, { page: page + 1 })}
+              href={buildLeadsHref(filters, { page: page + 1 }, basePath)}
               className={linkClasses}
               rel="next"
             >

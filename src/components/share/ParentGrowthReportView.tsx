@@ -163,10 +163,9 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
 
   if (state.phase === "unavailable") {
     return (
-      <NoticeCard title="이 성장 기록을 열 수 없습니다">
-        링크가 만료되었거나 더 이상 공유되지 않는 기록일 수 있습니다.
-        <br />
-        유치원에 새 링크를 요청해주세요.
+      // DEC-103 · DEC-044: 실패 원인(만료 · 중지 · 무효)을 구분해 알리지 않는다.
+      <NoticeCard title="이 링크로는 기록을 확인할 수 없습니다.">
+        기관에 새 공유 링크를 요청해 주세요.
       </NoticeCard>
     );
   }

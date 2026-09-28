@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { href: "/admin/onboarding", label: "새 기관 도입", shortLabel: "기관 도입", exact: false },
   { href: "/admin/organizations", label: "기관 관리", shortLabel: "기관 관리", exact: false },
   { href: "/admin/curriculum", label: "수업 프로그램", shortLabel: "프로그램", exact: false },
+  { href: "/admin/products", label: "상품 · 기능", shortLabel: "상품", exact: false },
   { href: "/admin/leads", label: "기관 문의 관리", shortLabel: "문의 관리", exact: false },
 ] as const;
 

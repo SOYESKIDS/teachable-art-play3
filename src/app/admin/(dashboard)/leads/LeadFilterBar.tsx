@@ -20,24 +20,26 @@ import type { LeadStatus } from "@/types/lead";
 import type { SubmissionType } from "@/types/leadForm";
 
 const selectClasses =
-  "h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue focus:outline-none sm:w-auto";
+  "h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-auto";
 
 const labelClasses = "text-[11px] font-semibold text-navy/45";
 
 interface LeadFilterBarProps {
   filters: LeadListFilters;
+  /** Admin(/admin/leads) · Sales(/sales/leads) 공용 */
+  basePath?: string;
 }
 
 /**
  * 모든 필터 상태는 URL searchParams에 있다.
  * 새로고침·뒤로가기·링크 공유 시에도 조건이 그대로 유지된다.
  */
-export function LeadFilterBar({ filters }: LeadFilterBarProps) {
+export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilterBarProps) {
   const router = useRouter();
 
   // 필터를 바꾸면 항상 1page로 돌아간다
   function navigate(overrides: Partial<LeadListFilters>) {
-    router.push(buildLeadsHref(filters, { page: 1, ...overrides }));
+    router.push(buildLeadsHref(filters, { page: 1, ...overrides }, basePath));
   }
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
@@ -62,7 +64,7 @@ export function LeadFilterBar({ filters }: LeadFilterBarProps) {
               name="q"
               defaultValue={filters.q}
               placeholder="기관명 · 담당자 · 연락처"
-              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none sm:w-[260px]"
+              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
             />
             <button
               type="submit"
@@ -144,7 +146,7 @@ export function LeadFilterBar({ filters }: LeadFilterBarProps) {
         <div className="mt-3 border-t border-navy/8 pt-3">
           <button
             type="button"
-            onClick={() => router.push("/admin/leads")}
+            onClick={() => router.push(basePath)}
             className="text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             필터 초기화

@@ -453,7 +453,7 @@ export function ObservationChildForm({
               스크롤한다. StaffShell 헤더(상단 행 + nav, 약 107px)가 sticky라
               여백이 없으면 방금 누른 입력칸이 nav 아래로 들어간다.
             */
-            className="mt-1.5 min-h-24 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/30 read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60 focus:outline-none"
+            className="mt-1.5 min-h-24 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/30 read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60"
           />
         </div>
 
@@ -492,7 +492,7 @@ export function ObservationChildForm({
             maxLength={MAX_TEACHER_NOTE}
             rows={4}
             placeholder="관찰한 장면을 사실 그대로 적어주세요."
-            className="mt-1.5 min-h-32 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/30 read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60 focus:outline-none"
+            className="mt-1.5 min-h-32 w-full scroll-mt-28 rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/30 read-only:cursor-not-allowed read-only:opacity-60 focus:border-trust-blue/60"
           />
         </div>
 

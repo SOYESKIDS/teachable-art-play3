@@ -52,6 +52,8 @@ export async function requireAdmin(): Promise<AdminSession> {
   const isAdmin = await hasSoyesAdminAccess(supabase);
 
   if (!isAdmin) {
+    // G-2 cutover 후 Sales 는 is_soyes_admin 을 통과하지 않는다 → Sales Shell 로 안내 (권한 변화 없음)
+    if ((await getHqRole(supabase)) === "sales") redirect("/sales");
     // Server Component 렌더 중에는 쿠키를 지울 수 없어 로그아웃 엔드포인트를 경유한다.
     redirect("/admin/logout?reason=forbidden");
   }
@@ -59,5 +61,72 @@ export async function requireAdmin(): Promise<AdminSession> {
   return {
     supabase,
     email: typeof claims.email === "string" ? claims.email : null,
+  };
+}
+
+/** HQ 전역 역할 (DEC-079). admin ≠ sales. */
+export type HqRole = "admin" | "sales";
+
+/**
+ * 현재 사용자의 HQ 역할을 DB 에 묻는다 (public.current_hq_role → private.admin_users).
+ * 역할이 없거나 호출이 실패하면 null (차단).
+ */
+export async function getHqRole(supabase: SupabaseClient): Promise<HqRole | null> {
+  const { data, error } = await supabase.rpc("current_hq_role");
+
+  if (error) {
+    console.error("[hq] current_hq_role failed:", error.message);
+    return null;
+  }
+
+  return data === "admin" || data === "sales" ? data : null;
+}
+
+export interface HqSession extends AdminSession {
+  role: HqRole;
+}
+
+/**
+ * HQ Sales 전용 영역 게이트 (Sales Shell · DEC-097 · DEC-108).
+ * Admin 이 들어오면 Admin 화면으로 보낸다 (역할을 섞지 않는다).
+ */
+export async function requireHqSales(): Promise<HqSession> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  if (!claims) redirect("/admin/login");
+
+  const role = await getHqRole(supabase);
+
+  if (role === "admin") redirect("/admin");
+  if (role !== "sales") redirect("/admin/logout?reason=forbidden");
+
+  return {
+    supabase,
+    email: typeof claims.email === "string" ? claims.email : null,
+    role,
+  };
+}
+
+/**
+ * Admin · Sales 공통 업무(문의 관리) 게이트.
+ * 데이터 범위는 DB RLS 가 역할별로 다시 판정한다.
+ */
+export async function requireHqStaff(): Promise<HqSession> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  if (!claims) redirect("/admin/login");
+
+  const role = await getHqRole(supabase);
+
+  if (role === null) redirect("/admin/logout?reason=forbidden");
+
+  return {
+    supabase,
+    email: typeof claims.email === "string" ? claims.email : null,
+    role,
   };
 }

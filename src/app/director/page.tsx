@@ -4,9 +4,12 @@ import { todayInSeoul } from "@/lib/staff/class-session-queries";
 import { fetchDirectorDashboard } from "@/lib/staff/director-dashboard-queries";
 import { resolveMembership } from "@/lib/staff/membership";
 import { DirectorDashboard } from "@/components/staff/DirectorDashboard";
+import { NotEntitledState } from "@/components/staff/StateScreens";
+import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/queries";
+import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { DIRECTOR_NAV } from "./nav";
+import { directorNavFor } from "./nav";
 
 export const metadata: Metadata = {
   title: "원장 대시보드 | TeachAble Art Play",
@@ -49,6 +52,33 @@ export default async function DirectorPage({ searchParams }: DirectorPageProps) 
     );
   }
 
+  // ★ DEC-056 · DEC-106: STARTER 는 대시보드(집계 · 누락 탐지)가 없다.
+  //   URL 로 직접 들어와도 서버가 집계를 만들지 않는다 (SY-02).
+  //   legacy 화면 계열(G-2 rollout · Production 기본)은 PHASE 07 이전과 같이 대시보드를 보여 준다 —
+  //   상품 · 계약 개념이 아직 적용되지 않은 운영 상태이며, 집계 데이터 접근은 여전히 RLS 가 판정한다.
+  const gateByEntitlement = staffAppRouting() === "saas_v2";
+  const entitlements = gateByEntitlement
+    ? await fetchOrganizationEntitlements(supabase, membership.organizationId)
+    : null;
+
+  if (entitlements && !hasFeature(entitlements, "director_dashboard")) {
+    return (
+      <StaffShell
+        email={email}
+        roleLabel="원장"
+        organizationName={membership.organizationName}
+        navItems={await directorNavFor(supabase, membership.organizationId)}
+        currentHref="/director"
+      >
+        <NotEntitledState
+          audience="director"
+          backHref={`/director/sessions?org=${encodeURIComponent(membership.organizationId)}`}
+          backLabel="수업 운영으로"
+        />
+      </StaffShell>
+    );
+  }
+
   const today = todayInSeoul();
   const dashboard = await fetchDirectorDashboard(
     supabase,
@@ -61,7 +91,7 @@ export default async function DirectorPage({ searchParams }: DirectorPageProps) 
       email={email}
       roleLabel="원장"
       organizationName={membership.organizationName}
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director"
     >
       <DirectorDashboard

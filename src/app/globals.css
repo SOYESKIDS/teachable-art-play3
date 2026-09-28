@@ -100,6 +100,38 @@
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   --header-height: 72px;
+
+  /*
+   * ── PHASE 06 Target palette (DEC-109) ─────────────────────────
+   * Warm Premium Education SaaS. 운영 화면(teacher · director · HQ · parent)
+   * 부터 이 토큰을 쓴다. 마케팅의 기존 yellow 는 PHASE 07 마지막 단계에서 정리.
+   * Yellow 는 Target token 이 아니다. Coral 은 오류 색이 아니다.
+   */
+  --color-brand-navy: #142b4a;
+  --color-brand-green: #2f8f6b;
+  --color-brand-coral: #f1644b;
+  --color-brand-ivory: #f8f5ee;
+  --color-brand-mint: #edf7f2;
+  --color-brand-sky: #edf5fa;
+  --color-ink: #263238;
+  --color-hairline: #e7e9ec;
+
+  /*
+   * Semantic — WCAG 대비 공식으로 측정 (implementation-status §Design 참고)
+   *   ink-muted 5.80:1 · success-text 5.24:1 · accent-text 5.14:1 ·
+   *   danger 6.57:1 · warning-text on warning-soft 5.90:1 ·
+   *   info-text on sky 7.13:1 · control-border 3.08:1 (UI 경계)
+   * brand-green(3.99:1) · brand-coral(3.15:1)은 본문 글자에 쓰지 않는다.
+   */
+  --color-ink-muted: #5b6770;
+  --color-control-border: #8a949e;
+  --color-success-text: #257a5a;
+  --color-accent-text: #c2412b;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-warning-text: #8a5300;
+  --color-warning-soft: #fff6e5;
+  --color-info-text: #1d5487;
 }
 
 @media (min-width: 1024px) {
@@ -131,6 +163,24 @@
   --color-line-soft: var(--color-line-soft);
   --color-line-strong: var(--color-line-strong);
   --color-line-inverse: var(--color-line-inverse);
+
+  --color-brand-navy: var(--color-brand-navy);
+  --color-brand-green: var(--color-brand-green);
+  --color-brand-coral: var(--color-brand-coral);
+  --color-brand-ivory: var(--color-brand-ivory);
+  --color-brand-mint: var(--color-brand-mint);
+  --color-brand-sky: var(--color-brand-sky);
+  --color-ink: var(--color-ink);
+  --color-hairline: var(--color-hairline);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-control-border: var(--color-control-border);
+  --color-success-text: var(--color-success-text);
+  --color-accent-text: var(--color-accent-text);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-warning-text: var(--color-warning-text);
+  --color-warning-soft: var(--color-warning-soft);
+  --color-info-text: var(--color-info-text);
 
   --font-sans: var(--font-pretendard);
   --radius-card: var(--radius-card);

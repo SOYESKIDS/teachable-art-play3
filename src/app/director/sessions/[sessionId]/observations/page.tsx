@@ -5,7 +5,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { ObservationBoard } from "@/components/staff/ObservationBoard";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { DIRECTOR_NAV } from "../../../nav";
+import { directorNavFor } from "../../../nav";
 
 export const metadata: Metadata = {
   title: "관찰기록 조회 | TeachAble Art Play",
@@ -103,7 +103,7 @@ export default async function DirectorObservationPage({
       organizationName={
         membership.organizationName
       }
-      navItems={DIRECTOR_NAV}
+      navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions"
     >
       {!result.ok ? (

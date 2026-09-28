@@ -81,6 +81,7 @@ export function parseLeadFilters(params: RawSearchParams): LeadListFilters {
 export function buildLeadsHref(
   filters: LeadListFilters,
   overrides: Partial<LeadListFilters> = {},
+  basePath: string = "/admin/leads",
 ): string {
   const next = { ...filters, ...overrides };
   const params = new URLSearchParams();
@@ -92,7 +93,7 @@ export function buildLeadsHref(
   if (next.page > 1) params.set("page", String(next.page));
 
   const query = params.toString();
-  return query ? `/admin/leads?${query}` : "/admin/leads";
+  return query ? `${basePath}?${query}` : basePath;
 }
 
 export function hasActiveFilters(filters: LeadListFilters): boolean {

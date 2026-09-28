@@ -192,14 +192,13 @@ export async function fetchServiceReadiness(
             .limit(MAX_ADMIN_SESSIONS),
         MAX_ADMIN_SESSIONS,
       ),
-      fetchBounded<Row>(
+      // ★ DEC-093: 리포트 본문 대신 기관별 완료 건수만 받는다.
+      fetchBounded<Row & { completed_count: number }>(
         "reports",
         () =>
-          supabase
-            .from("child_growth_reports")
-            .select("organization_id")
-            .eq("status", "complete")
-            .limit(MAX_ADMIN_CHILDREN),
+          supabase.rpc("hq_completed_legacy_report_counts", {
+            p_organization_ids: null,
+          }),
         MAX_ADMIN_CHILDREN,
       ),
     ]);
@@ -234,7 +233,9 @@ export async function fetchServiceReadiness(
   // 취소된 수업은 운영 건수에서 뺀다.
   const liveSessions = sessions.rows.filter((row) => row.status !== "cancelled");
   const sessionCounts = countBy(liveSessions);
-  const reportCounts = countBy(reports.rows);
+  const reportCounts = new Map(
+    reports.rows.map((row) => [row.organization_id, Number(row.completed_count)]),
+  );
 
   const activeOrgIds = new Set(
     organizations.rows.filter((row) => row.status === "active").map((r) => r.id),

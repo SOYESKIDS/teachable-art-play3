@@ -107,7 +107,7 @@ export function CreateOrganizationDialog({
                   maxLength={100}
                   disabled={isPending}
                   placeholder="예) 새봄유치원"
-                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue disabled:opacity-60"
                 />
               </div>
 
@@ -123,7 +123,7 @@ export function CreateOrganizationDialog({
                   name="institution_type"
                   defaultValue=""
                   disabled={isPending}
-                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:opacity-60"
+                  className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
                 >
                   <option value="">미지정</option>
                   {INSTITUTION_TYPES.map((type) => (

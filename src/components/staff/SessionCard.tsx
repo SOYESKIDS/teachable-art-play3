@@ -7,7 +7,9 @@ import {
   isTerminalSessionStatus,
 } from "@/lib/admin/class-session";
 import type { StaffSessionItem } from "@/types/staff-session";
-import { SessionActions } from "./SessionActions";
+import { SessionActions, type SessionActorRole } from "./SessionActions";
+import { LegacySessionActions } from "./LegacySessionActions";
+import type { StaffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 interface SessionCardProps {
   session: StaffSessionItem;
@@ -25,6 +27,12 @@ interface SessionCardProps {
    *   원장 화면은 넘기지 않으므로 버튼이 나타나지 않는다(08C 범위).
    */
   observationHref?: string;
+  /** 수업 행동의 주체 (교사: 수업 준비 · 이어서 / 원장: 복구 처리 · 취소) */
+  actorRole?: SessionActorRole;
+  /** 교사 Class Mode 기준 경로 */
+  classModeBasePath?: string;
+  /** 기본 화면 계열 (G-2 rollout) — legacy 면 PHASE 07 이전 수업 상태 버튼 · 권한은 DB 가 판정 */
+  appRouting?: StaffAppRouting;
 }
 
 /**
@@ -80,6 +88,9 @@ export function SessionCard({
   readOnly = false,
   attendanceHref,
   observationHref,
+  actorRole = "teacher",
+  classModeBasePath,
+  appRouting = "legacy",
 }: SessionCardProps) {
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
@@ -157,7 +168,11 @@ export function SessionCard({
             hasDetailLinks ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
           }
         >
-          <SessionActions session={session} />
+          {appRouting === "saas_v2" ? (
+            <SessionActions session={session} actorRole={actorRole} classModeBasePath={classModeBasePath} />
+          ) : (
+            <LegacySessionActions session={session} />
+          )}
         </div>
       ) : null}
 

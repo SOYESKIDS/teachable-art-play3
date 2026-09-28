@@ -97,7 +97,7 @@ export function GrowthReportCreateForm({
   }
 
   const controlClasses =
-    "h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[14px] font-medium text-navy transition-colors focus:border-trust-blue focus:outline-none disabled:cursor-not-allowed disabled:opacity-60";
+    "h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[14px] font-medium text-navy transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-60";
 
   return (
     <section className="mt-4 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
