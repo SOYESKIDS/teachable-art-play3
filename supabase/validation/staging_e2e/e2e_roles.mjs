@@ -182,6 +182,42 @@ async function main() {
     const texts = await page.eval(`(async () => { const srcs = [...document.scripts].map((s) => s.src).filter((s) => s.startsWith(location.origin + '/_next/')).slice(0, 40); const t = [document.documentElement.outerHTML]; for (const s of srcs) { try { t.push(await (await fetch(s)).text()); } catch {} } return t; })()`);
     assertBundleProjectRef(texts, { expectLocal: !staging });
 
+    // ── Login / auth regression (PHASE 09C) ─────────────────
+    // 실패 로그인은 Auth 감사 기록을 남기므로 local-rehearsal 에서만 한다 (staging = SKIP)
+    for (const [label, loginPath, knownEmail] of [
+      ["staff", "/login", roles.teacher?.email],
+      ["hq", "/admin/login", roles.hqAdmin?.email],
+    ]) {
+      await step("auth", `${label} ${loginPath}: initial render has no error alert`, async () => {
+        await page.clearCookies();
+        await go(loginPath);
+        return noAlert();
+      });
+      if (!plan.local) {
+        record("auth", `${label} invalid credentials`, "SKIP", "local-rehearsal only (no failed sign-in on Staging)");
+        continue;
+      }
+      const attempt = async (email) => {
+        await page.clearCookies();
+        await go(loginPath);
+        if (!(await page.type('input[name="email"]', email)) || !(await page.type('input[name="password"]', `${TEST_PREFIX}WRONG_${stamp}`))) return null;
+        await page.eval(`document.querySelector('form button[type="submit"]').click()`);
+        if (!(await page.waitFor(`!!document.querySelector('[role=alert]') && !!(document.querySelector('[role=alert]').innerText||'').trim()`, 20000))) return null;
+        return page.eval(`(() => { const a = document.querySelector('[role=alert]'); const e = document.querySelector('input[name="email"]'); const p = document.querySelector('input[name="password"]');
+          return { text: a.innerText.trim(), emailInvalid: e.getAttribute('aria-invalid'), pwInvalid: p.getAttribute('aria-invalid'),
+            describedBy: e.getAttribute('aria-describedby') === a.id && p.getAttribute('aria-describedby') === a.id && !!a.id, path: location.pathname }; })()`);
+      };
+      await step("auth", `${label} invalid credentials: generic message · aria-invalid · aria-describedby · no account disclosure`, async () => {
+        const unknown = await attempt(`${TEST_PREFIX.toLowerCase()}nobody_${stamp}@example.test`);
+        const wrongPw = knownEmail ? await attempt(knownEmail) : unknown;
+        if (!unknown || !wrongPw) return "error alert not shown";
+        if (unknown.text !== wrongPw.text) return "unknown email and wrong password produce different messages";
+        if (!/이메일 또는 비밀번호를 확인/.test(unknown.text)) return "message is not the generic credential message";
+        if (unknown.emailInvalid !== "true" || unknown.pwInvalid !== "true" || !unknown.describedBy) return "aria-invalid / aria-describedby missing";
+        return unknown.path.endsWith("/login") || `left login page (${unknown.path})`;
+      });
+    }
+
     // ── Teacher ─────────────────────────────────────────────
     if (roles.teacher) {
       await step("teacher", "login → /teacher", async () => (await login("teacher")) === "/teacher" || `landed ${await path()}`);
@@ -231,8 +267,10 @@ async function main() {
           if (!n) return "no attendance groups";
           if (!(await page.clickText("출결 저장"))) return "save button not found";
           await page.idle(1500);
-          // 성공 문구도 role=alert 로 렌더된다 (A11Y-1) → 성공 문구를 확인
-          return (await bodyHas("출결을 저장했습니다")) || (await noAlert());
+          // A11Y-1 (PHASE 09C): 성공 문구는 role=status (polite) · 오류만 role=alert
+          const saved = await page.eval(`(() => { const s = [...document.querySelectorAll('[role=status]')].find((x) => (x.innerText||'').includes('출결을 저장했습니다')); return s ? s.getAttribute('aria-live') : null; })()`);
+          if (saved !== "polite") return `success message not in role=status polite (${saved})`;
+          return noAlert();
         }, { write: true });
         await step("teacher", "Growth5 observation (창의적 시도 · 스스로)", async () => {
           await go(`/teacher/sessions/${ctx.sessionId}/observations?org=${ctx.org}`);
@@ -270,6 +308,13 @@ async function main() {
       await step("director", "/director shows not-entitled (no aggregates)", async () => {
         await go("/director");
         return bodyHas("현재 이용 상품에 포함되지 않은 기능입니다.");
+      });
+      await step("director", "no automatic missing-record detection (STARTER)", async () => {
+        for (const p of ["/director", "/director/sessions"]) {
+          await go(p);
+          for (const t of ["확인이 필요한 기록", "출결 기록 없음", "관찰 기록 없음"]) if (await bodyHas(t)) return `${p} shows "${t}"`;
+        }
+        return true;
       });
       await step("director", "no bulk print UI", async () => !(await bodyHas("일괄 인쇄")));
       await step("director", "session history h1", async () => { await go("/director/sessions/history"); return (await h1()) === "수업 이력" || `h1=${await h1()}`; });
@@ -326,7 +371,10 @@ async function main() {
         await step("parent", "hidden report not shown in portal (empty state)", async () => {
           await openPortal();
           const empty = (await bodyHas("아직 공유된 기록이 없습니다.")) || (await bodyHas("현재 새로 공유된 기록이 없습니다."));
-          return (empty && !(await bodyHas("교사 관찰 기록"))) || "hidden report still visible";
+          if (!(empty && !(await bodyHas("교사 관찰 기록")))) return "hidden report still visible";
+          // 숨김 · 미작성 · 미공개 사유를 드러내지 않는다 (generic empty state 만)
+          const leak = await page.eval(`/(숨김|숨겼|비공개|사유|${TEST_PREFIX}HIDE|결석|미작성)/.test(document.body.innerText)`);
+          return !leak || "portal discloses a hide / absence / not-written reason";
         }, { write: true });
         await step("director", "cleanup: unhide report", async () => {
           await login("director");

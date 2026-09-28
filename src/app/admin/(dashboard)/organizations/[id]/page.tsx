@@ -207,7 +207,7 @@ export default async function OrganizationDetailPage({
     <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
       <Link
         href="/admin/organizations"
-        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
       >
         ← 기관 목록
       </Link>

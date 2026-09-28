@@ -20,7 +20,7 @@ import type { LeadStatus } from "@/types/lead";
 import type { SubmissionType } from "@/types/leadForm";
 
 const selectClasses =
-  "h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-auto";
+  "h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-auto";
 
 const labelClasses = "text-[11px] font-semibold text-navy/45";
 
@@ -64,11 +64,11 @@ export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilter
               name="q"
               defaultValue={filters.q}
               placeholder="기관명 · 담당자 · 연락처"
-              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
+              className="h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
             />
             <button
               type="submit"
-              className="h-10 shrink-0 rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
+              className="h-11 shrink-0 rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
             >
               검색
             </button>
@@ -147,7 +147,7 @@ export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilter
           <button
             type="button"
             onClick={() => router.push(basePath)}
-            className="text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             필터 초기화
           </button>

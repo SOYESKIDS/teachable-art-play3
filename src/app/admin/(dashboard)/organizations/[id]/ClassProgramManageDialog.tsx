@@ -96,7 +96,7 @@ export function ClassProgramManageDialog({
       <button
         type="button"
         onClick={openDialog}
-        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
       >
         운영 관리
       </button>

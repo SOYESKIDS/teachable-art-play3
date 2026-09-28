@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireDirector } from "@/lib/auth/organization";
-import { fetchDirectorPortalRows } from "@/lib/staff/director-report-queries";
+import { fetchDirectorPortalRows, MAX_PORTAL_CHILDREN } from "@/lib/staff/director-report-queries";
 import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/queries";
 import { resolveMembership } from "@/lib/staff/membership";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
@@ -62,7 +62,15 @@ export default async function DirectorPortalPage({ searchParams }: DirectorPorta
             재원 중인 원아가 없습니다.
           </p>
         ) : (
-          <PortalManager rows={rows.rows} portalAvailable={portalAvailable} />
+          <>
+            {rows.truncated ? (
+              <p role="status" className={`mb-3 ${noticeInfo}`}>
+                재원 원아가 많아 이름순으로 앞의 {MAX_PORTAL_CHILDREN.toLocaleString("ko-KR")}명만 표시합니다. 나머지 원아가 더
+                있습니다.
+              </p>
+            ) : null}
+            <PortalManager rows={rows.rows} portalAvailable={portalAvailable} />
+          </>
         )}
       </div>
     </StaffShell>

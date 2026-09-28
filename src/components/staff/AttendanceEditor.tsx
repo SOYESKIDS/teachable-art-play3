@@ -662,7 +662,8 @@ export function AttendanceEditor({
 
           {state.message ? (
             <p
-              role="alert"
+              role={state.phase === "error" ? "alert" : "status"}
+              aria-live={state.phase === "error" ? "assertive" : "polite"}
               className={`mb-3 rounded-lg border px-3 py-2 text-[13px] leading-relaxed ${
                 state.phase === "error"
                   ? "border-soft-coral/50 bg-soft-coral/10 text-navy"

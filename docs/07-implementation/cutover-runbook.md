@@ -191,7 +191,7 @@ PHASE 08 변경 요약 (상세 · 준비 상태: [../08-security-hardening/cutov
 ```
 npx supabase@2.113.0 db reset                                                     # PRE-CUTOVER (일반 migration 10개)
 npx supabase@2.113.0 test db                                                      # 기본 suite 232 (baseline 30 · hardening 116 · PHASE 08 86)
-node supabase/cutover/tests/run-local.mjs G2_post_cutover.test.sql                 # POST-G2 47 (적용 · rollback · 재적용 · rollback 됨 · PHASE 08 §5 §6 포함)
+node supabase/cutover/tests/run-local.mjs G2_post_cutover.test.sql                 # POST-G2 67 (적용 · rollback · 재적용 · rollback 됨 · PHASE 08 §5 §6 · 09C.1 Sales 사진 · Growth5 · 확인 SQL 포함)
 node supabase/cutover/tests/run-local.mjs M3_post_cutover.test.sql                 # POST-G1 59 (PHASE 08 D4 · D5 · ISSUE1 · ISSUE4 · rollback · 재적용 포함)
 node supabase/cutover/tests/run-local.mjs M5_post_cutover.test.sql                 # POST-M5 46 (G-2 → G-1 → M5 · rollback · 재적용)
 node --test supabase/validation/phase08/app_gates.test.mjs                         # 앱 서버 gate 12 (AI 판정 · 식별자 · legacy 수업 Action 모드 · J/K/L start gate)

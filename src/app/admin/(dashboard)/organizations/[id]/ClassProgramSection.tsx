@@ -256,7 +256,7 @@ export function ClassProgramSection({
                                 {/* 수업 실행 이력은 종료된 배정에서도 열람할 수 있어야 한다. */}
                                 <Link
                                   href={`/admin/organizations/${organizationId}/program-assignments/${item.id}`}
-                                  className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                                  className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                                 >
                                   {isTerminalAssignmentStatus(item.status)
                                     ? "수업 이력"
@@ -313,7 +313,7 @@ export function ClassProgramSection({
                           <span className="flex items-center gap-3">
                             <Link
                               href={`/admin/organizations/${organizationId}/program-assignments/${item.id}`}
-                              className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                              className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                             >
                               {isTerminalAssignmentStatus(item.status)
                                 ? "수업 이력"

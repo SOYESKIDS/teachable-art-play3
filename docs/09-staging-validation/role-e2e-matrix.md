@@ -29,3 +29,21 @@ Portal 활성 0 · 중지 1 · audit +4 (`portal.issued · report.hidden · repo
 
 pre-commit 안전 검토 후(지정 수업 · 판정 강화) 재실행해도 같은 합계였다 ([harness-safety-review.md](./harness-safety-review.md)). harness 자체 결함(수정함): ① 성공 여부를 문자열로 돌려준 단계가 PASS 로 기록되던 판정 → PASS/FAIL/CUTOVER_PENDING 명확화
 ② Growth5 지표 label 이 설명을 포함해 정확 일치 클릭이 조용히 빗나감 → 포함 일치 + 클릭 확인 + DB 전후 비교로 발견 · 수정.
+
+## 3. PHASE 09C 재실행 (2026-09-28 · local-rehearsal · 09C QA 수정 포함 빌드)
+
+위 §2 는 PHASE 09A 기록이다 (그대로 둔다). 09C 에서 단계를 추가했다:
+auth 4 (첫 화면 alert 없음 · 잘못된 자격 증명 일반 문구 · aria — staff · HQ) · 원장 "누락 자동 탐지 없음(STARTER)" 1 ·
+Parent 숨김 상태에서 숨김 · 결석 · 미작성 사유 비노출 확인 (기존 단계 강화) · 출결 성공 문구 `role=status` 확인 (기존 단계 강화).
+
+| Role | Staging (Preview) | local-rehearsal |
+|---|---|---|
+| auth | BLOCKED (Preview SSO · 실패 로그인은 local 전용) | 4/4 PASS |
+| Teacher | BLOCKED_BY_VERCEL_DEPLOYMENT_PROTECTION · 비밀번호 MISSING | 13/13 PASS (AI key 없음 = provider 호출 없이 완료) |
+| Director | 〃 | 15/15 PASS |
+| Parent Portal | 〃 | 5/5 PASS |
+| HQ Admin | 〃 | 6/6 PASS (초대 제출 안 함) |
+| HQ Sales | 〃 | 2 PASS + 1 **CUTOVER_PENDING** |
+
+합계 **45 PASS · 1 CUTOVER_PENDING · 0 FAIL** · 임시 browser profile 삭제. DB 전후(`e2e_effects.sql`): 전 `2|2|6|0|0|0|0|0|0|0|0` → 후 `3|2|9|1|1|0|1|0|0|1|4`
+(완료 +1 · 출결 +3 · E2E 관찰 1 · Growth5 1 · 메모 남음 0 · Weekly 완료 1 · 숨김 0 · portal 활성 0 · 중지 1 · audit +4) — 09A 와 같다.

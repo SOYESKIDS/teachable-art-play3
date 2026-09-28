@@ -65,10 +65,10 @@ export function AdminNav({ layout = "inline" }: AdminNavProps) {
             href={item.href}
             aria-current={isActive ? "page" : undefined}
             className={`rounded-lg text-[13px] font-semibold whitespace-nowrap transition-colors ${
-              // 그리드에서는 터치 목표를 44px 이상으로 잡고 가운데 정렬한다.
+              // 터치 목표 44px 이상 (그리드 · 가로 메뉴 모두). 그리드에서는 가운데 정렬한다.
               isGrid
                 ? "flex min-h-11 items-center justify-center px-3"
-                : "px-3 py-2"
+                : "inline-flex min-h-11 items-center px-3"
             } ${
               isActive
                 ? "bg-navy text-white"

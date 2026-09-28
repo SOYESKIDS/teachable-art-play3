@@ -23,7 +23,7 @@ export function CreateOrganizationStep() {
   );
 
   const inputClass =
-    "w-full rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
+    "min-h-11 w-full rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
 
   return (
     <SectionCard

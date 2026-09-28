@@ -85,7 +85,7 @@ export default async function ProgramDetailPage({
     <div className="mx-auto w-full max-w-[1100px] px-5 py-8 lg:px-8">
       <Link
         href="/admin/curriculum"
-        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
       >
         ← 수업 프로그램 목록
       </Link>

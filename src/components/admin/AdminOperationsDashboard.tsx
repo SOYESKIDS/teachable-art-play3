@@ -103,7 +103,7 @@ export function AdminOperationsDashboard({
           <h2 className="text-[16px] font-bold text-navy">기관 운영 현황</h2>
           <Link
             href="/admin/organizations"
-            className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             전체 기관 관리
           </Link>

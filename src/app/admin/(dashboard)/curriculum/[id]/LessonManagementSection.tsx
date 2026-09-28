@@ -169,7 +169,7 @@ export function LessonManagementSection({
                             />
                             <Link
                               href={`/admin/curriculum/${programId}/lessons/${lesson.id}`}
-                              className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                              className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                             >
                               활동 관리
                             </Link>
@@ -212,7 +212,7 @@ export function LessonManagementSection({
                       />
                       <Link
                         href={`/admin/curriculum/${programId}/lessons/${lesson.id}`}
-                        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                       >
                         활동 관리
                       </Link>

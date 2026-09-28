@@ -29,9 +29,9 @@ interface ClassProgramAssignDialogProps {
 
 const buttonClasses = {
   primary:
-    "rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep",
+    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep",
   outline:
-    "rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
+    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
 } as const;
 
 const inputClasses = fieldInput;
@@ -231,7 +231,7 @@ export function ClassProgramAssignDialog({
                     </p>
                     <Link
                       href="/admin/curriculum"
-                      className="mt-4 inline-block text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                      className="mt-4 inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                     >
                       수업 프로그램 관리로 이동 →
                     </Link>

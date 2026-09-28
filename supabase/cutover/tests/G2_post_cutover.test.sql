@@ -6,13 +6,15 @@
 -- rollback 스크립트 → 재적용까지 확인하고 전부 rollback 한다.
 -- 기본 suite 에서 옮긴 8개 assertion (N-3 · N-4 · N-13 · J) 을 그대로 포함한다.
 -- PHASE 08: §5 기관 구성원 직접 쓰기 회수 (audited RPC 만) · §6 AI 초안 저장 gate (ai_assist ∧ AR-8) · 되돌리기 · 재적용 포함.
+-- PHASE 09C.1: HQ Sales 사진(metadata · storage object · 서명 판정) · Growth5 · portal · 아동별 동의 거부 명시 +
+--              교사 · 원장 · HQ Admin 대조(positive control) — 0 이 seed 누락 때문이 아님을 함께 확인한다.
 -- =====================================================================
 
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(47);
+select plan(67);
 
 set local session_replication_role = replica;
 
@@ -74,6 +76,16 @@ insert into public.class_session_observation_media (id, organization_id, class_s
 insert into public.lead_submissions (submission_type, institution_name, contact_name, phone, privacy_agreed, status)
 values ('consult', '가상 문의 기관', '가상 담당자', '010-0000-0000', true, 'new');
 
+-- PHASE 09C.1: HQ Sales 사진 · Growth5 · portal · 동의 거부를 명시 확인하기 위한 합성 행
+insert into storage.objects (bucket_id, name) values
+  ('observation-media', '10000000-0000-0000-0000-00000000000b/80000000-0000-0000-0000-0000000000b1/40000000-0000-0000-0000-0000000000b1/85000000-0000-0000-0000-0000000000b1.jpg');
+insert into public.observation_growth_selections (organization_id, observation_id, metric_code, stage) values
+  ('10000000-0000-0000-0000-00000000000b', '90000000-0000-0000-0000-0000000000b1', 'creative_attempt', 'independent');
+insert into public.child_media_consents (organization_id, child_id, status) values
+  ('10000000-0000-0000-0000-00000000000b', '40000000-0000-0000-0000-0000000000b1', 'consented');
+insert into public.child_portals (organization_id, child_id, token_hash) values
+  ('10000000-0000-0000-0000-00000000000b', '40000000-0000-0000-0000-0000000000b1', repeat('a', 64));
+
 set local session_replication_role = origin;
 
 create or replace function pg_temp.act_as(p_user uuid) returns void language sql as $$
@@ -94,6 +106,17 @@ $$;
 -- 기준선 (PRE-G2): legacy 동작이 살아 있음
 select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.children'), 1::bigint,
   'PRE-G2: Sales still reads children through legacy is_soyes_admin');
+-- PHASE 09C.1 기준선: 사진은 PRE-G2 에서 Sales 에게 열려 있다 (G-2 가 닫는 노출) · Growth5 는 PRE-G2 에서도 닫혀 있다
+select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.class_session_observation_media'), 1::bigint,
+  'PRE-G2: Sales reads photo metadata through legacy is_soyes_admin (exposure G-2 closes)');
+select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.observation_growth_selections'), 0::bigint,
+  'PRE-G2: Sales cannot read Growth5 selections (org-staff-only policy)');
+
+-- PHASE 09C.1: 운영자용 읽기 전용 확인 SQL 을 그대로 펼쳐 네 상태(PRE · 적용 · rollback · 재적용)의 판정을 확인한다
+create temp view g2_verify as
+\ir ../../validation/staging_e2e/sql/g2_post_verify.sql
+select is((select verdict from g2_verify) like 'G-2 NOT VERIFIED%', true,
+  'VERIFY SQL: PRE-G2 = NOT VERIFIED');
 
 
 -- ---------------------------------------------------------------------
@@ -106,6 +129,8 @@ select is((select count(*) from public.audit_events where event_type = 'cutover.
   'G-2: cutover application is audited');
 select is((select count(*) from pg_catalog.pg_trigger where tgname like '%entitlement_gate%')::int, 0,
   'G-2: applying G-2 does not install G-1 entitlement gates');
+select is((select verdict || ' ' || missing::text from g2_verify), 'G-2 ACTIVE — VERIFIED {}',
+  'VERIFY SQL: after apply = G-2 ACTIVE — VERIFIED (nothing missing)');
 
 
 -- ---------------------------------------------------------------------
@@ -123,6 +148,21 @@ select is((select count(*) from public.lead_submissions)::int, 1, 'G-2: Sales ke
 select lives_ok($$ select * from public.hq_sales_organization_summary() $$, 'G-2: Sales keeps the commercial summary');
 select throws_ok($$ select public.hq_support_open_observation('90000000-0000-0000-0000-0000000000b1', '영업 열람 시도') $$,
   '42501', null, 'G-2: Sales cannot use support access');
+
+-- PHASE 09C.1: Sales 사진 · Growth5 · portal · 아동별 동의 거부 (RLS · storage 정책 · 서명 판정 함수)
+select is((select count(*) from public.class_session_observation_media)::int, 0,
+  'G-2/09C.1: Sales cannot read photo metadata');
+select is((select count(*) from storage.objects where bucket_id = 'observation-media')::int, 0,
+  'G-2/09C.1: Sales cannot read observation photo objects (storage RLS)');
+select is(private.can_read_observation_media_object(
+  '10000000-0000-0000-0000-00000000000b/80000000-0000-0000-0000-0000000000b1/40000000-0000-0000-0000-0000000000b1/85000000-0000-0000-0000-0000000000b1.jpg'),
+  false, 'G-2/09C.1: Sales cannot sign observation photos (media access path)');
+select is((select count(*) from public.observation_growth_selections)::int, 0,
+  'G-2/09C.1: Sales cannot read Growth5 selections');
+select is((select count(*) from public.child_portals)::int, 0,
+  'G-2/09C.1: Sales cannot read child portal rows');
+select is((select count(*) from public.child_media_consents)::int, 0,
+  'G-2/09C.1: Sales cannot read per-child consent');
 
 select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
 select is((select count(*) from public.class_session_observations)::int, 0, 'N-4: HQ Admin has no blanket observation SELECT');
@@ -145,8 +185,19 @@ select is((select count(*) from public.class_session_observation_ai_drafts)::int
 select is(private.can_read_observation_media_object(
   '10000000-0000-0000-0000-00000000000b/80000000-0000-0000-0000-0000000000b1/40000000-0000-0000-0000-0000000000b1/85000000-0000-0000-0000-0000000000b1.jpg'),
   true, 'G-2: director still signs own organization photos');
+select is((select count(*) from public.observation_growth_selections)::int, 1,
+  'G-2/09C.1 control: director still reads own organization Growth5 selections');
+select is((select count(*) from public.child_media_consents)::int, 1,
+  'G-2/09C.1 control: director still reads own organization consent');
 select pg_temp.act_as('00000000-0000-0000-0000-00000000c002');
 select is((select count(*) from public.class_session_observation_ai_drafts)::int, 1, 'G-2: assigned teacher keeps own AI drafts');
+select is((select count(*) from public.observation_growth_selections)::int, 1,
+  'G-2/09C.1 control: assigned teacher still reads Growth5 selections');
+select is((select count(*) from storage.objects where bucket_id = 'observation-media')::int, 1,
+  'G-2/09C.1 control: assigned teacher still reads observation photo objects');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select is((select count(*) from public.observation_growth_selections)::int, 0,
+  'G-2/09C.1: HQ Admin has no Growth5 selection SELECT (unchanged)');
 reset role;
 
 
@@ -226,23 +277,38 @@ select is((select count(*) from public.audit_events where event_type like 'membe
 
 select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.children'), 1::bigint,
   'ROLLBACK: legacy Sales read restored');
+select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.class_session_observation_media'), 1::bigint,
+  'ROLLBACK/09C.1: legacy Sales photo metadata read restored (why rollback is incident-only)');
 select is((select count(*) from public.audit_events where event_type = 'cutover.g2_hq_role_split_rolled_back')::int, 1,
   'ROLLBACK: rollback is audited');
 select is(has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT'), true,
   'ROLLBACK/P08: direct membership INSERT restored (legacy app)');
 select is((select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%')::int, 0,
   'ROLLBACK/P08: AI draft release gates removed');
+select is((select verdict like 'G-2 NOT VERIFIED%' and 'release_gate_triggers_enabled' = any (missing)
+             and 'g2_applied_audit_latest' = any (missing) from g2_verify), true,
+  'VERIFY SQL: after rollback = NOT VERIFIED (release gates · latest audit flagged)');
 
 \ir ../M3_hq_role_split_sensitive_access.sql
 
 select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.children'), 0::bigint,
   'RE-APPLY: cutover can be re-applied (Sales read closed again)');
+select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count(*) from public.class_session_observation_media'), 0::bigint,
+  'RE-APPLY/09C.1: Sales photo metadata closed again');
 select is(pg_temp.count_as('00000000-0000-0000-0000-00000000c001', 'select count(*) from public.class_session_observation_ai_drafts'), 0::bigint,
   'RE-APPLY: director AI draft access closed again');
 select is(has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT'), false,
   'RE-APPLY/P08: direct membership INSERT closed again');
 select is((select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%')::int, 2,
   'RE-APPLY/P08: AI draft release gates installed again');
+select is((select verdict from g2_verify), 'G-2 ACTIVE — VERIFIED',
+  'VERIFY SQL: after re-apply = VERIFIED again');
+
+-- 트리거가 있어도 꺼져 있으면(disabled) 판정이 잡아야 한다
+alter table public.class_session_observation_ai_drafts disable trigger trg_observation_ai_drafts_release_gate;
+select is((select 'release_gate_triggers_enabled' = any (missing) and verdict like 'G-2 NOT VERIFIED%' from g2_verify), true,
+  'VERIFY SQL: a disabled release gate trigger is flagged');
+alter table public.class_session_observation_ai_drafts enable trigger trg_observation_ai_drafts_release_gate;
 
 select * from finish();
 rollback;

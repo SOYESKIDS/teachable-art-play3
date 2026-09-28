@@ -22,6 +22,7 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
   );
 
   const message = state.error ?? initialError;
+  const errorId = "admin-login-error";
 
   return (
     <form action={formAction} className="mt-8 flex flex-col gap-5" noValidate>
@@ -35,6 +36,8 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
           type="email"
           autoComplete="username"
           required
+          aria-invalid={message ? true : undefined}
+          aria-describedby={message ? errorId : undefined}
           disabled={isPending}
           placeholder="admin@soyeskids.com"
           className={fieldClasses}
@@ -51,6 +54,8 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
           type="password"
           autoComplete="current-password"
           required
+          aria-invalid={message ? true : undefined}
+          aria-describedby={message ? errorId : undefined}
           disabled={isPending}
           placeholder="비밀번호를 입력하세요"
           className={fieldClasses}
@@ -59,6 +64,7 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
 
       {message ? (
         <p
+          id={errorId}
           role="alert"
           aria-live="polite"
           className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"

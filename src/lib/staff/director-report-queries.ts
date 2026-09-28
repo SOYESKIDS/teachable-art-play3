@@ -122,18 +122,22 @@ export interface PortalChildRow {
   consentStatus: "unknown" | "consented" | "declined";
 }
 
+/** 학부모 공유 화면에 한 번에 보여 주는 재원 원아 수 상한 (PERF-1 · PostgREST max_rows 1000 보다 작게) */
+export const MAX_PORTAL_CHILDREN = 500;
+
 export async function fetchDirectorPortalRows(
   supabase: SupabaseClient,
   organizationId: string,
-): Promise<{ ok: true; rows: PortalChildRow[] } | { ok: false }> {
+): Promise<{ ok: true; rows: PortalChildRow[]; truncated: boolean } | { ok: false }> {
   const [childResult, classResult, portalResult, consentResult] = await Promise.all([
+    // 상한 + 1 개를 읽어 더 있는지 안다 (잘린 목록을 전체처럼 보이지 않게)
     supabase
       .from("children")
       .select("id, name, class_id")
       .eq("organization_id", organizationId)
       .eq("status", "active")
       .order("name", { ascending: true })
-      .limit(500),
+      .limit(MAX_PORTAL_CHILDREN + 1),
     supabase.from("classes").select("id, name").eq("organization_id", organizationId),
     supabase
       .from("child_portals")
@@ -160,9 +164,12 @@ export async function fetchDirectorPortalRows(
     ]),
   );
 
+  const children = (childResult.data ?? []) as { id: string; name: string; class_id: string | null }[];
+
   return {
     ok: true,
-    rows: ((childResult.data ?? []) as { id: string; name: string; class_id: string | null }[]).map((child) => {
+    truncated: children.length > MAX_PORTAL_CHILDREN,
+    rows: children.slice(0, MAX_PORTAL_CHILDREN).map((child) => {
       const portal = portalByChild.get(child.id) ?? null;
       return {
         childId: child.id,

@@ -208,7 +208,7 @@ export function ChildManagementSection({
                       setStatusFilter("all");
                       setClassFilter(CLASS_FILTER_ALL);
                     }}
-                    className="self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
+                    className="inline-flex min-h-11 items-center self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
                   >
                     필터 초기화
                   </button>

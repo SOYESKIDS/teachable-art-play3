@@ -106,7 +106,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
                 setQuery("");
                 setStatusFilter("all");
               }}
-              className="self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
+              className="inline-flex min-h-11 items-center self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
             >
               필터 초기화
             </button>
@@ -188,7 +188,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
                     <td className={`${bodyCellClasses} text-right`}>
                       <Link
                         href={`/admin/curriculum/${program.id}`}
-                        className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                       >
                         상세
                       </Link>
@@ -229,7 +229,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
                 <div className="mt-2.5 flex justify-end border-t border-navy/8 pt-2.5">
                   <Link
                     href={`/admin/curriculum/${program.id}`}
-                    className="text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
                   >
                     상세
                   </Link>

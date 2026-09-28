@@ -48,11 +48,11 @@ export function OrganizationFilterBar({ filters }: OrganizationFilterBarProps) {
               name="q"
               defaultValue={filters.q}
               placeholder="기관명"
-              className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
+              className="h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
             />
             <button
               type="submit"
-              className="h-10 shrink-0 rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
+              className="h-11 shrink-0 rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
             >
               검색
             </button>
@@ -74,7 +74,7 @@ export function OrganizationFilterBar({ filters }: OrganizationFilterBarProps) {
                 status: event.target.value as OrganizationStatus | "all",
               })
             }
-            className="h-10 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-[160px]"
+            className="h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-[160px]"
           >
             <option value="all">전체</option>
             {ORGANIZATION_STATUSES.map((status) => (
@@ -91,7 +91,7 @@ export function OrganizationFilterBar({ filters }: OrganizationFilterBarProps) {
           <button
             type="button"
             onClick={() => router.push("/admin/organizations")}
-            className="text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             필터 초기화
           </button>

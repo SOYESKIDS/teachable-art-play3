@@ -7,9 +7,12 @@
 | — | SEV-0 · SEV-1 | 없음 | — |
 | — | SEV-2 | 없음 | — |
 | P09-D1 | SEV-3 · CUTOVER PENDING | PRE-G2 에서 HQ Sales 가 `/admin` 을 열 수 있고 원장 · 교사 초대를 제출하면 service-role `inviteUserByEmail` 이 **먼저** 실행된다 (Auth 사용자 생성 · 초대 메일) — 이후 `hq_add_organization_member` 가 거부. Staging 에 active Sales 1 | G-2 가 `requireAdmin` 에서 Sales 를 막아 닫는다 (G2_db_preflight ESCALATE). 추가 제안: 초대 Action 이 Auth 호출 전에 `current_hq_role() = 'admin'` 을 확인 (제품 코드 · 미수정) |
-| A11Y-1 | SEV-3 | 출결 성공 문구가 `role="alert"` (`AttendanceEditor.tsx:665`) | `status` 로 분기 제안 |
-| A11Y-2 | SEV-3 | HQ 운영 화면 조작 요소 38~42px | 다음 UI pass |
-| PERF-1 | SEV-3 | 원장 portal · 동의 · 반 조회 · Sales 기관 요약 · 이력 2000 cap 에 페이지네이션 없음 | 규모 증가 전 |
+| A11Y-1 | SEV-3 | 출결 성공 문구가 `role="alert"` (`AttendanceEditor.tsx:665`) | **FIXED (PHASE 09C · 미커밋)** — 성공 `status`/polite · 오류 `alert` ([qa-fixes.md](./qa-fixes.md) §1) |
+| A11Y-2 | SEV-3 | HQ 운영 화면 조작 요소 38~42px | **FIXED (PHASE 09C · 미커밋)** — 44px 미만 130 → 14 (남은 14 = 문서화된 예외) · `DirectorDashboard` 는 DEFERRED ([qa-fixes.md](./qa-fixes.md) §2) |
+| PERF-1 | SEV-3 | 원장 portal · 동의 · 반 조회 · Sales 기관 요약 · 이력 2000 cap 에 페이지네이션 없음 | **부분 FIXED (09C)** — 원장 portal/동의 = 상한 + "더 있음" 안내 (P0) · 반 · 이력 = P1 PILOT ACCEPTABLE · Sales 요약 = P2 · 이력 2000 은 PostgREST max_rows 1000 보다 커서 조용히 잘릴 수 있음 = DEFERRED ([qa-fixes.md](./qa-fixes.md) §3) |
+| P09C-A1 | SEV-3 | HQ `/admin/login` 필드에 `aria-invalid` · `aria-describedby` 없음 (staff 로그인은 있음) | **FIXED (PHASE 09C · 미커밋)** |
+| P09C-V1 | 정보 · 운영 | `npx vercel curl` 은 bypass 비밀이 없으면 **프로젝트에 "Protection Bypass for Automation" 비밀을 새로 만든다** (CLI 56.2.1 소스 `getOrCreateDeploymentProtectionToken` · `PATCH /v1/projects/{id}/protection-bypass`). 2026-09-28 Staging 프로젝트 bypass 항목 0 → 09C 는 `vercel curl` 을 **실행하지 않았다** (bypass 재생성 금지) | Preview 앱 수준 확인은 ① 사람이 Vercel 로그인 브라우저로 · 또는 ② alias Deployment Protection Exception (09B 결정) 중 하나로 |
+| P09C-L2 | local 전용 | local storage 1.68.10 이 `03_media` 업로드 4장 모두 500 (`42P10` ON CONFLICT 인덱스 없음 · local 도구 버전 불일치) | 영향 없음 (e2e 는 사진 없이 · Parent 사진 비노출 확인) |
 | H-1 | 정보 | CSP 없음 (next.config.ts 에 의도적 제외로 기록) | 기존 결정 유지 |
 | P09-L1 | local 전용 | browser_smoke `03_media.mjs` 가상 사진 4번째 업로드 500 (로컬 storage) | 영향 없음 (3장으로 흐름 검증) |
 

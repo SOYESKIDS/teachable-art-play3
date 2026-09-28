@@ -33,6 +33,11 @@
 
 아래 §1 · 다른 문서의 `BLOCKED_PENDING_LOCAL_SECRETS` 는 PHASE 09A 당시 결과 기록이다.
 
+## 1-2. PHASE 09C — Staging service QA · QA 수정 · G-2 준비
+
+보고: [phase-09c-report.md](./phase-09c-report.md) · QA 수정: [qa-fixes.md](./qa-fixes.md) · G-2 계획: [g2-rehearsal-plan.md](./g2-rehearsal-plan.md) ·
+cutover 상태: [cutover-readiness-update.md](./cutover-readiness-update.md). remote 쓰기 0 · cutover 적용 0 · Production 변경 0.
+
 ## 2. 검증 방식의 한계 (솔직히)
 
 - Preview 가 SSO 뒤에 있어 **remote 앱 수준 E2E · responsive · a11y · 성능은 이번에 Preview 에서 실행하지 못했다.** 같은 커밋(153a413) 코드를
