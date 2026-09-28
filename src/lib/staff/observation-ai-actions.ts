@@ -7,6 +7,12 @@ import {
   generateObservationDraft,
   isObservationAiConfigured,
 } from "@/lib/ai/observation-draft-provider";
+import {
+  AI_BLOCK_MESSAGES,
+  IDENTIFIER_BLOCK_MESSAGE,
+  authorizeAiAssist,
+  findExplicitIdentifier,
+} from "@/lib/ai/ai-assist-gate";
 import { formatLessonOrder } from "@/lib/admin/class-session";
 import type { ClassStatus } from "@/types/class-child";
 import type { ClassSessionStatus } from "@/types/class-session";
@@ -40,6 +46,8 @@ import {
  *
  * ★ service_role을 쓰지 않는다. 사용자 세션 client + RLS만 사용한다.
  * ★ 사진(09A)은 AI 입력에 포함되지 않는다 — 이 파일은 media 테이블을 읽지 않는다.
+ * ★ PHASE 08 (A1): provider 호출 전에 DB 판정(ai_assist_authorization: ai_assist C1 · AR-8 · 담당 교사 ·
+ *   반 쓰기)과 명시적 식별자 검사를 통과해야 한다. 환경변수만으로는 호출하지 않는다.
  */
 
 const UUID_PATTERN =
@@ -258,12 +266,6 @@ export async function generateObservationAiDraftAction(input: {
     return { ok: false, message: MESSAGES.invalidRequest };
   }
 
-  // 환경변수가 없으면 provider를 부르지 않고 여기서 끝낸다.
-  // (secret 이름·값·stack을 화면에 노출하지 않는다)
-  if (!isObservationAiConfigured()) {
-    return { ok: false, message: MESSAGES.notConfigured };
-  }
-
   const context = await resolveObservationContext(sessionId, childId);
 
   if (!context.ok) {
@@ -288,9 +290,47 @@ export async function generateObservationAiDraftAction(input: {
   }
 
   /**
+   * ★ PHASE 08 (A1): provider 호출 전 DB 판정 — 담당 교사 · ai_assist(C1) · release registry(AR-8) · 반 쓰기.
+   *   OPENAI_API_KEY 만으로는 호출하지 않는다. 판정 실패 · 오류는 차단 (fail closed).
+   */
+  const decision = await authorizeAiAssist(supabase, "observation_cleanup", observation.id);
+
+  if (!decision.allowed) {
+    return { ok: false, message: AI_BLOCK_MESSAGES[decision.reason] };
+  }
+
+  // 환경변수가 없으면 provider를 부르지 않고 여기서 끝낸다.
+  // (secret 이름·값·stack을 화면에 노출하지 않는다)
+  if (!isObservationAiConfigured()) {
+    return { ok: false, message: MESSAGES.notConfigured };
+  }
+
+  // ★ PHASE 08 (A1): 보낼 문장에 원아 이름 · 연락처 같은 명시적 식별자가 보이면 보내지 않는다.
+  const { data: childData, error: childError } = await supabase
+    .from("children")
+    .select("name")
+    .eq("id", childId)
+    .maybeSingle();
+
+  if (childError || !childData) {
+    logFailure("child lookup", childError?.message ?? "not found");
+    return { ok: false, message: AI_BLOCK_MESSAGES.check_failed };
+  }
+
+  if (
+    findExplicitIdentifier(
+      [observation.child_voice, observation.teacher_note],
+      [(childData as { name: string | null }).name],
+    )
+  ) {
+    return { ok: false, message: IDENTIFIER_BLOCK_MESSAGE };
+  }
+
+  /**
    * provider 입력에 쓸 값만 조회한다.
    *
-   * ★ 아이 이름 · id · 기관 · 반 · 교사 정보는 조회하지도, 보내지도 않는다.
+   * ★ 아이 이름 · id · 기관 · 반 · 교사 정보는 보내지 않는다.
+   *   (아이 이름은 위 식별자 검사에만 읽고 provider 입력에는 넣지 않는다 · PHASE 08)
    *   보내는 것은 차시 정보 · 관찰영역 label · 교사가 쓴 두 문장뿐이다.
    */
   const [lessonResult, linkResult] = await Promise.all([

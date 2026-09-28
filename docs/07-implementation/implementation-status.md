@@ -4,7 +4,7 @@
 |---|---|
 | 문서 성격 | **구현 로그** (Product Decision 문서 아님 · 새 DEC 없음) |
 | Branch / Base | `saas-v2` / `bf785b2` |
-| 최종 갱신 | 2026-09-28 (세션 8 · local 브라우저 smoke) |
+| 최종 갱신 | 2026-09-28 (세션 8 · local 브라우저 smoke) · PHASE 08 로 바뀐 사실만 반영 (§8-A · [../08-security-hardening/](../08-security-hardening/phase-08-plan.md)) |
 | 상태 표기 | IMPLEMENTED · VERIFIED · UNVERIFIED · BLOCKED · DEFERRED |
 
 > 이 문서는 context 가 끊겨도 다음 세션이 이어갈 수 있게 **현재 구현 · migration · 검증 · blocker** 를 기록한다.
@@ -37,7 +37,7 @@
 | **M2** | fact backfill · 기준 데이터 | `20261001100000_m2_fact_backfill_reference_seed` (week_no 복사 · Growth5 catalog · 상품 draft 버전 · capability registry) | IMPLEMENTED · **DB EXECUTION VERIFIED** (빈 DB 기준 · 운영 데이터 backfill 은 미검증) |
 | **M3** | 신규 운영 write 경로 · 계약 · HQ 역할 기반(additive). HQ 역할 제한 · entitlement write gate 는 cutover 로 분리 | `…110000_m3_hq_role_foundation` · `…111000_m3_commerce_contract_readiness` · `…112000_m3_class_operation_rpcs` · `…113000_m3_app_context_rpcs` · **cutover**: `supabase/cutover/M3_hq_role_split_sensitive_access.sql` (G-2) · `supabase/cutover/M3_entitlement_write_gates.sql` (G-1) | IMPLEMENTED · **LOCAL DB VERIFIED** · cutover 는 **LOCAL TEST VERIFIED** (post-G2 28 · post-G1 24) · 운영 적용은 각 preflight 후 |
 | **M4** | Report 2.0 · Portal · legacy adapter | `…120000_m4_report_portal_rpcs` | IMPLEMENTED · **DB EXECUTION VERIFIED** (local) |
-| **M5** | cutover: legacy write · 세션 status 직접 UPDATE 회수 | `supabase/cutover/M5_legacy_write_revoke.sql` (**migrations 밖 · 자동 적용 안 됨**) | PREPARED · DEFERRED (앱 cutover 승인 시) |
+| **M5** | cutover: legacy write · 세션 status 직접 UPDATE 회수 | `supabase/cutover/M5_legacy_write_revoke.sql` (**migrations 밖 · 자동 적용 안 됨**) | PREPARED · DEFERRED (앱 cutover 승인 시) · PHASE 08: 회수 범위 완성 · preflight(DB · 앱) · guard(M5001 · M5002) · audit · rollback · post-M5 test |
 | **M6** | cleanup | 없음 | DEFERRED (CO-2 · 별도 승인) |
 
 ---
@@ -169,12 +169,12 @@
 | 항목 | 상태 | 비고 |
 |---|---|---|
 | Migration 실제 적용 · pgTAP 실행 | VERIFIED (local · 세션 4) | 운영 데이터 기준 backfill · lock 시간(G-5)은 미검증 · remote 적용은 사용자 승인 후 별도 단계 |
-| M5 cutover (`update(status)` · legacy write 회수) | DEFERRED | 앱 전환 배포 확인 후 |
+| M5 cutover (`update(status)` · legacy write 회수) | DEFERRED (파일 완성 · PHASE 08) | 앱 전환 배포 · legacy 화면 계열 제거 확인 후 (M5_app_preflight PASS) |
 | Onboarding Contract step | DEFERRED | §6 |
 | 원장 관찰 화면 Growth5 label 표시 | DEFERRED | 교사 화면만 구현 |
 | 8주 기록 모아보기 학부모 노출 | OPEN | IB-7 |
 | 공통 `InlineAlert` · `ReadOnlyBanner` · `PermissionState` component | 없음 | `EmptyState` · `ErrorState`(ui/surface) · `NotEntitledState` · `ServiceModeBanner` · `ContentNotReadyState` 만 존재 · 알림은 `notice*` class 로 통일 |
-| Legacy share 생성 UI (원장 legacy 리포트 상세) | 유지 | M5 에서 RPC 회수 예정 · 새 공유는 아동별 링크 |
+| Legacy share 생성 UI (원장 legacy 리포트 상세) | 유지 | M5 에서 발급 RPC · 표 INSERT 회수 (PHASE 08) · 기존 링크 중지는 유지 · 새 공유는 아동별 링크 |
 | Monthly · Semester | DEFERRED (P1/P2) | AR-1 · AR-2 하드코딩 없음 |
 | AI C1 × Observation 2.0 | DEFERRED | IB-4 · AR-8 |
 | Marketing 정합 (UI-6) · 마케팅 페이지 serif · yellow 정리 | DEFERRED | 마지막 우선순위 · 원천 충돌 미해결 유지 |
@@ -368,12 +368,23 @@
 
 **검증 (세션 8)**: `db reset` PASS · `test db` 146/146 · post-G2 28/28 · post-G1 24/24 · G-2 preflight 15/15 · tsc · lint · build · diff-check PASS · Remote NOT TOUCHED
 
+## 8-A. PHASE 08 이후 달라진 사실 (요약 · 상세는 docs/08-security-hardening)
+
+| 항목 | PHASE 07 기록 | PHASE 08 이후 |
+|---|---|---|
+| 일반 migration | 10개 (PHASE 07) | 16개 (+ `20261002090000` ~ `20261002095000` · local 만 · Staging 미적용) |
+| G-2 | HQ 역할 split | + §5 구성원 직접 쓰기 회수 · §6 AI 초안 저장 gate · 앱 preflight 18 항목 · DB preflight(active HQ Sales 수 필수) · D2 = TARGET IMPLEMENTED / CUTOVER PENDING |
+| G-1 | trigger 4 · rollback = trigger drop | trigger 6 · D4 onboarding · 배정 재개 gate · before_start 일정 · legacy 공유 쓰기 표면 gate 는 G-1 에서만 (Step H 로 legacy 동작 불변) · G1001 = cutover-time guard · G1002 · rollback 파일 |
+| M5 | 세션 status + legacy RPC 6개 | 표 grant 전부 · legacy 관찰 AI · 관찰영역 연결 · legacy 형식 관찰 closure · guard · preflight · rollback · J/K/L 한 window 연속 수행 (start gate · window preflight) |
+| 검증 | 281 (pre 146 · G2 28 · G1 24 · prod-shaped 83) | [../08-security-hardening/test-matrix.md](../08-security-hardening/test-matrix.md) |
+| 새 DEC | 없음 | DEC-113 · DEC-114 · DEC-115 |
+
 ## 9. Next (새 세션이 이어갈 순서)
 
 1. staging review — 일반 migration 10개 + PHASE 07 앱(legacy 기본) 조합 (remote 적용은 사용자 승인 후 별도 단계)
 2. local 또는 staging 에서 화면 수동 점검: legacy 계열(기본) · `SOYE_SAAS_V2_APP_CUTOVER=true` 계열(가상 계약 fixture)
 3. G-2 cutover 적용 시점 결정 (runbook Step C~E)
 4. 정책 blocker(CO-12 · AR-8 · CO-8) 결정 — Step F 이후의 전제
-5. M5 preflight 작성 (Step L 전)
+5. ~~M5 preflight 작성 (Step L 전)~~ → PHASE 08 에서 작성 (`M5_preflight.sql` · `M5_app_preflight.mjs`)
 
 상태 marker: **READY TO COMMIT PHASE 07 FOR STAGING** (local 브라우저 smoke 완료 · production cutover 아님 · Step F 이후 정책 blocker 로 진행 불가)

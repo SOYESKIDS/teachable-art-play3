@@ -6,6 +6,7 @@
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchStaffObservations } from "@/lib/staff/observation-queries";
 import { isObservationAiConfigured } from "@/lib/ai/observation-draft-provider";
+import { fetchClassEntitlements } from "@/lib/entitlement/queries";
 import { resolveMembership } from "@/lib/staff/membership";
 import { ObservationBoard } from "@/components/staff/ObservationBoard";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
@@ -98,7 +99,12 @@ export async function LegacyTeacherObservationPage({
         <ObservationBoard
           data={result.data}
           role="teacher"
-          aiEnabled={isObservationAiConfigured()}
+          aiEnabled={
+            // PHASE 08 (A1): 환경변수 ∧ 반의 AI C1 판정(ai_assist · AR-8 · 반 쓰기). 버튼 표시용 ·
+            // 최종 판정은 Server Action 이 provider 호출 전에 다시 한다.
+            isObservationAiConfigured() &&
+            (await fetchClassEntitlements(supabase, result.data.session.classId)).aiC1
+          }
           backHref={`/teacher?org=${encodeURIComponent(
             membership.organizationId,
           )}`}

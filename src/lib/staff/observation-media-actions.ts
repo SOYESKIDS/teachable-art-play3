@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireTeacher } from "@/lib/auth/organization";
+import { toUserFacingError } from "@/lib/errors/rpc-errors";
 import type { ClassStatus } from "@/types/class-child";
 import type { ClassSessionStatus } from "@/types/class-session";
 import {
@@ -89,6 +90,7 @@ const MESSAGES = {
   missingObject:
     "업로드된 사진을 확인할 수 없습니다. 사진을 다시 선택해 업로드해주세요.",
   failure: "활동 사진을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.",
+  consentDeclined: "사진 공유에 동의하지 않은 원아의 사진은 올릴 수 없습니다.",
 } as const;
 
 function prepareError(message: string): ObservationMediaPrepareState {
@@ -293,6 +295,20 @@ export async function prepareObservationMediaUpload(input: {
     return prepareError(context.message);
   }
 
+  /**
+   * ★ PHASE 08 (A4): 사진 공유 동의 운영 상태가 declined 인 원아는 올리지 않는다.
+   *   최종 판정은 DB(Storage INSERT 정책 · metadata trigger MD004)다. 여기서는 업로드 전에 이유를 알려 준다.
+   */
+  const { data: consentData } = await context.supabase
+    .from("child_media_consents")
+    .select("status")
+    .eq("child_id", childId)
+    .maybeSingle();
+
+  if ((consentData as { status?: string } | null)?.status === "declined") {
+    return prepareError(MESSAGES.consentDeclined);
+  }
+
   const extension = OBSERVATION_MEDIA_EXTENSIONS[mimeType];
 
   const storagePath = [
@@ -421,6 +437,11 @@ export async function finalizeObservationMediaUpload(input: {
      */
     if (error.code === MISSING_STORAGE_OBJECT) {
       return finalizeError(MESSAGES.missingObject);
+    }
+
+    // PHASE 08 (A4): 동의 declined(MD004) · 재원 아님(MD005) · 반 쓰기 entitlement 없음(EN003)
+    if (error.code === "MD004" || error.code === "MD005" || error.code === "EN003") {
+      return finalizeError(toUserFacingError(error, MESSAGES.notAllowed).message);
     }
 
     if (

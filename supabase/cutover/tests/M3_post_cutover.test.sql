@@ -13,13 +13,15 @@
 --   Org S = 'suspended' 유지 (비운영 기관은 G-1 차단 조건에서 제외)
 -- 계약 active 상태는 replica 모드 fixture 로만 만든다 (정상 활성화 경로는 CO-12 등으로 막혀 있음 ·
 -- 이 파일은 "활성 계약이 존재하는 미래 상태"에서 gate 동작만 검증한다).
+-- PHASE 08 (§3 · §4): D4 onboarding(초안 Org N · 시작 전 Org F) · D5 배정 재개 · FK 정리 UPDATE · legacy 표면 gate (ISSUE1) ·
+--   rollback 파일(M3_entitlement_write_gates_rollback.sql) · 재적용 · G-1 이후 신규 기관 onboarding 전 과정 (ISSUE4).
 -- =====================================================================
 
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(24);
+select plan(59);
 
 set local session_replication_role = replica;
 
@@ -96,6 +98,18 @@ set local session_replication_role = origin;
 
 create or replace function pg_temp.act_as(p_user uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, true);
+$$;
+
+create or replace function pg_temp.try_sql(p_sql text) returns text language plpgsql as $$
+declare
+  v_rows integer;
+begin
+  execute p_sql;
+  get diagnostics v_rows = row_count;
+  return 'rows=' || v_rows;
+exception when others then
+  return sqlstate;
+end;
 $$;
 
 
@@ -218,6 +232,241 @@ select lives_ok(
   'POST: resumed contract allows attendance edits again');
 
 reset role;
+
+
+-- ---------------------------------------------------------------------
+-- 3. PHASE 08 — D4 onboarding (초안 · 시작 전) · D5 배정 재개 · FK 정리 · gate 교체 · 되돌리기
+-- ---------------------------------------------------------------------
+-- Org N = 신규 기관 · STARTER 초안 계약 (반 n1 범위 · n2 범위 밖)
+-- Org F = STARTER 활성화 · 시작일 +10 (before_start) · 반 f1 범위
+set local session_replication_role = replica;
+insert into public.organizations (id, name, status) values
+  ('10000000-0000-0000-0000-00000000000e', 'Org N', 'active'),
+  ('10000000-0000-0000-0000-00000000000f', 'Org F', 'active');
+insert into public.classes (id, organization_id, name, school_year, status) values
+  ('30000000-0000-0000-0000-0000000000e1', '10000000-0000-0000-0000-00000000000e', '새싹반', 2026, 'active'),
+  ('30000000-0000-0000-0000-0000000000e2', '10000000-0000-0000-0000-00000000000e', '잎새반', 2026, 'active'),
+  ('30000000-0000-0000-0000-0000000000f1', '10000000-0000-0000-0000-00000000000f', '열매반', 2026, 'active');
+insert into public.contracts (id, organization_id, product_version_id, status, start_date, end_date)
+select '60000000-0000-0000-0000-00000000000f', '10000000-0000-0000-0000-00000000000f', pv.id, 'active',
+       private.local_today() + 10, private.local_today() + 70
+from public.product_versions pv join public.products p on p.id = pv.product_id
+where p.code = 'starter';
+insert into public.contract_classes (organization_id, contract_id, class_id) values
+  ('10000000-0000-0000-0000-00000000000f', '60000000-0000-0000-0000-00000000000f', '30000000-0000-0000-0000-0000000000f1');
+-- 범위 밖 반 a3 의 종료된 배정 (재개 시도용) · Org C 진행 중 수업의 관찰 (FK 정리용)
+insert into public.class_program_assignments (id, organization_id, class_id, program_id, status) values
+  ('70000000-0000-0000-0000-0000000000a3', '10000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-0000000000a3', '50000000-0000-0000-0000-000000000001', 'completed');
+insert into public.class_session_observations (id, organization_id, class_session_id, class_id, child_id, teacher_note, record_status, created_by, updated_by) values
+  ('90000000-0000-0000-0000-0000000000c1', '10000000-0000-0000-0000-00000000000c', '80000000-0000-0000-0000-0000000000c1', '30000000-0000-0000-0000-0000000000c1',
+   '40000000-0000-0000-0000-0000000000c1', 'legacy 관찰', 'complete', '00000000-0000-0000-0000-00000000d001', '00000000-0000-0000-0000-00000000d001');
+set local session_replication_role = origin;
+
+-- 초안 계약은 정상 경로(HQ 초안 생성 · 반 범위)로 만든다
+insert into public.contracts (id, organization_id, product_version_id, start_date, end_date)
+select '60000000-0000-0000-0000-00000000000e', '10000000-0000-0000-0000-00000000000e', pv.id,
+       private.local_today() + 7, private.local_today() + 90
+from public.product_versions pv join public.products p on p.id = pv.product_id
+where p.code = 'starter';
+insert into public.contract_classes (organization_id, contract_id, class_id) values
+  ('10000000-0000-0000-0000-00000000000e', '60000000-0000-0000-0000-00000000000e', '30000000-0000-0000-0000-0000000000e1');
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select lives_ok(
+  $$ insert into public.class_program_assignments (organization_id, class_id, program_id, status)
+     values ('10000000-0000-0000-0000-00000000000e', '30000000-0000-0000-0000-0000000000e1', '50000000-0000-0000-0000-000000000001', 'active') $$,
+  'D4: draft-contract scope class can receive a program assignment (onboarding · no deadlock)');
+select throws_ok(
+  $$ insert into public.class_program_assignments (organization_id, class_id, program_id, status)
+     values ('10000000-0000-0000-0000-00000000000e', '30000000-0000-0000-0000-0000000000e2', '50000000-0000-0000-0000-000000000001', 'active') $$,
+  'EN001', null, 'D4: class outside every contract scope still rejected (no permanent bypass)');
+select throws_ok(
+  $$ insert into public.class_sessions (organization_id, class_id, class_program_assignment_id, program_id, lesson_id, scheduled_date, status)
+     values ('10000000-0000-0000-0000-00000000000e', '30000000-0000-0000-0000-0000000000e1', (select id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000e1'),
+             '50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000001', private.local_today() + 8, 'scheduled') $$,
+  'EN002', null, 'D4: no service write (session) before activation');
+select lives_ok(
+  $$ insert into public.class_program_assignments (organization_id, class_id, program_id, status)
+     values ('10000000-0000-0000-0000-00000000000f', '30000000-0000-0000-0000-0000000000f1', '50000000-0000-0000-0000-000000000002', 'active') $$,
+  'D4: before_start contract scope class can receive a program assignment');
+select lives_ok(
+  $$ insert into public.class_sessions (organization_id, class_id, class_program_assignment_id, program_id, lesson_id, scheduled_date, status)
+     values ('10000000-0000-0000-0000-00000000000f', '30000000-0000-0000-0000-0000000000f1', (select id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000f1'),
+             '50000000-0000-0000-0000-000000000002', '52000000-0000-0000-0000-000000000002', private.local_today() + 12, 'scheduled') $$,
+  'D4: before_start allows schedule preparation inside the contract week range');
+select throws_ok(
+  $$ insert into public.class_sessions (organization_id, class_id, class_program_assignment_id, program_id, lesson_id, scheduled_date, status)
+     values ('10000000-0000-0000-0000-00000000000f', '30000000-0000-0000-0000-0000000000f1', (select id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000f1'),
+             '50000000-0000-0000-0000-000000000002', '52000000-0000-0000-0000-000000000009', private.local_today() + 12, 'scheduled') $$,
+  'EN002', null, 'D4: before_start still limits the week range (STARTER 1~8)');
+select throws_ok(
+  $$ update public.class_program_assignments set status = 'active' where id = '70000000-0000-0000-0000-0000000000a3' $$,
+  'EN001', null, 'D5: re-activating an assignment outside the contract scope rejected');
+reset role;
+
+select is((select origin_contract_id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000e1'),
+  '60000000-0000-0000-0000-00000000000e'::uuid, 'D4: onboarding assignment records the draft contract as provenance');
+select is((select origin_contract_id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000f1'),
+  '60000000-0000-0000-0000-00000000000f'::uuid, 'D4: before_start assignment records the upcoming contract');
+select is((select (e ->> 'ok')::boolean
+           from jsonb_array_elements(private.contract_readiness_internal('60000000-0000-0000-0000-00000000000e') -> 'items') e
+           where e ->> 'code' = 'program_assignment'), true,
+  'D4: readiness program_assignment item can now be satisfied before activation');
+select is(private.class_write_allowed('30000000-0000-0000-0000-0000000000e1', 'class_mode')
+          or private.class_write_allowed('30000000-0000-0000-0000-0000000000f1', 'class_mode'), false,
+  'D4: draft / before_start classes still have no class_mode write (hard entitlement after activation only)');
+select lives_ok(
+  $$ update public.class_session_observations set created_by = null where id = '90000000-0000-0000-0000-0000000000c1' $$,
+  'D5/D7: FK clean-up style update (audit columns only) is not blocked by the record gate');
+select is((select count(*) from pg_catalog.pg_trigger
+           where tgname in ('trg_class_sessions_status_g1_gate', 'trg_observation_domains_g1_gate'))::int, 2,
+  'ISSUE1: legacy-surface gates (direct start · domain links) are installed by G-1 itself');
+
+-- Issue 1: G-1 이 켜는 legacy 공유 쓰기 표면 판정 (일반 migration 에는 없다) — Org C (운영 중 · 계약 없음)
+set local session_replication_role = replica;
+insert into public.class_sessions (id, organization_id, class_id, class_program_assignment_id, program_id, lesson_id, scheduled_date, status, week_no) values
+  ('80000000-0000-0000-0000-0000000000c2', '10000000-0000-0000-0000-00000000000c', '30000000-0000-0000-0000-0000000000c1', '70000000-0000-0000-0000-0000000000c1',
+   '50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000002', private.local_today(), 'scheduled', 2);
+set local session_replication_role = origin;
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000d001');
+select is(pg_temp.try_sql($f$update public.class_sessions set status = 'completed' where id = '80000000-0000-0000-0000-0000000000c2'$f$),
+  'EN003', 'ISSUE1/POST: legacy direct scheduled -> completed rejected without entitlement (G-1)');
+select is(pg_temp.try_sql($f$insert into public.class_session_observation_domains (observation_id, domain_code)
+    select '90000000-0000-0000-0000-0000000000c1', code from public.observation_domains order by sort_order limit 1$f$),
+  'EN003', 'ISSUE1/POST: legacy domain link rejected without entitlement (G-1)');
+select is(private.can_upload_observation_media_object(
+  '10000000-0000-0000-0000-00000000000c/80000000-0000-0000-0000-0000000000c1/40000000-0000-0000-0000-0000000000c1/85000000-0000-0000-0000-0000000000c9.jpg'),
+  false, 'ISSUE1/POST: photo upload refused without entitlement (G-1)');
+reset role;
+
+-- 되돌리기 (PHASE 08 rollback 파일)
+\ir ../M3_entitlement_write_gates_rollback.sql
+
+select is((select count(*) from pg_catalog.pg_trigger
+           where tgname like '%entitlement_gate%' or tgname like '%\_g1\_gate')::int, 0,
+  'ROLLBACK: all G-1 gate triggers removed');
+select ok(to_regprocedure('private.gate_class_record_write()') is null
+          and to_regprocedure('private.gate_class_session_direct_start()') is null
+          and to_regprocedure('private.assert_g1_preflight_clean()') is null,
+  'ROLLBACK: G-1 functions removed (PRE-CUTOVER shape)');
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000d001');
+select is(private.can_upload_observation_media_object(
+  '10000000-0000-0000-0000-00000000000c/80000000-0000-0000-0000-0000000000c1/40000000-0000-0000-0000-0000000000c1/85000000-0000-0000-0000-0000000000c9.jpg'),
+  true, 'ROLLBACK: photo upload judgement back to the normal-migration rule (consent only)');
+select is(pg_temp.try_sql($f$update public.class_sessions set status = 'completed' where id = '80000000-0000-0000-0000-0000000000c2'$f$),
+  'rows=1', 'ROLLBACK: legacy direct completion back to pre-G1 behaviour (M5 not applied)');
+reset role;
+select is((select count(*) from public.audit_events where event_type = 'cutover.m3_entitlement_gates_rolled_back')::int, 1,
+  'ROLLBACK: rollback is audited');
+
+-- 재적용 (G-1 조건을 다시 맞춘 뒤): G1001 은 적용 시점의 cleanliness guard — 계약 없는 기관(C)과
+-- onboarding 중(초안 N · 시작 전 F)이면서 운영 중 반이 있는 기관은 적용 창에서 정지 상태여야 한다
+update public.organizations set status = 'suspended'
+where id in ('10000000-0000-0000-0000-00000000000c', '10000000-0000-0000-0000-00000000000e', '10000000-0000-0000-0000-00000000000f');
+
+\ir ../M3_entitlement_write_gates.sql
+
+select is((select count(*) from pg_catalog.pg_trigger where tgname like '%entitlement_gate%')::int, 4,
+  'RE-APPLY: G-1 entitlement gates installed again');
+select is((select count(*) from pg_catalog.pg_trigger where tgname like '%\_g1\_gate')::int, 2,
+  'RE-APPLY: legacy-surface gates installed again');
+
+
+-- ---------------------------------------------------------------------
+-- 4. ISSUE 4 — G-1 적용 후 신규 기관 onboarding 전 과정 (G1001 은 실행되지 않는다)
+-- ---------------------------------------------------------------------
+-- Org W = G-1 적용 이후 새로 온 기관. 가짜 계약 · bypass 없이:
+--   초안 계약 → 반 범위 → 배정(provenance) → Readiness → 활성화 → 정상 쓰기
+-- [SIMULATION] 정책 blocker(CO-12 등) 해소 이후 상태를 transaction 안에서만 가정한다 (실제 registry 는 바꾸지 않음 · rollback).
+update public.platform_capabilities set is_released = true, blocked_by = '{}'
+where code in ('class_mode', 'weekly_report', 'parent_portal');
+
+insert into auth.users (id, email) values
+  ('00000000-0000-0000-0000-00000000f0f1', 'onboard-teacher@test.local');
+insert into public.organizations (id, name, status) values
+  ('10000000-0000-0000-0000-0000000000f0', 'Org W (post-G1 onboarding)', 'active');
+insert into public.organization_members (id, organization_id, user_id, role, status) values
+  ('20000000-0000-0000-0000-0000000000f0', '10000000-0000-0000-0000-0000000000f0', '00000000-0000-0000-0000-00000000f0f1', 'teacher', 'active');
+insert into public.classes (id, organization_id, name, school_year, status) values
+  ('30000000-0000-0000-0000-0000000000f0', '10000000-0000-0000-0000-0000000000f0', '새반', 2026, 'active');
+insert into public.class_teachers (organization_id, class_id, organization_member_id) values
+  ('10000000-0000-0000-0000-0000000000f0', '30000000-0000-0000-0000-0000000000f0', '20000000-0000-0000-0000-0000000000f0');
+insert into public.children (id, organization_id, class_id, name, status) values
+  ('40000000-0000-0000-0000-0000000000f0', '10000000-0000-0000-0000-0000000000f0', '30000000-0000-0000-0000-0000000000f0', '가상아이W', 'active');
+insert into public.curriculum_programs (id, code, title, duration_weeks, status) values
+  ('50000000-0000-0000-0000-0000000000f0', 'G1-ONB', 'Onboarding Program', 8, 'published');
+insert into public.curriculum_lessons (id, program_id, week_no, session_no, title, status)
+select ('5f000000-0000-0000-0000-00000000000' || w)::uuid, '50000000-0000-0000-0000-0000000000f0', w, 1, w || '주 수업', 'draft'
+from generate_series(1, 8) as w;
+insert into public.lesson_sections (lesson_id, section_code, body)
+select ('5f000000-0000-0000-0000-00000000000' || w)::uuid, s.code, '가상 ' || s.code
+from generate_series(1, 8) as w
+cross join unnest(private.required_lesson_sections()) as s(code);
+-- 콘텐츠 흐름대로: 초안 차시에 섹션을 채운 뒤 게시
+update public.curriculum_lessons set status = 'published' where program_id = '50000000-0000-0000-0000-0000000000f0';
+
+-- 초안 계약 · 반 범위 (정상 경로)
+insert into public.contracts (id, organization_id, product_version_id, start_date, end_date)
+select '60000000-0000-0000-0000-0000000000f0', '10000000-0000-0000-0000-0000000000f0', pv.id,
+       private.local_today(), private.local_today() + 60
+from public.product_versions pv join public.products p on p.id = pv.product_id
+where p.code = 'starter';
+insert into public.contract_classes (organization_id, contract_id, class_id) values
+  ('10000000-0000-0000-0000-0000000000f0', '60000000-0000-0000-0000-0000000000f0', '30000000-0000-0000-0000-0000000000f0');
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select lives_ok(
+  $$ insert into public.class_program_assignments (organization_id, class_id, program_id, status)
+     values ('10000000-0000-0000-0000-0000000000f0', '30000000-0000-0000-0000-0000000000f0', '50000000-0000-0000-0000-0000000000f0', 'active') $$,
+  'ISSUE4: post-G1 draft-contract assignment bootstrap');
+reset role;
+select is((select origin_contract_id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000f0'),
+  '60000000-0000-0000-0000-0000000000f0'::uuid, 'ISSUE4: assignment provenance = the draft contract (no fake contract)');
+select is((private.contract_readiness_internal('60000000-0000-0000-0000-0000000000f0') ->> 'ready')::boolean, true,
+  'ISSUE4: readiness evaluates to READY after bootstrap');
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select lives_ok(
+  $$ select public.activate_contract('60000000-0000-0000-0000-0000000000f0',
+       (select updated_at from public.contracts where id = '60000000-0000-0000-0000-0000000000f0')) $$,
+  'ISSUE4: HQ Admin activates the contract through the normal readiness gate');
+reset role;
+select is(private.org_service_mode('10000000-0000-0000-0000-0000000000f0'), 'active', 'ISSUE4: service mode active after activation');
+select is((select count(*) from public.contracts where organization_id = '10000000-0000-0000-0000-0000000000f0')::int, 1,
+  'ISSUE4: exactly one contract (no auto-created contract)');
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000f0f1');
+select lives_ok(
+  $$ insert into public.class_sessions (organization_id, class_id, class_program_assignment_id, program_id, lesson_id, scheduled_date, status)
+     values ('10000000-0000-0000-0000-0000000000f0', '30000000-0000-0000-0000-0000000000f0',
+             (select id from public.class_program_assignments where class_id = '30000000-0000-0000-0000-0000000000f0'),
+             '50000000-0000-0000-0000-0000000000f0', '5f000000-0000-0000-0000-000000000001', private.local_today(), 'scheduled') $$,
+  'ISSUE4: normal write — session scheduled under G-1 (EN002 passes)');
+select lives_ok(
+  $$ select public.confirm_session_before((select id from public.class_sessions where class_id = '30000000-0000-0000-0000-0000000000f0'), true, true) $$,
+  'ISSUE4: BEFORE confirmation');
+select lives_ok(
+  $$ select public.start_class_session((select id from public.class_sessions where class_id = '30000000-0000-0000-0000-0000000000f0')) $$,
+  'ISSUE4: V2 start (required sections · entitlement)');
+select lives_ok(
+  $$ select public.save_class_session_attendance_atomic((select id from public.class_sessions where class_id = '30000000-0000-0000-0000-0000000000f0'),
+       '[{"child_id":"40000000-0000-0000-0000-0000000000f0","attendance_status":"present"}]'::jsonb) $$,
+  'ISSUE4: attendance under G-1');
+select lives_ok(
+  $$ select public.save_class_observation((select id from public.class_sessions where class_id = '30000000-0000-0000-0000-0000000000f0'),
+       '40000000-0000-0000-0000-0000000000f0', '색을 섞어 보았다', null, 'complete',
+       '[{"metric_code":"creative_attempt","stage":"independent"}]'::jsonb, null) $$,
+  'ISSUE4: Growth5 observation under G-1');
+reset role;
+select is((select count(*) from public.audit_events where event_type = 'cutover.m3_entitlement_gates_applied')::int, 3,
+  'ISSUE4: G-1 was not re-applied during onboarding (G1001 is a cutover-time guard only)');
 
 select * from finish();
 rollback;

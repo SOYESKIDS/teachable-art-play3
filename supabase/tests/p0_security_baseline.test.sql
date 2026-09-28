@@ -83,6 +83,11 @@ insert into public.curriculum_lessons (id, program_id, week_no, session_no, titl
 insert into public.lesson_sections (lesson_id, section_code, body) values
   ('51000000-0000-0000-0000-000000000001', 's13', '가정에서 오늘 만든 색을 함께 찾아보세요.');
 
+-- PHASE 08 (A3): 수업 시작은 Required Content Set(DEC-096) 전체를 DB 가 요구한다 → 1주 차시에 나머지 필수 섹션을 둔다
+insert into public.lesson_sections (lesson_id, section_code, body)
+select '51000000-0000-0000-0000-000000000001', s.code, '가상 ' || s.code
+from unnest(array['s1', 's2', 's3', 's4a', 's4c', 's5', 's6', 's11', 's12', 's15']) as s(code);
+
 -- STARTER published version · 계약 (org A · 햇님반/달님반) / STANDARD 계약 (org B)
 update public.product_versions pv
 set lifecycle = 'published', published_at = now()

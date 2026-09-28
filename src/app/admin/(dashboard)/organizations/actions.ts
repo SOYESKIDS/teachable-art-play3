@@ -21,6 +21,15 @@ import type {
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/**
+ * 구성원 등록 사유 (audit_events.reason · PHASE 08 D2).
+ * 초대 화면에는 사유 입력칸이 없어 화면 · 행위를 사유로 남긴다 (행위자 · 시각은 audit 가 기록한다).
+ */
+const MEMBERSHIP_REASONS = {
+  directorInvite: "HQ 원장 초대 (기관 관리 화면)",
+  teacherInvite: "HQ 교사 초대 (기관 관리 화면)",
+} as const;
+
 const MESSAGES = {
   invalidName: "기관명을 1~100자로 입력해주세요.",
   createFailure: "기관을 등록하지 못했습니다. 잠시 후 다시 시도해주세요.",
@@ -145,7 +154,7 @@ const INVITE_MESSAGES = {
  *   2. 기관 존재 확인   — Client가 보낸 organization_id를 그대로 믿지 않는다
  *   3. Auth Admin으로 초대 메일 발송 (Secret Key를 쓰는 유일한 지점)
  *      실패 시 "이미 가입된 계정"인지 확인하고 그렇다면 연결만 진행한다
- *   4. organization_members 연결은 **관리자 세션 Client + RLS**로 수행 (Secret Key 미사용)
+ *   4. organization_members 연결은 **관리자 세션 Client + HQ Admin 전용 audited RPC**(hq_add_organization_member)로 수행 (Secret Key 미사용 · PHASE 08)
  *
  * 재시도 안전성(원자성)
  *   - Auth User는 만들어졌는데 membership 연결이 실패한 경우, 같은 폼을 다시 제출하면
@@ -262,24 +271,24 @@ export async function inviteDirectorAction(
   // 초대를 수락하기 전에는 Auth 세션 자체가 없어 Data API에 접근할 수 없으므로
   // 이 시점의 active membership만으로는 어떤 권한도 발생하지 않는다.
   // (invited → active 전환용 별도 RPC 없이 현재 Foundation으로 안전하게 동작한다.)
-  const { error: insertError } = await supabase
-    .from("organization_members")
-    .insert({
-      organization_id: organizationId,
-      user_id: userId,
-      role: "director",
-      status: "active",
-    });
+  // ★ PHASE 08 (D2): 구성원 등록은 HQ Admin 전용 audited RPC 로만 한다 (직접 INSERT 없음).
+  //   사유 · audit · self-grant 금지는 DB 가 판정한다. G-2 cutover 이후에는 직접 INSERT 권한 자체가 없다.
+  const { error: insertError } = await supabase.rpc("hq_add_organization_member", {
+    p_organization_id: organizationId,
+    p_user_id: userId,
+    p_role: "director",
+    p_reason: MEMBERSHIP_REASONS.directorInvite,
+  });
 
   if (insertError) {
-    // 23505 = unique 위반. 동시 제출 경합이면 이미 연결된 것으로 본다.
-    if ((insertError as { code?: string }).code === "23505") {
+    // MB004 = 이미 등록. 동시 제출 경합이면 이미 연결된 것으로 본다.
+    if ((insertError as { code?: string }).code === "MB004") {
       return { phase: "error", message: INVITE_MESSAGES.alreadyMember };
     }
 
     console.error(
-      "[admin/organizations] membership insert failed:",
-      insertError.message,
+      "[admin/organizations] membership rpc failed: code=",
+      (insertError as { code?: string }).code ?? "unknown",
     );
     return { phase: "error", message: INVITE_MESSAGES.linkFailed };
   }
@@ -318,7 +327,7 @@ const TEACHER_INVITE_MESSAGES = {
  *   1. requireAdmin()으로 시작한다. 이번 버전은 SOYES 운영자 전용이고,
  *      원장이 교사를 직접 초대하는 경로는 만들지 않는다.
  *   2. Auth Admin(Secret Key)은 초대 발송과 기존 사용자 조회에만 쓴다.
- *      organization_members INSERT는 관리자 세션 Client + RLS로 한다.
+ *      organization_members 등록은 관리자 세션 Client + audited RPC(hq_add_organization_member)로 한다.
  *   3. 비밀번호는 Admin이 만들지 않는다. 초대 링크로 본인이 설정한다.
  *
  * ★ 원장 초대와 코드가 상당 부분 겹치지만 공통 helper로 묶지 않았다.
@@ -447,24 +456,23 @@ export async function inviteTeacherAction(
   // status는 'active'로 둔다(원장 초대와 동일한 판단).
   // 초대를 수락하기 전에는 Auth 세션 자체가 없어 Data API에 접근할 수 없으므로
   // 이 시점의 active membership만으로는 어떤 권한도 발생하지 않는다.
-  const { error: insertError } = await supabase
-    .from("organization_members")
-    .insert({
-      organization_id: organizationId,
-      user_id: userId,
-      role: "teacher",
-      status: "active",
-    });
+  // ★ PHASE 08 (D2): HQ Admin 전용 audited RPC (원장 초대와 같다).
+  const { error: insertError } = await supabase.rpc("hq_add_organization_member", {
+    p_organization_id: organizationId,
+    p_user_id: userId,
+    p_role: "teacher",
+    p_reason: MEMBERSHIP_REASONS.teacherInvite,
+  });
 
   if (insertError) {
-    // 23505 = unique 위반. 동시 제출 경합이면 이미 연결된 것으로 본다.
-    if ((insertError as { code?: string }).code === "23505") {
+    // MB004 = 이미 등록. 동시 제출 경합이면 이미 연결된 것으로 본다.
+    if ((insertError as { code?: string }).code === "MB004") {
       return { phase: "error", message: TEACHER_INVITE_MESSAGES.alreadyTeacher };
     }
 
     console.error(
-      "[admin/organizations] teacher membership insert failed:",
-      insertError.message,
+      "[admin/organizations] teacher membership rpc failed: code=",
+      (insertError as { code?: string }).code ?? "unknown",
     );
     return { phase: "error", message: TEACHER_INVITE_MESSAGES.linkFailed };
   }

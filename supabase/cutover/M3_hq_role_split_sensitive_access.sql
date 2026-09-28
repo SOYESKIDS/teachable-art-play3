@@ -13,6 +13,9 @@
 --   이 변경이 적용되면 HQ Sales 는 is_soyes_admin() 을 통과하지 못해 현재 앱의 /admin 을 쓸 수 없고,
 --   HQ Admin 은 관찰 · 사진 · AI 초안 · 리포트 본문을 직접 읽지 못한다. PHASE 07 앱(/sales Shell ·
 --   HQ 메타데이터 RPC · 지원 열람)이 먼저 배포되어 있어야 한다.
+--   PHASE 08 추가 (§5 · §6): 기관 구성원 직접 INSERT/UPDATE 회수(초대는 audited RPC) · AI 초안 저장 gate
+--   (ai_assist ∧ AR-8). 현재 legacy 앱은 구성원을 직접 INSERT 하고 AI provider 를 판정 없이 호출하므로
+--   이 둘도 새 앱 배포 뒤에만 적용할 수 있다 (G2_app_preflight 확인 항목).
 --
 -- ★ 적용 조건 (G-2 application preflight · cutover-runbook.md)
 --   1. PHASE 07 앱 배포 확인 (/sales · Sales 로그인 분기 · HQ 메타데이터 RPC 사용)
@@ -45,6 +48,10 @@ begin
     or to_regprocedure('public.hq_sales_organization_summary()') is null
     or to_regprocedure('public.hq_support_open_observation(uuid, text)') is null
     or to_regprocedure('public.hq_completed_legacy_report_meta(uuid[], integer)') is null
+    -- PHASE 08 선행 migration (20261002090000 · 20261002091000)
+    or to_regprocedure('public.hq_add_organization_member(uuid, uuid, text, text)') is null
+    or to_regprocedure('public.hq_change_organization_member(uuid, uuid, text, text, text, timestamptz)') is null
+    or to_regprocedure('private.ai_assist_allowed(uuid, text, text)') is null
   then
     raise exception 'G-2 선행 migration(HQ 역할 기반)이 적용되지 않았습니다.' using errcode = 'G2002';
   end if;
@@ -222,6 +229,81 @@ as $$
       )
   );
 $$;
+
+
+-- ---------------------------------------------------------------------
+-- 5. (PHASE 08 · D2) 기관 구성원 직접 INSERT/UPDATE 회수 — audited RPC 만
+-- ---------------------------------------------------------------------
+-- 일반 migration 20261002090000 이 HQ Admin 전용 audited RPC(hq_add_organization_member ·
+-- hq_change_organization_member · SECURITY DEFINER)와 self-grant · 마지막 원장 · audit trigger 를 이미 둔다.
+-- legacy 앱의 초대는 직접 INSERT 를 쓰므로 그 경로는 새 앱 배포(G2_app_preflight: 초대가 RPC 사용) 뒤에만 닫는다.
+-- 회수 후: 어떤 authenticated 사용자도 organization_members 를 직접 쓰지 못한다 (Sales · 원장 · 교사 · HQ Admin 모두).
+
+revoke insert, update on public.organization_members from authenticated;
+
+drop policy if exists "members insert by soyes admin" on public.organization_members;
+drop policy if exists "members update by soyes admin" on public.organization_members;
+
+
+-- ---------------------------------------------------------------------
+-- 6. (PHASE 08 · A1) AI 초안 저장 gate — ai_assist ∧ release registry(AR-8) ∧ 반 쓰기
+-- ---------------------------------------------------------------------
+-- 앱은 provider 호출 전에 public.ai_assist_authorization 으로 먼저 판정한다 (fail closed).
+-- 이 trigger 는 그 판정을 거치지 않은 저장(직접 DML · 이전 앱)을 DB 에서 거부한다 (AG002).
+-- 새 생성 · 재생성만 판정한다. 이미 저장된 초안의 검토(accept)는 provider 호출이 아니므로 막지 않는다.
+-- 판정 함수 private.ai_assist_allowed 는 일반 migration 20261002091000.
+
+create or replace function private.gate_ai_draft_release()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_class_id uuid;
+  v_allowed boolean;
+begin
+  if tg_table_name = 'class_session_observation_ai_drafts' then
+    if tg_op = 'UPDATE' and new.generated_text is not distinct from old.generated_text then
+      return new;
+    end if;
+    select o.class_id into v_class_id
+    from public.class_session_observations o
+    where o.id = new.observation_id;
+    v_allowed := v_class_id is not null and private.ai_assist_allowed(v_class_id, 'c1', null);
+  else
+    if tg_op = 'UPDATE'
+      and new.generated_growth_changes is not distinct from old.generated_growth_changes
+      and new.generated_observation_summary is not distinct from old.generated_observation_summary
+      and new.generated_next_support is not distinct from old.generated_next_support
+    then
+      return new;
+    end if;
+    select r.class_id into v_class_id
+    from public.child_growth_reports r
+    where r.id = new.report_id;
+    v_allowed := v_class_id is not null and private.ai_assist_allowed(v_class_id, 'c2', 'monthly_report');
+  end if;
+
+  if not v_allowed then
+    raise exception 'AI 작성 보조를 사용할 수 없습니다 (이용 상품 · AI 출시 정책).' using errcode = 'AG002';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke execute on function private.gate_ai_draft_release() from public, anon, authenticated;
+
+drop trigger if exists trg_observation_ai_drafts_release_gate on public.class_session_observation_ai_drafts;
+create trigger trg_observation_ai_drafts_release_gate
+  before insert or update on public.class_session_observation_ai_drafts
+  for each row execute function private.gate_ai_draft_release();
+
+drop trigger if exists trg_growth_report_ai_drafts_release_gate on public.child_growth_report_ai_drafts;
+create trigger trg_growth_report_ai_drafts_release_gate
+  before insert or update on public.child_growth_report_ai_drafts
+  for each row execute function private.gate_ai_draft_release();
 
 
 -- ---------------------------------------------------------------------

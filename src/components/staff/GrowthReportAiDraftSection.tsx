@@ -136,10 +136,10 @@ export function GrowthReportAiDraftSection({
         </p>
       ) : null}
 
-      {/* 환경변수 미설정 — 화면은 죽지 않고 안내만 한다 */}
+      {/* AI 사용 불가 (환경변수 · 이용 상품 · AI 정책 판정 · PHASE 08) — 화면은 죽지 않고 안내만 한다 */}
       {hasSource && !aiEnabled ? (
         <p className="mt-3 text-[13px] leading-relaxed text-navy/45">
-          AI 기능 설정이 필요합니다. 기관 관리자에게 문의해주세요.
+          현재 AI 작성 보조를 사용할 수 없습니다 (이용 상품 · AI 정책 · 설정).
         </p>
       ) : null}
 

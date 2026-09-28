@@ -120,6 +120,11 @@ select pg_temp.u('mdV' || n), pg_temp.u('orgV'), pg_temp.u('s:V:w1'), pg_temp.u(
        'image/png', 68
 from generate_series(1, 4) as n;
 
+-- PHASE 08 (A4): Weekly 사진 선택은 동의 운영 상태 consented 원아만 (DEC-088) → [LOCAL SIMULATION] 아이 1 동의 기록
+-- evidence_ref 는 비워 둔다 (가상 데이터 · 증빙을 꾸며 넣지 않는다)
+insert into public.child_media_consents (organization_id, child_id, status)
+values (pg_temp.u('orgV'), pg_temp.u('V:ch1'), 'consented');
+
 insert into public.lead_submissions (submission_type, institution_name, contact_name, phone, privacy_agreed, status, package_code) values
   ('consult', '스모크 문의 기관 1(가상)', '가상 담당자', '010-0000-0101', true, 'new', 'starter'),
   ('pilot',   '스모크 문의 기관 2(가상)', '가상 담당자', '010-0000-0102', true, 'contacted', 'undecided');

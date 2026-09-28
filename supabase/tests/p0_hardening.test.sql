@@ -153,6 +153,10 @@ select ('85000000-0000-0000-0000-00000000000' || n)::uuid,
        'image/jpeg', 1000
 from generate_series(1, 4) as n;
 
+-- PHASE 08 (A4): Weekly 사진 선택은 동의 운영 상태 consented 원아의 사진만 (DEC-088) → 아이 A1 동의 기록
+insert into public.child_media_consents (organization_id, child_id, status)
+values ('10000000-0000-0000-0000-00000000000a', '40000000-0000-0000-0000-0000000000a1', 'consented');
+
 set local session_replication_role = origin;
 
 

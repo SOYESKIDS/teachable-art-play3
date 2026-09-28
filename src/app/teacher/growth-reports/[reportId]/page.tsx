@@ -4,6 +4,7 @@ import { requireTeacher } from "@/lib/auth/organization";
 import { fetchGrowthReportDetail } from "@/lib/staff/growth-report-queries";
 import { resolveMembership } from "@/lib/staff/membership";
 import { isGrowthReportAiConfigured } from "@/lib/ai/growth-report-draft-provider";
+import { authorizeAiAssist } from "@/lib/ai/ai-assist-gate";
 import { GrowthReportAiDraftSection } from "@/components/staff/GrowthReportAiDraftSection";
 import { GrowthReportAttendanceSummary } from "@/components/staff/GrowthReportAttendanceSummary";
 import { GrowthReportEditor } from "@/components/staff/GrowthReportEditor";
@@ -140,7 +141,10 @@ export default async function TeacherGrowthReportDetailPage({
               reportId={result.report.id}
               reportUpdatedAt={result.report.updatedAt}
               sourceCount={result.report.sources.length}
-              aiEnabled={isGrowthReportAiConfigured()}
+              aiEnabled={
+                isGrowthReportAiConfigured() &&
+                (await authorizeAiAssist(supabase, "period_report_draft", result.report.id)).allowed
+              }
               draft={result.report.aiDraft}
             />
           ) : null}

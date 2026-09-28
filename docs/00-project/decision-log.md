@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | 문서 상태 | 운영 중 (누적 기록) |
-| 최종 갱신 | 2026-09-26 |
+| 최종 갱신 | 2026-09-28 (PHASE 08 · DEC-113~115) |
 | 범위 | PHASE 01 (Product Definition) · PHASE 02 (User Flow / IA) · PHASE 03 (Product / Contract / Entitlement / Commerce) · PHASE 04 (AI Growth / Report) · PHASE 05 (Data / Security) · PHASE 06 (UX / Design System) 확정 사항 |
 | Branch / commit | `saas-v2` / `faa8f9a` (PHASE 01) · `0ceb8ad` (PHASE 02 기준) · `b31fdc9` (PHASE 03 기준) · `11269e6` (PHASE 04 기준) · `1c7afe9` (PHASE 05 기준) · `dc5ba3d` (PHASE 06 기준) |
 | 관련 문서 | [project-charter.md](./project-charter.md) · [../01-product/open-items.md](../01-product/open-items.md) · [../02-ia/open-items.md](../02-ia/open-items.md) · [../03-commerce/open-items.md](../03-commerce/open-items.md) · [../04-ai-report/open-items.md](../04-ai-report/open-items.md) · [../05-data-security/open-items.md](../05-data-security/open-items.md) · [../06-ux-design/open-items.md](../06-ux-design/open-items.md) |
@@ -2696,6 +2696,78 @@ PHASE 05 감사에서 현재 Sales가 모든 기관의 관찰 · 인용 · 사�
 
 ---
 
+## 14-A. Security & Cutover Integrity (PHASE 08)
+
+PHASE 08 에서 새로 확정된 정책만 기록한다. 구현 세부(trigger · RPC · 오류 코드)는 결정이 아니며
+[../08-security-hardening/phase-08-plan.md](../08-security-hardening/phase-08-plan.md)에 있다.
+PHASE 08 해석으로 구현했지만 사용자 확인이 필요한 항목은 결정이 아니다 → [../08-security-hardening/open-items.md](../08-security-hardening/open-items.md).
+
+### DEC-113 · 기관 구성원(organization_members) 변경 권한
+
+| | |
+|---|---|
+| 결정일 | 2026-09-28 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 08 고정 결정 1 · D2) |
+
+**결정 내용**
+- 기관 구성원 추가 · 역할 변경 · 상태 변경은 **HQ Admin 만** 한다. HQ Sales · 원장 · 교사는 할 수 없다 (원장의 교사 초대 위임은 PH3-2 OPEN 그대로).
+- 모든 변경에 **사유가 필수**이고 **audit_events 가 필수**다.
+- HQ Admin 이 **자기 자신에게 원장 역할을 부여하는 self-grant 는 금지**한다.
+- 기관의 **마지막 active 원장을 제거 · 비활성화 · 역할 변경해 active 원장이 0명이 되는 변경은 금지**한다.
+- 직접 authenticated DML 에 의존하지 않고 **전용 audited 경로를 DB 가 강제**한다 (UI gate 아님).
+- (적용 시점 · 방식은 결정이 아니다 → cutover-runbook · 08-security-hardening/cutover-readiness.md)
+
+**결정 이유**
+PHASE 01~07 감사(D2): HQ 운영자가 직접 INSERT/UPDATE 로 자기 자신에게 원장 권한을 주고 아동 기록 전체에 접근할 수 있었고 기록이 남지 않았다.
+
+**관련**: DEC-079 · DEC-080 · DEC-093
+
+---
+
+### DEC-114 · AI provider 호출 조건 (legacy 경로 포함)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-28 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 08 고정 결정 2 · A1) |
+| Clarifies | DEC-009 · DEC-070 · DEC-071 |
+
+**결정 내용**
+- AI provider 호출 전에 서버가 **담당 교사 권한 · ai_assist entitlement(해당 capability) · release registry(AR-8 등 blocked_by) · 유효한 근거**를 모두 확인한다. 하나라도 아니면 호출하지 않는다.
+- **OPENAI_API_KEY 등 환경변수가 있다는 사실만으로 AI 를 실행하지 않는다.** 이 조건은 legacy 관찰 AI · legacy 성장 리포트 AI 에도 적용된다.
+- 사진 · child id · organization id 등 명시적 식별자는 provider 로 보내지 않는다. 자유 텍스트 개인정보 최소화 정책과 충돌하면 호출을 차단하고 이유를 돌려준다 (정책 자체는 AR-8 OPEN).
+- raw request · response · full prompt 저장 금지 유지 (DEC-078). AI 초안은 리포트 공개를 일으키지 않고 Growth5 · Stage 를 선택하지 않는다 (DEC-009 · DEC-070).
+
+**결정 이유**
+PHASE 01~07 감사(A1): legacy AI 두 경로가 환경변수만 확인하고 provider 를 호출해 AR-8 · entitlement 를 우회할 수 있었다.
+
+**관련**: DEC-009 · DEC-070 · DEC-071 · DEC-078 · AR-8
+
+---
+
+### DEC-115 · 활성화 전 onboarding 준비 (프로그램 배정)
+
+| | |
+|---|---|
+| 결정일 | 2026-09-28 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE 08 WS4 불변 조건 · D4) |
+| Resolves | 03-commerce contract-policy.md "온보딩 준비를 draft에서도 허용할지" (PHASE 05 이월) — 프로그램 배정에 한해 |
+
+**결정 내용**
+- **초안(draft) 계약 · 이용 시작 전(before_start) 계약의 반 범위**에 있는 반에는 활성화 전에도 프로그램 배정을 만들 수 있다. 배정은 근거 계약을 provenance 로 남긴다.
+- **Production 서비스 쓰기(수업 진행 · 출결 · 관찰 · 리포트)는 활성화 후 유효 계약 ∧ 서비스 모드 active 에서만** 가능하다 (hard entitlement 유지).
+- 가짜 계약 자동 생성 없음 · 영구 bypass 없음 (그 계약이 초안 · 시작 전인 동안, 그 반 범위만) · Readiness 요구(DEC-063) · 상품 약속은 그대로다.
+
+**결정 이유**
+G-1 이후 배정 gate 는 유효 계약을 요구하고, 활성화 Readiness 는 범위 반마다 배정을 요구해 신규 기관이 활성화할 수 없는 순환(D4)이 있었다.
+
+**관련**: DEC-051 · DEC-063 · DEC-083 · DEC-084
+
+---
+
 ## 15. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
@@ -2813,6 +2885,9 @@ PHASE 05 감사에서 현재 Sales가 모든 기관의 관찰 · 인용 · 사�
 | DEC-110 | 디자인 | 반응형 우선순위 · Class Mode 고밀도 전환 없음 · WCAG 2.2 AA 실무 baseline | ACTIVE | 사용자 (UX-25 · 26) |
 | DEC-111 | UX | 상태 어휘 · 화면 상태 · 충돌 · 확인 단계 (typed-name 필수 아님) | ACTIVE | 사용자 (UX-27 · 28 · 33) |
 | DEC-112 | UX | 용어 사전 · copy 체계 · modal 범위 · Cutover 안내 · 법적 문구 경계 | ACTIVE | 사용자 (UX-30 · 34 · 35 · UI-8) |
+| DEC-113 | 보안 | 기관 구성원 변경 = HQ Admin 전용 audited 경로 · 사유 필수 · self-grant 금지 · 마지막 원장 보호 | ACTIVE | 사용자 (PHASE 08 고정 결정 1) |
+| DEC-114 | AI | AI provider 호출 = 담당 교사 ∧ ai_assist ∧ release registry(AR-8) ∧ 근거 · env 만으로 호출 금지 (legacy 포함) | ACTIVE | 사용자 (PHASE 08 고정 결정 2) |
+| DEC-115 | 계약 | 활성화 전 onboarding: 초안 · 시작 전 계약의 반 범위에 프로그램 배정 허용 · 서비스 쓰기는 활성화 후 | ACTIVE | 사용자 (PHASE 08 WS4 불변 조건) |
 
 **총 112건 · ACTIVE 112 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-042 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-060 · DEC-063 · DEC-067 · DEC-069 · DEC-071 · DEC-072 · DEC-075) · SUPERSEDED 0 · WITHDRAWN 0**
 

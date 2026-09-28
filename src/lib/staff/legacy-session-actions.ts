@@ -6,6 +6,7 @@
 
 import { refresh } from "next/cache";
 import { requireStaff } from "@/lib/auth/organization";
+import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 import {
   parseSessionTransitionStatus,
   requiresActiveParents,
@@ -39,6 +40,9 @@ const UUID_PATTERN =
 /** Postgres check_violation — enforce_class_session_update trigger가 던지는 코드 */
 const CHECK_VIOLATION = "23514";
 
+/** G-1 gate_class_session_direct_start — 반 쓰기 entitlement 없음 (G-1 적용 후) */
+const NOT_ENTITLED = "EN003";
+
 const MESSAGES = {
   invalidRequest: "요청 값을 확인할 수 없습니다.",
   invalidStatus: "변경할 수업 상태를 선택해주세요.",
@@ -51,6 +55,10 @@ const MESSAGES = {
   stale:
     "수업 상태가 이미 변경되었습니다. 화면을 새로고침한 뒤 다시 확인해주세요.",
   failure: "수업 상태를 변경하지 못했습니다. 잠시 후 다시 시도해주세요.",
+  routeClosed:
+    "이 화면에서는 수업 상태를 바꿀 수 없습니다. 수업 화면에서 수업 준비 · 시작 · 마치기를 이용해주세요.",
+  notEntitled:
+    "현재 읽기 전용 상태이거나 이용 상품에 포함되지 않아 수업을 진행할 수 없습니다.",
   started: "수업을 시작했습니다.",
   completed: "수업을 완료 처리했습니다.",
   cancelled: "수업을 취소 처리했습니다.",
@@ -97,6 +105,12 @@ export async function transitionStaffSessionAction(
   );
 
   if (nextStatus === null) return error(MESSAGES.invalidStatus);
+
+  // ★ PHASE 08 (A2): 라우팅 스위치는 권한 우회 경로가 아니다.
+  //   SaaS 2.0 모드에서는 이 legacy 직접 전환(scheduled → completed 포함)을 서버가 거부한다.
+  //   화면에서 버튼을 숨기는 것만으로는 부족하다 — Server Action 은 action ID 로 직접 호출될 수 있다.
+  //   legacy 모드(Production 기본)의 동작은 그대로다. DB 쪽 완전 회수는 M5 cutover.
+  if (staffAppRouting() !== "legacy") return error(MESSAGES.routeClosed);
 
   // 로그인 + 활성 membership(director|teacher) + 활성 기관까지 DB가 판정한다.
   const { supabase } = await requireStaff();
@@ -156,6 +170,12 @@ export async function transitionStaffSessionAction(
     if ((updateError as { code?: string }).code === CHECK_VIOLATION) {
       logFailure("db rule", updateError.message);
       return error(MESSAGES.parentsInactive);
+    }
+
+    // G-1 적용 후: 반 쓰기 entitlement 가 없으면 DB 가 legacy 직접 시작 · 완료를 거부한다 (EN003)
+    if ((updateError as { code?: string }).code === NOT_ENTITLED) {
+      logFailure("entitlement", updateError.message);
+      return error(MESSAGES.notEntitled);
     }
 
     logFailure("transition", updateError.message);

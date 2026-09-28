@@ -6,6 +6,12 @@ import {
   generateGrowthReportDraft,
   isGrowthReportAiConfigured,
 } from "@/lib/ai/growth-report-draft-provider";
+import {
+  AI_BLOCK_MESSAGES,
+  IDENTIFIER_BLOCK_MESSAGE,
+  authorizeAiAssist,
+  findExplicitIdentifier,
+} from "@/lib/ai/ai-assist-gate";
 import type {
   GrowthReportAiApplyState,
   GrowthReportAiGenerateState,
@@ -30,6 +36,8 @@ import type {
  *
  * ★ service_role을 쓰지 않는다. 사용자 세션 client + RLS만 사용한다.
  * ★ 사진·storage path·signed URL은 어느 경로로도 provider에 가지 않는다.
+ * ★ PHASE 08 (A1): provider 호출 전에 DB 판정(ai_assist_authorization: ai_assist C2 · monthly_report · AR-8 ·
+ *   담당 교사 · 반 쓰기)과 명시적 식별자 검사를 통과해야 한다. 환경변수만으로는 호출하지 않는다.
  */
 
 const UUID_PATTERN =
@@ -84,6 +92,7 @@ interface ReportRow {
   id: string;
   organization_id: string;
   class_id: string;
+  child_id: string;
   status: string;
   period_start: string;
   period_end: string;
@@ -120,11 +129,6 @@ export async function generateGrowthReportAiDraftAction(input: {
     return { ok: false, message: MESSAGES.invalidRequest };
   }
 
-  // 환경변수가 없으면 provider를 부르지 않고 여기서 끝낸다.
-  if (!isGrowthReportAiConfigured()) {
-    return { ok: false, message: MESSAGES.notConfigured };
-  }
-
   // 로그인 + role='teacher' + membership active + 기관 active를 DB가 판정한다.
   const { supabase } = await requireTeacher();
 
@@ -135,7 +139,7 @@ export async function generateGrowthReportAiDraftAction(input: {
   const { data: reportData, error: reportError } = await supabase
     .from("child_growth_reports")
     .select(
-      "id, organization_id, class_id, status, period_start, period_end, source_revision, attendance_present_count, attendance_absent_count, attendance_late_count, attendance_left_early_count, session_count",
+      "id, organization_id, class_id, child_id, status, period_start, period_end, source_revision, attendance_present_count, attendance_absent_count, attendance_late_count, attendance_left_early_count, session_count",
     )
     .eq("id", reportId)
     .maybeSingle();
@@ -153,6 +157,21 @@ export async function generateGrowthReportAiDraftAction(input: {
 
   if (report.status !== "draft") {
     return { ok: false, message: MESSAGES.notDraft };
+  }
+
+  /**
+   * ★ PHASE 08 (A1): provider 호출 전 DB 판정 — 담당 교사 · ai_assist(C2) · monthly_report ·
+   *   release registry(AR-8) · 반 쓰기. OPENAI_API_KEY 만으로는 호출하지 않는다 (fail closed).
+   */
+  const decision = await authorizeAiAssist(supabase, "period_report_draft", report.id);
+
+  if (!decision.allowed) {
+    return { ok: false, message: AI_BLOCK_MESSAGES[decision.reason] };
+  }
+
+  // 환경변수가 없으면 provider를 부르지 않고 여기서 끝낸다.
+  if (!isGrowthReportAiConfigured()) {
+    return { ok: false, message: MESSAGES.notConfigured };
   }
 
   /**
@@ -177,6 +196,27 @@ export async function generateGrowthReportAiDraftAction(input: {
 
   if (sources.length === 0) {
     return { ok: false, message: MESSAGES.noSource };
+  }
+
+  // ★ PHASE 08 (A1): 보낼 문장에 원아 이름 · 연락처 같은 명시적 식별자가 보이면 보내지 않는다.
+  const { data: childData, error: childError } = await supabase
+    .from("children")
+    .select("name")
+    .eq("id", report.child_id)
+    .maybeSingle();
+
+  if (childError || !childData) {
+    logFailure("child lookup", childError?.code ?? "not_found");
+    return { ok: false, message: AI_BLOCK_MESSAGES.check_failed };
+  }
+
+  if (
+    findExplicitIdentifier(
+      sources.flatMap((row) => [row.child_voice_snapshot, row.teacher_note_snapshot, row.reviewed_text_snapshot]),
+      [(childData as { name: string | null }).name],
+    )
+  ) {
+    return { ok: false, message: IDENTIFIER_BLOCK_MESSAGE };
   }
 
   /**

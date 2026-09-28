@@ -6,6 +6,8 @@
 --   · lead · 관찰 · 사진 · AI 초안 · 성장 리포트 정책    ← 각 원본 migration (아래 주석)
 --   · private.can_read_observation_media_object()   ← 일반 migration 20261001110000 (기존 역할 + 숨김 제외)
 --   · private.can_read_child_observation_history()  ← 20260831095000
+--   · (PHASE 08) organization_members 직접 INSERT/UPDATE grant · 정책  ← 20260815
+--   · (PHASE 08) AI 초안 저장 gate trigger 제거
 -- 되돌리면 현재(legacy) 앱의 Sales-via-admin 동작과 HQ blanket 조회가 다시 열린다 — 장애 대응용.
 -- 실행: psql --single-transaction -v ON_ERROR_STOP=1 -f supabase/cutover/M3_hq_role_split_rollback.sql
 -- =====================================================================
@@ -179,6 +181,31 @@ as $$
       )
   );
 $$;
+
+-- PHASE 08 §5: 기관 구성원 직접 쓰기 복원 (원본: 20260815_create_organization_foundation.sql)
+-- self-grant · 마지막 원장 · audit trigger(일반 migration 20261002090000)는 그대로 남는다.
+grant insert (organization_id, user_id, role, status) on public.organization_members to authenticated;
+grant update (role, status) on public.organization_members to authenticated;
+
+drop policy if exists "members insert by soyes admin" on public.organization_members;
+create policy "members insert by soyes admin"
+  on public.organization_members
+  for insert
+  to authenticated
+  with check ((select private.is_soyes_admin()));
+
+drop policy if exists "members update by soyes admin" on public.organization_members;
+create policy "members update by soyes admin"
+  on public.organization_members
+  for update
+  to authenticated
+  using ((select private.is_soyes_admin()))
+  with check ((select private.is_soyes_admin()));
+
+-- PHASE 08 §6: AI 초안 저장 gate 제거 (앱의 provider 전 판정 ai_assist_authorization 은 그대로)
+drop trigger if exists trg_observation_ai_drafts_release_gate on public.class_session_observation_ai_drafts;
+drop trigger if exists trg_growth_report_ai_drafts_release_gate on public.child_growth_report_ai_drafts;
+drop function if exists private.gate_ai_draft_release();
 
 select private.record_audit_event(
   null, 'cutover.g2_hq_role_split_rolled_back', 'cutover', null, 'G-2 rollback',

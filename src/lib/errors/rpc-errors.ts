@@ -7,10 +7,10 @@
  * 호출한 곳이 정한 일반 문구로 바꾼다.
  */
 
-const APP_ERROR_CODE = /^(SS|OB|GM|QM|RP|PT|CT|MD|CS|EN|HS)\d{3}$/;
+const APP_ERROR_CODE = /^(SS|OB|GM|QM|RP|PT|CT|MD|CS|EN|HS|MB|AG)\d{3}$/;
 
 /** 동시 수정 충돌 (last-write-wins 금지 · DEC-111) */
-const CONFLICT_CODES = new Set(["OB004", "QM005", "RP009", "CT008"]);
+const CONFLICT_CODES = new Set(["OB004", "QM005", "RP009", "CT008", "MB005"]);
 
 export interface RpcErrorLike {
   code?: string | null;

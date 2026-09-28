@@ -126,6 +126,28 @@ check(
   /SOYE_SAAS_V2_APP_CUTOVER\s*===\s*["'`]true["'`]/.test(routing) && !/NEXT_PUBLIC/.test(routing),
 );
 
+// 8. (PHASE 08 · D2) 기관 구성원 쓰기 = audited RPC 만 (cutover §5 가 직접 INSERT/UPDATE 를 회수)
+const appSources = walk("src").map((file) => ({ file, src: stripComments(read(file)) }));
+const memberWrites = appSources
+  .filter(({ src }) => /\.from\(\s*["'`]organization_members["'`]\s*\)\s*\.(insert|update|upsert|delete)\(/.test(src))
+  .map(({ file }) => file);
+check("app writes organization_members only through audited RPC (no direct DML)", memberWrites.length === 0, memberWrites.join(", "));
+const orgActions = stripComments(read("src/app/admin/(dashboard)/organizations/actions.ts"));
+check("director · teacher invites use hq_add_organization_member", (orgActions.match(/["'`]hq_add_organization_member["'`]/g) ?? []).length >= 2);
+
+// 9. (PHASE 08 · A1) AI provider 호출 전 DB 판정 (cutover §6 이 판정 없는 AI 초안 저장을 거부)
+const AI_ACTIONS = [
+  { file: "src/lib/staff/observation-ai-actions.ts", provider: "generateObservationDraft(" },
+  { file: "src/lib/staff/growth-report-ai-actions.ts", provider: "generateGrowthReportDraft(" },
+];
+const aiUngated = AI_ACTIONS.filter(({ file, provider }) => {
+  const src = stripComments(read(file));
+  const gate = src.indexOf("authorizeAiAssist(");
+  const call = src.indexOf(provider);
+  return gate < 0 || call < 0 || gate > call;
+}).map(({ file }) => file);
+check("AI actions authorize (ai_assist · AR-8) before calling the provider", aiUngated.length === 0, aiUngated.join(", "));
+
 // 결과
 let failed = 0;
 for (const { name, ok, detail } of results) {

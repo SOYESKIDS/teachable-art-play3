@@ -5,13 +5,14 @@
 -- transaction 안에서 supabase/cutover/M3_hq_role_split_sensitive_access.sql 을 적용 → 검증 →
 -- rollback 스크립트 → 재적용까지 확인하고 전부 rollback 한다.
 -- 기본 suite 에서 옮긴 8개 assertion (N-3 · N-4 · N-13 · J) 을 그대로 포함한다.
+-- PHASE 08: §5 기관 구성원 직접 쓰기 회수 (audited RPC 만) · §6 AI 초안 저장 gate (ai_assist ∧ AR-8) · 되돌리기 · 재적용 포함.
 -- =====================================================================
 
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(28);
+select plan(47);
 
 set local session_replication_role = replica;
 
@@ -150,6 +151,75 @@ reset role;
 
 
 -- ---------------------------------------------------------------------
+-- PHASE 08 §5 (D2) · §6 (A1)
+-- ---------------------------------------------------------------------
+create or replace function pg_temp.try_sql(p_sql text) returns text language plpgsql as $$
+declare
+  v_rows integer;
+begin
+  execute p_sql;
+  get diagnostics v_rows = row_count;
+  return 'rows=' || v_rows;
+exception when others then
+  return sqlstate;
+end;
+$$;
+
+insert into auth.users (id, email) values
+  ('00000000-0000-0000-0000-000000009001', 'g2-new-teacher@test.local'),
+  ('00000000-0000-0000-0000-000000009002', 'g2-new-teacher-2@test.local');
+
+select is(has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT'), false,
+  'G-2/P08: authenticated has no direct organization_members INSERT');
+select is(has_any_column_privilege('authenticated', 'public.organization_members', 'UPDATE'), false,
+  'G-2/P08: authenticated has no direct organization_members UPDATE');
+select is((select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%')::int, 2,
+  'G-2/P08: AI draft release gates installed');
+
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select is(pg_temp.try_sql($f$insert into public.organization_members (organization_id, user_id, role, status)
+    values ('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-000000009001', 'teacher', 'active')$f$),
+  '42501', 'G-2/P08: HQ Admin direct membership INSERT closed');
+select lives_ok(
+  $$ select public.hq_add_organization_member('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-000000009001', 'teacher', 'G-2 이후 교사 등록') $$,
+  'G-2/P08: HQ Admin audited membership RPC still works');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a002');
+select throws_ok(
+  $$ select public.hq_add_organization_member('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-000000009002', 'teacher', '영업 등록 시도') $$,
+  '42501', null, 'G-2/P08: HQ Sales membership RPC denied');
+select is(pg_temp.try_sql($f$insert into public.organization_members (organization_id, user_id, role, status)
+    values ('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-00000000a002', 'director', 'active')$f$),
+  '42501', 'G-2/P08: HQ Sales direct self-grant closed');
+select is(pg_temp.try_sql($f$insert into public.organization_members (organization_id, user_id, role, status)
+    values ('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-000000009002', 'teacher', 'active')$f$),
+  '42501', 'G-2/P08: HQ Sales organization_members INSERT (other user) denied');
+select is(pg_temp.try_sql($f$update public.organization_members set status = 'disabled' where user_id = '00000000-0000-0000-0000-000000009001'$f$),
+  '42501', 'G-2/P08: HQ Sales organization_members UPDATE denied');
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
+select is(pg_temp.try_sql($f$update public.organization_members set status = 'disabled' where user_id = '00000000-0000-0000-0000-000000009001'$f$),
+  '42501', 'G-2/P08: HQ Admin direct organization_members UPDATE denied');
+select lives_ok(
+  $$ select public.hq_change_organization_member((select id from public.organization_members where user_id = '00000000-0000-0000-0000-000000009001'), '10000000-0000-0000-0000-00000000000b',
+       null, 'disabled', 'G-2 이후 상태 변경', (select updated_at from public.organization_members where user_id = '00000000-0000-0000-0000-000000009001')) $$,
+  'G-2/P08: HQ Admin audited change RPC succeeds');
+
+select pg_temp.act_as('00000000-0000-0000-0000-00000000c002');
+select is(pg_temp.try_sql($f$select public.save_observation_ai_generated_atomic('90000000-0000-0000-0000-0000000000b1', '새 AI 초안', 'test', 'test-model', 'test.v1')$f$),
+  'AG002', 'G-2/P08: AI draft save without ai_assist / AR-8 rejected by DB');
+select is(pg_temp.try_sql($f$update public.class_session_observation_ai_drafts set generated_text = '직접 재생성'
+    where observation_id = '90000000-0000-0000-0000-0000000000b1'$f$),
+  'AG002', 'G-2/P08: direct AI draft regeneration rejected by DB');
+reset role;
+select is((select count(*) from public.audit_events
+           where event_type in ('membership.added', 'membership.changed') and metadata ->> 'via' = 'rpc'
+             and reason in ('G-2 이후 교사 등록', 'G-2 이후 상태 변경'))::int, 2,
+  'G-2/P08: RPC membership add / change audited with reason (via rpc)');
+select is((select count(*) from public.audit_events where event_type like 'membership.%' and metadata ->> 'via' = 'direct')::int, 0,
+  'G-2/P08: no direct membership write happened after G-2');
+
+
+-- ---------------------------------------------------------------------
 -- 되돌리기 → 재적용 (forward-fix 경로 확인)
 -- ---------------------------------------------------------------------
 \ir ../M3_hq_role_split_rollback.sql
@@ -158,6 +228,10 @@ select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count
   'ROLLBACK: legacy Sales read restored');
 select is((select count(*) from public.audit_events where event_type = 'cutover.g2_hq_role_split_rolled_back')::int, 1,
   'ROLLBACK: rollback is audited');
+select is(has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT'), true,
+  'ROLLBACK/P08: direct membership INSERT restored (legacy app)');
+select is((select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%')::int, 0,
+  'ROLLBACK/P08: AI draft release gates removed');
 
 \ir ../M3_hq_role_split_sensitive_access.sql
 
@@ -165,6 +239,10 @@ select is(pg_temp.count_as('00000000-0000-0000-0000-00000000a002', 'select count
   'RE-APPLY: cutover can be re-applied (Sales read closed again)');
 select is(pg_temp.count_as('00000000-0000-0000-0000-00000000c001', 'select count(*) from public.class_session_observation_ai_drafts'), 0::bigint,
   'RE-APPLY: director AI draft access closed again');
+select is(has_any_column_privilege('authenticated', 'public.organization_members', 'INSERT'), false,
+  'RE-APPLY/P08: direct membership INSERT closed again');
+select is((select count(*) from pg_catalog.pg_trigger where tgname like '%release_gate%')::int, 2,
+  'RE-APPLY/P08: AI draft release gates installed again');
 
 select * from finish();
 rollback;
