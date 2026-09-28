@@ -11,7 +11,8 @@
 //   3. linked project ref == Staging · CLI 대상을 바꾸는 env 없음 (guards.assertStagingProjectRef)
 //   4. 첫 조회 전에 DB 지문 확인: 합성 계정이 아닌 사용자가 0 이어야 한다 (Production 이면 거부)
 //   5. 모든 문장은 `begin transaction read only; … rollback;` 로 실행 — 1차 검사를 지나친 쓰기도 Postgres 가 25006 으로 거부
-//   6. 결과가 오류 · 해석 불가 · 행 필드 없음이면 실패로 센다 (성공으로 판정되는 경로 없음)
+//   6. CLI 는 `--linked --output json --agent yes` 로만 호출 (buildQueryCommand) — 결과는 parseCliResult 가
+//      exit 0 · JSON object · rows array · error 필드 없음을 모두 확인할 때만 성공 (그 외 전부 실패 · fail closed)
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -36,30 +37,70 @@ export function prepareFile(file, params = {}) {
   return { rel, statements };
 }
 
+// CLI 출력 형식을 명시한다. `--agent auto`(기본) 는 실행 환경을 감지해 사람 터미널에서는 표(text)를,
+// agent 환경에서는 JSON 을 낸다 → 사람이 실행하면 "unparsed output" 이 났다 (PHASE 09A hotfix).
+// `--output json --agent yes` = 항상 `{ boundary, rows, warning }` JSON (supabase 2.113.0 에서 확인).
+// 대상은 `--linked` 뿐이다 (`--db-url` · `--local` · project ref 를 명령에 넣지 않는다).
+export const CLI_PACKAGE = "supabase@2.113.0";
+export const CLI_QUERY_ARGS = Object.freeze(["db", "query", "--linked", "--output", "json", "--agent", "yes"]);
+
+/** 실행할 CLI 명령 (네트워크 없음 · 테스트 대상) */
+export function buildQueryCommand(file) {
+  if (/["\r\n]/.test(file)) refuse("임시 SQL 파일 경로에 허용되지 않는 문자");
+  return `npx ${CLI_PACKAGE} ${CLI_QUERY_ARGS.join(" ")} --file "${file}"`;
+}
+
+const ANSI = /\u001b\[[0-9;]*m/g;
+const DB_URL = /postgres(?:ql)?:\/\/\S+/gi;
+const clean = (s) => redact(String(s).replace(ANSI, "").replace(DB_URL, "[redacted-db-url]")).trim().slice(0, 300);
+// stderr 진행 메시지("Initialising login role..." · "Connecting to remote database..." 등)는 실패가 아니다.
+// 이 패턴에 맞는 줄은 CLI · SQL 오류로 본다.
+const ERROR_LINE = /\b(error|failed|fatal|panic)\b/i;
+
+/**
+ * CLI 결과 → { rows, error } (fail closed).
+ * 성공 조건 전부: exit 0 · stderr 에 오류 줄 없음 · stdout 이 하나의 JSON object · `rows` 가 array (각 행 object) · `error` 필드 없음.
+ * stdout 앞의 안내 줄: JSON 은 줄 맨 앞 `{` 에서 시작해 stdout 끝까지 온전히 해석돼야 하고,
+ * 그 앞의 줄은 오류 패턴이 없을 때만 안내 문구로 무시한다 (오류 패턴이 있으면 실패).
+ */
+export function parseCliResult({ status, stdout, stderr }) {
+  const fail = (msg) => ({ rows: null, error: clean(msg) });
+  const errLines = String(stderr ?? "").replace(ANSI, "").split(/\r?\n/).filter((l) => ERROR_LINE.test(l));
+  if (status !== 0) return fail(errLines.at(-1) ?? `cli exit ${status}`);
+  if (errLines.length) return fail(errLines.at(-1));
+  const text = String(stdout ?? "").replace(ANSI, "").trim();
+  if (!text) return fail("empty stdout");
+  const start = text.startsWith("{") ? 0 : text.search(/\n\{/) + 1;
+  if (start === 0 && !text.startsWith("{")) return fail("stdout is not JSON (table/text output)");
+  const lead = text.slice(0, start);
+  if (ERROR_LINE.test(lead)) return fail(lead.split(/\r?\n/).filter((l) => ERROR_LINE.test(l)).at(-1));
+  let json;
+  try {
+    json = JSON.parse(text.slice(start));
+  } catch {
+    return fail("stdout is not valid JSON");
+  }
+  if (json === null || typeof json !== "object" || Array.isArray(json)) return fail("JSON result is not an object");
+  if ("error" in json) return fail(typeof json.error === "string" ? json.error : (json.error?.message ?? "error field in response"));
+  if (!Array.isArray(json.rows)) return fail("no rows array in response");
+  if (!json.rows.every((r) => r !== null && typeof r === "object" && !Array.isArray(r))) return fail("rows are not objects");
+  return { rows: json.rows, error: null };
+}
+
 function execReadOnly(label, statement) {
   validateStatement(statement, label);
   const dir = mkdtempSync(join(tmpdir(), "p09-ro-"));
   const file = join(dir, "q.sql");
   writeFileSync(file, wrapReadOnly(statement));
-  const r = spawnSync(`npx supabase@2.113.0 db query --linked --file "${file}"`, {
+  const r = spawnSync(buildQueryCommand(file), {
     cwd: ROOT,
     encoding: "utf8",
     shell: true,
     timeout: 180000,
   });
   rmSync(dir, { recursive: true, force: true });
-  const text = `${r.stdout ?? ""}`;
-  let rows = null;
-  let error = null;
-  try {
-    const json = JSON.parse(text.slice(text.indexOf("{")));
-    if (Array.isArray(json.rows)) rows = json.rows;
-    else error = json.error?.message ?? "no rows in response";
-  } catch {
-    error = (text + (r.stderr ?? "")).split("\n").filter((l) => /error/i.test(l)).slice(-1)[0] ?? "unparsed output";
-  }
-  if (r.status !== 0 && !error) error = `cli exit ${r.status}`;
-  return { label, rows, error: error ? redact(error).slice(0, 300) : null };
+  const status = r.error ? `spawn ${r.error.code ?? "error"}` : r.status;
+  return { label, ...parseCliResult({ status, stdout: r.stdout, stderr: r.stderr }) };
 }
 
 let fingerprintChecked = false;

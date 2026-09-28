@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import * as G from "../guards.mjs";
 import * as S from "../sql_guard.mjs";
 import { resolvePlan } from "../e2e_roles.mjs";
+import * as Q from "../remote_readonly_query.mjs";
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = resolve(HERE, "..", "..", "..");
@@ -156,6 +157,68 @@ test("sql CLI: disallowed file refused before any network", () => {
   const r = spawnSync(process.execPath, [join(HERE, "remote_readonly_query.mjs"), "--validate-only", "supabase/cutover/M5_legacy_write_revoke.sql"], { cwd: ROOT, encoding: "utf8" });
   assert.equal(r.status, 3);
   assert.match(r.stderr, /REFUSE TO RUN/);
+});
+
+// ── HOTFIX · CLI 출력 형식 · JSON 파서 (fail closed) ─────────
+// 실제 supabase 2.113.0 `--output json --agent yes` 출력 형태 (local 에서 확인한 모양 · 값은 가짜)
+const CLI_OK = '{\n  "boundary": "0123abcd",\n  "rows": [\n    {\n      "non_synthetic_users": 0\n    }\n  ],\n  "warning": "untrusted data"\n}\n';
+const PROGRESS = "Initialising login role...\nConnecting to remote database...\n";
+test("cli command: --linked · explicit JSON output · --agent yes · no other target", () => {
+  const cmd = Q.buildQueryCommand("C:/tmp/p09-ro-x/q.sql");
+  assert.equal(cmd, 'npx supabase@2.113.0 db query --linked --output json --agent yes --file "C:/tmp/p09-ro-x/q.sql"');
+  assert.ok(!/--db-url|--local\b|--project-ref|postgres(ql)?:\/\/|--workdir|--profile/.test(cmd));
+  assert.ok(!/vpppxuhodwauaclhybtg|iwvxpbpqfwibghiwsjvz|itcddooiuqsqingfhxkk/.test(cmd), "no project ref in the command (linked only)");
+  assert.ok(!/teachable-art-play3(-soyeskids-projects)?\.vercel\.app|supabase\.co/.test(cmd));
+  refuses(() => Q.buildQueryCommand('C:/tmp/x" --db-url "postgres://x'));
+});
+test("cli command: execReadOnly uses buildQueryCommand only", () => {
+  const src = readFileSync(join(HERE, "remote_readonly_query.mjs"), "utf8");
+  assert.equal((src.match(/spawnSync\(/g) ?? []).length, 1);
+  assert.match(src, /spawnSync\(buildQueryCommand\(file\)/);
+});
+test("cli parse A: table / non-JSON stdout fails", () => {
+  const r = Q.parseCliResult({ status: 0, stdout: "┌───┐\n│ a │\n├───┤\n│ 1 │\n└───┘\n", stderr: PROGRESS });
+  assert.equal(r.rows, null);
+  assert.match(r.error, /not JSON/);
+});
+test("cli parse B: valid JSON with rows succeeds · stderr progress is not an error · empty rows is a valid result", () => {
+  assert.deepEqual(Q.parseCliResult({ status: 0, stdout: CLI_OK, stderr: PROGRESS }), { rows: [{ non_synthetic_users: 0 }], error: null });
+  assert.deepEqual(Q.parseCliResult({ status: 0, stdout: '{"rows":[]}', stderr: "" }), { rows: [], error: null });
+});
+test("cli parse C: leading info lines + JSON succeeds only if the lead has no error and the JSON is complete", () => {
+  assert.deepEqual(Q.parseCliResult({ status: 0, stdout: `${PROGRESS}${CLI_OK}`, stderr: "" }).rows, [{ non_synthetic_users: 0 }]);
+  assert.equal(Q.parseCliResult({ status: 0, stdout: `error: something\n${CLI_OK}`, stderr: "" }).rows, null);
+  assert.equal(Q.parseCliResult({ status: 0, stdout: `${CLI_OK}trailing text`, stderr: "" }).rows, null);
+  assert.equal(Q.parseCliResult({ status: 0, stdout: 'note {"rows":[{"a":1}]}', stderr: "" }).rows, null, "JSON must start a line");
+});
+test("cli parse D: exit 0 with empty stdout fails", () => {
+  for (const stdout of ["", "  \n", undefined, null]) assert.equal(Q.parseCliResult({ status: 0, stdout, stderr: PROGRESS }).rows, null);
+});
+test("cli parse E: non-zero exit fails even with valid JSON · SQL error surfaced without ANSI · DB URL redacted", () => {
+  assert.equal(Q.parseCliResult({ status: 1, stdout: CLI_OK, stderr: "" }).rows, null);
+  assert.equal(Q.parseCliResult({ status: null, stdout: CLI_OK, stderr: "" }).rows, null, "timeout / signal");
+  assert.equal(Q.parseCliResult({ status: "spawn ENOENT", stdout: "", stderr: "" }).rows, null);
+  const r = Q.parseCliResult({
+    status: 1,
+    stdout: "",
+    stderr: 'Connecting...\n\u001b[31mfailed to execute query: error: cannot execute INSERT in a read-only transaction postgresql://postgres:FAKE_TEST_ONLY_pw@db.example.test:5432/postgres\u001b[39m\n',
+  });
+  assert.equal(r.rows, null);
+  assert.match(r.error, /read-only transaction/);
+  assert.ok(!r.error.includes("\u001b") && !r.error.includes("FAKE_TEST_ONLY_pw") && !/postgres(ql)?:\/\//.test(r.error));
+  assert.equal(Q.parseCliResult({ status: 0, stdout: CLI_OK, stderr: "ERROR: unexpected\n" }).rows, null, "error on stderr with exit 0");
+});
+test("cli parse F: JSON without a rows array fails (bare array · missing · non-array · non-object rows)", () => {
+  for (const stdout of ['[{"a":1}]', '{"boundary":"x"}', '{"rows":{"a":1}}', '{"rows":"x"}', '{"rows":[1,2]}', '{"rows":[null]}', "null", "42", '"x"']) {
+    assert.equal(Q.parseCliResult({ status: 0, stdout, stderr: "" }).rows, null, stdout);
+  }
+});
+test("cli parse G: JSON with an error field fails", () => {
+  for (const stdout of ['{"rows":[],"error":"boom"}', '{"error":{"message":"boom"}}', '{"rows":[{"a":1}],"error":null}']) {
+    const r = Q.parseCliResult({ status: 0, stdout, stderr: "" });
+    assert.equal(r.rows, null, stdout);
+    assert.ok(r.error);
+  }
 });
 
 // ── REVIEW 2 · 7 · remote write gate ─────────────────────────

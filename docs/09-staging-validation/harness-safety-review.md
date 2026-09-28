@@ -35,10 +35,20 @@ remote 쓰기 · cutover · Production 접근 없이 local 로만 검증했다.
 | 임시 browser profile 잔존 | 0 |
 | secret scan (untracked 20개 파일) | 실제 비밀 값 0 (fixture 는 `FAKE_TEST_ONLY_` 로만) |
 
-## 3. 남은 한계
+## 3. Hotfix — remote read-only 실행기 CLI 출력 형식 (09c26f7 이후)
 
-- 새 remote SQL 실행 경로(지문 확인 · `queryReadOnly`)는 이번 검토 규칙(local 만)에 따라 remote 에서 재실행하지 않았다.
-  PHASE 09B 첫 단계로 `staging_inventory.sql` 을 읽기 전용으로 실행해 확인한다.
+| | |
+|---|---|
+| 증상 | 사람 터미널에서 `remote_readonly_query.mjs sql/staging_inventory.sql` → `REFUSE TO RUN — DB 지문 확인 실패 (unparsed output)` (fail closed 로 멈춤 · 쓰기 없음) |
+| 원인 | CLI 출력 형식을 명시하지 않았다. supabase 2.113.0 `db query` 는 `--agent auto`(기본)가 실행 환경을 감지해 agent 환경에서는 `{boundary, rows, warning}` JSON 을, 사람 터미널에서는 표(text)를 낸다 — 검토 때 실행은 agent 환경이라 JSON 이 나와 통과했다. local 재현: `--agent no` = 표 · `--agent yes` = JSON |
+| CLI help 확인 | `--linked` · `--file` · 전역 `--output`(json 지원) · `--output-format`(text/json/stream-json) · `--agent`(auto/yes/no) |
+| 수정 | 명령 = `npx supabase@2.113.0 db query --linked --output json --agent yes --file "<tmp>"` (`buildQueryCommand` · `--db-url` · `--local` · project ref 없음) · `parseCliResult`: exit 0 ∧ stderr 오류 줄 없음 ∧ stdout 이 하나의 JSON object ∧ `rows` array(행 = object) ∧ `error` 필드 없음일 때만 성공 · stdout 앞 안내 줄은 오류 패턴이 없고 JSON 이 줄 맨 앞에서 시작해 끝까지 온전할 때만 허용 · 나머지 전부 실패 · stderr 진행 메시지는 무시 · 오류 문구는 ANSI · DB URL · 비밀 제거 · 300자 |
+| 테스트 | +9 (명령 구성 · 단일 spawn 경로 · A 표 출력 실패 · B JSON 성공 · C 앞 안내 줄 · D 빈 stdout · E exit ≠ 0 · F rows 없음 · G error 필드) → **39/39 PASS** |
+| remote 재확인 (읽기 전용 1회) | linked ref `itcddooiuqsqingfhxkk` · DB 지문 통과 (비합성 사용자 0) · `staging_inventory.sql` 1 문장 → 1 행 · 39 열 · 오류 0 · exit 0 · 쓰기 0 · cutover 0 |
+
+## 4. 남은 한계
+
+- remote SQL 실행 경로(지문 확인 · `queryReadOnly`)는 hotfix 에서 `staging_inventory.sql` 로 remote 확인했다. `e2e_target_scope.sql`(쓰기 gate) 은 아직 remote 에서 실행하지 않았다.
 - 빠른 메모 자동 저장은 화면 문구("저장됨")로만 확인하고 DB 는 "남은 E2E 메모 0" 만 본다 — 저장 자체의 DB 증거는 없다 (정리 후 0 이라서).
 - 부재 확인(AI UI · 일괄 인쇄 · raw stage 코드)은 문구 기반이다.
 - 원장 portal 발급 · 중지는 재실행 때마다 반복된다 (되돌릴 수 있는 쓰기 · audit 누적).
