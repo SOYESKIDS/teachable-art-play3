@@ -5,7 +5,7 @@
 > | cutover | Staging 현재 |
 > |---|---|
 > | G-2 | **ACTIVE — VERIFIED** (`g2_post_verify` 11/11 · missing `{}` · audit `cutover.g2_hq_role_split_applied` 1건 · rollback 0) |
-> | G-1 | **NOT APPLIED · REHEARSAL PREPARED (09E) · AWAITING EXPLICIT APPROVAL** · `G1_preflight` = SAFE TO APPLY (blocking 0 · WARN 섹션 2~5 = 0 · INFO 7 = 출시 준비 항목) · [g1-rehearsal-plan.md](./g1-rehearsal-plan.md) |
+> | G-1 | **NOT APPLIED** · 09E 준비 · 09F 승인 후 시도 → Shared Pooler 인증 실패로 SQL 실행 전 중단 (**P09F-AUTH-1** · PRE-G1 유지 · 부분 적용 없음) · local tests PASS · `G1_preflight` = SAFE TO APPLY · [g1-rehearsal-plan.md](./g1-rehearsal-plan.md) |
 > | M5 | **NOT READY** · DB NOT SAFE (G-1 미적용) · app 2/7 |
 > | J/K/L | **DO NOT START** · DB window = READY (DB) · app start gate = DO NOT START J |
 >

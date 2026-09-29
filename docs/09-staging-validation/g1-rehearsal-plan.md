@@ -5,7 +5,7 @@
 | 대상 | Staging Supabase `teachable-art-play3-staging` · ref `itcddooiuqsqingfhxkk` 만 · Production `vpppxuhodwauaclhybtg` 은 대상이 아니다 (거부) |
 | cutover | G-1 = `supabase/cutover/M3_entitlement_write_gates.sql` (entitlement write gate · 변경 없음) |
 | 되돌리기 | `supabase/cutover/M3_entitlement_write_gates_rollback.sql` (정의만 · 데이터 변경 없음) |
-| 현재 상태 (2026-09-29) | G-2 **ACTIVE — VERIFIED** · G-1 **NOT APPLIED · REHEARSAL PREPARED · AWAITING EXPLICIT APPROVAL** · M5 NOT READY · J/K/L DO NOT START |
+| 현재 상태 (2026-09-29) | G-2 **ACTIVE — VERIFIED** · G-1 **NOT APPLIED** — 09F 승인(`APPROVE G1 STAGING K-ONLY`) 후 runner 실행 → Shared Pooler 인증 실패로 SQL 실행 전 중단 (**P09F-AUTH-1** · PRE-G1 유지) · M5 NOT READY · J/K/L DO NOT START |
 | 순서 | G-2 → **G-1** → (J → K → L window: M5 앱 조건 준비 후 · 별도 승인) |
 
 ## 1. G-1 이 정확히 하는 일 (읽은 SQL 기준)
