@@ -7,9 +7,9 @@
 
 | 구분 | 주소 |
 |---|---|
-| 테스트 사이트 (Preview) | `<Preview URL — 담당자 전달>` |
-| 본사 관리자 · 영업 로그인 | `<Preview URL>/admin/login` |
-| 원장 · 교사 로그인 | `<Preview URL>/kindergarten` (안 되면 `<Preview URL>/login`) |
+| 테스트 사이트 (Preview) | `https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app` (Vercel 권한이 없으면 담당자가 보내는 공유 링크) |
+| 본사 관리자 · 영업 로그인 | `https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/admin/login` |
+| 원장 · 교사 로그인 | `https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/kindergarten` (안 되면 `/login`) |
 
 - 홈페이지 첫 화면에는 본사 관리자 로그인 버튼이 **일부러 없습니다**. 위 주소로 직접 들어가세요.
 - Vercel 로그인 화면이 먼저 나오면: Vercel 팀 권한이 있는 분은 로그인, 없는 분은 담당자가 보내 준 **공유 링크**로 들어오세요.

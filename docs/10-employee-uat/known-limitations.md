@@ -41,5 +41,5 @@ W9~24 자료는 **존재한다.** 다만 저장소 운영 자료 · Production �
 
 ## 5. 운영 보안 (담당자)
 
-- **P09F-C1**: Staging DB 비밀번호가 운영자 스크린샷 · 대화에 노출됨 → 직원 공유 전 회전 필수
+- **P09F-C1**: Staging DB 비밀번호 노출 → **RESOLVED (2026-09-29 회전 완료)**
 - **P09D-C2**: 이전에 노출된 Staging `SUPABASE_SECRET_KEY` → Production 서비스 활성화 전 회전 / 폐기

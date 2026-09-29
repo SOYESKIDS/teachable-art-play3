@@ -19,7 +19,7 @@
 | P09E-O1 | 결정 · G-1 승인 전제 | Production 에서 G-1 은 J/K/L window 의 K. Staging G-1 단독 rehearsal 은 K 의 DB 동작만 미리 확인 → 이후 Staging `JKL_window_preflight` = `NOT READY — G-1 이 이미 적용됨` (전체 window rehearsal 전 G-1 rollback 필요) | 승인 시 "G-1 단독 Staging rehearsal (Production 순서 불변)" 명시 ([g1-rehearsal-plan.md §10](./g1-rehearsal-plan.md)) |
 | P09E-O2 | 주의 · 운영 | G-1 적용 후 Staging `M5_preflight` DB verdict = `SAFE TO APPLY M5 (DB)` 가 된다 (계약 적용 기관만 있음) — 앱 preflight 2/7 FAIL 이므로 M5 는 NOT READY | DB SAFE 만 보고 M5 적용 금지 · M5 는 J/K/L window 에서 앱 PASS 와 함께만 |
 | P09F-AUTH-1 | **G-1 rehearsal 차단 (인프라)** | Shared Pooler(Supavisor) DB 인증이 불안정 — 한 번은 연결 확인 PASS · 이후 G-1 적용 시 `password authentication failed` (연결 단계 · SQL 미실행 · PRE-G1 유지). Direct 연결은 IPv6 전용이라 이 PC 에서 도달 불가 | DB 비밀번호 회전 후 pooler 연결 확인(읽기 전용) 1회 → PASS 시 별도 승인으로 G-1 재시도. G-1 SQL 결함 증거 아님 (local 70/70 · 24/24) |
-| P09F-C1 | **OPEN · 운영 · 직원 공유 전 필수** | Staging DB 비밀번호가 운영자 스크린샷 · 대화에 다시 노출됨 (값은 기록하지 않음) | 직원 공유 전 회전 (사람 · Dashboard) · 자동 회전하지 않음 |
+| P09F-C1 | **RESOLVED (2026-09-29)** | Staging DB 비밀번호가 운영자 스크린샷 · 대화에 다시 노출됨 (값은 기록하지 않음) | 운영자가 직원 공유 전 회전 완료 |
 | P09C-L2 | local 전용 | local storage 1.68.10 이 `03_media` 업로드 4장 모두 500 (`42P10` ON CONFLICT 인덱스 없음 · local 도구 버전 불일치) | 영향 없음 (e2e 는 사진 없이 · Parent 사진 비노출 확인) |
 | H-1 | 정보 | CSP 없음 (next.config.ts 에 의도적 제외로 기록) | 기존 결정 유지 |
 | P09-L1 | local 전용 | browser_smoke `03_media.mjs` 가상 사진 4번째 업로드 500 (로컬 storage) | 영향 없음 (3장으로 흐름 검증) |

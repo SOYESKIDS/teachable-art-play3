@@ -4,13 +4,16 @@
 
 현재 상태 표기: **PASS (사람 확인)** = 운영자가 브라우저에서 확인 · **HUMAN UAT PENDING** = 아직 사람 확인 전 · 자동 테스트 결과는 사람 확인을 대신하지 않는다.
 
-## 본사 영업 (HQ Sales) — `/admin/login` · `staging-hq-sales@example.test` — **HUMAN UAT PENDING**
+**운영자 사람 확인 결과 (2026-09-29): HQ Admin · HQ Sales · Teacher · Director = PASS** (읽기 · 화면 이동만 · 쓰기 작업 없음).
+체크 표시는 운영자가 확인한 항목만이다. 빈 칸은 직원 테스트에서 확인한다.
 
-- [ ] 로그인 후 영업 화면(`/sales/leads`)으로 이동
-- [ ] 문의 관리 (`/sales/leads`) 목록 · 필터
-- [ ] 기관 영업 현황 (`/sales/organizations`)
-- [ ] `/admin/...` 주소를 직접 입력해도 본사 관리자 화면이 보이지 않음 (영업 화면으로 돌아가거나 권한 없음)
-- [ ] 아동 이름 · 관찰 · 리포트 · 사진 · Growth5 가 보이지 않음
+## 본사 영업 (HQ Sales) — `/admin/login` · `staging-hq-sales@example.test` — **PASS (사람 확인 · 2026-09-29)**
+
+- [x] 로그인 후 영업 화면(`/sales/leads`)으로 이동
+- [x] 문의 관리 (`/sales/leads`) 목록 · 필터
+- [x] 기관 영업 현황 (`/sales/organizations`)
+- [x] `/admin/...` 주소를 직접 입력해도 본사 관리자 화면이 보이지 않음 (영업 화면으로 돌아가거나 권한 없음)
+- [ ] 아동 이름 · 관찰 · 리포트 · 사진 · Growth5 가 보이지 않음 (직원 테스트에서 화면 확인 · DB 증거: G-2 로 Sales 민감 표 접근 차단 · `g2_post_verify` VERIFIED)
 
 ## 본사 관리자 (HQ Admin) — `/admin/login` · `staging-hq-admin@example.test` — **PASS (사람 확인 · 2026-09-29)**
 
@@ -24,25 +27,25 @@
 - [x] 기관 문의 관리
 - (초대 메일 보내기는 테스트하지 않습니다 — 실제 메일 발송)
 
-## 교사 (Teacher) — `/kindergarten` · `staging-teacher@example.test` — **HUMAN UAT PENDING**
+## 교사 (Teacher) — `/kindergarten` · `staging-teacher@example.test` — **PASS (사람 확인 · 2026-09-29 · 쓰기 없음)**
 
-- [ ] 로그인
-- [ ] 오늘의 수업
-- [ ] 수업 이력
-- [ ] 성장리포트 목록
-- [ ] 수업 카드 → 수업 준비(BEFORE) 화면 진입 (**수업 시작은 담당자가 지정한 경우에만**)
-- [ ] 버튼 · 레이아웃 정상
+- [x] 로그인
+- [x] 오늘의 수업
+- [x] 수업 이력
+- [x] 성장리포트 목록
+- [x] 수업 카드 → 수업 준비(BEFORE) 화면 진입 (**수업 시작은 담당자가 지정한 경우에만**)
+- [ ] 버튼 · 레이아웃 정상 (직원 테스트에서 확인)
 - 참고: G-1(계약 기반 쓰기 제한)이 Staging 에 아직 적용되지 않았다. **"계약 범위 밖 쓰기 차단"은 이번 UAT 로 확인된 것이 아니다** (local 자동 테스트만 PASS).
 
-## 원장 (Director · STARTER) — `/kindergarten` · `staging-director@example.test` — **HUMAN UAT PENDING**
+## 원장 (Director · STARTER) — `/kindergarten` · `staging-director@example.test` — **PASS (사람 확인 · 2026-09-29 · 쓰기 없음)**
 
-- [ ] 로그인 후 `/director/sessions` (수업 현황)
-- [ ] 수업 이력
-- [ ] 출결 확인 (조회)
-- [ ] 관찰 기록 (읽기 전용)
-- [ ] 성장리포트 (완료 Weekly)
-- [ ] 학부모 공유 · 동의 화면 (발급 · 변경은 담당자 요청 시에만)
-- [ ] STARTER 에서 원장 대시보드(집계 · 누락 자동 탐지 · 일괄 인쇄)가 **나오지 않음**
+- [x] 로그인 후 `/director/sessions` (수업 현황)
+- [x] 수업 이력
+- [x] 출결 확인 (조회)
+- [ ] 관찰 기록 (읽기 전용) (직원 테스트에서 확인)
+- [x] 성장리포트 화면
+- [x] 학부모 공유(portal) 화면 (발급 · 동의 변경은 담당자 요청 시에만)
+- [x] STARTER 에서 원장 대시보드가 제공되지 않음 (not entitled) — 집계 · 누락 자동 탐지 · 일괄 인쇄 미노출은 local 자동 테스트 PASS
 
 ## 화면 · 공통
 

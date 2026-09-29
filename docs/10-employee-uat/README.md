@@ -5,10 +5,10 @@
 
 | | |
 |---|---|
-| 테스트 대상 | saas-v2 Preview (Staging Supabase `itcddooiuqsqingfhxkk` · 합성 데이터) |
+| 테스트 대상 | saas-v2 Preview (Staging Supabase `itcddooiuqsqingfhxkk` · 합성 데이터) · 공유 주소: `https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app` (브랜치 고정 주소 · Vercel 보호) |
 | 빌드 커밋 | `79ccbba` (saas-v2) — 문서 커밋 이후 Preview 가 다시 배포되면 해당 커밋 기준 |
 | 테스트 일자 | `<테스트 기간 — 담당자 기입>` |
-| 판정 | **EMPLOYEE UAT PACKAGE READY — HUMAN ROLE CHECKS PENDING** (HQ Admin 만 사람 확인 완료) |
+| 판정 | **EMPLOYEE UAT READY WITH KNOWN LIMITATIONS — STAGING ONLY** (2026-09-29 · 운영자 사람 확인 HQ Admin · HQ Sales · Teacher · Director = PASS · 쓰기 작업 없이 확인) |
 | 상태 요약 | G-2 ACTIVE — VERIFIED · **G-1 미적용 (원격 rehearsal 보류 · P09F-AUTH-1)** · M5 미적용 · J/K/L 미시작 |
 
 ## 문서
@@ -23,7 +23,7 @@
 
 ## 담당자 준비 사항 (공유 전)
 
-1. **Staging DB 비밀번호 회전** — 운영자 스크린샷 · 대화에 노출되었다 (P09F-C1). 직원은 DB 비밀번호를 쓰지 않지만 공유 전 회전한다.
+1. ~~Staging DB 비밀번호 회전 (P09F-C1)~~ → **RESOLVED (2026-09-29 · 노출 후 회전 완료)**. 직원은 DB 비밀번호를 쓰지 않는다.
 2. 역할별 **테스트 계정 비밀번호**는 저장소 · 공지 문구에 넣지 않고 담당자가 개별 전달한다.
 3. 접속 방법 (Deployment Protection 은 끄지 않는다 · 자동화 bypass 비밀을 만들지 않는다):
    - Vercel 팀 · 프로젝트 권한이 있는 직원: 보호된 saas-v2 Preview 주소를 그대로 사용

@@ -9,7 +9,8 @@
 안녕하세요. TeachAble Art Play **직원 내부 테스트(Staging)** 를 시작합니다.
 이 버전은 **실제 서비스(Production)가 아닌 테스트 버전**이며, 화면의 기관 · 반 · 아동은 모두 **가상(합성) 데이터**입니다.
 
-▶ 테스트 주소: `<Preview URL 또는 공유 링크 — 개별 전달>`
+▶ 테스트 주소: https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app
+   (Vercel 로그인 화면이 나오면 담당자가 따로 보내 드리는 공유 링크로 접속해 주세요)
 ▶ 기간: `<시작일> ~ <마감일>`
 
 ▶ 역할별 계정 (비밀번호는 담당자가 **개별로 따로** 전달합니다)

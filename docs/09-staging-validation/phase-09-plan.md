@@ -4,7 +4,7 @@
 |---|---|
 | 기준 | `saas-v2` · HEAD = origin = `153a413` (PHASE 08) · Staging `itcddooiuqsqingfhxkk` · migration 37 local = remote (… `20261002095000`) |
 | cutover | G-2 · G-1 · M5 **미적용** (Staging · Production 모두) — 의도된 상태 (PHASE 09A 기준 · 아래 현재 상태 참고) |
-| **현재 (PHASE 09F · 2026-09-29)** | Staging: **G-2 ACTIVE — VERIFIED** · G-1 **NOT APPLIED — REMOTE REHEARSAL BLOCKED BY POOLER AUTH (P09F-AUTH-1) · LOCAL TESTS PASS** · M5 NOT APPLIED / NOT READY · J/K/L NOT STARTED · 직원 UAT 패키지 준비 ([../10-employee-uat/](../10-employee-uat/README.md)) · Production: 변경 없음 |
+| **현재 (PHASE 09F · 2026-09-29)** | Staging: **G-2 ACTIVE — VERIFIED** · G-1 **NOT APPLIED — REMOTE REHEARSAL BLOCKED BY POOLER AUTH (P09F-AUTH-1) · LOCAL TESTS PASS** · M5 NOT APPLIED / NOT READY · J/K/L NOT STARTED · **직원 UAT: EMPLOYEE UAT READY WITH KNOWN LIMITATIONS — STAGING ONLY** (사람 확인 HQ Admin · Sales · Teacher · Director PASS · [../10-employee-uat/](../10-employee-uat/README.md)) · Production: 변경 없음 |
 | 범위 | 읽기 전용 remote 검증 · E2E harness · read-only cutover preflight · responsive · a11y · performance · runtime baseline |
 | 범위 밖 (PHASE 09B · 사람 승인 후) | Staging G-2 · G-1 · M5 rehearsal · rollback rehearsal · post-cutover role E2E |
 | 관련 | [remote-baseline.md](./remote-baseline.md) · [role-e2e-matrix.md](./role-e2e-matrix.md) · [cutover-preflight.md](./cutover-preflight.md) · [responsive-a11y.md](./responsive-a11y.md) · [performance-baseline.md](./performance-baseline.md) · [open-items.md](./open-items.md) · [harness-safety-review.md](./harness-safety-review.md) · harness: `supabase/validation/staging_e2e/` |
@@ -54,7 +54,8 @@ local `M3_post_cutover` 70/70 · 신규 `G1_rehearsal_verify` 24/24 · 신규 �
 
 운영자 승인(`APPROVE G1 STAGING K-ONLY` · PRE-G1 확인 PASS) 후 runner 실행 → Shared Pooler(Supavisor) DB 인증 실패로 **SQL 실행 전에 중단** ·
 PRE-G1 상태 확인(부분 적용 없음) · G-1 **NOT APPLIED** (P09F-AUTH-1 · SQL 결함 아님). 이후 G-1 재시도 없이 **직원 UAT 패키지**를 준비했다:
-[../10-employee-uat/](../10-employee-uat/README.md) — 판정 `EMPLOYEE UAT PACKAGE READY — HUMAN ROLE CHECKS PENDING` (HQ Admin 만 사람 확인).
+[../10-employee-uat/](../10-employee-uat/README.md) — 판정 `EMPLOYEE UAT PACKAGE READY — HUMAN ROLE CHECKS PENDING` (HQ Admin 만 사람 확인) →
+같은 날 P09F-C1 해소(DB 비밀번호 회전) · 사람 확인 HQ Sales · Teacher · Director PASS (쓰기 없음) → **`EMPLOYEE UAT READY WITH KNOWN LIMITATIONS — STAGING ONLY`**.
 
 ## 2. 검증 방식의 한계 (솔직히)
 
