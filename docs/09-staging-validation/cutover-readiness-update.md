@@ -1,5 +1,16 @@
 # PHASE 09C — Cutover Readiness Update (2026-09-28 · Staging 읽기 전용 재실행)
 
+> **현재 상태 (PHASE 09D · 2026-09-29 11:36 KST 읽기 전용 재확인)** — 아래 표는 PHASE 09C 시점 기록이다.
+>
+> | cutover | Staging 현재 |
+> |---|---|
+> | G-2 | **ACTIVE — VERIFIED** (`g2_post_verify` 11/11 · missing `{}` · audit `cutover.g2_hq_role_split_applied` 1건 · rollback 0) |
+> | G-1 | **NOT APPLIED** · `G1_preflight` = SAFE TO APPLY (blocking 0) |
+> | M5 | **NOT READY** · DB NOT SAFE (G-1 미적용) · app 2/7 |
+> | J/K/L | **DO NOT START** · DB window = READY (DB) · app start gate = DO NOT START J |
+>
+> 상세: [phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md)
+
 모든 DB 확인은 `remote_readonly_query.mjs` (Staging `itcddooiuqsqingfhxkk` · 문장마다 READ ONLY transaction · DB 지문 비합성 사용자 0) 로 했다.
 앱 확인은 이 저장소 작업 트리(`99f10a7` + 09C 미커밋 수정) 기준이다. **G-2 · G-1 · M5 는 어디에도 적용하지 않았다.**
 

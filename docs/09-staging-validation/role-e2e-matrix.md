@@ -47,3 +47,15 @@ Parent 숨김 상태에서 숨김 · 결석 · 미작성 사유 비노출 확인
 
 합계 **45 PASS · 1 CUTOVER_PENDING · 0 FAIL** · 임시 browser profile 삭제. DB 전후(`e2e_effects.sql`): 전 `2|2|6|0|0|0|0|0|0|0|0` → 후 `3|2|9|1|1|0|1|0|0|1|4`
 (완료 +1 · 출결 +3 · E2E 관찰 1 · Growth5 1 · 메모 남음 0 · Weekly 완료 1 · 숨김 0 · portal 활성 0 · 중지 1 · audit +4) — 09A 와 같다.
+
+## 4. PHASE 09D — Staging G-2 적용 후 (2026-09-29)
+
+위 §2 · §3 은 PRE-G2 기록이다 (그대로 둔다). Staging 에 G-2 가 적용 · 확인된 뒤 (POST-G2 Preview 사람 확인 PASS):
+
+| 항목 | 상태 |
+|---|---|
+| HQ Sales PRE-G2 `CUTOVER_PENDING` (`/admin` 열람) | **RESOLVED BY G-2 (Staging)** — `/admin/*` 에서 Admin Shell 이 보이지 않음 · `/sales/leads` · `/sales/organizations` 정상 (사람 확인) · DB: `is_soyes_admin` Sales 제외 · 민감 표 정책에 sales 없음 |
+| HQ Admin | `/admin/leads` · 기관 · 관리 화면 정상 (사람 확인) |
+| Teacher · Director(STARTER) | 일반 읽기 화면 정상 (사람 확인) |
+| 자동 Staging role E2E | 실행하지 않음 (비밀번호는 운영자 로컬에만 · 원격 쓰기 E2E 금지) — `e2e_roles.mjs` 의 hqSales 단계는 local-rehearsal 에서만 PRE-G2 기준이다 |
+| Production | G-2 전 → HQ Sales `CUTOVER_PENDING` 은 Production 에서 여전히 유효 |

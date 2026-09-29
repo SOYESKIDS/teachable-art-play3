@@ -13,7 +13,9 @@
 | P09C-A1 | SEV-3 | HQ `/admin/login` 필드에 `aria-invalid` · `aria-describedby` 없음 (staff 로그인은 있음) | **FIXED (PHASE 09C · 미커밋)** |
 | P09C-V1 | 정보 · 운영 | `npx vercel curl` 은 bypass 비밀이 없으면 **프로젝트에 "Protection Bypass for Automation" 비밀을 새로 만든다** (CLI 56.2.1 소스 `getOrCreateDeploymentProtectionToken` · `PATCH /v1/projects/{id}/protection-bypass`). 2026-09-28 Staging 프로젝트 bypass 항목 0 → 09C 는 `vercel curl` 을 **실행하지 않았다** (bypass 재생성 금지) | Preview 앱 수준 확인은 ① 사람이 Vercel 로그인 브라우저로 · 또는 ② alias Deployment Protection Exception (09B 결정) 중 하나로 |
 | P09D-R1 | 운영 · 정보 | G-2 runner 가 두 번 실행되어 2차 실행이 공용 로그를 새로 쓰면서 1차 실행의 적용 줄이 지워졌다 (2차는 PRE 게이트에서 올바르게 거부 · 이중 적용 없음 · audit 1건) | 다음 cutover runner(G-1 · M5): 실행별 로그 파일 · 동시 실행 lock · 결과 요약을 먼저 출력 |
-| P09D-S1 | 해소 (Staging) | PHASE 09A HQ Sales `CUTOVER_PENDING`(PRE-G2 에서 `/admin` 열람) | Staging 에서 G-2 로 닫힘 (POST-G2 Preview PASS) · Production 은 G-2 전이므로 여전히 CUTOVER PENDING |
+| P09D-S1 | **RESOLVED BY G-2 (Staging)** | PHASE 09A HQ Sales `CUTOVER_PENDING`(PRE-G2 에서 `/admin` 열람) | Staging 에서 G-2 로 닫힘 (POST-G2 Preview PASS · DB 확인) · Production 은 G-2 전이므로 여전히 CUTOVER PENDING |
+| P09D-C1 | **운영 · 필수 (다음 DB cutover 전제)** | Staging DB 비밀번호가 운영자 문제 해결 과정에서 노출됨 (값은 기록하지 않음) | **G-1 rehearsal 전에 Staging DB 비밀번호를 다시 회전** (사람 · Supabase Dashboard) · 자동 회전하지 않음 |
+| P09D-C2 | 운영 · 필수 (Production 활성화 전) | 이전에 노출된 Staging `SUPABASE_SECRET_KEY` | **Production 서비스 활성화 전에 회전 / 폐기** (기존 요구 유지) · 자동 회전하지 않음 |
 | P09C-L2 | local 전용 | local storage 1.68.10 이 `03_media` 업로드 4장 모두 500 (`42P10` ON CONFLICT 인덱스 없음 · local 도구 버전 불일치) | 영향 없음 (e2e 는 사진 없이 · Parent 사진 비노출 확인) |
 | H-1 | 정보 | CSP 없음 (next.config.ts 에 의도적 제외로 기록) | 기존 결정 유지 |
 | P09-L1 | local 전용 | browser_smoke `03_media.mjs` 가상 사진 4번째 업로드 500 (로컬 storage) | 영향 없음 (3장으로 흐름 검증) |

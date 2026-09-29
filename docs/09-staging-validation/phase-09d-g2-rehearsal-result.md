@@ -4,7 +4,9 @@
 |---|---|
 | 결과 | **G-2 STAGING ACTIVE — VERIFIED** (rollback 불필요 · 실행 안 함) |
 | 적용 시각 | 2026-09-29 02:09:16 UTC (11:09:16 KST) · audit `cutover.g2_hq_role_split_applied` |
-| 최종 확인 | 2026-09-29 11:32 KST · `g2_post_verify` = `G-2 ACTIVE — VERIFIED` · missing `{}` |
+| 최종 확인 | 2026-09-29 11:32 KST · closeout 재확인 11:36 KST — `g2_post_verify` = `G-2 ACTIVE — VERIFIED` · missing `{}` · 11/11 true |
+| 적용 횟수 | **G-2 적용 1회** (runner 1차 실행) · runner 2차 실행은 이미 적용된 상태를 보고 **적용 전에 거부** — 이중 cutover 아님 (§2 운영 기록) |
+| rollback | **NOT REQUIRED** (실행 안 함 · rollback audit 0) |
 | 승인 | 프로젝트 소유자 "G-2 Staging rehearsal 승인" (G-2 적용 · 읽기 전용 확인 · 실패 시 즉시 rollback 만) |
 | 승인 커밋 | `c358310c34a7c0c0f541153df990c1349313c003` (saas-v2 · HEAD = origin · clean) |
 | Staging | `teachable-art-play3-staging` · ref `itcddooiuqsqingfhxkk` (Production `vpppxuhodwauaclhybtg` 거부 조건 · 해당 없음) |
@@ -33,13 +35,19 @@
 
 - psql = local Supabase DB 컨테이너(`supabase_db_teachable-art-play3`)의 psql 17 · 대상은 Staging **session pooler** (5432)
 - 연결 대상은 입력받지 않고 `supabase/.temp/pooler-url`(비밀번호 없음)에서 만들었다: 사용자 `postgres.<staging-ref>` · `*.pooler.supabase.com` 인지 확인 · Production ref 가 보이면 거부
-- DB 비밀번호는 운영자 PowerShell 의 숨김 입력으로만 받아 프로세스 env(`PGPASSWORD`) → `docker exec -e PGPASSWORD`(이름만 전달)로 넘기고 종료 시 삭제 · URL · 비밀번호는 출력 · 파일 · 이력에 없음
+- DB 비밀번호는 운영자 PowerShell 의 숨김 입력으로만 받아 프로세스 env(`PGPASSWORD`) → `docker exec -e PGPASSWORD`(이름만 전달)로 넘기고 종료 시 삭제 · runner 는 URL · 비밀번호를 출력 · 파일 · 이력에 남기지 않았다 (단, runner 밖의 운영자 문제 해결 과정에서 Staging DB 비밀번호가 노출됨 → §7 회전 필수)
 - SQL 파일은 `docker cp` 로 원본 그대로 컨테이너에 넣어 실행 후 삭제 (재인코딩 · 수정 없음)
 - `DATABASE_URL` · `SUPABASE_DB_URL` · `PG*` env 가 있으면 거부 · 승인 커밋 · clean tree 아니면 거부
 - runner 는 적용 직전 app preflight · DB PRE 게이트를 다시 실행하고, 적용 후 필수 post-verify 가 실패하면 **자동 rollback** 하도록 만들었다 (사용되지 않음)
 - 임시 runner 는 저장소 밖(세션 scratchpad)에만 있었고 rehearsal 후 삭제했다
 
-### 운영 기록 — runner 이중 실행
+### 운영 기록 — runner 이중 실행 (이중 cutover 아님)
+
+| 실행 | 시각 (KST) | 결과 |
+|---|---|---|
+| 1차 | ~11:08 적용 · 11:09:16 audit · 11:09:39 post-verify | PRE 게이트 PASS → **G-2 적용** → post-verify **PASS** (`G-2 ACTIVE — VERIFIED`) |
+| 2차 | 11:09:36 시작 · 11:11:04 거부 | PRE 게이트가 이미 적용된 상태(cutover audit 1 · Sales 제외 · 직접 INSERT 닫힘 · `g2_applied=true`)를 보고 **비밀번호 입력 · 적용 전에 거부** (`REFUSE TO RUN - PRE-G2 state changed`) |
+
 
 runner 가 두 번 실행됐다. 1차 실행이 적용 · post-verify PASS(11:09:39 KST) 를 마칠 무렵 2차 실행이 시작(11:09:36)되어 공용 로그를 새로 쓰면서
 1차 실행의 적용 줄이 로그에서 지워졌고, 2차 실행은 PRE 게이트에서 이미 POST-G2 인 상태를 보고 **비밀번호 입력 전에 적용을 거부**했다 (11:11:04 · 설계대로 fail closed).
@@ -78,7 +86,7 @@ runner 가 두 번 실행됐다. 1차 실행이 적용 · post-verify PASS(11:09
 | 확인 | 결과 |
 |---|---|
 | PRE-G2 PREVIEW CHECK | PASS (Auth 비밀번호 설정 후) |
-| POST-G2 PREVIEW CHECK | **PASS** |
+| POST-G2 PREVIEW CHECK | **PASS** — 운영자가 확인한 범위만: HQ Sales `/sales/leads` 동작 · `/sales/organizations` 동작 · `/admin/*` 에서 Admin Shell 이 보이지 않음 / HQ Admin `/admin/leads` 동작 · 기관 · 관리 화면 동작 / Teacher 일반 읽기 화면 동작 / Director STARTER 일반 읽기 화면 동작 |
 
 ## 4. G-1 · M5 · J/K/L (적용 후 · 읽기 전용)
 
@@ -99,7 +107,14 @@ runner 가 두 번 실행됐다. 1차 실행이 적용 · post-verify PASS(11:09
 
 기록하지 않은 것: DB 비밀번호 · DB URL · Supabase secret key · 역할 비밀번호 · portal token.
 
-## 6. 현재 Staging 상태
+## 6. 자격 증명 회전 (운영 · 필수 · 자동 회전하지 않음)
+
+| 항목 | 요구 |
+|---|---|
+| Staging DB 비밀번호 | 운영자 문제 해결 과정에서 노출됨 (값은 기록하지 않음) → **G-1 rehearsal 전에 다시 회전 필수** (다음 DB cutover phase 의 전제) |
+| Staging `SUPABASE_SECRET_KEY` | 이전에 노출된 적이 있으면 **Production 서비스 활성화 전에 회전 / 폐기** (기존 요구 유지) |
+
+## 7. 현재 Staging 상태
 
 **G-2 ACTIVE — VERIFIED · G-1 NOT APPLIED · M5 NOT APPLIED · J/K/L NOT STARTED.**
 Production 은 여전히 PRE-G2 (이 rehearsal 과 무관).

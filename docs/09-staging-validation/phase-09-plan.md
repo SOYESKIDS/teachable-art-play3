@@ -3,7 +3,8 @@
 | | |
 |---|---|
 | 기준 | `saas-v2` · HEAD = origin = `153a413` (PHASE 08) · Staging `itcddooiuqsqingfhxkk` · migration 37 local = remote (… `20261002095000`) |
-| cutover | G-2 · G-1 · M5 **미적용** (Staging · Production 모두) — 의도된 상태 |
+| cutover | G-2 · G-1 · M5 **미적용** (Staging · Production 모두) — 의도된 상태 (PHASE 09A 기준 · 아래 현재 상태 참고) |
+| **현재 (PHASE 09D 이후 · 2026-09-29)** | Staging: **G-2 ACTIVE — VERIFIED** · G-1 NOT APPLIED (preflight SAFE) · M5 NOT READY · J/K/L DO NOT START · Production: 변경 없음 ([phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md)) |
 | 범위 | 읽기 전용 remote 검증 · E2E harness · read-only cutover preflight · responsive · a11y · performance · runtime baseline |
 | 범위 밖 (PHASE 09B · 사람 승인 후) | Staging G-2 · G-1 · M5 rehearsal · rollback rehearsal · post-cutover role E2E |
 | 관련 | [remote-baseline.md](./remote-baseline.md) · [role-e2e-matrix.md](./role-e2e-matrix.md) · [cutover-preflight.md](./cutover-preflight.md) · [responsive-a11y.md](./responsive-a11y.md) · [performance-baseline.md](./performance-baseline.md) · [open-items.md](./open-items.md) · [harness-safety-review.md](./harness-safety-review.md) · harness: `supabase/validation/staging_e2e/` |
