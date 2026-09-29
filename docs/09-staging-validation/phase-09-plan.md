@@ -38,6 +38,11 @@
 보고: [phase-09c-report.md](./phase-09c-report.md) · QA 수정: [qa-fixes.md](./qa-fixes.md) · G-2 계획: [g2-rehearsal-plan.md](./g2-rehearsal-plan.md) ·
 cutover 상태: [cutover-readiness-update.md](./cutover-readiness-update.md). remote 쓰기 0 · cutover 적용 0 · Production 변경 0.
 
+## 1-3. PHASE 09D — G-2 Staging rehearsal
+
+**Staging: G-2 ACTIVE — VERIFIED** (2026-09-29 · rollback 불필요) · G-1 · M5 미적용 · J/K/L 시작 안 함 · Production 변경 0 ·
+결과: [phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md).
+
 ## 2. 검증 방식의 한계 (솔직히)
 
 - Preview 가 SSO 뒤에 있어 **remote 앱 수준 E2E · responsive · a11y · 성능은 이번에 Preview 에서 실행하지 못했다.** 같은 커밋(153a413) 코드를

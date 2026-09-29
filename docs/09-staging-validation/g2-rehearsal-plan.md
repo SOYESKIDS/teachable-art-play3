@@ -5,7 +5,7 @@
 | 대상 | Staging Supabase `itcddooiuqsqingfhxkk` 만 · Production 은 이 계획의 대상이 아니다 |
 | cutover | G-2 = `supabase/cutover/M3_hq_role_split_sensitive_access.sql` (HQ Admin / Sales 분리 · HQ 민감 blanket SELECT 제거 · 원장 AI 초안 접근 제거 · PHASE 08 §5 구성원 직접 쓰기 회수 · §6 AI 초안 저장 gate) |
 | 되돌리기 | `supabase/cutover/M3_hq_role_split_rollback.sql` (정의만 복원 · 데이터 변경 없음) |
-| 상태 (2026-09-28 기준) | G-2 **NOT APPLIED** · 이 문서는 PHASE 09C 에서 작성만 했다 · 실행은 사람 승인 후 별도 phase |
+| 상태 | PHASE 09C 작성 · **PHASE 09D 에서 이 계획대로 Staging 에 적용 (2026-09-29 11:09 KST) → `G-2 ACTIVE — VERIFIED`** · 결과: [phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md) · Production 미적용 |
 | 근거 | runbook [../07-implementation/cutover-runbook.md](../07-implementation/cutover-runbook.md) §3 · §5 · PHASE 08 [../08-security-hardening/cutover-readiness.md](../08-security-hardening/cutover-readiness.md) |
 
 ## 1. 전제 조건 (모두 충족해야 시작)
