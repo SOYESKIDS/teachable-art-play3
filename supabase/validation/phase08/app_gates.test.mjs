@@ -152,6 +152,38 @@ test("JKL: any direct legacy write consumer blocks J", () => {
   }
 });
 
+// ---------------------------------------------------------------------
+// PHASE 10B.1 — G-2 app preflight 수명 주기 (J-ready 빌드에서 예외 없이 lifecycle FAIL · gate 약화 없음)
+// ---------------------------------------------------------------------
+const g2Script = join(root, "supabase/cutover/G2_app_preflight.mjs");
+const runG2 = (extraArgs = []) => spawnSync(process.execPath, [g2Script, ...extraArgs], { encoding: "utf8" });
+
+test("G2 preflight: J-ready build fails cleanly with a lifecycle reason (no crash)", () => {
+  const r = runG2();
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.doesNotMatch(r.stdout + r.stderr, /ENOENT|Error:|at .*\.mjs:\d+/);
+  assert.match(r.stdout, /FAIL {2}staff app routing switch defaults to legacy and is server-only {2}→ pre-G2 routing switch absent/);
+  assert.match(r.stdout, /17\/18 PASS/);
+  assert.match(r.stdout, /LIFECYCLE:/);
+  assert.match(r.stdout, /VERDICT: FAIL/);
+});
+
+test("G2 preflight: an ungated AI provider caller anywhere in src is caught (stricter than before)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "g2-pre-"));
+  try {
+    for (const top of ["src"]) {
+      spawnSync(process.execPath, ["-e", `require("fs").cpSync(${JSON.stringify(join(root, top))}, ${JSON.stringify(join(dir, top))}, { recursive: true })`]);
+    }
+    mkdirSync(join(dir, "src/lib/staff"), { recursive: true });
+    writeFileSync(join(dir, "src/lib/staff/rogue-ai.ts"), 'export async function x() { return generateObservationDraft({}); }\n');
+    const r = runG2(["--root", dir]);
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /FAIL {2}AI actions authorize \(ai_assist · AR-8\) before calling the provider {2}→ src\/lib\/staff\/rogue-ai\.ts/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // PHASE 10B: legacy 수업 Action · 라우팅 스위치 자체를 제거했다 (이전 A2 는 saas_v2 모드 거부 순서를 검사했다)
 const DIRECT_STATUS_UPDATE = /\.from\(\s*["'`]class_sessions["'`]\s*\)\s*\.update\(\s*\{[^}]*\bstatus\b/;
 test("A2 (PHASE 10B): legacy session action and routing switch are removed and nothing updates class_sessions.status", () => {

@@ -77,7 +77,12 @@
 
 1. **병합 승인 전** — 이 브랜치는 `saas-v2`(직원 UAT)에 합치지 않았다.
 2. **J/K/L · G-1 · M5 는 여전히 미적용** (DB 조건 · Staging G-1 은 P09F-AUTH-1).
-3. **`G2_app_preflight.mjs` 는 이 브랜치에서 실행 불가 (ENOENT)** — 그 gate 는 legacy 기본 빌드(PRE-G2)를 검사하도록 쓰였고 제거된 파일(AI Action · 라우팅 스위치 · 교사 관찰 폼)을 읽는다. runbook 순서상 G-2 는 J(이 빌드) **전에** 현재 빌드로 적용한다 (Staging G-2 는 이미 ACTIVE). **결정 필요**: Production G-2 를 이 코드가 `main` 에 들어가기 전에 적용하거나, 승인 하에 G-2 app preflight 를 J 이후 빌드도 다루도록 개정. 이번 phase 는 cutover gate 를 수정하지 않았다.
+3. ~~`G2_app_preflight.mjs` 는 이 브랜치에서 실행 불가 (ENOENT)~~ → **PHASE 10B.1 에서 해결 (승인된 수명 주기 보강 · gate 약화 없음)**:
+   - 이 브랜치(J-ready): **예외 없이 FAIL 17/18** — 실패 항목은 PRE-G2 전용 조건 "staff app routing switch …" 하나 (`pre-G2 routing switch absent; this source appears to be a post-G2 / J-ready build`) + `LIFECYCLE:` 안내
+   - 알려진 PRE-G2 소스(`saas-v2` @ `80537ae` · 임시 worktree · `--root`): **18/18 PASS** · 원래 스크립트와 항목별 결과 **동일**
+   - 강화된 부분: AI provider 판정 순서를 legacy Action 파일 2개뿐 아니라 **src 전체 provider 호출**에 적용 · 원장 관찰 보드 파일이 없으면 FAIL
+   - 문서화: `docs/07-implementation/cutover-runbook.md` §3 "G-2 app preflight 의 수명 주기" — PRE-G2 빌드 전용 · G-2 ACTIVE 뒤 J 용 앱 gate 는 M5_app_preflight · JKL_start_gate · role E2E · **FAIL 을 G-2 재적용 근거로 쓰지 않는다** · Production 순서 불변
+   - 테스트: `supabase/validation/phase08/app_gates.test.mjs` +2 (lifecycle FAIL · 새 ungated provider 호출 적발) → 13/13
 4. 교사 legacy 작성 중 리포트 · legacy 기관 교사 관찰 작성 — J 전 계약 mapping · 사람 공지 필요 (runbook §2-1 · M5_preflight WARN)
 5. PHASE 10A 의 나머지: CO-12 · class_mode / weekly_report 출시 · CO-2 · BC-3 · P09D-C2 · 출시 플래그 audited RPC · `suspended→active` 재확인 · IB-5
 

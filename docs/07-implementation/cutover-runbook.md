@@ -121,6 +121,14 @@ J 이후 M5 전 상태(legacy 직접 쓰기 경로가 DB 에 남은 상태)는 *
 
 코드 점검만 한다. 배포된 앱이 실제로 이 코드인지 · /sales 가 동작하는지는 운영자가 확인한 뒤 `-v g2_app_preflight=passed` 를 준다.
 
+**G-2 app preflight 의 수명 주기 (PHASE 10B.1 · 순서 변경 없음)**
+1. `G2_app_preflight.mjs` 는 **G-2 cutover 직전에 배포되는 PRE-G2 빌드**의 gate 다 (`--root <빌드 소스>` 로 다른 소스도 점검 가능 · 점검 항목은 그대로).
+2. J-ready / M5-ready 빌드(PHASE 10B 이후)는 legacy 라우팅 스위치 · legacy AI 쓰기 Action 을 **의도적으로 지운다**.
+3. 그래서 J-ready 빌드는 PRE-G2 라우팅 조건을 통과하지 않는 것이 정상이다 — 예외 없이 `pre-G2 routing switch absent … (G-2 app preflight not applicable)` 와 `LIFECYCLE:` 안내로 FAIL 한다 (나머지 항목 · AI provider 판정 순서는 계속 검사하고, src 전체의 provider 호출도 검사한다).
+4. G-2 가 ACTIVE · VERIFIED 인 뒤 J 를 위한 앱 gate 는 `M5_app_preflight.mjs` · `JKL_start_gate.mjs` · role E2E / smoke 다.
+5. **G-2 가 이미 ACTIVE 인 환경에서 G-2 app preflight 의 FAIL(또는 과거의 crash)을 G-2 재적용 근거로 쓰지 않는다.** 상태 확인은 `g2_post_verify.sql` 로 한다.
+6. Production 순서는 그대로: **PRE-G2 앱 → G-2 app preflight → G-2 → 정책 · Readiness 작업 → J-ready 앱 → G-1 → M5** (J → K(G-1) → L(M5) 은 §2-1 의 한 controlled window).
+
 **G-2 DB preflight (PHASE 08 · 필수)**: `psql -v ON_ERROR_STOP=1 -f supabase/cutover/G2_db_preflight.sql`
 - PHASE 08 membership authority · AI 판정 객체 존재 (없으면 NOT READY)
 - **READ-ONLY: active HQ Sales account count** — 필수 확인 항목. 1 이상이면 G-2 전까지 Sales 가 아동 기록 조회 ·
