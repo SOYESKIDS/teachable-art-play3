@@ -222,10 +222,18 @@ select is((select count(*) from public.class_session_attendance
   'POST: existing attendance remains readable and unchanged while read_only');
 
 select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
-select lives_ok(
+-- PHASE 10C: 재개 = 활성화와 같은 Readiness. 이 fixture 계약은 trigger 없이 active 로 넣은 준비 미충족 계약 → 재개 거부.
+--            준비된 계약의 재개 성공은 supabase/tests/p0_phase10c_release_controls.test.sql.
+select throws_ok(
   $$ select public.change_contract_status('60000000-0000-0000-0000-00000000000a', 'active', '점검 완료',
        (select updated_at from public.contracts where id = '60000000-0000-0000-0000-00000000000a')) $$,
-  'POST: HQ admin resumes contract with reason');
+  'CT005', null, 'POST: HQ admin resume re-runs Readiness (not-ready fixture contract rejected · PHASE 10C)');
+-- 이후 검사를 위해 fixture 를 active 로 되돌린다 (fixture 조작 · 검사 대상 아님)
+reset role;
+set local session_replication_role = replica;
+update public.contracts set status = 'active' where id = '60000000-0000-0000-0000-00000000000a';
+set local session_replication_role = origin;
+set local role authenticated;
 select pg_temp.act_as('00000000-0000-0000-0000-00000000b002');
 select lives_ok(
   $$ select public.save_class_session_attendance_atomic('80000000-0000-0000-0000-0000000000a1',

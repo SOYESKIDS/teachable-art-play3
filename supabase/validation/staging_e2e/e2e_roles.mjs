@@ -452,6 +452,24 @@ async function main() {
       ]) {
         await step("hqAdmin", name, async () => { await go(p); return ((await path()) === p && (await h1()).length > 0) || `path=${await path()} h1=${await h1()}`; });
       }
+      // PHASE 10C: 출시 dialog 는 사유(필수) · 동시성 값을 받는다 — 열어서 확인만 하고 제출하지 않는다 (쓰기 없음)
+      await step("hqAdmin", "capability release dialog asks for a reason (opened · not submitted)", async () => {
+        await go("/admin/products");
+        const r = await page.eval(`(async () => {
+          const b = [...document.querySelectorAll('section[aria-labelledby="capability-title"] button')].find((x) => x.textContent.trim() === "출시");
+          if (!b) return "no release button";
+          b.click();
+          await new Promise((res) => setTimeout(res, 300));
+          const d = document.querySelector('[role="dialog"]');
+          const t = d && d.querySelector('textarea[name="reason"]');
+          const h = d && d.querySelector('input[type="hidden"][name="expectedUpdatedAt"]');
+          const cancel = d && [...d.querySelectorAll('button')].find((x) => x.textContent.trim() === "취소");
+          const ok = Boolean(t && t.required && h && h.value);
+          if (cancel) cancel.click();
+          return ok ? "ok" : "reason field or expectedUpdatedAt missing";
+        })()`);
+        return r === "ok" || r;
+      });
       await step("hqAdmin", "organization detail (first)", async () => {
         await go("/admin/organizations");
         const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href^="/admin/organizations/"]')].find((x) => /\\/admin\\/organizations\\/[0-9a-f-]{36}$/.test(x.getAttribute('href'))); return a ? a.getAttribute('href') : null; })()`);

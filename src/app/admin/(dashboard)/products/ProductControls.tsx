@@ -84,7 +84,17 @@ export function PublishVersionButton({
   );
 }
 
-export function CapabilityToggle({ code, released, blocked }: { code: FeatureCode; released: boolean; blocked: boolean }) {
+export function CapabilityToggle({
+  code,
+  released,
+  blocked,
+  expectedUpdatedAt,
+}: {
+  code: FeatureCode;
+  released: boolean;
+  blocked: boolean;
+  expectedUpdatedAt: string;
+}) {
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState(setCapabilityReleasedAction, IDLE);
   const done = state.phase === "success";
@@ -103,7 +113,7 @@ export function CapabilityToggle({ code, released, blocked }: { code: FeatureCod
         title={released ? `${label}을(를) 미출시로 바꿀까요?` : `${label}을(를) 출시할까요?`}
         description={
           released
-            ? "미출시로 바꾸면 이 기능을 포함한 새 계약은 준비 상태를 충족하지 못해 활성화할 수 없습니다. 이미 유효한 계약에는 영향을 주지 않습니다."
+            ? "미출시로 바꾸면 이 기능을 포함한 계약은 준비 상태를 충족하지 못해 새로 활성화하거나 정지 후 다시 시작할 수 없습니다. 현재 운영 중인 계약의 이용 권한은 바뀌지 않습니다."
             : "출시하면 이 기능을 포함한 계약의 준비 상태에서 이 항목이 충족됩니다. 계약 활성화는 별도로 진행합니다."
         }
         busy={pending}
@@ -111,6 +121,17 @@ export function CapabilityToggle({ code, released, blocked }: { code: FeatureCod
         <form action={formAction} className="flex flex-col gap-3">
           <input type="hidden" name="code" value={code} />
           <input type="hidden" name="released" value={released ? "false" : "true"} />
+          <input type="hidden" name="expectedUpdatedAt" value={expectedUpdatedAt} />
+          <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+            출시 · 미출시 변경 사유 (필수)
+            <textarea
+              name="reason"
+              required
+              maxLength={500}
+              rows={3}
+              className="min-h-11 w-full rounded-lg border border-control-border bg-white px-3 py-2 text-[14px] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+            />
+          </label>
           <Notice state={state} />
           <div className="flex justify-end gap-2">
             <button type="button" className={appButtonSecondary} onClick={() => setOpen(false)} disabled={pending}>

@@ -520,10 +520,19 @@ select is(private.can_upload_observation_media_object(
   false, 'WS9: consent-declined child upload still refused while read-only (consent rule is not a G-1 rule)');
 
 select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
-select lives_ok(
+-- PHASE 10C: 구조 재확인(CT010)은 통과하고, 이어서 전체 Readiness 가 준비 미충족 fixture 계약을 거부한다 (CT005 ≠ CT010).
+--            준비된 계약의 재개 성공은 p0_phase10c_release_controls.
+select throws_ok(
   $$ select public.change_contract_status('60000000-0000-0000-0000-00000000000a', 'active', '점검 완료',
        pg_temp.contract_ts('60000000-0000-0000-0000-00000000000a')) $$,
-  'WS6: resume passes the structural re-check (scope within limits)');
+  'CT005', null, 'WS6: resume passes the structural re-check (scope within limits) then full Readiness rejects the not-ready fixture (PHASE 10C)');
+-- 이후 검사를 위해 fixture 를 active 로 되돌린다 (fixture 조작 · 검사 대상 아님)
+reset role;
+set local session_replication_role = replica;
+update public.contracts set status = 'active' where id = '60000000-0000-0000-0000-00000000000a';
+set local session_replication_role = origin;
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000a001');
 
 
 -- =====================================================================

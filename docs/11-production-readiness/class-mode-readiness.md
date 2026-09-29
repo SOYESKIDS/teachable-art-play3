@@ -1,5 +1,11 @@
 # class_mode Release Readiness (PHASE 10A · 읽기 전용)
 
+> **Updated PHASE 10C (local 만 · Staging 미적용)** — 아래 "출시 경로의 결함" 은 `phase-10c-release-controls` 브랜치에서 local 로 닫았다:
+> audited `set_capability_release` RPC (HQ Admin · 사유 · 동시성 · actor) · blocker 있는 출시를 DB trigger 가 모든 경로에서 거부 · authenticated 의 `is_released` 직접 UPDATE 권한 회수 · `capability.changed` audit 에 reason · actor · from/to · `suspended → active` = 활성화와 같은 Readiness (CT005).
+> "없는 테스트" 도 `supabase/tests/p0_phase10c_release_controls.test.sql` (47) 로 채웠다. **class_mode 는 출시하지 않았다** (`is_released = false`).
+> 출시 기준: [class-mode-release-checklist.md](./class-mode-release-checklist.md) — **DRAFT — HUMAN APPROVAL REQUIRED**. 상세: [phase-10c-release-controls.md](./phase-10c-release-controls.md).
+> 남은 것: Staging migration 적용 승인 · 체크리스트 승인 · G-1 / M5 전제 결정 · 실제 출시는 사람이.
+
 ## 왜 OPEN 인가 (정확히)
 
 `platform_capabilities.class_mode.is_released` 가 seed 값 `false` 그대로다 (`supabase/migrations/20261001100000_m2_fact_backfill_reference_seed.sql:133` · 이후 migration 변경 없음).

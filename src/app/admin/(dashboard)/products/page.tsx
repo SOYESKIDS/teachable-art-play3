@@ -46,7 +46,7 @@ export default async function ProductsPage() {
         "id, product_id, version_label, lifecycle, week_from, week_to, children_per_class, max_classes, updated_at, product_version_features(feature_code, ai_capabilities)",
       )
       .order("version_label", { ascending: false }),
-    supabase.from("platform_capabilities").select("code, is_released, blocked_by, note").order("code"),
+    supabase.from("platform_capabilities").select("code, is_released, blocked_by, note, updated_at").order("code"),
   ]);
 
   const failed = productResult.error || versionResult.error || capabilityResult.error;
@@ -61,6 +61,7 @@ export default async function ProductsPage() {
     is_released: boolean;
     blocked_by: string[];
     note: string | null;
+    updated_at: string;
   }[];
 
   return (
@@ -143,7 +144,7 @@ export default async function ProductsPage() {
               플랫폼 기능 출시 상태
             </h2>
             <p className="mt-1 text-[13px] text-ink-muted">
-              계약 활성화는 상품에 포함된 기능이 모두 출시된 경우에만 가능합니다(활성화 시점 판정). 정책 결정 대기 기능은 이 화면에서 출시할 수 없습니다.
+              계약 활성화 · 정지 후 재개는 상품에 포함된 기능이 모두 출시된 경우에만 가능합니다(그 시점 판정). 정책 결정 대기 기능은 이 화면에서 출시할 수 없습니다. 출시 · 미출시 변경은 사유와 함께 기록됩니다.
             </p>
             <ul className="mt-3 flex flex-col divide-y divide-navy/8">
               {capabilities.map((capability) => (
@@ -162,6 +163,7 @@ export default async function ProductsPage() {
                     code={capability.code}
                     released={capability.is_released}
                     blocked={capability.blocked_by.length > 0}
+                    expectedUpdatedAt={capability.updated_at}
                   />
                 </li>
               ))}

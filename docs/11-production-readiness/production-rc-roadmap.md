@@ -42,3 +42,15 @@ G-2 · J/K/L(G-1 · M5) 적용 · Production env 범위 확인 · Staging secret
 - 범위 밖: G-1 · M5 · J/K/L 적용 · migration · Staging 쓰기 · Production
 - 완료 기준: `M5_app_preflight` 7/7 · `JKL_start_gate` app READY · local role E2E 교사 · 원장 · 학부모 PASS · legacy 리포트 · 공유 **조회** 유지 · lint · tsc · build
 - 그다음(PHASE 10C 후보): audited capability release RPC + `suspended→active` 재확인 + pgTAP (migration · Staging 적용은 승인)
+
+## 진행 기록
+
+| phase | 브랜치 | 상태 |
+|---|---|---|
+| 10B · 10B.1 | `phase-10b-m5-app-readiness` @ `252c5f5` | M5 앱 7/7 · JKL 앱 READY · G2 preflight lifecycle-safe · 병합 승인 전 |
+| **10C** | `phase-10c-release-controls` | **안전한 출시 경로 local 구현** (`set_capability_release` · blocker DB 강제 · 직접 UPDATE 회수 · audit 사유 · actor) · **`suspended→active` Readiness local 수정** · pgTAP 279 · E2E 48 PASS · **migration Staging 미적용** · **어떤 기능도 출시하지 않음** · Production 변경 0 · [phase-10c-release-controls.md](./phase-10c-release-controls.md) |
+
+A3(출시 체크리스트 초안)은 10C 에서 작성했다 — [class_mode](./class-mode-release-checklist.md) · [weekly_report](./weekly-report-release-checklist.md) **DRAFT — HUMAN APPROVAL REQUIRED**.
+E 의 "audited release RPC · `suspended→active` 재확인 migration" 은 **local 구현 완료 · Staging 적용 승인 대기**로 바뀌었다. CO-12 는 계속 OPEN · class_mode / weekly_report 사람 출시 승인은 계속 필요.
+
+다음 후보: PHASE 10C Staging migration rehearsal (별도 승인 · 적용 전 Staging 정지 계약 확인) · 8주 모아보기 수락 테스트 (A4) · CO-12 결정.
