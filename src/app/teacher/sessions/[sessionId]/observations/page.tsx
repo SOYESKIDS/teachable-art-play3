@@ -7,8 +7,6 @@ import { ClassObservationWorkspace } from "@/components/staff/ClassObservationWo
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { TEACHER_NAV } from "../../../nav";
-import { LegacyTeacherObservationPage } from "./LegacyTeacherObservationPage";
-import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 export const metadata: Metadata = {
   title: "관찰 기록 | TeachAble Art Play",
@@ -29,11 +27,6 @@ type AttendanceStatus = "present" | "absent" | "late" | "left_early";
  * 쓰기 가능 여부 = 반 기능 권한 ∧ 서비스 모드 ∧ 진행 중/종료 수업 (최종 판정은 RPC).
  */
 export default async function TeacherObservationPage({ params, searchParams }: TeacherObservationPageProps) {
-  // G-2 rollout: Production 기본은 legacy 관찰 화면 (계약 없이도 기존 운영 경로 유지 · 권한은 DB 판정)
-  if (staffAppRouting() === "legacy") {
-    return <LegacyTeacherObservationPage params={params} searchParams={searchParams} />;
-  }
-
   const { supabase, email, memberships } = await requireTeacher();
   const { sessionId } = await params;
   const query = await searchParams;

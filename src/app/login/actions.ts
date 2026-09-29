@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchActiveMemberships } from "@/lib/auth/organization";
 import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/queries";
-import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 import type { OrganizationLoginState } from "./form-state";
 
 /**
@@ -56,10 +55,9 @@ export async function organizationSignInAction(
       // (원장이면서 특정 반 담임을 겸하는 경우도 원장 화면에서 전부 보인다.)
       // ★ DEC-044 · DEC-097: 대시보드 기능이 없는 상품(STARTER)은 수업 운영으로 착지한다.
       //   여러 기관 소속이면 기관 선택이 먼저이므로 수업 운영에서 고르게 한다.
-      //   legacy 화면 계열(G-2 rollout · Production 기본)은 PHASE 07 이전처럼 /director 로 착지한다.
-      destination = staffAppRouting() === "legacy" ? "/director" : "/director/sessions";
+      destination = "/director/sessions";
 
-      if (staffAppRouting() === "saas_v2" && directorMemberships.length === 1) {
+      if (directorMemberships.length === 1) {
         const entitlements = await fetchOrganizationEntitlements(
           supabase,
           directorMemberships[0].organizationId,

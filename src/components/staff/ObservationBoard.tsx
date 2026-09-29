@@ -4,8 +4,6 @@ import {
   formatLessonOrder,
   formatSessionDate,
 } from "@/lib/admin/class-session";
-import { ObservationChildForm } from "@/components/staff/ObservationChildForm";
-import { ObservationAiDraftSection } from "@/components/staff/ObservationAiDraftSection";
 import { ObservationMediaSection } from "@/components/staff/ObservationMediaSection";
 import {
   OBSERVATION_RECORD_STATUS_LABELS,
@@ -14,53 +12,32 @@ import {
   type StaffObservationPageData,
 } from "@/types/staff-observation";
 
-type StaffRole = "director" | "teacher";
-
 interface ObservationBoardProps {
   data: StaffObservationPageData;
-  role: StaffRole;
   backHref: string;
-  /**
-   * SERVICE-10A — AI 정리 기능이 설정되어 있는가(환경변수 존재 여부).
-   * 서버에서만 판정해 내려보낸다. 값 자체는 화면에 오지 않는다.
-   */
-  aiEnabled?: boolean;
 }
 
 /**
- * SERVICE-08B — 관찰기록 화면.
+ * SERVICE-08B — 관찰기록 화면 (원장 · 읽기 전용).
+ *
+ * ★ PHASE 10B (M5 앱 준비): 교사 legacy 관찰 작성 · AI 정리 경로를 없앴다.
+ *   교사는 Observation 2.0(ClassObservationWorkspace)으로 쓰고, 이 화면은 원장 조회만 한다.
+ *   legacy 관찰 저장 RPC · 관찰 AI RPC 는 M5 가 회수한다.
  *
  * ★ 이 화면은 아동을 평가하지 않는다.
  *   점수·등급·발달단계·위험도 같은 표시를 만들지 않는다.
  *   다루는 것은 교사가 남긴 서술과 관찰영역 태그뿐이다.
  *
- * 편집 정책
- *   cancelled 수업            : 전원 조회만 (RPC OB003 · Policy가 최종 방어선)
- *   교사 + 운영 중인 반       : 신규 작성 · 기존 정정
- *   교사 + 보관된 반          : 기존 기록만 정정, 신규 작성 불가
- *   원장                      : 조회만 (20260831094000의 쓰기 Policy에 director 분기가 없다)
- *   이름을 읽지 못한 원아     : 조회만
- *
- * ★ 다른 반으로 옮겨간 원아(historical)라고 해서 앱이 임의로 막지 않는다.
- *   UPDATE Policy는 is_assigned_class_teacher()라 과거 기록의 정정을 허용한다.
- *   여기서 현재 반 소속만 보고 차단하면 DB가 허용하는 정정을 화면이 막게 된다.
- *
- * 최종 권한 판정은 RLS + trigger + RPC다. 아래 판정은 사용자에게 이유를 설명하기 위한 것이다.
+ * 원장은 조회만 한다 (20260831094000의 쓰기 Policy에 director 분기가 없다). 최종 판정은 RLS 다.
  */
 export function ObservationBoard({
   data,
-  role,
   backHref,
-  aiEnabled = false,
 }: ObservationBoardProps) {
   const { session, domains, children } = data;
 
   const sessionReadOnly =
     session.status === "cancelled";
-
-  const teacherArchived =
-    role === "teacher" &&
-    session.classStatus !== "active";
 
   /**
    * 원장은 보관된 반의 기록도 그대로 읽는다 —
@@ -69,15 +46,9 @@ export function ObservationBoard({
    *
    * 그래도 안내를 두는 이유: 아무 표시가 없으면 "왜 이 반이 목록에 있지"라고
    * 오해하게 된다. 수업 정보 카드의 "(보관)" 표시만으로는 약하다.
-   * 저장 가능 여부 판정(canWrite)에는 관여하지 않는다 — 문구 전용이다.
+   * 문구 전용이다.
    */
-  const directorArchived =
-    role === "director" &&
-    session.classStatus !== "active";
-
-  /** 관찰 원문은 그 자리에 있었던 교사만 쓴다. */
-  const canWrite =
-    role === "teacher" && !sessionReadOnly;
+  const directorArchived = session.classStatus !== "active";
 
   const completeCount = children.filter(
     (child) => child.recordStatus === "complete",
@@ -159,12 +130,6 @@ export function ObservationBoard({
         </p>
       ) : null}
 
-      {teacherArchived && !sessionReadOnly ? (
-        <p className="mt-4 rounded-xl border border-yellow/50 bg-yellow-soft px-4 py-3 text-[13px] leading-relaxed text-navy">
-          보관된 반입니다. 기존 관찰기록은 정정할 수 있지만 새 기록은 작성할 수 없습니다.
-        </p>
-      ) : null}
-
       {/*
         cancelled 배너가 이미 "조회만 가능"을 말하고 있을 때는 겹쳐 띄우지 않는다.
         (교사 쪽 배너와 같은 기준 — 배너가 세 개 쌓이면 아무것도 읽지 않게 된다)
@@ -175,11 +140,9 @@ export function ObservationBoard({
         </p>
       ) : null}
 
-      {role === "director" ? (
-        <p className="mt-4 rounded-xl border border-navy/10 bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-navy/60">
-          관찰기록은 수업을 담당한 교사가 작성합니다. 원장은 조회만 할 수 있습니다.
-        </p>
-      ) : null}
+      <p className="mt-4 rounded-xl border border-navy/10 bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-navy/60">
+        관찰기록은 수업을 담당한 교사가 작성합니다. 원장은 조회만 할 수 있습니다.
+      </p>
 
       <section className="mt-5 scroll-mt-28">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -241,11 +204,6 @@ export function ObservationBoard({
                 sessionId={session.id}
                 child={child}
                 domains={domains}
-                canWrite={canWrite}
-                teacherArchived={teacherArchived}
-                classActive={session.classStatus === "active"}
-                role={role}
-                aiEnabled={aiEnabled}
               />
             ))}
           </ul>
@@ -267,109 +225,12 @@ interface ObservationChildCardProps {
   sessionId: string;
   child: StaffObservationChild;
   domains: ObservationDomain[];
-  canWrite: boolean;
-  teacherArchived: boolean;
-  /** 반이 운영 중인가 — 활동사진 신규 업로드 조건(is_class_teacher와 같은 기준) */
-  classActive: boolean;
-  role: StaffRole;
-  aiEnabled: boolean;
-}
-
-/**
- * SERVICE-09A — 활동사진을 새로 올릴 수 있는가.
- *
- * DB 조건을 그대로 옮긴다.
- *   Storage  can_upload_observation_media_object()
- *              = is_class_teacher(반 active) + is_recordable_session(취소 아님)
- *                + 원아가 그 반의 현재 소속
- *   Table    INSERT Policy + enforce_observation_media_insert() trigger
- *
- * 여기 판정은 사용자에게 이유를 먼저 알려 주기 위한 것이고,
- * 최종 판정은 Server Action → Storage RLS → DB trigger 순으로 다시 이뤄진다.
- */
-function resolveMediaUpload(
-  child: StaffObservationChild,
-  canWrite: boolean,
-  classActive: boolean,
-): { canUpload: boolean; blockedReason: string | null } {
-  // 원장 · 취소된 수업 — 상단 배너가 이미 설명하고 있다.
-  if (!canWrite) {
-    return { canUpload: false, blockedReason: null };
-  }
-
-  if (!classActive) {
-    return {
-      canUpload: false,
-      blockedReason:
-        "보관된 반에는 새 활동 사진을 추가할 수 없습니다.",
-    };
-  }
-
-  // 수업 이후 다른 반으로 옮긴 원아. 기존 사진 조회는 그대로 가능하다.
-  if (!child.isCurrentClassMember) {
-    return {
-      canUpload: false,
-      blockedReason:
-        "현재 이 반에 소속되지 않은 원아에게는 새 활동 사진을 추가할 수 없습니다.",
-    };
-  }
-
-  if (!child.childName) {
-    return {
-      canUpload: false,
-      blockedReason:
-        "원아 정보를 확인할 수 없어 활동 사진을 추가할 수 없습니다.",
-    };
-  }
-
-  return { canUpload: true, blockedReason: null };
-}
-
-/**
- * 편집 가능 여부와 "왜 불가능한지"를 함께 판정한다.
- *
- * 이유를 함께 돌려주는 이유: 카드가 비어 보이면 교사는 화면 오류로 오해한다.
- * 다만 수업 취소처럼 화면 상단 배너가 이미 설명한 경우에는 문구를 반복하지 않는다.
- */
-function resolveEditability(
-  child: StaffObservationChild,
-  canWrite: boolean,
-  teacherArchived: boolean,
-): { editable: boolean; blockedReason: string | null } {
-  if (!canWrite) {
-    return { editable: false, blockedReason: null };
-  }
-
-  // 이름조차 읽히지 않는 비정상 행은 화면에서 임의로 정정하지 않는다.
-  if (!child.childName) {
-    return {
-      editable: false,
-      blockedReason:
-        "원아 정보를 확인할 수 없어 이 기록은 수정할 수 없습니다.",
-    };
-  }
-
-  // 보관된 반: 기존 기록 정정은 허용, 신규 작성은 불가 (INSERT Policy와 같은 규칙).
-  if (teacherArchived && !child.hasExistingObservation) {
-    return {
-      editable: false,
-      blockedReason:
-        "보관된 반에서는 새 관찰기록을 작성할 수 없습니다.",
-    };
-  }
-
-  return { editable: true, blockedReason: null };
 }
 
 function ObservationChildCard({
   sessionId,
   child,
   domains,
-  canWrite,
-  teacherArchived,
-  classActive,
-  role,
-  aiEnabled,
 }: ObservationChildCardProps) {
   const statusLabel = childStatusLabel(
     child.childStatus,
@@ -380,14 +241,6 @@ function ObservationChildCard({
         child.recordStatus
       ]
     : "미작성";
-
-  const { editable, blockedReason } = resolveEditability(
-    child,
-    canWrite,
-    teacherArchived,
-  );
-
-  const media = resolveMediaUpload(child, canWrite, classActive);
 
   return (
     <li className="scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4">
@@ -422,26 +275,10 @@ function ObservationChildCard({
         </span>
       </div>
 
-      {editable ? (
-        <ObservationChildForm
-          sessionId={sessionId}
-          child={child}
-          domains={domains}
-        />
-      ) : (
-        <>
-          <ObservationChildReadOnly
-            child={child}
-            domains={domains}
-          />
-
-          {blockedReason ? (
-            <p className="mt-3 text-[12px] leading-relaxed text-navy/45">
-              {blockedReason}
-            </p>
-          ) : null}
-        </>
-      )}
+      <ObservationChildReadOnly
+        child={child}
+        domains={domains}
+      />
 
       {/*
         SERVICE-09A — 활동사진.
@@ -453,29 +290,10 @@ function ObservationChildCard({
         childId={child.childId}
         childName={child.childName}
         media={child.media}
-        canUpload={media.canUpload}
-        uploadBlockedReason={media.blockedReason}
+        canUpload={false}
+        uploadBlockedReason={null}
       />
 
-      {/*
-        SERVICE-10A — AI 기록정리.
-        관찰기록 → 활동 사진 → AI 기록정리 순서로 둔다.
-        AI는 교사가 이미 쓴 문장만 읽는다 — 사진은 입력에 들어가지 않는다.
-      */}
-      {/* DEC-093: 원장에게 AI 초안 · 정리 문장을 보여 주지 않는다 (담당 교사만). */}
-      {role === "teacher" ? (
-      <ObservationAiDraftSection
-        sessionId={sessionId}
-        childId={child.childId}
-        role={role}
-        aiEnabled={aiEnabled}
-        canWrite={canWrite}
-        classActive={classActive}
-        hasObservation={child.hasExistingObservation}
-        recordStatus={child.recordStatus}
-        draft={child.aiDraft}
-      />
-      ) : null}
     </li>
   );
 }

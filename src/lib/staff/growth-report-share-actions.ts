@@ -1,30 +1,20 @@
 "use server";
 
-import { createHash, randomBytes } from "node:crypto";
 import { refresh } from "next/cache";
 import { requireDirector } from "@/lib/auth/organization";
-import {
-  SHARE_TOKEN_BYTES,
-  type GrowthReportShareCreateState,
-  type GrowthReportShareRevokeState,
-} from "@/types/parent-share";
+import type { GrowthReportShareRevokeState } from "@/types/parent-share";
 
 /**
- * SERVICE-13 — 학부모 공유 링크 Server Action.
+ * SERVICE-13 — 학부모 공유 링크 Server Action (이전 형식 리포트).
+ *
+ * ★ PHASE 10B (M5 앱 준비): 새 공유 링크 발급(create_child_growth_report_share)은 앱에서 없앴다.
+ *   M5 가 그 RPC 를 회수하고, 기존 링크의 중지(revoke_child_growth_report_share)는 유지한다 (DEC-041).
  *
  * ★ 원장만 도달할 수 있다.
- *   두 함수 모두 requireDirector()로 시작하고, DB의 쓰기 Policy에도
+ *   requireDirector()로 시작하고, DB의 쓰기 Policy에도
  *   교사 분기가 없다. 교사는 리포트를 작성하지만 외부 공개 권한은 갖지 않는다.
  *
  * ★ service_role을 쓰지 않는다. 사용자 세션 client + RLS만 사용한다.
- *
- * ★ 비밀값의 일생
- *   randomBytes(32)  → 이 프로세스 메모리
- *   SHA-256(hex)     → RPC 인자로 DB에 전달, 저장되는 것은 이것뿐
- *   원본             → 이 함수의 반환값으로 원장 화면에 한 번 전달되고 끝
- *
- *   원본은 DB에 저장되지 않고, 로그에 찍히지 않고, URL 경로/쿼리에도 들어가지 않는다.
- *   (링크에서는 #fragment 뒤에 붙어 서버로 전송되지 않는다)
  *
  * ★ 로그에 남기는 것은 scope와 오류 코드뿐이다.
  *   token · token hash · share id · report id · 원아 정보는 넣지 않는다.
@@ -72,88 +62,6 @@ function toMessage(error: PostgrestLikeError): string {
     default:
       return GENERIC_FAILURE;
   }
-}
-
-/**
- * 새 학부모 공유 링크 만들기.
- *
- * 기존에 살아 있는 공유가 있으면 RPC가 같은 transaction 안에서 먼저 중지한다.
- * 그래서 "새 링크 발급"과 "처음 발급"이 같은 경로다 — 분기를 두지 않는다.
- */
-export async function createGrowthReportShareAction(input: {
-  reportId: string;
-}): Promise<GrowthReportShareCreateState> {
-  const { supabase } = await requireDirector();
-
-  const reportId = typeof input?.reportId === "string" ? input.reportId : "";
-
-  if (!UUID_PATTERN.test(reportId)) {
-    return { ok: false, message: "잘못된 요청입니다." };
-  }
-
-  // ★ 리포트를 서버가 다시 읽는다. Client가 보낸 상태·기관을 믿지 않는다.
-  //   원장에게는 작성 완료된 리포트만 보이므로(11A SELECT Policy),
-  //   작성 중 리포트는 여기서 not found가 된다.
-  const { data: reportRow, error: reportError } = await supabase
-    .from("child_growth_reports")
-    .select("id, status")
-    .eq("id", reportId)
-    .maybeSingle();
-
-  if (reportError) {
-    logFailure("report lookup", reportError.code ?? "unknown");
-    return { ok: false, message: GENERIC_FAILURE };
-  }
-
-  if (!reportRow) {
-    return {
-      ok: false,
-      message: "성장 리포트를 찾을 수 없거나 권한이 없습니다.",
-    };
-  }
-
-  if ((reportRow as { status?: string }).status !== "complete") {
-    return {
-      ok: false,
-      message: "작성 완료된 성장 리포트만 학부모에게 공유할 수 있습니다.",
-    };
-  }
-
-  // ★ 여기서만 원본이 존재한다.
-  //   base64url이라 URL fragment에 그대로 넣어도 인코딩이 필요 없다.
-  const token = randomBytes(SHARE_TOKEN_BYTES).toString("base64url");
-  const tokenHash = createHash("sha256").update(token, "utf8").digest("hex");
-
-  const { data, error } = await supabase.rpc(
-    "create_child_growth_report_share",
-    {
-      p_report_id: reportId,
-      p_token_hash: tokenHash,
-    },
-  );
-
-  if (error) {
-    logFailure("create share", error.code ?? "unknown");
-    return { ok: false, message: toMessage(error) };
-  }
-
-  const payload = data as
-    | { share_id?: string; expires_at?: string }
-    | null;
-
-  if (!payload?.share_id || !payload.expires_at) {
-    logFailure("create share", "unexpected rpc payload");
-    return { ok: false, message: GENERIC_FAILURE };
-  }
-
-  refresh();
-
-  return {
-    ok: true,
-    shareId: payload.share_id,
-    token,
-    expiresAt: payload.expires_at,
-  };
 }
 
 /**

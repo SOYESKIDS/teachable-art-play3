@@ -9,7 +9,6 @@ import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { TodaySessionBoardView } from "@/components/staff/TodaySessionBoard";
 import { TEACHER_NAV } from "./nav";
-import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 export const metadata: Metadata = {
   title: "오늘의 수업 | TeachAble Art Play",
@@ -103,7 +102,6 @@ export default async function TeacherTodayPage({
 
       <div className="mt-5">
         <TodaySessionBoardView
-          appRouting={staffAppRouting()}
           board={board}
           showClassName
           hasError={!result.ok}

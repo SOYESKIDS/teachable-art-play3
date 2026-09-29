@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/queries";
-import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 /**
  * 원장 메뉴 (DEC-097 · DEC-044 · DEC-056).
@@ -18,14 +17,6 @@ const OPERATION_NAV = [
 
 const HOME_NAV = { href: "/director", label: "홈" } as const;
 
-/** legacy 화면 계열 (G-2 rollout · PHASE 07 이전 production 메뉴 그대로) */
-const LEGACY_DIRECTOR_NAV = [
-  { href: "/director", label: "홈" },
-  { href: "/director/sessions", label: "수업 운영" },
-  { href: "/director/sessions/history", label: "수업 이력" },
-  { href: "/director/growth-reports", label: "성장 리포트" },
-] as const;
-
 /** 기능 권한을 모를 때(이전 호출부 호환)의 기본값: 홈 없이 운영 메뉴만 */
 export const DIRECTOR_NAV: readonly { href: string; label: string }[] = OPERATION_NAV;
 
@@ -33,7 +24,6 @@ export async function directorNavFor(
   supabase: SupabaseClient,
   organizationId: string,
 ): Promise<readonly { href: string; label: string }[]> {
-  if (staffAppRouting() === "legacy") return LEGACY_DIRECTOR_NAV;
   const entitlements = await fetchOrganizationEntitlements(supabase, organizationId);
   return hasFeature(entitlements, "director_dashboard") ? [HOME_NAV, ...OPERATION_NAV] : OPERATION_NAV;
 }

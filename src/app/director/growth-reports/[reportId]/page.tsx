@@ -6,6 +6,7 @@ import { fetchGrowthReportShare } from "@/lib/staff/growth-report-share-queries"
 import { resolveMembership } from "@/lib/staff/membership";
 import { GrowthReportAttendanceSummary } from "@/components/staff/GrowthReportAttendanceSummary";
 import { GrowthReportEvidenceTimeline } from "@/components/staff/GrowthReportEvidenceTimeline";
+import { GrowthReportReadOnlyContent } from "@/components/staff/GrowthReportReadOnlyContent";
 import { GrowthReportShareSection } from "@/components/staff/GrowthReportShareSection";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
@@ -136,47 +137,17 @@ export default async function DirectorGrowthReportDetailPage({
             attendance={result.report.attendance}
           />
 
-          <section className="mt-6 scroll-mt-28">
-            <h2 className="text-[15px] font-bold text-navy">리포트 내용</h2>
+          <GrowthReportReadOnlyContent
+            growthChanges={result.report.growthChanges}
+            observationSummary={result.report.observationSummary}
+            nextSupport={result.report.nextSupport}
+          />
 
-            <div className="mt-3 flex flex-col gap-4">
-              <ReadOnlyBlock
-                label="성장 변화"
-                value={result.report.growthChanges}
-              />
-              <ReadOnlyBlock
-                label="관찰 요약"
-                value={result.report.observationSummary}
-              />
-              <ReadOnlyBlock
-                label="다음 지원 방향"
-                value={result.report.nextSupport}
-              />
-            </div>
-          </section>
-
-          <GrowthReportShareSection reportId={reportId} share={share} />
+          <GrowthReportShareSection share={share} />
 
           <GrowthReportEvidenceTimeline sources={result.report.sources} />
         </div>
       )}
     </StaffShell>
-  );
-}
-
-function ReadOnlyBlock({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | null;
-}) {
-  return (
-    <div>
-      <p className="text-[11px] font-bold text-navy/55">{label}</p>
-      <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-navy/10 bg-white px-3 py-2.5 text-[13px] leading-relaxed text-navy">
-        {value ?? "작성된 내용이 없습니다."}
-      </p>
-    </div>
   );
 }

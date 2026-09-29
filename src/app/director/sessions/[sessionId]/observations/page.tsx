@@ -35,10 +35,7 @@ interface DirectorObservationPageProps {
  *   requireDirector() → 소속 확인 → fetchStaffObservations() → StaffShell
  *
  * ★ 원장은 읽기만 한다.
- *   이 파일은 saveObservationAction / observation-actions.ts /
- *   ObservationChildForm.tsx 어느 것도 import하지 않는다.
- *   ObservationBoard에 role="director"를 하드코딩으로 넘기면
- *   canWrite가 false가 되어 입력 form이 한 개도 렌더되지 않는다.
+ *   ObservationBoard 는 PHASE 10B 부터 읽기 전용이다 (입력 form · AI 영역 없음 · legacy 관찰 쓰기 경로는 M5 가 회수).
  *   최종 방어선은 DB다 — 20260831094000의 관찰기록 INSERT/UPDATE Policy에는
  *   director 분기가 아예 없고, DELETE Policy는 존재하지 않는다.
  *
@@ -47,10 +44,7 @@ interface DirectorObservationPageProps {
  *   원장이 무엇을 볼 수 있는지는 RLS가 판정한다
  *   (observations SELECT Policy의 has_org_role(organization_id, ['director']) 분기).
  *
- * ★ SERVICE-10A — 원장 화면에는 AI 생성 경로가 없다.
- *   ObservationBoard에 aiEnabled를 넘기지 않으므로 기본값 false가 되고,
- *   AI 영역은 "교사 검토 완료" 문장만 읽기 전용으로 표시한다.
- *   이 파일은 observation-ai-actions도 AI provider도 import하지 않는다.
+ * ★ 원장 화면에는 AI 경로가 없다 (AI provider 를 import 하지 않는다).
  *
  * ★ 실패 문구는 "찾을 수 없거나 접근 권한이 없습니다" 하나로 합친다.
  *   존재하지 않는 수업과 권한 없는 수업을 구분해 보여주면
@@ -122,7 +116,6 @@ export default async function DirectorObservationPage({
       ) : (
         <ObservationBoard
           data={result.data}
-          role="director"
           backHref={`/director/sessions?org=${encodeURIComponent(
             membership.organizationId,
           )}`}

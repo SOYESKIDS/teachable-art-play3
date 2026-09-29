@@ -10,8 +10,6 @@ import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { WeeklyQueue } from "@/components/staff/WeeklyQueue";
 import { TEACHER_NAV } from "../nav";
-import { LegacyTeacherGrowthReportsPage } from "./LegacyTeacherGrowthReportsPage";
-import { staffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 export const metadata: Metadata = {
   title: "리포트 | TeachAble Art Play",
@@ -33,11 +31,6 @@ function first(value: string | string[] | undefined): string | undefined {
  * · 이전 형식 리포트 (기간형) — 읽기 전용 목록 (새로 만들지 않는다 · DEC-091)
  */
 export default async function TeacherReportsPage({ searchParams }: TeacherReportsPageProps) {
-  // G-2 rollout: Production 기본은 legacy 성장 리포트 화면 (계약 없이도 기존 운영 경로 유지 · 권한은 DB 판정)
-  if (staffAppRouting() === "legacy") {
-    return <LegacyTeacherGrowthReportsPage searchParams={searchParams} />;
-  }
-
   const { supabase, email, memberships, userId } = await requireTeacher();
   const params = await searchParams;
   const membership = resolveMembership(memberships, params.org);

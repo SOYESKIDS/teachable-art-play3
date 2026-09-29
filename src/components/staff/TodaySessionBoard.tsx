@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { StaffSessionItem, TodaySessionBoard } from "@/types/staff-session";
 import { SessionCard } from "./SessionCard";
 import type { SessionActorRole } from "./SessionActions";
-import type { StaffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 interface TodaySessionBoardProps {
   board: TodaySessionBoard;
@@ -24,8 +23,6 @@ interface TodaySessionBoardProps {
   actorRole: SessionActorRole;
   /** 교사 Class Mode 기준 경로 (예: /teacher/sessions) */
   classModeBasePath?: string;
-  /** 기본 화면 계열 (G-2 rollout · 서버가 정해 내려준다 · 권한과 무관) */
-  appRouting?: StaffAppRouting;
 }
 
 function KpiItem({ label, value }: { label: string; value: number }) {
@@ -73,7 +70,6 @@ function Section({
   observationBasePath,
   actorRole,
   classModeBasePath,
-  appRouting,
 }: {
   title: string;
   description?: string;
@@ -84,7 +80,6 @@ function Section({
   observationBasePath?: string;
   actorRole: SessionActorRole;
   classModeBasePath?: string;
-  appRouting?: StaffAppRouting;
 }) {
   if (sessions.length === 0 && !emptyText) return null;
 
@@ -120,7 +115,6 @@ function Section({
               )}
               actorRole={actorRole}
               classModeBasePath={classModeBasePath}
-              appRouting={appRouting}
             />
           ))}
         </ul>
@@ -148,7 +142,6 @@ export function TodaySessionBoardView({
   observationBasePath,
   actorRole,
   classModeBasePath,
-  appRouting,
 }: TodaySessionBoardProps): ReactNode {
   if (hasError) {
     return (
@@ -186,7 +179,6 @@ export function TodaySessionBoardView({
         observationBasePath={observationBasePath}
         actorRole={actorRole}
         classModeBasePath={classModeBasePath}
-              appRouting={appRouting}
       />
 
       <Section
@@ -198,7 +190,6 @@ export function TodaySessionBoardView({
         observationBasePath={observationBasePath}
         actorRole={actorRole}
         classModeBasePath={classModeBasePath}
-              appRouting={appRouting}
       />
 
       <Section
@@ -210,7 +201,6 @@ export function TodaySessionBoardView({
         observationBasePath={observationBasePath}
         actorRole={actorRole}
         classModeBasePath={classModeBasePath}
-              appRouting={appRouting}
       />
 
       <Section
@@ -222,7 +212,6 @@ export function TodaySessionBoardView({
         observationBasePath={observationBasePath}
         actorRole={actorRole}
         classModeBasePath={classModeBasePath}
-              appRouting={appRouting}
       />
     </>
   );

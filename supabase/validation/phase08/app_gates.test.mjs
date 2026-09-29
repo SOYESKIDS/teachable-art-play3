@@ -13,7 +13,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -78,21 +78,26 @@ function source(path) {
   return readFileSync(join(root, path), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 
-for (const { file, provider } of [
-  { file: "src/lib/staff/observation-ai-actions.ts", provider: "generateObservationDraft(" },
-  { file: "src/lib/staff/growth-report-ai-actions.ts", provider: "generateGrowthReportDraft(" },
-]) {
-  test(`A1: ${file} authorizes, checks env and identifiers before the provider call`, () => {
-    const src = source(file);
-    const authz = src.indexOf("authorizeAiAssist(");
-    const identifiers = src.indexOf("findExplicitIdentifier(");
-    const call = src.indexOf(provider);
-    const env = src.search(/is(Observation|GrowthReport)AiConfigured\(\)/);
-    assert.ok(authz > 0 && call > 0, "gate and provider call present");
-    assert.ok(authz < env && env < call, "authorization → env check → provider");
-    assert.ok(identifiers > authz && identifiers < call, "identifier check before provider");
-  });
+// PHASE 10B: legacy AI 초안 Action(관찰 C1 · 기간 리포트 C2)은 M5 가 회수하는 RPC 를 쓰므로 앱에서 제거했다.
+//   provider 모듈(src/lib/ai/*-draft-provider.ts)은 남아 있지만 어떤 앱 코드도 호출하지 않는다 → 판정 없는 provider 호출 경로 0.
+//   AI 를 다시 붙일 때는 이 테스트를 "authorize → env → identifier → provider" 순서 검사로 되돌린다 (AR-8 OPEN).
+function walkSrc(dir) {
+  return readdirSync(join(root, dir), { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory()
+      ? walkSrc(`${dir}/${entry.name}`)
+      : /\.(ts|tsx)$/.test(entry.name) ? [`${dir}/${entry.name}`] : [],
+  );
 }
+const PROVIDER_USE = /generate(Observation|GrowthReport)Draft\(|@\/lib\/ai\/(observation|growth-report)-draft-provider/;
+test("A1 (PHASE 10B): no app code calls an AI provider (legacy AI draft actions removed)", () => {
+  for (const removed of ["src/lib/staff/observation-ai-actions.ts", "src/lib/staff/growth-report-ai-actions.ts"]) {
+    assert.ok(!existsSync(join(root, removed)), removed);
+  }
+  const callers = walkSrc("src")
+    .filter((file) => !file.startsWith("src/lib/ai/"))
+    .filter((file) => PROVIDER_USE.test(source(file)));
+  assert.deepEqual(callers, []);
+});
 
 // ---------------------------------------------------------------------
 // J / K / L start gate (PHASE 08 PRE-COMMIT Issue 2)
@@ -112,11 +117,12 @@ function fixtureRoot(files) {
   return dir;
 }
 
-test("JKL: current branch (legacy UI still present) must not start J", () => {
+// PHASE 10B: 이 브랜치는 legacy 화면 계열을 뺀 J 빌드다 → 앱 조건 READY (DB 조건은 JKL_window_preflight.sql 이 따로 본다)
+test("JKL: current branch (legacy-free J build) passes the app start gate", () => {
   const r = runGate();
-  assert.equal(r.status, 1);
-  assert.match(r.stdout, /DO NOT START J/);
-  assert.match(r.stdout, /legacy UI disabled/);
+  assert.equal(r.status, 0, r.stdout);
+  assert.match(r.stdout, /7\/7 PASS/);
+  assert.match(r.stdout, /READY/);
 });
 
 test("JKL: a cutover build with no legacy consumer can start J", () => {
@@ -146,11 +152,15 @@ test("JKL: any direct legacy write consumer blocks J", () => {
   }
 });
 
-test("A2: legacy session action rejects saas_v2 mode before auth / DB access", () => {
-  const src = source("src/lib/staff/legacy-session-actions.ts");
-  const modeCheck = src.indexOf('staffAppRouting() !== "legacy"');
-  const auth = src.indexOf("await requireStaff()");
-  const update = src.indexOf(".update({ status: nextStatus })");
-  assert.ok(modeCheck > 0, "mode check present");
-  assert.ok(modeCheck < auth && auth < update, "mode check precedes requireStaff and the direct UPDATE");
+// PHASE 10B: legacy 수업 Action · 라우팅 스위치 자체를 제거했다 (이전 A2 는 saas_v2 모드 거부 순서를 검사했다)
+const DIRECT_STATUS_UPDATE = /\.from\(\s*["'`]class_sessions["'`]\s*\)\s*\.update\(\s*\{[^}]*\bstatus\b/;
+test("A2 (PHASE 10B): legacy session action and routing switch are removed and nothing updates class_sessions.status", () => {
+  for (const removed of ["src/lib/staff/legacy-session-actions.ts", "src/components/staff/LegacySessionActions.tsx", "src/lib/rollout/staff-app-routing.ts"]) {
+    assert.ok(!existsSync(join(root, removed)), removed);
+  }
+  const offenders = walkSrc("src").filter((file) => {
+    const src = source(file);
+    return /staffAppRouting|staff-app-routing|legacy-session-actions|LegacySessionActions/.test(src) || DIRECT_STATUS_UPDATE.test(src);
+  });
+  assert.deepEqual(offenders, []);
 });

@@ -3,12 +3,9 @@ import Link from "next/link";
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchGrowthReportDetail } from "@/lib/staff/growth-report-queries";
 import { resolveMembership } from "@/lib/staff/membership";
-import { isGrowthReportAiConfigured } from "@/lib/ai/growth-report-draft-provider";
-import { authorizeAiAssist } from "@/lib/ai/ai-assist-gate";
-import { GrowthReportAiDraftSection } from "@/components/staff/GrowthReportAiDraftSection";
 import { GrowthReportAttendanceSummary } from "@/components/staff/GrowthReportAttendanceSummary";
-import { GrowthReportEditor } from "@/components/staff/GrowthReportEditor";
 import { GrowthReportEvidenceTimeline } from "@/components/staff/GrowthReportEvidenceTimeline";
+import { GrowthReportReadOnlyContent } from "@/components/staff/GrowthReportReadOnlyContent";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import {
@@ -132,24 +129,19 @@ export default async function TeacherGrowthReportDetailPage({
           />
 
           {/*
-            SERVICE-11B — AI 초안은 작성 중인 리포트에서만 보인다.
-            완료된 리포트에는 생성·적용 버튼을 아예 렌더하지 않는다.
-            AI 는 리포트를 완성하지 않는다 — 확정은 아래 편집기의 "작성완료"다.
+            PHASE 10B (M5 앱 준비): 이전 형식(기간형) 리포트는 조회만 한다.
+            작성 · 저장 · AI 초안 경로는 M5 가 회수하므로 화면에서도 없앤다 (DEC-041 · DEC-091).
+            새 기록은 주간(Weekly) 리포트로 쓴다.
           */}
-          {result.report.status === "draft" ? (
-            <GrowthReportAiDraftSection
-              reportId={result.report.id}
-              reportUpdatedAt={result.report.updatedAt}
-              sourceCount={result.report.sources.length}
-              aiEnabled={
-                isGrowthReportAiConfigured() &&
-                (await authorizeAiAssist(supabase, "period_report_draft", result.report.id)).allowed
-              }
-              draft={result.report.aiDraft}
-            />
-          ) : null}
+          <p className="mt-4 rounded-xl border border-navy/10 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+            이전 형식의 리포트입니다. 내용은 확인만 할 수 있습니다. 새 기록은 주간 리포트로 작성해 주세요.
+          </p>
 
-          <GrowthReportEditor report={result.report} />
+          <GrowthReportReadOnlyContent
+            growthChanges={result.report.growthChanges}
+            observationSummary={result.report.observationSummary}
+            nextSupport={result.report.nextSupport}
+          />
 
           <GrowthReportEvidenceTimeline sources={result.report.sources} />
         </div>

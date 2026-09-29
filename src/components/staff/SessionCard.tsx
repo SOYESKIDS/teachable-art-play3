@@ -8,8 +8,6 @@ import {
 } from "@/lib/admin/class-session";
 import type { StaffSessionItem } from "@/types/staff-session";
 import { SessionActions, type SessionActorRole } from "./SessionActions";
-import { LegacySessionActions } from "./LegacySessionActions";
-import type { StaffAppRouting } from "@/lib/rollout/staff-app-routing";
 
 interface SessionCardProps {
   session: StaffSessionItem;
@@ -31,8 +29,6 @@ interface SessionCardProps {
   actorRole?: SessionActorRole;
   /** 교사 Class Mode 기준 경로 */
   classModeBasePath?: string;
-  /** 기본 화면 계열 (G-2 rollout) — legacy 면 PHASE 07 이전 수업 상태 버튼 · 권한은 DB 가 판정 */
-  appRouting?: StaffAppRouting;
 }
 
 /**
@@ -90,7 +86,6 @@ export function SessionCard({
   observationHref,
   actorRole = "teacher",
   classModeBasePath,
-  appRouting = "legacy",
 }: SessionCardProps) {
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
@@ -168,11 +163,8 @@ export function SessionCard({
             hasDetailLinks ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
           }
         >
-          {appRouting === "saas_v2" ? (
-            <SessionActions session={session} actorRole={actorRole} classModeBasePath={classModeBasePath} />
-          ) : (
-            <LegacySessionActions session={session} />
-          )}
+          {/* 수업 상태 변경은 SaaS 2.0 전환 RPC 경로만 (start · finish · recovery · cancel) */}
+          <SessionActions session={session} actorRole={actorRole} classModeBasePath={classModeBasePath} />
         </div>
       ) : null}
 

@@ -56,6 +56,9 @@ export async function resolvePlan({ argv = args, env = process.env, queryScope }
       director: { email: "smoke-v2-director@example.test", password: SMOKE_PASSWORD },
       hqAdmin: { email: "smoke-hq-admin@example.test", password: SMOKE_PASSWORD },
       hqSales: { email: "smoke-hq-sales@example.test", password: SMOKE_PASSWORD },
+      // PHASE 10B: 이전 형식(기간형) 리포트 읽기 호환 확인용 legacy 기관 계정 (local seed 에만 있음)
+      legacyTeacher: { email: "smoke-legacy-teacher@example.test", password: SMOKE_PASSWORD },
+      legacyDirector: { email: "smoke-legacy-director@example.test", password: SMOKE_PASSWORD },
     };
     const allowWrites = has("--allow-writes");
     const sessionId = val("--session");
@@ -401,6 +404,43 @@ async function main() {
       }
       ctx.portalUrl = null;
     } else record("parent", "valid / hidden / revoked token", "SKIP", "portal link not issued (쓰기 조건 없음)");
+
+    // ── Legacy READ 호환 (PHASE 10B · local-rehearsal 만 · 읽기만) ─────
+    // M5 는 legacy 쓰기를 회수하고 조회는 유지한다 → 이전 형식 리포트는 교사 · 원장 모두 읽기 전용으로 열려야 한다.
+    const openLegacyReport = async (listPath, detailPrefix) => {
+      await go(listPath);
+      const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href^="${detailPrefix}"]')].find((x) => /\\/growth-reports\\/[0-9a-f-]{36}(\\?|$)/.test(x.getAttribute('href'))); return a ? a.getAttribute('href') : null; })()`);
+      if (!href) return "legacy report link not found";
+      await go(href);
+      return true;
+    };
+    const legacyWriteUi = () => page.eval(`(() => {
+      const labels = [...document.querySelectorAll('button')].map((b) => (b.innerText || '').trim());
+      return { textareas: document.querySelectorAll('main textarea').length,
+               writeButtons: labels.filter((l) => /작성완료|임시저장|AI|링크 만들기|새 링크 발급/.test(l)) };
+    })()`);
+    if (roles.legacyTeacher) {
+      await step("legacyTeacher", "legacy report READ: detail opens read-only (no editor · no AI · no save)", async () => {
+        await login("legacyTeacher");
+        const opened = await openLegacyReport("/teacher/growth-reports", "/teacher/growth-reports/");
+        if (opened !== true) return opened;
+        if (!(await bodyHas("이전 형식의 리포트입니다"))) return "read-only notice not shown";
+        if (!(await bodyHas("가상 변화"))) return "legacy report content not shown";
+        const ui = await legacyWriteUi();
+        return (ui.textareas === 0 && ui.writeButtons.length === 0) || `write UI present: textareas=${ui.textareas} buttons=${ui.writeButtons.join("|")}`;
+      });
+    }
+    if (roles.legacyDirector) {
+      await step("legacyDirector", "legacy report READ: detail opens · share section has no new-link issuing", async () => {
+        await login("legacyDirector");
+        const opened = await openLegacyReport("/director/growth-reports", "/director/growth-reports/");
+        if (opened !== true) return opened;
+        if (!(await bodyHas("가상 변화"))) return "legacy report content not shown";
+        if (!(await bodyHas("학부모 공유 (이전 형식)"))) return "legacy share section not shown";
+        const ui = await legacyWriteUi();
+        return (ui.textareas === 0 && ui.writeButtons.length === 0) || `write UI present: textareas=${ui.textareas} buttons=${ui.writeButtons.join("|")}`;
+      });
+    }
 
     // ── HQ Admin (읽기 · 초대 화면 열지 않음) ────────────────
     if (roles.hqAdmin) {
