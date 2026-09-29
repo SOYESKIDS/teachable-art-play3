@@ -137,7 +137,7 @@ test("sql: canonical preflights and harness SQL pass validation", () => {
   for (const f of ["supabase/cutover/G1_preflight.sql", "supabase/cutover/G2_db_preflight.sql", "supabase/cutover/M5_preflight.sql",
     "supabase/cutover/JKL_window_preflight.sql", "supabase/validation/staging_e2e/sql/staging_inventory.sql",
     "supabase/validation/staging_e2e/sql/session_dates.sql", "supabase/validation/staging_e2e/sql/e2e_effects.sql",
-    "supabase/validation/staging_e2e/sql/g2_post_verify.sql"]) {
+    "supabase/validation/staging_e2e/sql/g2_post_verify.sql", "supabase/validation/staging_e2e/sql/g1_post_verify.sql"]) {
     const statements = S.splitStatements(readFileSync(join(ROOT, f), "utf8"));
     assert.ok(statements.length > 0, f);
     for (const s of statements) S.validateStatement(s, f);
@@ -152,6 +152,26 @@ test("sql: G-2 post-apply verify is one allow-listed read-only SELECT (catalog o
   assert.equal(S.validateStatement(statements[0], rel), true);
   assert.ok(!/M3_hq_role_split|_rollback\.sql|record_audit_event|\\ir\b/.test(statements[0]));
   assert.match(S.wrapReadOnly(statements[0]), /^begin transaction read only;/);
+});
+test("sql: G-1 post-apply verify is one allow-listed read-only SELECT (catalog only · no G-1 function call · no cutover)", () => {
+  const rel = "supabase/validation/staging_e2e/sql/g1_post_verify.sql";
+  assert.ok(S.isAllowedFile(rel));
+  const src = readFileSync(join(ROOT, rel), "utf8");
+  const statements = S.splitStatements(src);
+  assert.equal(statements.length, 1);
+  assert.equal(S.validateStatement(statements[0], rel), true);
+  // G-1 함수는 적용 전에는 없다 → 이름은 to_regprocedure('…') 문자열 안에만 나오고, 문자열 밖(= 실제 호출)에는 없어야 한다
+  const outsideLiterals = statements[0].replace(/'(?:[^']|'')*'/g, "''");
+  assert.ok(!/private\.(g1_blocking_organizations|assert_g1_preflight_clean|class_assignment_contract_id|gate_class_\w+|gate_observation_domain_write)\b/i.test(outsideLiterals));
+  assert.ok(/private\.g1_blocking_organizations\(\)/.test(statements[0]), "names are referenced only as catalog strings");
+  assert.ok(!/M3_entitlement_write_gates|_rollback\.sql|record_audit_event|\\ir\b/.test(statements[0]));
+  assert.match(statements[0], /G-1 ACTIVE — VERIFIED/);
+  assert.match(S.wrapReadOnly(statements[0]), /^begin transaction read only;\n[\s\S]*\nrollback;\n$/);
+});
+test("sql: disallowed G-1 apply / rollback files are refused by the read-only runner", () => {
+  for (const f of ["supabase/cutover/M3_entitlement_write_gates.sql", "supabase/cutover/M3_entitlement_write_gates_rollback.sql"]) {
+    assert.ok(!S.isAllowedFile(f), f);
+  }
 });
 test("sql: parameters accept UUID only · unbound placeholder refused", () => {
   const sql = readFileSync(join(ROOT, "supabase/validation/staging_e2e/sql/e2e_target_scope.sql"), "utf8");

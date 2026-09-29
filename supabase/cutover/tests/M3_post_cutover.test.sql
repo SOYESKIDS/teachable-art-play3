@@ -15,13 +15,14 @@
 -- 이 파일은 "활성 계약이 존재하는 미래 상태"에서 gate 동작만 검증한다).
 -- PHASE 08 (§3 · §4): D4 onboarding(초안 Org N · 시작 전 Org F) · D5 배정 재개 · FK 정리 UPDATE · legacy 표면 gate (ISSUE1) ·
 --   rollback 파일(M3_entitlement_write_gates_rollback.sql) · 재적용 · G-1 이후 신규 기관 onboarding 전 과정 (ISSUE4).
+-- PHASE 09E: 기간 만료 계약 쓰기 불가 · Weekly 쓰기 권한 = 계약 범위 · STARTER 승격 없음 · Pilot 별도 Offer (+11).
 -- =====================================================================
 
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(59);
+select plan(70);
 
 set local session_replication_role = replica;
 
@@ -232,6 +233,50 @@ select lives_ok(
   'POST: resumed contract allows attendance edits again');
 
 reset role;
+
+-- PHASE 09E: 기간이 끝난 계약 (ended · 기간 만료) = 쓰기 불가 · Weekly 권한 · STARTER 승격 없음 · Pilot 별도 Offer
+set local session_replication_role = replica;
+update public.contracts set start_date = private.local_today() - 90, end_date = private.local_today() - 1
+where id = '60000000-0000-0000-0000-00000000000a';
+set local session_replication_role = origin;
+select isnt(private.org_service_mode('10000000-0000-0000-0000-00000000000a'), 'active',
+  '09E: contract past its end date → service mode no longer active');
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-0000-0000-00000000b002');
+select throws_ok(
+  $$ select public.save_class_session_attendance_atomic('80000000-0000-0000-0000-0000000000a1',
+       '[{"child_id":"40000000-0000-0000-0000-0000000000a1","attendance_status":"present"}]'::jsonb) $$,
+  'EN003', null, '09E: ended (expired) contract blocks record writes (EN003)');
+reset role;
+set local session_replication_role = replica;
+update public.contracts set start_date = private.local_today() - 30, end_date = private.local_today() + 60
+where id = '60000000-0000-0000-0000-00000000000a';
+set local session_replication_role = origin;
+
+select is(private.class_write_allowed('30000000-0000-0000-0000-0000000000a1', 'weekly_report'), true,
+  '09E: STARTER in-scope class keeps weekly_report write authority under G-1');
+select is(private.class_write_allowed('30000000-0000-0000-0000-0000000000a3', 'weekly_report'), false,
+  '09E: out-of-scope class has no weekly_report write authority');
+select is(private.class_has_feature('30000000-0000-0000-0000-0000000000a1', 'director_dashboard'), false,
+  '09E: STARTER class has no director_dashboard entitlement');
+select is(private.class_has_feature('30000000-0000-0000-0000-0000000000a1', 'monthly_report'), false,
+  '09E: STARTER class has no monthly_report (no STANDARD escalation)');
+select is(private.class_has_feature('30000000-0000-0000-0000-0000000000a1', 'semester_report'), false,
+  '09E: STARTER class has no semester_report (no PREMIUM escalation)');
+select is(private.class_has_feature('30000000-0000-0000-0000-0000000000a1', 'ai_assist'), false,
+  '09E: STARTER class has no ai_assist entitlement');
+select is((select pv.week_from || '-' || pv.week_to || ' / ' || pv.children_per_class || ' / ' || pv.max_classes
+           from public.product_versions pv join public.products p on p.id = pv.product_id
+           where p.code = 'pilot' and pv.version_label = '2026.1'), '1-4 / 15 / 2',
+  '09E: Pilot remains a separate offer (weeks 1-4 · 15 per class · max 2 classes)');
+select is((select count(*) from public.product_version_features f
+           join public.product_versions pv on pv.id = f.product_version_id
+           join public.products p on p.id = pv.product_id
+           where p.code = 'pilot' and f.feature_code in ('monthly_report', 'semester_report'))::int, 0,
+  '09E: Pilot reports are Weekly only (no monthly / semester)');
+select isnt((select pv.id from public.product_versions pv join public.products p on p.id = pv.product_id where p.code = 'pilot' and pv.version_label = '2026.1'),
+            (select pv.id from public.product_versions pv join public.products p on p.id = pv.product_id where p.code = 'starter' and pv.version_label = '2026.1'),
+  '09E: Pilot is not the STARTER product version');
 
 
 -- ---------------------------------------------------------------------

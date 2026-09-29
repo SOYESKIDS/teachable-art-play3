@@ -4,7 +4,7 @@
 |---|---|
 | 기준 | `saas-v2` · HEAD = origin = `153a413` (PHASE 08) · Staging `itcddooiuqsqingfhxkk` · migration 37 local = remote (… `20261002095000`) |
 | cutover | G-2 · G-1 · M5 **미적용** (Staging · Production 모두) — 의도된 상태 (PHASE 09A 기준 · 아래 현재 상태 참고) |
-| **현재 (PHASE 09D 이후 · 2026-09-29)** | Staging: **G-2 ACTIVE — VERIFIED** · G-1 NOT APPLIED (preflight SAFE) · M5 NOT READY · J/K/L DO NOT START · Production: 변경 없음 ([phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md)) |
+| **현재 (PHASE 09E · 2026-09-29)** | Staging: **G-2 ACTIVE — VERIFIED** · G-1 **NOT APPLIED · REHEARSAL PREPARED · AWAITING EXPLICIT APPROVAL** (preflight SAFE) · M5 NOT READY · J/K/L DO NOT START · Production: 변경 없음 ([phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md) · [g1-rehearsal-plan.md](./g1-rehearsal-plan.md)) |
 | 범위 | 읽기 전용 remote 검증 · E2E harness · read-only cutover preflight · responsive · a11y · performance · runtime baseline |
 | 범위 밖 (PHASE 09B · 사람 승인 후) | Staging G-2 · G-1 · M5 rehearsal · rollback rehearsal · post-cutover role E2E |
 | 관련 | [remote-baseline.md](./remote-baseline.md) · [role-e2e-matrix.md](./role-e2e-matrix.md) · [cutover-preflight.md](./cutover-preflight.md) · [responsive-a11y.md](./responsive-a11y.md) · [performance-baseline.md](./performance-baseline.md) · [open-items.md](./open-items.md) · [harness-safety-review.md](./harness-safety-review.md) · harness: `supabase/validation/staging_e2e/` |
@@ -43,6 +43,12 @@ cutover 상태: [cutover-readiness-update.md](./cutover-readiness-update.md). re
 
 **Staging: G-2 ACTIVE — VERIFIED** (2026-09-29 · rollback 불필요) · G-1 · M5 미적용 · J/K/L 시작 안 함 · Production 변경 0 ·
 결과: [phase-09d-g2-rehearsal-result.md](./phase-09d-g2-rehearsal-result.md).
+
+## 1-4. PHASE 09E — G-1 Staging rehearsal 준비 (적용 안 함)
+
+G-1 preflight SAFE (blocking 0 · WARN 0 · INFO 7 = 출시 준비 항목) · 적용 · rollback SQL 검토 (rollback 은 G-2 를 건드리지 않음 · 데이터 삭제 없음) ·
+local `M3_post_cutover` 70/70 · 신규 `G1_rehearsal_verify` 24/24 · 신규 읽기 전용 `sql/g1_post_verify.sql` (Staging 현재 = NOT VERIFIED · G-1 항목 4개만) ·
+임시 runner selftest · runbook [g1-rehearsal-plan.md](./g1-rehearsal-plan.md) (§10 순서 결정 포함). **G-1 은 명시 승인 전까지 적용하지 않는다.**
 
 ## 2. 검증 방식의 한계 (솔직히)
 
