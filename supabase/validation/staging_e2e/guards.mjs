@@ -154,6 +154,33 @@ export function assertLocalBaseUrl(raw) {
   return url.origin;
 }
 
+// 번들 ref 를 찾는 경로 (PHASE 10C.2). /login 은 server action 로그인이라 브라우저 Supabase client 가 번들에 없을 수 있다.
+// 공개 첫 화면(/)은 문의 form 이 브라우저 client 를 쓴다. 판정은 그대로: 찾은 ref 전부가 Staging (없음 · Production · 그 밖 = 거부).
+export const BUNDLE_REF_PATHS = Object.freeze(["/login", "/"]);
+
+/** 브라우저에서 실행할 식: 현재 문서 + BUNDLE_REF_PATHS 의 같은 origin HTML · `/_next/` script 본문을 모은다 (GET 만) */
+export function bundleTextsScript(paths = BUNDLE_REF_PATHS) {
+  return `(async () => {
+    const o = location.origin;
+    const t = [document.documentElement.outerHTML];
+    const srcs = new Set([...document.scripts].map((s) => s.src).filter((s) => s.startsWith(o + '/_next/')));
+    for (const p of ${JSON.stringify(paths)}) {
+      try {
+        const r = await fetch(o + p, { redirect: 'manual' });
+        if (r.type === 'opaqueredirect' || !r.ok) continue;
+        const html = await r.text();
+        t.push(html);
+        for (const s of new DOMParser().parseFromString(html, 'text/html').querySelectorAll('script[src]')) {
+          const u = new URL(s.getAttribute('src'), o + p).href;
+          if (u.startsWith(o + '/_next/')) srcs.add(u);
+        }
+      } catch {}
+    }
+    for (const s of [...srcs].slice(0, 80)) { try { t.push(await (await fetch(s)).text()); } catch {} }
+    return t;
+  })()`;
+}
+
 /** 앱 번들이 가리키는 Supabase project 가 기대와 같은지 (HTML · JS chunk 에서 *.supabase.co 탐색) */
 export function assertBundleProjectRef(texts, { expectLocal = false } = {}) {
   const refs = new Set();

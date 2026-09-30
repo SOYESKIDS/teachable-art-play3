@@ -5,7 +5,7 @@
 | 브랜치 | `phase-10c-release-controls` (source `phase-10b-m5-app-readiness` @ `252c5f5`) · **병합하지 않음** |
 | 목적 | PHASE 10A 결함 2건 닫기 — 출시 플래그 직접 UPDATE (SEC-NEW-1) · `suspended → active` Readiness 재확인 없음 (SEC-NEW-2) |
 | 결과 | **안전한 출시 경로 local 구현 · 증명** · **재개 Readiness local 수정** |
-| 적용 | **local 만. Staging migration 적용 안 함 (별도 승인 필요) · Production 변경 0** |
+| 적용 | **10C STAGING REHEARSAL APPLIED AND VERIFIED** — Staging `itcddooiuqsqingfhxkk` 2026-09-30 09:02 UTC (PHASE 10C.2 · [phase-10c2-staging-rehearsal.md](./phase-10c2-staging-rehearsal.md)) · 업무 데이터 변경 0 · UAT 계약 active 유지 · **Production 변경 0** |
 | 출시 | **어떤 기능도 출시하지 않음** — class_mode · weekly_report `is_released = false` · parent_portal CO-12 blocker 유지 · ai_assist AR-8 · branding CO-8 유지 |
 
 ## 1. migration
@@ -73,10 +73,10 @@ Staging `db push` · remote migration · remote psql · Staging `platform_capabi
 
 ## 6. 남은 blocker · 결정
 
-1. **Staging migration rehearsal 승인** (별도) — 적용 전: Staging 에 정지 계약이 있는지 · 재개 계획이 있는지 확인 (적용 후 준비 미충족 계약은 재개 불가)
+1. ~~Staging migration rehearsal 승인~~ → **완료 (PHASE 10C.2 · 적용 · 확인)**. 적용 후 준비 미충족 계약은 재개 불가 — Staging UAT 계약 정지 시험 금지 유지 · saas-v2 Preview 의 출시 토글(직접 UPDATE)은 이 브랜치 배포 전까지 Staging 에서 permission denied
 2. class_mode · weekly_report 체크리스트 사람 승인 · G-1 / M5 를 출시 전제로 할지 결정
 3. **CO-12 OPEN** — parent_portal 차단 유지 · STARTER 활성화 · 재개 불가의 직접 원인
 4. 8주 모아보기 수락 테스트 (weekly)
 5. G-1 (P09F-AUTH-1) · M5 · J/K/L 미적용 · PHASE 10B 브랜치 병합 승인 전
 
-**Production Ready 아님. Staging 적용 승인 없음. Production 변경 0.**
+**Production Ready 아님. 10C STAGING REHEARSAL APPLIED AND VERIFIED (Staging 만). Production 변경 0.**

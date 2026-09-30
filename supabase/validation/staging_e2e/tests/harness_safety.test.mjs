@@ -90,6 +90,25 @@ test("bundle ref: Staging accepted · production · unknown · none refused · l
   refuses(() => G.assertBundleProjectRef(["https://itcddooiuqsqingfhxkk.supabase.co"], { expectLocal: true }));
 });
 
+// PHASE 10C.2: /login(server action 로그인)에 ref 가 없어도 공개 첫 화면(/) 번들로 판정 · 판정 규칙은 그대로
+test("bundle ref paths: /login + / only · same-origin GET collector · combined texts keep fail-closed rule", () => {
+  assert.deepEqual([...G.BUNDLE_REF_PATHS], ["/login", "/"]);
+  assert.ok(Object.isFrozen(G.BUNDLE_REF_PATHS));
+  const js = G.bundleTextsScript();
+  assert.match(js, /location\.origin/);
+  assert.match(js, /'\/_next\/'/);
+  assert.doesNotMatch(js, /method\s*:|POST|PUT|DELETE|PATCH|credentials|headers\s*:|https?:\/\//i);
+  const loginNoRef = "<html>server action login</html>";
+  assert.equal(G.assertBundleProjectRef([loginNoRef, "https://itcddooiuqsqingfhxkk.supabase.co"]), "itcddooiuqsqingfhxkk");
+  refuses(() => G.assertBundleProjectRef([loginNoRef, "no ref on / either"]));
+  refuses(() => G.assertBundleProjectRef([loginNoRef, "https://vpppxuhodwauaclhybtg.supabase.co"]));
+  refuses(() => G.assertBundleProjectRef(["https://itcddooiuqsqingfhxkk.supabase.co", "https://vpppxuhodwauaclhybtg.supabase.co"]));
+  for (const f of ["e2e_roles.mjs", "ui_audit.mjs"]) {
+    assert.match(readFileSync(join(HERE, f), "utf8"), /page\.eval\(bundleTextsScript\(\)\)/, `${f} uses shared collector`);
+  }
+  assert.match(readFileSync(join(HERE, "preview_probe.mjs"), "utf8"), /for \(const p of BUNDLE_REF_PATHS\)/);
+});
+
 // ── REVIEW 3 · read-only SQL ─────────────────────────────────
 test("sql: allow-listed files only (cutover apply · rollback refused)", () => {
   for (const f of ["supabase/cutover/G1_preflight.sql", "supabase/cutover/G2_db_preflight.sql", "supabase/cutover/M5_preflight.sql",

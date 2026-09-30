@@ -15,6 +15,7 @@ import { launchEphemeral } from "./browser.mjs";
 import {
   ACCOUNTS,
   assertBundleProjectRef,
+  bundleTextsScript,
   assertLocalBaseUrl,
   assertOnOrigin,
   assertPreviewBaseUrl,
@@ -134,7 +135,7 @@ async function main() {
       return;
     }
     await onBase();
-    const texts = await page.eval(`(async () => { const srcs = [...document.scripts].map((s) => s.src).filter((s) => s.startsWith(location.origin + '/_next/')).slice(0, 40); const t = [document.documentElement.outerHTML]; for (const s of srcs) { try { t.push(await (await fetch(s)).text()); } catch {} } return t; })()`);
+    const texts = await page.eval(bundleTextsScript());
     out.bundle_supabase_project = assertBundleProjectRef(texts, { expectLocal: !staging });
 
     const targets = [{ key: "login", role: null, path: "/login" }];

@@ -10,7 +10,7 @@
 
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { assertBundleProjectRef, assertPreviewBaseUrl, classifyPreviewAccess, PREVIEW_ALIAS, PREVIEW_BLOCKED, redact, runMain } from "./guards.mjs";
+import { assertBundleProjectRef, assertPreviewBaseUrl, BUNDLE_REF_PATHS, classifyPreviewAccess, PREVIEW_ALIAS, PREVIEW_BLOCKED, redact, runMain } from "./guards.mjs";
 
 const PATHS = [
   "/login",
@@ -87,9 +87,14 @@ async function main() {
   if (login.access !== "REACHABLE") {
     report.app_level = login.access === PREVIEW_BLOCKED ? PREVIEW_BLOCKED : `UNREACHABLE (${login.access})`;
   } else {
-    const html = (await get(base + "/login")).body;
-    const chunks = [...html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map((m) => m[1]).slice(0, 40);
-    const texts = [html];
+    const texts = [];
+    const found = new Set();
+    for (const p of BUNDLE_REF_PATHS) {
+      const html = (await get(base + p)).body ?? "";
+      texts.push(html);
+      for (const m of html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)) found.add(m[1]);
+    }
+    const chunks = [...found].slice(0, 80);
     let assetsOk = 0;
     for (const c of chunks) {
       const res = await fetch(base + c, { redirect: "manual" });
