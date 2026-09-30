@@ -5,14 +5,14 @@
 - **저장소에는 수업 콘텐츠 행이 없다.** 실제 차시 · 섹션은 HQ Admin 화면(`src/app/admin/(dashboard)/curriculum/*`)으로 DB 에 입력한다. migration · test · validation seed 의 차시는 합성이다.
 - 차시당 필수 섹션 11개 (`20261001091000_m1…:574-580`) · Readiness 가 약속 주차마다 게시 차시 + 필수 섹션을 요구하고 빠진 주차를 보고한다 (`20261001111000_m3…:111-169`).
 - 상품 주차 (seed `20261001100000_m2…:77-80`): STARTER 1~8 · STANDARD 1~16 · PREMIUM 1~24 · PILOT 1~4 (최대 2반).
-- Staging DB: 게시 차시 8 · lesson section 88 (`docs/09-staging-validation/cutover-readiness-update.md`) — Staging 입력이며 콘텐츠 승인 증거는 아니다.
+- Staging DB: 게시 차시 8 · lesson section 88 (`docs/09-staging-validation/cutover-readiness-update.md`) — Staging 입력이며 콘텐츠 승인 증거는 아니다. **PHASE 10D 확인: 8차시 모두 합성 "N주 색과 모양 놀이(가상)" (프로그램 `STAGING-P8` · 차시당 본문 292자 · source_ref 없음)** → Staging Readiness `content = ok` 는 콘텐츠 준비 증거가 아니다.
 
 ## 주차별 상태 (정직한 표기)
 
 | 범위 | 상태 | 근거 |
 |---|---|---|
 | W1~6 | **OPERATIONAL** — 표준화 규격 v1.0 확정본 | `docs/01-product/content-governance.md:19` |
-| W7~8 | **CONFLICT — 사람 확인 필요**: content-governance 는 "PDF 존재 · 규격 미적용 · `DRAFT` 고정" (BC-3 · STARTER Service Ready 조건) / 직원 UAT 문서는 "W1~8 운영 자료" | `content-governance.md:20,265,283` · `docs/03-commerce/open-items.md:84` vs `docs/10-employee-uat/known-limitations.md:30` |
+| W7~8 | **BC-3 = B. TECHNICALLY INCOMPLETE (PHASE 10D)** — 규격 콘텐츠 · 승인 증거 없음 · Staging 은 합성 "(가상)" 차시. 이전 기록: **CONFLICT**: content-governance 는 "PDF 존재 · 규격 미적용 · `DRAFT` 고정" (BC-3 · STARTER Service Ready 조건) / 직원 UAT 문서는 "W1~8 운영 자료" | `content-governance.md:20,265,283` · `docs/03-commerce/open-items.md:84` vs `docs/10-employee-uat/known-limitations.md:30` |
 | W9~16 | **SOURCE EXISTS / MIXED** ("우리 그리고 모두의 사계절") | `docs/03-commerce/product-catalog.md:35` · BC-1 |
 | W17~24 | **SOURCE EXISTS / DRAFT OR PROPOSAL** ("두근두근 세계여행") | `product-catalog.md:36` · BC-2 |
 

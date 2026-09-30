@@ -1,6 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UUID_PATTERN } from "@/lib/errors/rpc-errors";
 import { fetchOrganizationEntitlements } from "@/lib/entitlement/queries";
+import {
+  buildSummaryWeeks,
+  SUMMARY_WEEKS,
+  summaryWindow,
+  type ProgramSummaryWeek,
+  type SummaryReportRow,
+  type SummarySessionRow,
+} from "@/lib/staff/program-summary-window";
 
 /**
  * "8주 기록 모아보기" (DEC-069 · DEC-104 · report-parent-experience §11).
@@ -11,25 +19,11 @@ import { fetchOrganizationEntitlements } from "@/lib/entitlement/queries";
  * · 빈 주는 중립적으로 비우고 사유(결석 · 미작성 · 미공개)를 구분하지 않는다
  * · 범위는 RLS 가 정한다 (교사: 담당 반 · 원장: 기관 · 원장은 완료본만)
  *
- * 8주 구간: 기준 Weekly 가 속한 구간. 계약 week 범위 시작점부터 8주 단위로 나눈다
- * (계약 정보가 없으면 1주차부터). 구간 끝은 계약 week 범위를 넘지 않는다.
+ * 8주 구간 · 주 행 계산은 program-summary-window.ts (순수 함수 · PHASE 10D 수락 테스트 대상).
+ * 기준 Weekly 는 화면이 고른 기관(?org)의 것이어야 한다 — 다르면 not_found (PHASE 10D).
  */
 
-export const SUMMARY_WEEKS = 8;
-
-export interface ProgramSummaryWeek {
-  weekNo: number;
-  dateFrom: string | null;
-  dateTo: string | null;
-  report: {
-    id: string;
-    topic: string | null;
-    quoteChoice: string | null;
-    hidden: boolean;
-    revised: boolean;
-    photoUrl: string | null;
-  } | null;
-}
+export { SUMMARY_WEEKS, summaryWindow, type ProgramSummaryWeek };
 
 export interface ProgramSummaryData {
   anchorReportId: string;
@@ -37,6 +31,10 @@ export interface ProgramSummaryData {
   className: string | null;
   weekFrom: number;
   weekTo: number;
+  /** false = 현재 계약 week 범위 밖(또는 계약 정보 없음)의 구간 — 화면이 안내한다 */
+  inContract: boolean;
+  contractWeekFrom: number | null;
+  contractWeekTo: number | null;
   weeks: ProgramSummaryWeek[];
 }
 
@@ -44,25 +42,10 @@ function log(scope: string, code: string | undefined) {
   console.error(`[program-summary] ${scope} failed: code=${code ?? "unknown"}`);
 }
 
-function pickText(content: unknown, key: string): string | null {
-  const row = (content ?? {}) as Record<string, unknown>;
-  const value = row[key];
-  return typeof value === "string" && value.trim() !== "" ? value : null;
-}
-
-export function summaryWindow(anchorWeek: number, contractFrom: number | null, contractTo: number | null) {
-  const base = contractFrom ?? 1;
-  const offset = Math.max(0, anchorWeek - base);
-  const from = base + Math.floor(offset / SUMMARY_WEEKS) * SUMMARY_WEEKS;
-  const last = from + SUMMARY_WEEKS - 1;
-  const to = contractTo !== null && contractTo >= from ? Math.min(last, contractTo) : last;
-  return { from, to };
-}
-
 export async function fetchProgramSummary(
   supabase: SupabaseClient,
   anchorReportId: string,
-  options: { includePhotos: boolean },
+  options: { includePhotos: boolean; organizationId: string },
 ): Promise<{ ok: true; data: ProgramSummaryData } | { ok: false; reason: "not_found" | "load_failed" }> {
   if (!UUID_PATTERN.test(anchorReportId)) return { ok: false, reason: "not_found" };
 
@@ -77,9 +60,11 @@ export async function fetchProgramSummary(
     return { ok: false, reason: "load_failed" };
   }
   if (!anchor || anchor.report_type !== "weekly") return { ok: false, reason: "not_found" };
+  if (anchor.organization_id !== options.organizationId) return { ok: false, reason: "not_found" };
 
   const entitlements = await fetchOrganizationEntitlements(supabase, anchor.organization_id);
-  const { from, to } = summaryWindow(anchor.week_no, entitlements.weekFrom, entitlements.weekTo);
+  const window = summaryWindow(anchor.week_no, entitlements.weekFrom, entitlements.weekTo);
+  const { from, to } = window;
 
   const [reportResult, sessionResult, childResult, classResult] = await Promise.all([
     supabase
@@ -110,12 +95,7 @@ export async function fetchProgramSummary(
     return { ok: false, reason: "load_failed" };
   }
 
-  const reports = (reportResult.data ?? []) as {
-    id: string;
-    week_no: number;
-    hidden_at: string | null;
-    latest_completed_revision_id: string;
-  }[];
+  const reports = (reportResult.data ?? []) as SummaryReportRow[];
 
   const revisionIds = reports.map((row) => row.latest_completed_revision_id);
   const revisionById = new Map<string, { content: unknown; revision_no: number }>();
@@ -173,39 +153,13 @@ export async function fetchProgramSummary(
     }
   }
 
-  const dates = new Map<number, { from: string; to: string }>();
-  for (const row of (sessionResult.data ?? []) as { week_no: number | null; scheduled_date: string | null }[]) {
-    if (row.week_no === null || !row.scheduled_date) continue;
-    const current = dates.get(row.week_no);
-    if (!current) dates.set(row.week_no, { from: row.scheduled_date, to: row.scheduled_date });
-    else {
-      if (row.scheduled_date < current.from) current.from = row.scheduled_date;
-      if (row.scheduled_date > current.to) current.to = row.scheduled_date;
-    }
-  }
-
-  const reportByWeek = new Map(reports.map((row) => [row.week_no, row]));
-  const weeks: ProgramSummaryWeek[] = [];
-  for (let week = from; week <= to; week += 1) {
-    const row = reportByWeek.get(week);
-    const revision = row ? revisionById.get(row.latest_completed_revision_id) : undefined;
-    weeks.push({
-      weekNo: week,
-      dateFrom: dates.get(week)?.from ?? null,
-      dateTo: dates.get(week)?.to ?? null,
-      report:
-        row && revision
-          ? {
-              id: row.id,
-              topic: pickText(revision.content, "topic"),
-              quoteChoice: pickText(revision.content, "quote_choice"),
-              hidden: row.hidden_at !== null,
-              revised: revision.revision_no > 1,
-              photoUrl: photoByRevision.get(row.latest_completed_revision_id) ?? null,
-            }
-          : null,
-    });
-  }
+  const weeks = buildSummaryWeeks({
+    window,
+    reports,
+    revisions: revisionById,
+    photos: photoByRevision,
+    sessions: (sessionResult.data ?? []) as SummarySessionRow[],
+  });
 
   return {
     ok: true,
@@ -215,6 +169,9 @@ export async function fetchProgramSummary(
       className: (classResult.data as { name: string } | null)?.name ?? null,
       weekFrom: from,
       weekTo: to,
+      inContract: window.inContract,
+      contractWeekFrom: entitlements.weekFrom,
+      contractWeekTo: entitlements.weekTo,
       weeks,
     },
   };

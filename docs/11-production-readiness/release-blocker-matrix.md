@@ -19,8 +19,8 @@
 
 | ID | 제목 | 현재 상태 | 증거 | PU | EU | 다음 조치 |
 |---|---|---|---|---|---|---|
-| class_mode release | 출시 플래그 · 기준 | `is_released=false` · blocker 없음 · **출시 기준 문서 없음** (코드 확인) | `20261001100000_m2…:133` · readiness `20261001111000_m3…:173-192` | yes | no | [class-mode-readiness.md](./class-mode-readiness.md) |
-| weekly_report release | 동일 | `is_released=false` (코드 확인) · STARTER "8주 모아보기"(DEC-069) 테스트 없음 | m2 `:134` | yes | no | [weekly-report-readiness.md](./weekly-report-readiness.md) |
+| class_mode release | 출시 플래그 · 기준 | `is_released=false` · blocker 없음 · **PHASE 10D: 승인용 체크리스트 PASS 15 · HUMAN 5 · BLOCKED 4 (BC-3 · G-1 · M5 · P10C-PROD)** | `20261001100000_m2…:133` · readiness `20261001111000_m3…:173-192` | yes | no | [class-mode-readiness.md](./class-mode-readiness.md) |
+| weekly_report release | 동일 | `is_released=false` · **PHASE 10D: 8주 모아보기 수락 PASS (pgTAP 22 · 앱 6)** · 체크리스트 PASS 18 · HUMAN 5 · BLOCKED 4 (CO-12 · G-1 · M5 · P10C-PROD) | m2 `:134` | yes | no | [weekly-report-readiness.md](./weekly-report-readiness.md) |
 | CO-12 | Child Portal 만료 · 재발급 정책 | OPEN · Production Blocker YES · `parent_portal.blocked_by={CO-12}` · **모든 상품에 parent_portal 포함** | `docs/03-commerce/open-items.md:51` · m2 `:138,91,98,106,113` | **yes** | no | [parent-portal-co12.md](./parent-portal-co12.md) |
 | AR-8 | AI 자유 텍스트 개인정보 최소화 | OPEN · 외부 AI 사용 blocker | `docs/04-ai-report/open-items.md:66,80` | no (STARTER) · yes (STANDARD · PREMIUM · PILOT 는 ai_assist 포함) | no | [ai-ar8.md](./ai-ar8.md) |
 | CO-8 | 브랜딩 범위 | OPEN · `branding.blocked_by` | m2 seed | no (PREMIUM 만) | no | 사람 결정 |
@@ -28,7 +28,7 @@
 | CO-9 · CO-10 · DB-9 | 단체 사진 · 동의 법적 단위 · portal 사진 signer | OPEN · YES (사진 공개 전) | `docs/03-commerce/open-items.md:47-49` · `docs/05-data-security/open-items.md:35,95` | no (학부모 사진 비활성 유지 시) | no | 사진 공개 전 결정 |
 | BP-14 | STANDARD/PREMIUM 판매 문구 | 부분 해결 (활성화 차단) · 판매 문구 사업 판단 | `docs/03-commerce/open-items.md:79` | no (STARTER) | no | 사업 판단 |
 | BP-16 | AI 국외 이전 고지 | Pilot Go 조건 | `docs/03-commerce/open-items.md:81` | no (AI OFF) | no | AR-8 와 함께 |
-| BC-3 | STARTER W7~8 규격 미적용 | `DRAFT` 고정 (content-governance) — **"W1~8 운영" 표기와 충돌** | `docs/01-product/content-governance.md:20,265,283` vs `docs/10-employee-uat/known-limitations.md:30` | **yes (확인 전까지)** | no | 사람 확인: W7~8 승인 여부 |
+| BC-3 | STARTER W7~8 규격 미적용 | **PHASE 10D: B. TECHNICALLY INCOMPLETE** — 저장소 콘텐츠 없음 · Staging 은 합성 차시뿐 · 승인 증거 없음 · "W1~8 운영" 표기는 근거 없음 ([phase-10d](./phase-10d-starter-release-readiness.md)) | `docs/01-product/content-governance.md:20,265,283` vs `docs/10-employee-uat/known-limitations.md:30` | **yes (확인 전까지)** | no | 사람 확인: W7~8 승인 여부 |
 | BC-1 · BC-2 | W9~16 · W17~24 콘텐츠 | SOURCE EXISTS MIXED · DRAFT/PROPOSAL | [content-readiness.md](./content-readiness.md) | no (STARTER) · yes (STANDARD · PREMIUM) | no | 콘텐츠 승인 · 적재 |
 
 ## 3. 보안 · 운영

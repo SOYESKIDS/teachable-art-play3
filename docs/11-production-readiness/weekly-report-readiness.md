@@ -3,7 +3,7 @@
 > **Updated PHASE 10C (local 만 · Staging 미적용)** — 출시 경로는 class_mode 와 같이 audited `set_capability_release` RPC 로만 (사유 · 동시성 · actor · blocker DB 강제 · 직접 UPDATE 회수) · `suspended → active` = 활성화와 같은 Readiness.
 > Readiness `not_released` → ok · 출시가 `class_write_allowed` 를 바꾸지 않음 · release → unrelease audit 테스트 추가 (`p0_phase10c_release_controls` · 47). **weekly_report 는 출시하지 않았다** (`is_released = false`).
 > 출시 기준: [weekly-report-release-checklist.md](./weekly-report-release-checklist.md) — **DRAFT — HUMAN APPROVAL REQUIRED**. 상세: [phase-10c-release-controls.md](./phase-10c-release-controls.md).
-> 남은 것: **CO-12 OPEN** (학부모 노출 · STARTER 활성화 전제) · **8주 모아보기 수락 테스트 PENDING** · Staging migration 적용 승인 · 체크리스트 승인.
+> 남은 것: **CO-12 OPEN** (학부모 노출 · STARTER 활성화 전제) · ~~8주 모아보기 수락 테스트 PENDING~~ → **PASS (PHASE 10D · pgTAP 22 · 앱 6 · 구간 edge case · 기관 확인 수정)** · ~~Staging migration 적용 승인~~ → 10C.2 완료 · 체크리스트 승인 ([phase-10d](./phase-10d-starter-release-readiness.md)).
 
 ## 왜 OPEN 인가 (정확히)
 

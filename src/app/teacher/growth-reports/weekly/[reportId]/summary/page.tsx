@@ -36,7 +36,7 @@ export default async function TeacherProgramSummaryPage({ params, searchParams }
     );
   }
 
-  const result = await fetchProgramSummary(supabase, reportId, { includePhotos: true });
+  const result = await fetchProgramSummary(supabase, reportId, { includePhotos: true, organizationId: membership.organizationId });
   if (!result.ok) {
     if (result.reason === "load_failed") throw new Error("program summary load failed");
     notFound();

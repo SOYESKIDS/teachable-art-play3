@@ -13,6 +13,13 @@ export function ProgramSummaryView({ data, weeklyHrefBase, orgQuery }: { data: P
       <p className="mt-1 text-[15px] text-ink-muted">
         {data.className ?? ""} · {data.weekFrom}~{data.weekTo}주 · 완료된 주간 리포트를 모아 보여 줍니다.
       </p>
+      {data.inContract ? null : (
+        <p role="note" className="mt-3 rounded-xl border border-hairline bg-surface-soft px-4 py-3 text-[14px] text-ink-muted">
+          {data.contractWeekFrom !== null && data.contractWeekTo !== null
+            ? `현재 계약 주차 범위(${data.contractWeekFrom}~${data.contractWeekTo}주) 밖의 기록입니다. 이전 기록을 그대로 보여 줍니다.`
+            : "현재 유효한 계약 주차 범위를 확인할 수 없어 1주차부터 8주 단위로 나눈 구간을 보여 줍니다."}
+        </p>
+      )}
 
       <ol className="mt-6 flex flex-col gap-3">
         {data.weeks.map((week) => {
