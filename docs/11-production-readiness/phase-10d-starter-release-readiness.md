@@ -59,7 +59,12 @@
 
 Staging 에서 모아보기 화면을 실제로 연 기록은 없다 (Staging 에 완료 Weekly 0 · 쓰기 금지). saas-v2 Preview 에는 이 수정이 배포되지 않았다.
 
-## C. W7 상태
+> **PHASE 10E 정정 (2026-09-30)** — 아래 C · D 의 "CONTENT EXISTS: NO" 는 **저장소 안** 기준이었다. 원본은 존재한다:
+> `SOYE_KIDS_7주차_교사용_수업가이드.pdf` (《나비야 놀자!》 · 기다림) · `SOYE_KIDS_8주차_교사용_수업가이드.pdf` (《모이면 숲이 되는 우리》 · 공동체) — 15절 표준 구성 · 누리 연계 · 관찰 · 가정연계 포함 (W1~W6 가이드도 존재).
+> 올바른 표기: **SOURCE CONTENT: AVAILABLE · CANONICAL REPOSITORY INGESTION: COMPLETE (PHASE 10E · local 검증) · STAGING REAL CONTENT: NOT YET APPLIED · HUMAN CONTENT APPROVAL: REQUIRED**.
+> BC-3 = **TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED** (닫히지 않음). 상세: [phase-10e-starter-content-approval.md](./phase-10e-starter-content-approval.md)
+
+## C. W7 상태 (PHASE 10D 기록 · 위 정정 참고)
 
 | 항목 | 결과 | 근거 |
 |---|---|---|
@@ -71,7 +76,7 @@ Staging 에서 모아보기 화면을 실제로 연 기록은 없다 (Staging �
 
 **Operational 로 표시하지 않는다.**
 
-## D. W8 상태
+## D. W8 상태 (PHASE 10D 기록 · 위 정정 참고)
 
 | 항목 | 결과 | 근거 |
 |---|---|---|
@@ -88,7 +93,7 @@ Staging 계약 Readiness 의 `content` 항목이 `ok = true` 인 것은 **합성
 
 ## E. BC-3 분류
 
-**B. TECHNICALLY INCOMPLETE**
+**B. TECHNICALLY INCOMPLETE** (PHASE 10D) → **PHASE 10E: TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED** (원본 존재 · canonical 적재 local 완료 · Staging 미적용 · 승인 없음)
 
 근거: W7 · W8 모두 저장소에 규격 적용 콘텐츠가 없고 (구조 미완) · Staging 에는 합성 행만 있으며 · 사람 승인 기록이 없다. "W1~8 운영 자료" 표기는 근거 없는 서술이므로 정정 대상이다. 승인을 만들어 넣지 않았다.
 해소 조건: W7 · W8 원자료에 표준화 규격 v1.0 적용 → 교육 검토 · 콘텐츠 승인 (승인자 · 날짜 기록) → HQ Admin 으로 게시 차시 · 필수 section 입력 (Production · Staging 각각) → Readiness `content` 확인.
@@ -130,7 +135,7 @@ Staging M5 **NOT APPLIED** · 앱 `M5_app_preflight` **7/7** · JKL 앱 gate **R
 
 | ID | 내용 | 상태 |
 |---|---|---|
-| BC-3 | STARTER W7~8 콘텐츠 (규격 · 승인 · 적재) — W1~6 실제 적재 확인 포함 | **TECHNICALLY INCOMPLETE** |
+| BC-3 | STARTER W1~W8 콘텐츠 — PHASE 10E: canonical 적재 local 완료 · 사람 승인 · Staging/Production 적재 남음 | **TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED** |
 | CO-12 | Child Portal 정책 · parent_portal blocker | OPEN |
 | class_mode · weekly_report | 출시 승인 없음 · 체크리스트 BLOCKED 4 · HUMAN 5 | NOT APPROVED |
 | G-1 | Staging 미적용 (P09F-AUTH-1) · Production 미적용 | OPEN |

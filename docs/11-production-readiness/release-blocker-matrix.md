@@ -28,7 +28,7 @@
 | CO-9 · CO-10 · DB-9 | 단체 사진 · 동의 법적 단위 · portal 사진 signer | OPEN · YES (사진 공개 전) | `docs/03-commerce/open-items.md:47-49` · `docs/05-data-security/open-items.md:35,95` | no (학부모 사진 비활성 유지 시) | no | 사진 공개 전 결정 |
 | BP-14 | STANDARD/PREMIUM 판매 문구 | 부분 해결 (활성화 차단) · 판매 문구 사업 판단 | `docs/03-commerce/open-items.md:79` | no (STARTER) | no | 사업 판단 |
 | BP-16 | AI 국외 이전 고지 | Pilot Go 조건 | `docs/03-commerce/open-items.md:81` | no (AI OFF) | no | AR-8 와 함께 |
-| BC-3 | STARTER W7~8 규격 미적용 | **PHASE 10D: B. TECHNICALLY INCOMPLETE** — 저장소 콘텐츠 없음 · Staging 은 합성 차시뿐 · 승인 증거 없음 · "W1~8 운영" 표기는 근거 없음 ([phase-10d](./phase-10d-starter-release-readiness.md)) | `docs/01-product/content-governance.md:20,265,283` vs `docs/10-employee-uat/known-limitations.md:30` | **yes (확인 전까지)** | no | 사람 확인: W7~8 승인 여부 |
+| BC-3 | STARTER W1~W8 운영 콘텐츠 | **PHASE 10E: TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED** — SOURCE CONTENT: AVAILABLE (교사용 가이드 W1~W8 · SHA-256 기록) · CANONICAL REPOSITORY INGESTION: COMPLETE (`content/starter/2026.1` · local pgTAP 26/26) · STAGING REAL CONTENT: NOT YET APPLIED · HUMAN CONTENT APPROVAL: REQUIRED (W1 · W3~W6 원본 대조 포함 · W4 성장키워드 결정) | [phase-10e](./phase-10e-starter-content-approval.md) | **yes (승인 · 적재 전까지)** | no | W1~W8 승인 체크 → Staging 적재 · 배정 전환(별도 승인) |
 | BC-1 · BC-2 | W9~16 · W17~24 콘텐츠 | SOURCE EXISTS MIXED · DRAFT/PROPOSAL | [content-readiness.md](./content-readiness.md) | no (STARTER) · yes (STANDARD · PREMIUM) | no | 콘텐츠 승인 · 적재 |
 
 ## 3. 보안 · 운영
