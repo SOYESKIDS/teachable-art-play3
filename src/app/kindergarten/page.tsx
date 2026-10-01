@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { AuthShell } from "@/components/auth/AuthShell";
 import { StaffLoginCard } from "@/components/auth/StaffLoginCard";
 import { resolveLoginNotice } from "@/app/login/form-state";
 
@@ -54,51 +54,45 @@ export default async function KindergartenPortalPage({
   const params = await searchParams;
 
   return (
-    <main className="min-h-screen bg-ivory">
-      <div className="mx-auto grid w-full max-w-[1080px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1.05fr_minmax(380px,420px)] lg:items-center lg:gap-16 lg:py-20">
+    <AuthShell width="wide">
+      <div className="grid gap-10 lg:grid-cols-[1.05fr_minmax(380px,440px)] lg:items-center lg:gap-16">
         {/*
-          ★ 모바일에서는 로그인 카드가 먼저다.
-            여기까지 온 사람은 대개 "읽으러" 온 것이 아니라 "들어가려고" 온 것이다.
-            소개를 먼저 읽히려고 스크롤을 시키지 않는다.
-            order 로 순서만 바꾸고 DOM 순서(소개 → 카드)는 유지한다 —
-            스크린리더와 키보드 사용자에게는 맥락이 먼저 오는 편이 낫다.
-        */}
-        <section className="order-2 lg:order-1">
-          <Link
-            href="/"
-            className="inline-flex flex-col items-start leading-none"
-          >
-            <Image
-              src="/images/site/brand/soyeskids-logo-primary.png"
-              alt="SOYESKIDS"
-              width={440}
-              height={77}
-              priority
-              className="h-[20px] w-auto"
-            />
-            <span className="mt-1.5 font-serif text-xl font-semibold italic text-navy sm:text-2xl">
-              TeachAble Art Play
-            </span>
-          </Link>
+          ★ 모바일에서는 로그인 카드가 먼저다 — 여기 온 사람은 "들어가려고" 왔다.
+            order 로 순서만 바꾸고 DOM 순서(소개 → 카드)는 유지한다.
 
-          {/* 마케팅 화면과 같은 타입 스케일 — 같은 브랜드의 다른 문이어야 한다. */}
-          <h2 className="mt-8 text-h1 font-bold text-navy">
+          ★ 소개 문장은 제목(h2)이 아니라 문단이다.
+            예전에는 소개의 h2 가 카드의 h1 보다 먼저 나와 제목 순서가 뒤집혔다.
+            이 화면의 제목은 하나 — 카드의 "유치원 전용 로그인" 이다.
+        */}
+        <section aria-label="유치원 전용 공간 소개" className="order-2 lg:order-1">
+          <p className="eyebrow text-accent-strong">KINDERGARTEN PORTAL</p>
+          <p className="mt-4 text-h1 font-bold text-navy">
             수업과 성장 기록을
             <br />
             한곳에서 관리하세요.
-          </h2>
+          </p>
 
-          <p className="mt-5 max-w-[34ch] text-lead text-navy/60">
+          <p className="mt-5 max-w-[36ch] text-lead text-ink-muted">
             원장님과 선생님을 위한 TeachAble Art Play 유치원 전용 공간입니다.
           </p>
 
           <dl className="mt-10 grid gap-4 sm:grid-cols-2">
-            {ROLE_GUIDES.map((guide) => (
+            {ROLE_GUIDES.map((guide, index) => (
               <div
                 key={guide.role}
-                className="rounded-[var(--radius-card)] border border-line bg-white/70 p-5"
+                className="rounded-2xl border border-line bg-white/80 p-5 backdrop-blur-sm"
               >
-                <dt className="text-[15px] font-bold text-navy">
+                <dt className="flex items-center gap-2.5 text-body-sm font-bold text-navy">
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-caption font-bold ${
+                      index === 0
+                        ? "bg-primary-soft text-navy"
+                        : "bg-secondary-soft text-secondary-strong"
+                    }`}
+                  >
+                    {guide.role.slice(0, 1)}
+                  </span>
                   {guide.role}
                 </dt>
                 <dd>
@@ -106,12 +100,11 @@ export default async function KindergartenPortalPage({
                     {guide.items.map((item) => (
                       <li
                         key={item}
-                        className="flex items-start gap-2 text-[14px] leading-relaxed text-navy/65"
+                        className="flex items-start gap-2 text-label text-ink-muted"
                       >
-                        <span
-                          aria-hidden="true"
-                          className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-trust-blue"
-                        />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-[3px] shrink-0 text-secondary">
+                          <path d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
                         {item}
                       </li>
                     ))}
@@ -122,7 +115,7 @@ export default async function KindergartenPortalPage({
           </dl>
         </section>
 
-        <section className="order-1 lg:order-2">
+        <section aria-label="로그인" className="order-1 lg:order-2">
           <StaffLoginCard
             title="유치원 전용 로그인"
             description="초대받은 계정으로 로그인해주세요."
@@ -131,16 +124,19 @@ export default async function KindergartenPortalPage({
             footnote="계정이 없으신 경우 소속 기관 또는 SOYESKIDS 담당자에게 문의해주세요."
           />
 
-          <p className="mt-6 text-center text-[13px] text-navy/45">
+          <p className="mt-5 text-center text-caption">
             <Link
               href="/"
-              className="inline-flex min-h-11 items-center underline-offset-4 transition-colors hover:text-navy hover:underline"
+              className="inline-flex min-h-11 items-center gap-1.5 text-ink-muted underline-offset-4 transition-colors hover:text-navy hover:underline"
             >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M19 12H5M11 18l-6-6 6-6" />
+              </svg>
               홈페이지로 돌아가기
             </Link>
           </p>
         </section>
       </div>
-    </main>
+    </AuthShell>
   );
 }

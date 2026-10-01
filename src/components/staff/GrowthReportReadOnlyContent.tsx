@@ -15,7 +15,7 @@ export function GrowthReportReadOnlyContent({
 }) {
   return (
     <section className="mt-6 scroll-mt-28">
-      <h2 className="text-[15px] font-bold text-navy">리포트 내용</h2>
+      <h2 className="text-body-sm font-bold text-navy">리포트 내용</h2>
 
       <div className="mt-3 flex flex-col gap-4">
         <ReadOnlyBlock label="성장 변화" value={growthChanges} />
@@ -29,8 +29,8 @@ export function GrowthReportReadOnlyContent({
 function ReadOnlyBlock({ label, value }: { label: string; value: string | null }) {
   return (
     <div>
-      <p className="text-[11px] font-bold text-navy/55">{label}</p>
-      <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-navy/10 bg-white px-3 py-2.5 text-[13px] leading-relaxed text-navy">
+      <p className="text-micro font-bold text-ink-muted">{label}</p>
+      <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-line bg-white px-3 py-2.5 text-caption leading-relaxed text-navy">
         {value ?? "작성된 내용이 없습니다."}
       </p>
     </div>

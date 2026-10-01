@@ -64,10 +64,10 @@ export default async function DirectorWeeklyReportPage({ params, searchParams }:
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/growth-reports"
     >
-      <h1 className="text-[24px] font-bold text-ink">
+      <h1 className="text-headline font-bold text-navy">
         주간 리포트 · {report.childName ?? "이름 없음"}
       </h1>
-      <p className="mt-1 text-[15px] text-ink-muted">
+      <p className="mt-1 text-body-sm text-ink-muted">
         {report.className ?? ""} · {report.weekNo}주 · 최근 완료본 {formatDotDate(latestCompleted.completedAt)}
         {latestCompleted.revisionNo > 1 ? " · 수정본" : ""}
       </p>
@@ -86,7 +86,7 @@ export default async function DirectorWeeklyReportPage({ params, searchParams }:
         {!report.hidden ? <PrintButton /> : null}
         <Link
           href={`/director/growth-reports/weekly/${report.id}/summary?org=${encodeURIComponent(membership.organizationId)}`}
-          className="inline-flex min-h-11 items-center px-2 text-[14px] font-semibold text-brand-navy underline"
+          className="inline-flex min-h-11 items-center px-2 text-label font-semibold text-brand-navy underline"
         >
           8주 기록 모아보기
         </Link>
@@ -96,8 +96,8 @@ export default async function DirectorWeeklyReportPage({ params, searchParams }:
         {SECTIONS.map((section) =>
           latestCompleted.content[section.key] ? (
             <section key={section.key}>
-              <h2 className="text-[16px] font-bold text-ink">{section.label}</h2>
-              <p className="mt-1 whitespace-pre-line text-[16px] leading-relaxed text-ink">
+              <h2 className="text-body font-bold text-ink">{section.label}</h2>
+              <p className="mt-1 whitespace-pre-line text-body leading-relaxed text-ink">
                 {latestCompleted.content[section.key]}
               </p>
             </section>

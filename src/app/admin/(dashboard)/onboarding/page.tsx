@@ -58,7 +58,7 @@ export default async function AdminOnboardingPage({
           actions={
             <Link
               href="/admin/readiness"
-              className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+              className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
             >
               오픈 준비 현황
             </Link>
@@ -84,11 +84,11 @@ export default async function AdminOnboardingPage({
                     className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-3 first:pt-0 last:pb-0"
                   >
                     <span className="flex min-w-0 items-center gap-2">
-                      <span className="min-w-0 break-words text-[14px] font-semibold text-navy">
+                      <span className="min-w-0 break-words text-label font-semibold text-navy">
                         {org.name}
                       </span>
                       <span
-                        className={`shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[org.status]}`}
+                        className={`shrink-0 rounded-md border px-2 py-0.5 text-micro font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[org.status]}`}
                       >
                         {ORGANIZATION_STATUS_LABELS[org.status]}
                       </span>
@@ -96,7 +96,7 @@ export default async function AdminOnboardingPage({
 
                     <Link
                       href={`/admin/onboarding?organization=${encodeURIComponent(org.id)}`}
-                      className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-[13px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+                      className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-caption font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
                     >
                       도입 설정 계속
                     </Link>
@@ -123,7 +123,7 @@ export default async function AdminOnboardingPage({
             action={
               <Link
                 href="/admin/onboarding"
-                className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-[13px] font-bold text-white transition-colors hover:bg-navy/90"
+                className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-caption font-bold text-white transition-colors hover:bg-navy/90"
               >
                 처음부터 시작
               </Link>
@@ -143,7 +143,7 @@ export default async function AdminOnboardingPage({
         actions={
           <Link
             href={`/admin/organizations/${state.organization.id}`}
-            className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
           >
             기관 상세
           </Link>
@@ -151,7 +151,7 @@ export default async function AdminOnboardingPage({
       />
 
       {!state.ok ? (
-        <p className="mt-4 rounded-xl border border-navy/15 bg-white px-4 py-3 text-[13px] leading-relaxed text-navy/60">
+        <p className="mt-4 rounded-xl border border-line-strong bg-white px-4 py-3 text-caption leading-relaxed text-ink-muted">
           현재 설정 상태 일부를 불러오지 못했습니다. 아래 단계는 그대로 진행할 수
           있지만, 표시된 개수가 실제와 다를 수 있습니다.
         </p>

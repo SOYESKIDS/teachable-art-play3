@@ -71,7 +71,7 @@ export function ClassSessionManageDialog({
       <button
         type="button"
         onClick={openDialog}
-        className="inline-flex min-h-11 items-center text-[13px] font-semibold text-info-text hover:underline"
+        className="inline-flex min-h-11 items-center text-caption font-semibold text-info-text hover:underline"
       >
         수업 관리
       </button>
@@ -98,7 +98,7 @@ export function ClassSessionManageDialog({
           {canRecover ? (
             <fieldset className="flex flex-col gap-2">
               <legend className={fieldLabel}>처리 방법</legend>
-              <label className="flex min-h-11 items-center gap-2 text-[15px] text-ink">
+              <label className="flex min-h-11 items-center gap-2 text-body-sm text-ink">
                 <input
                   type="radio"
                   name="action-choice"
@@ -107,7 +107,7 @@ export function ClassSessionManageDialog({
                 />
                 복구 처리 (수업 종료로 정리)
               </label>
-              <label className="flex min-h-11 items-center gap-2 text-[15px] text-ink">
+              <label className="flex min-h-11 items-center gap-2 text-body-sm text-ink">
                 <input
                   type="radio"
                   name="action-choice"
@@ -125,7 +125,7 @@ export function ClassSessionManageDialog({
               처리 사유와 처리자가 기록됩니다.
             </p>
           ) : (
-            <p className="text-[15px] leading-relaxed text-ink">
+            <p className="text-body-sm leading-relaxed text-ink">
               취소한 수업은 다시 진행할 수 없습니다. 이미 남긴 기록은 이력에 그대로 남습니다.
             </p>
           )}

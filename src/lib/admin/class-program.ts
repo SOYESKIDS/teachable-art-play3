@@ -26,9 +26,9 @@ export const ASSIGNMENT_STATUS_LABELS: Record<AssignmentStatus, string> = {
 
 export const ASSIGNMENT_STATUS_BADGE_CLASSES: Record<AssignmentStatus, string> =
   {
-    active: "bg-soft-green/20 text-navy border-soft-green/50",
-    completed: "bg-light-blue/25 text-navy border-light-blue/60",
-    cancelled: "bg-navy/5 text-navy/50 border-navy/15",
+    active: "bg-success-soft text-success-text border-success-border",
+    completed: "bg-info-soft text-info-text border-info-border",
+    cancelled: "bg-muted text-ink-muted border-border-strong",
   };
 
 /**

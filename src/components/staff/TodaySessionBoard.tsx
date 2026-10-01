@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { StaffSessionItem, TodaySessionBoard } from "@/types/staff-session";
+import { ErrorState, EmptyState } from "@/components/ui/surface";
 import { SessionCard } from "./SessionCard";
 import type { SessionActorRole } from "./SessionActions";
 
@@ -25,11 +26,29 @@ interface TodaySessionBoardProps {
   classModeBasePath?: string;
 }
 
-function KpiItem({ label, value }: { label: string; value: number }) {
+const KPI_DOT = {
+  scheduled: "bg-info",
+  active: "bg-navy",
+  done: "bg-success",
+  cancelled: "bg-ink-subtle",
+} as const;
+
+function KpiItem({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: keyof typeof KPI_DOT;
+}) {
   return (
-    <div className="rounded-xl border border-navy/10 bg-white px-4 py-3">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="mt-0.5 text-[24px] font-bold tabular-nums leading-none text-navy">
+    <div className="rounded-2xl border border-line bg-white px-4 py-3.5 sm:px-5 sm:py-4">
+      <dt className="flex items-center gap-1.5 text-caption font-semibold text-ink-muted">
+        <span aria-hidden="true" className={`h-2 w-2 rounded-full ${KPI_DOT[tone]}`} />
+        {label}
+      </dt>
+      <dd className="mt-1.5 text-headline-lg font-bold tabular-nums leading-none text-navy">
         {value.toLocaleString("ko-KR")}
       </dd>
     </div>
@@ -66,6 +85,7 @@ function Section({
   sessions,
   showClassName,
   emptyText,
+  emptyHint,
   attendanceBasePath,
   observationBasePath,
   actorRole,
@@ -76,6 +96,7 @@ function Section({
   sessions: StaffSessionItem[];
   showClassName: boolean;
   emptyText?: string;
+  emptyHint?: string;
   attendanceBasePath?: string;
   observationBasePath?: string;
   actorRole: SessionActorRole;
@@ -84,23 +105,23 @@ function Section({
   if (sessions.length === 0 && !emptyText) return null;
 
   return (
-    <section className="mt-7">
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <h2 className="text-[15px] font-bold text-navy">{title}</h2>
-        <span className="text-[13px] tabular-nums text-navy/45">
+    <section className="mt-9">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <h2 className="text-title-sm font-bold text-navy">{title}</h2>
+        <span className="rounded-full bg-white px-2 py-0.5 text-caption font-semibold tabular-nums text-ink-muted ring-1 ring-line">
           {sessions.length.toLocaleString("ko-KR")}건
         </span>
       </div>
       {description ? (
-        <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
+        <p className="mt-1 max-w-[70ch] text-caption leading-relaxed text-ink-muted">
           {description}
         </p>
       ) : null}
 
       {sessions.length === 0 ? (
-        <p className="mt-3 rounded-xl border border-navy/10 bg-white px-4 py-8 text-center text-[14px] text-navy/50">
-          {emptyText}
-        </p>
+        <div className="mt-3">
+          <EmptyState text={emptyText ?? ""} hint={emptyHint} />
+        </div>
       ) : (
         <ul className="mt-3 flex flex-col gap-3">
           {sessions.map((session) => (
@@ -145,17 +166,13 @@ export function TodaySessionBoardView({
 }: TodaySessionBoardProps): ReactNode {
   if (hasError) {
     return (
-      <p className="rounded-xl border border-navy/10 bg-white px-4 py-12 text-center text-[14px] text-navy/55">
-        수업 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
-      </p>
+      <ErrorState text="수업 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요." />
     );
   }
 
   if (noClassNotice) {
     return (
-      <p className="rounded-xl border border-navy/10 bg-white px-4 py-12 text-center text-[14px] text-navy/55">
-        {noClassNotice}
-      </p>
+      <EmptyState text={noClassNotice} />
     );
   }
 
@@ -163,11 +180,11 @@ export function TodaySessionBoardView({
 
   return (
     <>
-      <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        <KpiItem label="오늘 예정" value={summary.scheduledToday} />
-        <KpiItem label="진행 중" value={summary.inProgress} />
-        <KpiItem label="오늘 완료" value={summary.completedToday} />
-        <KpiItem label="오늘 취소" value={summary.cancelledToday} />
+      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <KpiItem label="오늘 예정" value={summary.scheduledToday} tone="scheduled" />
+        <KpiItem label="진행 중" value={summary.inProgress} tone="active" />
+        <KpiItem label="오늘 완료" value={summary.completedToday} tone="done" />
+        <KpiItem label="오늘 취소" value={summary.cancelledToday} tone="cancelled" />
       </dl>
 
       <Section
@@ -175,6 +192,7 @@ export function TodaySessionBoardView({
         sessions={board.todaySessions}
         showClassName={showClassName}
         emptyText="오늘 예정된 수업이 없습니다."
+        emptyHint="아직 마치지 않았거나 시작하지 않은 이전 날짜 수업이 있으면 아래에 함께 보입니다. 지난 수업은 수업 이력에서 볼 수 있습니다."
         attendanceBasePath={attendanceBasePath}
         observationBasePath={observationBasePath}
         actorRole={actorRole}

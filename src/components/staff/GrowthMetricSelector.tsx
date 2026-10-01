@@ -52,11 +52,16 @@ export function GrowthMetricSelector({
 
   return (
     <fieldset className="flex flex-col gap-3" disabled={disabled}>
-      <legend className="text-[17px] font-bold text-ink">관찰 포인트</legend>
-      <p className="text-[14px] leading-relaxed text-ink-muted">
-        이 기록은 점수나 발달 수준이 아니라 이번 활동에서 관찰된 참여 방식을 기록합니다. 기록 없음은 못했다는
-        의미가 아닙니다.
-      </p>
+      <legend className="text-body-lg font-bold text-ink">관찰 포인트</legend>
+      <div className="rounded-lg border border-info-border bg-info-soft px-3.5 py-3 text-label leading-relaxed text-info-text">
+        <p className="font-semibold">
+          얼마나 잘했는지가 아니라, 그 활동에서 어떤 도움이 필요했는지를 남기는 기록입니다. 단계는 오르내릴 수 있고
+          다른 아이와 비교하지 않습니다.
+        </p>
+        <p className="mt-1">
+          함께 · 보고 나서 · 스스로 중 이번 활동에서 본 모습 하나를 고릅니다. 기록 없음은 못했다는 의미가 아닙니다.
+        </p>
+      </div>
 
       <ul className="flex flex-col gap-3">
         {activeMetrics.map((metric) => {
@@ -76,8 +81,8 @@ export function GrowthMetricSelector({
                   className="mt-1 h-6 w-6 shrink-0"
                 />
                 <span>
-                  <span className="block text-[16px] font-bold text-ink">{metric.label}</span>
-                  <span id={helpId} className="block text-[14px] text-ink-muted">
+                  <span className="block text-body font-bold text-ink">{metric.label}</span>
+                  <span id={helpId} className="block text-label text-ink-muted">
                     {metric.guide}
                   </span>
                 </span>
@@ -91,7 +96,7 @@ export function GrowthMetricSelector({
                       return (
                         <label
                           key={option.value}
-                          className={`flex min-h-12 cursor-pointer flex-col justify-center rounded-lg border px-3 py-2 text-[15px] ${
+                          className={`flex min-h-12 cursor-pointer flex-col justify-center rounded-lg border px-3 py-2 text-body-sm ${
                             checked ? "border-brand-navy bg-brand-sky font-bold text-ink" : "border-control-border bg-white text-ink"
                           }`}
                         >
@@ -104,13 +109,13 @@ export function GrowthMetricSelector({
                             />
                             {option.label}
                           </span>
-                          <span className="mt-0.5 text-[13px] font-normal text-ink-muted">{option.help}</span>
+                          <span className="mt-0.5 text-caption font-normal text-ink-muted">{option.help}</span>
                         </label>
                       );
                     })}
                   </div>
                   {missingStage ? (
-                    <p role="alert" className="mt-2 text-[14px] text-warning-text">
+                    <p role="alert" className="mt-2 text-label text-warning-text">
                       방식을 선택하거나 이 관찰 포인트 선택을 해제해 주세요.
                     </p>
                   ) : null}

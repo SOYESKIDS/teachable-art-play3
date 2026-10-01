@@ -5,6 +5,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { fetchClassModeData } from "@/lib/staff/class-mode-queries";
 import { ClassModeShell } from "@/components/class-mode/ClassModeShell";
 import { BeforeChecklist } from "@/components/class-mode/BeforeChecklist";
+import { LessonGuide } from "@/components/class-mode/LessonGuide";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { ContentNotReadyState } from "@/components/staff/StateScreens";
 
@@ -77,11 +78,22 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
     );
   }
 
-  const materials = data.steps
+  const stepMaterials = data.steps
     .map((step) => step.materials)
     .filter((value): value is string => Boolean(value && value.trim()))
     .flatMap((value) => value.split(/[\n,·]/).map((item) => item.trim()))
     .filter(Boolean);
+
+  // 활동 단계에 준비물이 없으면(STARTER 등) §4-A 준비물의 글머리 줄을 확인 목록으로 쓴다.
+  const materials =
+    stepMaterials.length > 0
+      ? stepMaterials
+      : (data.sections.s4a ?? "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line.startsWith("•"))
+          .map((line) => line.replace(/^•\s*/, "").trim())
+          .filter(Boolean);
 
   const blockedReason = !data.entitlements.classModeWrite
     ? data.entitlements.serviceMode === "active"
@@ -99,17 +111,22 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
       exitHref={exitHref}
     >
       <section aria-labelledby="today-topic" className="mb-6 rounded-2xl border border-hairline bg-white p-5">
-        <h1 id="today-topic" className="text-[22px] font-bold">
+        <h1 id="today-topic" className="text-title-lg font-bold">
           오늘 수업
         </h1>
-        {data.sections.s1 ? <p className="mt-2 whitespace-pre-line text-[17px] leading-relaxed">{data.sections.s1}</p> : null}
         {data.lesson.objective ? (
-          <p className="mt-2 text-[16px] text-ink-muted">수업 목표: {data.lesson.objective}</p>
+          <p className="mt-3 rounded-xl border-l-4 border-secondary bg-secondary-soft px-4 py-3 text-body-lg font-semibold leading-relaxed text-ink">
+            <span className="mb-0.5 block text-label font-bold text-secondary-strong">수업 목표</span>
+            {data.lesson.objective}
+          </p>
+        ) : null}
+        {data.sections.s1 ? (
+          <p className="mt-4 max-w-[72ch] whitespace-pre-line break-keep text-body-lg leading-relaxed">{data.sections.s1}</p>
         ) : null}
         {data.steps.length > 0 ? (
           <ol className="mt-4 grid gap-2 sm:grid-cols-2">
             {data.steps.map((step) => (
-              <li key={step.sequenceNo} className="rounded-xl bg-brand-ivory px-4 py-3 text-[16px]">
+              <li key={step.sequenceNo} className="rounded-xl bg-brand-ivory px-4 py-3 text-body">
                 <span className="font-bold">{step.sequenceNo}. </span>
                 {step.title}
                 {step.durationMinutes ? <span className="text-ink-muted"> · {step.durationMinutes}분</span> : null}
@@ -118,6 +135,8 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
           </ol>
         ) : null}
       </section>
+
+      <LessonGuide sections={data.sections} />
 
       <BeforeChecklist
         sessionId={data.session.id}

@@ -71,9 +71,9 @@ export default async function ParentSharePage({ params }: ParentSharePageProps) 
 
   return (
     <div className="min-h-screen bg-surface-soft print:bg-white">
-      <header className="border-b border-navy/10 bg-white print:hidden">
+      <header className="border-b border-line bg-white print:hidden">
         <div className="mx-auto w-full max-w-[960px] px-4 py-3 sm:px-6">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
+          <p className="text-micro font-bold tracking-[0.16em] text-ink-muted">
             TEACHABLE ART PLAY
           </p>
         </div>
@@ -87,11 +87,11 @@ export default async function ParentSharePage({ params }: ParentSharePageProps) 
       <main className="gr-page mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
         <ParentGrowthReportView shareId={shareId} />
 
-        <aside className="mt-10 border-t border-navy/10 pt-5 print:hidden">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-navy/40">
+        <aside className="mt-10 border-t border-line pt-5 print:hidden">
+          <p className="text-micro font-bold tracking-[0.16em] text-ink-muted">
             링크 안내
           </p>
-          <p className="mt-2 max-w-[62ch] text-[12px] leading-relaxed text-navy/50">
+          <p className="mt-2 max-w-[62ch] text-micro leading-relaxed text-ink-muted">
             이 링크는 해당 보호자에게만 전달해주세요. 링크를 가진 사람은
             유효기간 동안 내용을 볼 수 있습니다.
           </p>

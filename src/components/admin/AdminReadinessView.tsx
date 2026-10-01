@@ -30,6 +30,13 @@ import {
  *   모든 배지가 "설정됨" · "확인 필요" 같은 한국어 라벨을 함께 갖는다.
  */
 export function AdminReadinessView({ data }: { data: ReadinessData }) {
+  // 설정이 덜 된 기관을 먼저 — 받은 목록을 화면에서만 다시 놓는다 (같은 그룹 안의 순서는 그대로)
+  const organizations = [
+    ...data.organizations.filter((org) => org.doneCount < org.totalCount),
+    ...data.organizations.filter((org) => org.doneCount >= org.totalCount),
+  ];
+  const pendingCount = data.organizations.filter((org) => org.doneCount < org.totalCount).length;
+
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 py-8 lg:px-8">
       <PageHeader
@@ -44,8 +51,47 @@ export function AdminReadinessView({ data }: { data: ReadinessData }) {
         }
       />
 
-      {/* ───────────────────────────────────── 전체 요약 */}
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {/* ───────────────────────────── 기관별 준비 현황 */}
+      <section className="mt-6">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <h2 className="text-title-sm font-bold text-navy">기관별 준비 현황</h2>
+          {data.ok && pendingCount > 0 ? (
+            <StatusPill tone="pending">확인 필요 {pendingCount.toLocaleString("ko-KR")}곳</StatusPill>
+          ) : null}
+        </div>
+        <p className="mt-1 text-micro leading-relaxed text-ink-muted">
+          각 항목은 설정 여부라는 사실만 표시합니다. 점수나 등급이 아닙니다.
+          설정이 남은 기관을 먼저 보여 주며, 일시 중지된 기관도 함께 보여 줍니다.
+        </p>
+
+        {!data.ok ? (
+          <div className="mt-3">
+            <ErrorState text="준비 현황을 불러오지 못했습니다. 잠시 후 다시 시도해주세요." />
+          </div>
+        ) : data.organizations.length === 0 ? (
+          <div className="mt-3">
+            <EmptyState
+              text="등록된 기관이 없습니다."
+              action={
+                <QuickLink href="/admin/onboarding" label="새 기관 도입" primary />
+              }
+            />
+          </div>
+        ) : (
+          <ul className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-2">
+            {organizations.map((org) => (
+              <li key={org.id}>
+                <OrganizationCard org={org} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* ───────────────────────────────────── 전체 규모 (보조) */}
+      <section className="mt-8">
+        <h2 className="text-title-sm font-bold text-navy">전체 규모</h2>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MetricCard
           label="운영 기관"
           value={data.totals.activeOrganizations}
@@ -87,50 +133,19 @@ export function AdminReadinessView({ data }: { data: ReadinessData }) {
           value={data.totals.activeParentShares}
           unit="건"
         />
-        <div className="flex min-h-[104px] flex-col justify-center rounded-xl border border-navy/10 bg-surface-soft p-4">
-          <p className="break-keep text-[11px] leading-relaxed text-navy/55">
+        <div className="flex min-h-[104px] flex-col justify-center rounded-xl border border-line bg-surface-soft p-4">
+          <p className="break-keep text-micro leading-relaxed text-ink-muted">
             {PARENT_SHARE_NOTE}
           </p>
         </div>
       </div>
 
       {!data.reliable && data.ok ? (
-        <p className="mt-3 rounded-xl border border-navy/10 bg-white px-4 py-3 text-[12px] leading-relaxed text-navy/55">
+        <p className="mt-3 rounded-xl border border-line bg-white px-4 py-3 text-micro leading-relaxed text-ink-muted">
           일부 집계가 조회 범위를 넘었습니다. 위 숫자 중 일부는 표시하지
-          않았으며, 아래 기관별 항목이 실제와 다를 수 있습니다.
+          않았으며, 기관별 준비 항목이 실제와 다를 수 있습니다.
         </p>
       ) : null}
-
-      {/* ───────────────────────────── 기관별 준비 현황 */}
-      <section className="mt-8">
-        <h2 className="text-[16px] font-bold text-navy">기관별 준비 현황</h2>
-        <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
-          각 항목은 설정 여부라는 사실만 표시합니다. 점수나 등급이 아닙니다.
-          일시 중지된 기관도 함께 보여 줍니다.
-        </p>
-
-        {!data.ok ? (
-          <div className="mt-3">
-            <ErrorState text="준비 현황을 불러오지 못했습니다. 잠시 후 다시 시도해주세요." />
-          </div>
-        ) : data.organizations.length === 0 ? (
-          <div className="mt-3">
-            <EmptyState
-              text="등록된 기관이 없습니다."
-              action={
-                <QuickLink href="/admin/onboarding" label="새 기관 도입" primary />
-              }
-            />
-          </div>
-        ) : (
-          <ul className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-2">
-            {data.organizations.map((org) => (
-              <li key={org.id}>
-                <OrganizationCard org={org} />
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
 
       {/* ─────────────────────────────── 오픈 전 확인 */}
@@ -139,7 +154,7 @@ export function AdminReadinessView({ data }: { data: ReadinessData }) {
           title="첫 기관을 받기 전에"
           description="아래는 화면에서 자동으로 확인할 수 없는 항목입니다. 운영 문서의 체크리스트와 함께 확인하세요."
         >
-          <ul className="flex flex-col gap-2 text-[13px] leading-relaxed text-navy/65">
+          <ul className="flex flex-col gap-2 text-caption leading-relaxed text-navy/65">
             <li>· 본사 관리자 계정 중 지금 로그인할 수 있는 계정이 있는지</li>
             <li>· Production 환경변수와 Supabase 백업 설정</li>
             <li>· 학부모 공유 링크 안내 문구를 원장에게 전달했는지</li>
@@ -156,15 +171,15 @@ function OrganizationCard({ org }: { org: OrganizationReadiness }) {
   const allDone = org.doneCount === org.totalCount;
 
   return (
-    <div className="h-full rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
+    <div className="h-full rounded-xl border border-line bg-white p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <p className="min-w-0 break-words text-[15px] font-bold text-navy">
+        <p className="min-w-0 break-words text-body-sm font-bold text-navy">
           {org.name}
         </p>
 
         <div className="flex shrink-0 flex-wrap gap-1.5">
           <span
-            className={`shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[org.status]}`}
+            className={`shrink-0 rounded-md border px-2 py-0.5 text-micro font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[org.status]}`}
           >
             {ORGANIZATION_STATUS_LABELS[org.status]}
           </span>
@@ -182,9 +197,9 @@ function OrganizationCard({ org }: { org: OrganizationReadiness }) {
             key={entry.key}
             className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2"
           >
-            <span className="text-[13px] text-navy/70">{entry.label}</span>
+            <span className="text-caption text-navy/70">{entry.label}</span>
             <span className="flex items-center gap-2">
-              <span className="text-[12px] tabular-nums text-navy/55">
+              <span className="text-micro tabular-nums text-ink-muted">
                 {entry.detail}
               </span>
               {/*
@@ -200,16 +215,16 @@ function OrganizationCard({ org }: { org: OrganizationReadiness }) {
         ))}
       </ul>
 
-      <div className="mt-4 flex flex-wrap gap-2 border-t border-navy/8 pt-4">
+      <div className="mt-4 flex flex-wrap gap-2 border-t border-line-soft pt-4">
         <Link
           href={`/admin/onboarding?organization=${encodeURIComponent(org.id)}`}
-          className="inline-flex min-h-11 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-[13px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+          className="inline-flex min-h-11 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-caption font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
         >
           도입 설정 계속
         </Link>
         <Link
           href={`/admin/organizations/${org.id}`}
-          className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-3 text-[13px] font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+          className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-3 text-caption font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
         >
           기관 상세
         </Link>
@@ -230,10 +245,10 @@ function QuickLink({
   return (
     <Link
       href={href}
-      className={`inline-flex min-h-11 items-center rounded-lg px-4 text-[13px] font-semibold transition-colors ${
+      className={`inline-flex min-h-11 items-center rounded-lg px-4 text-caption font-semibold transition-colors ${
         primary
           ? "bg-navy text-white hover:bg-navy/90"
-          : "border border-navy/20 bg-white text-navy hover:border-navy/35 hover:bg-navy/5"
+          : "border border-line-strong bg-white text-navy hover:border-navy/35 hover:bg-navy/5"
       }`}
     >
       {label}

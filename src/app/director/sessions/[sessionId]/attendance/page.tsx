@@ -75,11 +75,11 @@ export default async function DirectorAttendancePage({
     >
       {!result.ok ? (
         <div>
-          <h1 className="text-[22px] font-bold text-navy">
+          <h1 className="text-headline font-bold text-navy">
             출결 관리
           </h1>
 
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/55">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
             {result.reason ===
             "load_failed"
               ? "출결 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요."

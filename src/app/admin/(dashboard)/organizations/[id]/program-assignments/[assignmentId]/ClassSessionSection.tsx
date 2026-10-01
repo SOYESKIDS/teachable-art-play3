@@ -33,9 +33,9 @@ interface ClassSessionSectionProps {
 
 function SummaryItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-navy/10 bg-surface-soft px-3.5 py-2.5">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-bold tabular-nums text-navy">
+    <div className="rounded-lg border border-line bg-surface-soft px-3.5 py-2.5">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="mt-0.5 text-title font-bold tabular-nums text-navy">
         {value.toLocaleString("ko-KR")}
       </dd>
     </div>
@@ -49,7 +49,7 @@ function SessionStatusBadge({
 }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CLASS_SESSION_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${CLASS_SESSION_STATUS_BADGE_CLASSES[status]}`}
     >
       {CLASS_SESSION_STATUS_LABELS[status]}
     </span>
@@ -62,11 +62,11 @@ function LessonStatusBadge({
 }: {
   status: ClassSessionItem["lessonStatus"];
 }) {
-  if (!status) return <span className="text-navy/40">—</span>;
+  if (!status) return <span className="text-ink-muted">—</span>;
 
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
     >
       {CURRICULUM_STATUS_LABELS[status]}
     </span>
@@ -106,11 +106,11 @@ export function ClassSessionSection({
   hasError,
 }: ClassSessionSectionProps) {
   return (
-    <section className="rounded-xl border border-navy/10 bg-white p-5">
+    <section className="rounded-xl border border-line bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-bold text-navy">수업 실행 이력</h2>
-          <p className="mt-1 text-[12px] text-navy/50">
+          <h2 className="text-body-sm font-bold text-navy">수업 실행 이력</h2>
+          <p className="mt-1 text-micro text-ink-muted">
             이 배정으로 실행한 차시별 수업입니다. 완료·취소한 수업도 그대로
             남습니다.
           </p>
@@ -128,7 +128,7 @@ export function ClassSessionSection({
       </div>
 
       {hasError ? (
-        <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+        <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
           수업 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
         </p>
       ) : (
@@ -142,11 +142,11 @@ export function ClassSessionSection({
           </dl>
 
           {sessions.length === 0 ? (
-            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-navy">
+            <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+              <p className="text-label font-semibold text-navy">
                 아직 등록된 수업 일정이 없습니다.
               </p>
-              <p className="mt-1 text-[13px] text-navy/50">
+              <p className="mt-1 text-caption text-ink-muted">
                 {canOpenNewSession
                   ? "게시된 차시를 골라 첫 수업 일정을 등록하세요."
                   : "이 배정으로는 새 수업을 등록할 수 없습니다."}
@@ -166,10 +166,10 @@ export function ClassSessionSection({
           ) : (
             <>
               {/* PC: compact table */}
-              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
-                <table className="w-full border-collapse text-[13px]">
+              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-line lg:block">
+                <table className="w-full border-collapse text-caption">
                   <thead>
-                    <tr className="bg-surface-soft text-navy/50">
+                    <tr className="bg-surface-soft text-ink-muted">
                       <th className="px-4 py-2.5 text-left font-semibold">
                         주차 · 차시
                       </th>
@@ -194,7 +194,7 @@ export function ClassSessionSection({
                     {sessions.map((session) => (
                       <tr
                         key={session.id}
-                        className="border-t border-navy/8 bg-white"
+                        className="border-t border-line-soft bg-white"
                       >
                         <td className="whitespace-nowrap px-4 py-3 font-semibold text-navy">
                           {formatLessonOrder(session.weekNo, session.sessionNo)}
@@ -213,7 +213,7 @@ export function ClassSessionSection({
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-right">
                           {isTerminalSessionStatus(session.status) ? (
-                            <span className="text-[12px] text-navy/40">
+                            <span className="text-micro text-ink-muted">
                               변경 불가
                             </span>
                           ) : (
@@ -249,31 +249,31 @@ export function ClassSessionSection({
                 {sessions.map((session) => (
                   <li
                     key={session.id}
-                    className="rounded-lg border border-navy/10 px-4 py-3"
+                    className="rounded-lg border border-line px-4 py-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[12px] font-semibold text-navy/50">
+                        <p className="text-micro font-semibold text-ink-muted">
                           {formatLessonOrder(session.weekNo, session.sessionNo)}
                         </p>
-                        <p className="mt-0.5 break-words text-[14px] font-semibold text-navy">
+                        <p className="mt-0.5 break-words text-label font-semibold text-navy">
                           {session.lessonTitle ?? "—"}
                         </p>
-                        <p className="mt-0.5 text-[12px] text-navy/50">
+                        <p className="mt-0.5 text-micro text-ink-muted">
                           예정 {formatSessionDate(session.scheduled_date)}
                         </p>
                       </div>
                       <SessionStatusBadge status={session.status} />
                     </div>
-                    <div className="mt-2.5 flex items-center justify-between gap-3 border-t border-navy/8 pt-2.5">
-                      <span className="text-[12px] text-navy/45">
+                    <div className="mt-2.5 flex items-center justify-between gap-3 border-t border-line-soft pt-2.5">
+                      <span className="text-micro text-ink-muted">
                         차시{" "}
                         {session.lessonStatus
                           ? CURRICULUM_STATUS_LABELS[session.lessonStatus]
                           : "—"}
                       </span>
                       {isTerminalSessionStatus(session.status) ? (
-                        <span className="text-[12px] text-navy/40">
+                        <span className="text-micro text-ink-muted">
                           변경 불가
                         </span>
                       ) : (

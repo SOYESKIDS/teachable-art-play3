@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { AppMark } from "@/components/layout/AppMark";
 
 interface StaffNavItem {
   href: string;
@@ -37,16 +38,20 @@ export function StaffShell({
   children,
 }: StaffShellProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-surface-soft">
-      <header className="print:hidden sticky top-0 z-30 border-b border-line-soft bg-white">
-        <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
-          <div className="min-w-0 leading-tight">
-            <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
-              TEACHABLE ART PLAY
-            </p>
-            <p className="truncate text-[14px] font-semibold text-navy">
-              {organizationName}
-              <span className="ml-1.5 text-[12px] font-medium text-navy/45">
+    <div className="flex min-h-screen flex-col bg-ivory">
+      <a href="#main" className="skip-link print:hidden">
+        본문 바로가기
+      </a>
+      <header className="print:hidden sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-4 px-5 py-2.5 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <AppMark className="max-sm:[&>span:last-child]:hidden" />
+            <span aria-hidden="true" className="hidden h-7 w-px bg-line sm:block" />
+            <p className="flex min-w-0 items-center gap-2">
+              <span className="truncate text-label font-bold text-navy">
+                {organizationName}
+              </span>
+              <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-micro font-semibold text-navy">
                 {roleLabel}
               </span>
             </p>
@@ -54,7 +59,7 @@ export function StaffShell({
 
           <div className="flex shrink-0 items-center gap-3">
             {email ? (
-              <span className="hidden max-w-[200px] truncate text-[13px] text-navy/55 lg:inline">
+              <span className="hidden max-w-[220px] truncate text-caption text-ink-muted lg:inline">
                 {email}
               </span>
             ) : null}
@@ -62,27 +67,24 @@ export function StaffShell({
             <form method="post" action="/auth/logout">
               <button
                 type="submit"
-                className="inline-flex min-h-11 items-center rounded-lg border border-line-strong px-3 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/[0.04]"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-control-border/60 bg-white px-3 text-caption font-semibold text-ink transition-colors hover:border-ink-muted hover:bg-bg"
               >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4" />
+                </svg>
                 로그아웃
               </button>
             </form>
           </div>
         </div>
 
-        <nav
-          aria-label="교직원 메뉴"
-          className="print:hidden border-t border-line-soft bg-white"
-        >
+        <nav aria-label="교직원 메뉴" className="print:hidden">
           {/*
             ★ 좁은 화면에서 메뉴가 잘리지 않게 한다.
-              원장 메뉴는 4개(홈 · 수업 운영 · 수업 이력 · 성장 리포트)이고
-              360px 에서 좌우 여백까지 더하면 한 줄을 넘어선다.
-              그래서 좁은 화면에서만 항목 좌우 여백을 줄인다 — 그러면 들어간다.
-              그보다 더 좁은 기기를 위해 overflow-x-auto 를 안전망으로 둔다.
-              nav 안에서만 밀리므로 본문이 가로로 스크롤되는 일은 없다.
+              좁은 화면에서만 항목 좌우 여백을 줄이고, 그보다 더 좁은 기기를 위해
+              overflow-x-auto 를 안전망으로 둔다 — nav 안에서만 밀린다.
           */}
-          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 overflow-x-auto overflow-y-hidden px-5 lg:px-8">
+          <div className="mx-auto flex w-full max-w-[1100px] items-center gap-1 overflow-x-auto overflow-y-hidden px-3 lg:px-6">
             {navItems.map((item) => {
               const isCurrent = item.href === currentHref;
 
@@ -91,10 +93,10 @@ export function StaffShell({
                   key={item.href}
                   href={item.href}
                   aria-current={isCurrent ? "page" : undefined}
-                  className={`-mb-px inline-flex min-h-12 shrink-0 items-center border-b-2 px-2 text-[14px] font-semibold transition-colors sm:px-3 ${
+                  className={`relative inline-flex min-h-12 shrink-0 items-center px-2.5 text-label font-semibold transition-colors after:absolute after:inset-x-2.5 after:bottom-0 after:h-[3px] after:rounded-t-full after:transition-colors sm:px-3 sm:after:inset-x-3 ${
                     isCurrent
-                      ? "border-navy text-navy"
-                      : "border-transparent text-navy/45 hover:text-navy/70"
+                      ? "text-navy after:bg-accent"
+                      : "text-ink-muted after:bg-transparent hover:text-navy hover:after:bg-line-strong"
                   }`}
                 >
                   {item.label}
@@ -105,7 +107,11 @@ export function StaffShell({
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-[1100px] flex-1 px-5 py-6 lg:px-8 lg:py-8">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-[1100px] flex-1 px-5 py-7 focus:outline-none lg:px-8 lg:py-10"
+      >
         {children}
       </main>
     </div>

@@ -35,12 +35,12 @@ test("A11Y-2: HQ nav · filter bars · dialog buttons keep 44px targets", () => 
   for (const f of ["src/app/admin/(dashboard)/leads/LeadFilterBar.tsx", "src/app/admin/(dashboard)/organizations/OrganizationFilterBar.tsx"]) {
     const src = read(f);
     assert.doesNotMatch(src, /"h-10 /, `${f}: h-10 control`);
-    assert.match(src, /inline-flex min-h-11 (min-w-11 )?items-center (justify-center )?text-\[12px\]/, `${f}: reset link`);
+    assert.match(src, /inline-flex min-h-11 (min-w-11 )?items-center (justify-center )?text-(\[12px\]|micro)/, `${f}: reset link`);
   }
   for (const f of [...walk("src/app/admin"), "src/components/admin/AdminOperationsDashboard.tsx"]) {
     const src = read(f);
-    assert.doesNotMatch(src, /"rounded-lg bg-navy px-4 py-2\.5 text-\[13px\]/, `${f}: primary button without min-h-11`);
-    assert.doesNotMatch(src, /(className="|link: ")text-\[13px\] font-semibold text-trust-blue transition-opacity/, `${f}: text action without min-h-11`);
+    assert.doesNotMatch(src, /"rounded-lg bg-navy px-4 py-2\.5 text-(\[13px\]|caption)/, `${f}: primary button without min-h-11`);
+    assert.doesNotMatch(src, /(className="|link: ")text-(\[13px\]|caption) font-semibold text-trust-blue transition-opacity/, `${f}: text action without min-h-11`);
   }
 });
 

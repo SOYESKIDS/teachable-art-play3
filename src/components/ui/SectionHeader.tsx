@@ -31,16 +31,21 @@ export function SectionHeader({
 
   return (
     <div
-      className={`flex flex-col gap-3 ${isCenter ? "mx-auto items-center text-center" : "items-start text-left"} ${className}`}
+      className={`flex flex-col gap-4 ${isCenter ? "mx-auto items-center text-center" : "items-start text-left"} ${className}`}
     >
-      {eyebrow && <p className="eyebrow text-trust-blue">{eyebrow}</p>}
+      {eyebrow && (
+        <p className="eyebrow inline-flex items-center gap-2.5 text-accent-strong">
+          <span aria-hidden="true" className="h-px w-6 bg-accent" />
+          {eyebrow}
+        </p>
+      )}
 
       <h2 className="max-w-3xl whitespace-pre-line text-h2 font-bold text-navy">
         {headline}
       </h2>
 
       {subCopy && (
-        <p className="measure whitespace-pre-line text-lead text-navy/65">
+        <p className="measure whitespace-pre-line text-lead text-ink-muted">
           {subCopy}
         </p>
       )}

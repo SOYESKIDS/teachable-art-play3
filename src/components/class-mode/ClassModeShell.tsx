@@ -39,16 +39,16 @@ export function ClassModeShell({
       <header className="sticky top-0 z-30 border-b border-hairline bg-white">
         <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4 px-5 py-3">
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-ink-muted">
+            <p className="text-label font-semibold text-ink-muted">
               {phaseLabel}
               {className ? ` · ${className}` : ""}
               {order ? ` · ${order}` : ""}
             </p>
-            <p className="truncate text-[19px] font-bold text-ink">{lessonTitle ?? "차시 정보 없음"}</p>
+            <p className="truncate text-title-sm font-bold text-ink">{lessonTitle ?? "차시 정보 없음"}</p>
           </div>
           <Link
             href={exitHref}
-            className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-control-border bg-white px-4 text-[16px] font-semibold text-ink hover:bg-brand-ivory"
+            className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-control-border bg-white px-4 text-body font-semibold text-ink hover:bg-brand-ivory"
           >
             나가기
           </Link>

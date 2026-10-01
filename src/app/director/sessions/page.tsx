@@ -8,6 +8,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { TodaySessionBoardView } from "@/components/staff/TodaySessionBoard";
+import { ClassTodayStatus } from "@/components/staff/ClassTodayStatus";
 import { directorNavFor } from "../nav";
 
 export const metadata: Metadata = {
@@ -85,10 +86,16 @@ export default async function DirectorSessionsPage({
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions"
     >
-      <h1 className="text-[22px] font-bold text-navy">수업 운영</h1>
-      <p className="mt-1 text-[14px] tabular-nums text-navy/55">
+      <h1 className="text-headline font-bold text-navy">수업 운영</h1>
+      <p className="mt-1 text-label tabular-nums text-ink-muted">
         {formatToday(today)} · 기관 전체
       </p>
+
+      {result.ok ? (
+        <div className="mt-5">
+          <ClassTodayStatus board={board} />
+        </div>
+      ) : null}
 
       <div className="mt-5">
         <TodaySessionBoardView

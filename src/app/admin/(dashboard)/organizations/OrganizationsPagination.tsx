@@ -13,10 +13,10 @@ interface OrganizationsPaginationProps {
 }
 
 const linkClasses =
-  "flex h-9 min-w-9 items-center justify-center rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5";
+  "flex h-11 min-w-11 items-center justify-center rounded-lg border border-line-strong bg-white px-3 text-caption font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5";
 
 const disabledClasses =
-  "flex h-9 min-w-9 items-center justify-center rounded-lg border border-navy/10 bg-navy/[0.03] px-3 text-[13px] font-semibold text-navy/30";
+  "flex h-11 min-w-11 items-center justify-center rounded-lg border border-line bg-navy/[0.03] px-3 text-caption font-semibold text-navy/30";
 
 function visiblePages(page: number, pageCount: number): number[] {
   const start = Math.max(1, Math.min(page - 2, pageCount - 4));
@@ -44,7 +44,7 @@ export function OrganizationsPagination({
       aria-label="기관 목록 페이지"
       className="flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
-      <p className="text-[12px] text-navy/50 tabular-nums">
+      <p className="text-micro text-ink-muted tabular-nums">
         총 {total.toLocaleString("ko-KR")}곳 중{" "}
         {firstIndex.toLocaleString("ko-KR")}–{lastIndex.toLocaleString("ko-KR")}곳
       </p>
@@ -68,7 +68,7 @@ export function OrganizationsPagination({
               <span
                 key={current}
                 aria-current="page"
-                className="flex h-9 min-w-9 items-center justify-center rounded-lg border border-navy bg-navy px-3 text-[13px] font-semibold text-white tabular-nums"
+                className="flex h-11 min-w-11 items-center justify-center rounded-lg border border-navy bg-navy px-3 text-caption font-semibold text-white tabular-nums"
               >
                 {current}
               </span>

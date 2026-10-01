@@ -52,7 +52,7 @@ export default async function DirectorProgramSummaryPage({ params, searchParams 
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/growth-reports"
     >
-      <Link href={`/director/growth-reports/weekly/${reportId}${orgQuery}`} className="text-[14px] font-semibold text-brand-navy underline print:hidden">
+      <Link href={`/director/growth-reports/weekly/${reportId}${orgQuery}`} className="text-label font-semibold text-brand-navy underline print:hidden">
         ← 주간 리포트로
       </Link>
       <div className="mt-3">

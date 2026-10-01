@@ -29,7 +29,7 @@ export function OrganizationEditForm({
 
       <div className="flex flex-col gap-1.5">
         <label
-          className="text-[12px] font-semibold text-navy/60"
+          className="text-micro font-semibold text-ink-muted"
           htmlFor="organization-name"
         >
           기관명 <span className="text-trust-blue">*</span>
@@ -42,13 +42,13 @@ export function OrganizationEditForm({
           maxLength={100}
           disabled={isPending}
           defaultValue={organization.name}
-          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
+          className="h-11 rounded-lg border border-line-strong bg-white px-3 text-label text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <label
-          className="text-[12px] font-semibold text-navy/60"
+          className="text-micro font-semibold text-ink-muted"
           htmlFor="organization-type"
         >
           기관 유형
@@ -58,7 +58,7 @@ export function OrganizationEditForm({
           name="institution_type"
           disabled={isPending}
           defaultValue={organization.institution_type ?? ""}
-          className="h-11 rounded-lg border border-navy/15 bg-white px-3 text-[14px] text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
+          className="h-11 rounded-lg border border-line-strong bg-white px-3 text-label text-navy transition-colors focus:border-trust-blue disabled:opacity-60"
         >
           <option value="">미지정</option>
           {INSTITUTION_TYPES.map((type) => (
@@ -72,7 +72,7 @@ export function OrganizationEditForm({
       {state.message ? (
         <p
           role="alert"
-          className={`rounded-lg border px-3 py-2 text-[13px] ${
+          className={`rounded-lg border px-3 py-2 text-caption ${
             state.phase === "error"
               ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
               : "border-soft-green/50 bg-soft-green/15 text-navy"
@@ -86,9 +86,9 @@ export function OrganizationEditForm({
         <button
           type="submit"
           disabled={isPending}
-          className="h-11 rounded-lg bg-navy px-6 text-[14px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-11 rounded-lg bg-navy px-6 text-label font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? "저장 중…" : "저장"}
+          {isPending ? "저장 중…" : "기관 정보 저장"}
         </button>
       </div>
     </form>

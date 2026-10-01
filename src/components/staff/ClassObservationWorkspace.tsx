@@ -135,7 +135,7 @@ export function ClassObservationWorkspace({
 
   if (children.length === 0) {
     return (
-      <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+      <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
         이 반에 관찰할 원아가 없습니다. 원아 등록은 원에서 관리합니다.
       </p>
     );
@@ -226,7 +226,7 @@ export function ClassObservationWorkspace({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[15px] font-semibold text-ink">
+        <p className="text-body-sm font-semibold text-ink">
           관찰 완료 {completeCount} / 출석 {presentCount}
         </p>
         <a href={backHref} className={appButtonGhost}>
@@ -255,11 +255,11 @@ export function ClassObservationWorkspace({
                     current ? "border-brand-navy bg-brand-sky" : "border-hairline bg-white"
                   }`}
                 >
-                  <span className="text-[15px] font-semibold text-ink">
+                  <span className="text-body-sm font-semibold text-ink">
                     {item.childName ?? "이름 없음"}
                     {dirty ? " *" : ""}
                   </span>
-                  <span className="text-[13px] text-ink-muted">{statusLabel(item)}</span>
+                  <span className="text-caption text-ink-muted">{statusLabel(item)}</span>
                 </button>
               </li>
             );
@@ -269,10 +269,10 @@ export function ClassObservationWorkspace({
 
       <section aria-labelledby="child-heading" className="flex flex-col gap-5 rounded-2xl border border-hairline bg-white p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="child-heading" className="text-[22px] font-bold text-ink">
+          <h2 id="child-heading" className="text-title-lg font-bold text-ink">
             {child.childName ?? "이름 없음"}
           </h2>
-          <span className="text-[14px] font-semibold text-ink-muted">{statusLabel(child)}</span>
+          <span className="text-label font-semibold text-ink-muted">{statusLabel(child)}</span>
         </div>
 
         {legacy ? (
@@ -280,20 +280,20 @@ export function ClassObservationWorkspace({
             <p className={noticeWarning}>이전 형식 관찰 기록입니다. 이 화면에서는 읽기만 할 수 있습니다.</p>
             <div>
               <p className={fieldLabel}>교사 관찰</p>
-              <p className="mt-1 whitespace-pre-line text-[16px] text-ink">{child.teacherNote ?? "—"}</p>
+              <p className="mt-1 whitespace-pre-line text-body text-ink">{child.teacherNote ?? "—"}</p>
             </div>
             <div>
               <p className={fieldLabel}>아이의 말</p>
-              <p className="mt-1 whitespace-pre-line text-[16px] text-ink">{child.childVoice ?? "—"}</p>
+              <p className="mt-1 whitespace-pre-line text-body text-ink">{child.childVoice ?? "—"}</p>
             </div>
           </div>
         ) : (
           <>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor={`note-${child.childId}`} className="text-[17px] font-bold text-ink">
+              <label htmlFor={`note-${child.childId}`} className="text-body-lg font-bold text-ink">
                 교사 관찰
               </label>
-              <p id={`note-help-${child.childId}`} className="text-[14px] text-ink-muted">
+              <p id={`note-help-${child.childId}`} className="text-label text-ink-muted">
                 관찰한 장면을 사실 그대로 적어 주세요.
               </p>
               <textarea
@@ -303,15 +303,15 @@ export function ClassObservationWorkspace({
                 disabled={!editable}
                 aria-describedby={`note-help-${child.childId}`}
                 onChange={(event) => update({ teacherNote: event.target.value })}
-                className={`${fieldTextarea} min-h-[140px] text-[16px]`}
+                className={`${fieldTextarea} min-h-[140px] text-body`}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor={`voice-${child.childId}`} className="text-[17px] font-bold text-ink">
+              <label htmlFor={`voice-${child.childId}`} className="text-body-lg font-bold text-ink">
                 아이의 말
               </label>
-              <p id={`voice-help-${child.childId}`} className="text-[14px] text-ink-muted">
+              <p id={`voice-help-${child.childId}`} className="text-label text-ink-muted">
                 아이가 실제로 한 말만 그대로 적어 주세요. 없으면 비워 두세요.
               </p>
               <textarea
@@ -321,7 +321,7 @@ export function ClassObservationWorkspace({
                 disabled={!editable}
                 aria-describedby={`voice-help-${child.childId}`}
                 onChange={(event) => update({ childVoice: event.target.value })}
-                className={`${fieldTextarea} min-h-[88px] text-[16px]`}
+                className={`${fieldTextarea} min-h-[88px] text-body`}
               />
             </div>
 
@@ -357,7 +357,7 @@ export function ClassObservationWorkspace({
 
         {conflictCopy ? (
           <div className="flex flex-col gap-2 rounded-xl border border-warning-soft bg-warning-soft p-4">
-            <p className="text-[14px] font-semibold text-warning-text">내 입력 (복사해서 다시 쓸 수 있습니다)</p>
+            <p className="text-label font-semibold text-warning-text">내 입력 (복사해서 다시 쓸 수 있습니다)</p>
             <textarea
               readOnly
               aria-label="충돌 전 내 교사 관찰 입력"
@@ -402,11 +402,11 @@ export function ClassObservationWorkspace({
       <Dialog open={finishOpen} onClose={() => setFinishOpen(false)} title="관찰 마무리">
         <div className="flex flex-col gap-4">
           {incompletePresent > 0 ? (
-            <p className="text-[15px] leading-relaxed text-ink">
+            <p className="text-body-sm leading-relaxed text-ink">
               미작성 {incompletePresent}명의 관찰은 작성 중으로 남습니다. 나중에 이어서 작성할 수 있습니다.
             </p>
           ) : (
-            <p className="text-[15px] leading-relaxed text-ink">출석한 아이의 관찰을 모두 완료했습니다.</p>
+            <p className="text-body-sm leading-relaxed text-ink">출석한 아이의 관찰을 모두 완료했습니다.</p>
           )}
           {dirtyCount > 0 ? (
             <p className={noticeWarning}>

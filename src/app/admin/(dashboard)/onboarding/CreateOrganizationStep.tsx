@@ -23,7 +23,7 @@ export function CreateOrganizationStep() {
   );
 
   const inputClass =
-    "min-h-11 w-full rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
+    "min-h-11 w-full rounded-lg border border-line-strong bg-white px-3 py-2.5 text-label text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
 
   return (
     <SectionCard
@@ -35,7 +35,7 @@ export function CreateOrganizationStep() {
         <input type="hidden" name="next" value="onboarding" />
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="org-name" className="text-[12px] font-semibold text-navy/60">
+          <label htmlFor="org-name" className="text-micro font-semibold text-ink-muted">
             기관명
           </label>
           <input
@@ -50,7 +50,7 @@ export function CreateOrganizationStep() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="org-type" className="text-[12px] font-semibold text-navy/60">
+          <label htmlFor="org-type" className="text-micro font-semibold text-ink-muted">
             기관 유형
           </label>
           <select id="org-type" name="institution_type" defaultValue="kindergarten" className={inputClass}>
@@ -65,7 +65,7 @@ export function CreateOrganizationStep() {
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-navy px-4 text-[13px] font-bold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-navy px-4 text-caption font-bold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pending ? "등록 중..." : "기관 등록하고 계속"}
           </button>
@@ -75,7 +75,7 @@ export function CreateOrganizationStep() {
       {result.phase === "error" && result.message ? (
         <p
           role="status"
-          className="mt-3 rounded-lg border border-navy/20 bg-surface-soft px-3 py-2 text-[13px] leading-relaxed text-navy/75"
+          className="mt-3 rounded-lg border border-line-strong bg-surface-soft px-3 py-2 text-caption leading-relaxed text-navy/75"
         >
           확인 필요 · {result.message}
         </p>

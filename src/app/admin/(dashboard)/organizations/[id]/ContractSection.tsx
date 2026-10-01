@@ -30,7 +30,7 @@ import {
 const IDLE: ContractActionState = { phase: "idle", message: null };
 
 const fieldClass =
-  "min-h-11 w-full rounded-lg border border-control-border bg-white px-3 text-[14px] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy";
+  "min-h-11 w-full rounded-lg border border-control-border bg-white px-3 text-label text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy";
 
 const READINESS_LABELS: Record<string, string> = {
   contract: "계약 · 기관 상태",
@@ -112,13 +112,13 @@ export function ContractSection({ organizationId, today, contracts, versions, cl
   const [createOpen, setCreateOpen] = useState(false);
 
   return (
-    <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2" aria-labelledby="contract-section-title">
+    <section className="rounded-xl border border-line bg-white p-5 lg:col-span-2" aria-labelledby="contract-section-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="contract-section-title" className="text-[15px] font-bold text-navy">
+          <h2 id="contract-section-title" className="text-body-sm font-bold text-navy">
             계약 · 이용권
           </h2>
-          <p className="mt-1 text-[12px] text-ink-muted">
+          <p className="mt-1 text-micro text-ink-muted">
             계약은 초안으로 만든 뒤 준비 상태가 모두 충족되면 활성화합니다. 결제 · 청구는 이 화면에서 다루지 않습니다.
           </p>
         </div>
@@ -130,7 +130,7 @@ export function ContractSection({ organizationId, today, contracts, versions, cl
       {hasError ? (
         <p className={`mt-4 ${noticeDanger}`}>계약 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
       ) : contracts.length === 0 ? (
-        <p className="mt-4 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center text-[14px] text-ink-muted">
+        <p className="mt-4 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center text-label text-ink-muted">
           등록된 계약이 없습니다. 계약이 없으면 이 기관은 수업 · 리포트 기능을 쓸 수 없습니다.
         </p>
       ) : (
@@ -171,7 +171,7 @@ function CreateContractDialog({
       ) : (
         <form action={formAction} className="flex flex-col gap-3">
           <input type="hidden" name="organizationId" value={organizationId} />
-          <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+          <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
             상품 버전
             <select name="productVersionId" required className={fieldClass} defaultValue="">
               <option value="" disabled>
@@ -185,11 +185,11 @@ function CreateContractDialog({
             </select>
           </label>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+            <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
               이용 시작일
               <input type="date" name="startDate" required className={fieldClass} />
             </label>
-            <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+            <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
               이용 종료일
               <input type="date" name="endDate" required className={fieldClass} />
             </label>
@@ -230,28 +230,28 @@ function ContractCard({
   const capacity = contract.childrenPerClass;
 
   return (
-    <li className="rounded-lg border border-navy/10 p-4">
+    <li className="rounded-lg border border-line p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[15px] font-bold text-ink">
+          <p className="text-body-sm font-bold text-ink">
             {contract.productName ?? "상품 정보 없음"}
-            {contract.versionLabel ? <span className="ml-1 text-[13px] font-medium text-ink-muted">({contract.versionLabel})</span> : null}
+            {contract.versionLabel ? <span className="ml-1 text-caption font-medium text-ink-muted">({contract.versionLabel})</span> : null}
           </p>
-          <p className="text-[13px] text-ink-muted">
+          <p className="text-caption text-ink-muted">
             {formatDotDate(contract.startDate)} ~ {formatDotDate(contract.endDate)}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-          <span className="rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-ink">
+        <div className="flex flex-wrap items-center gap-2 text-micro font-semibold">
+          <span className="rounded-md border border-line-strong bg-surface-soft px-2 py-0.5 text-ink">
             계약 {CONTRACT_STATUS_LABELS[contract.status]}
           </span>
-          <span className="rounded-md border border-navy/15 bg-white px-2 py-0.5 text-ink-muted">
+          <span className="rounded-md border border-line-strong bg-white px-2 py-0.5 text-ink-muted">
             기간 {contractPeriodLabel(contract.startDate, contract.endDate, today)}
           </span>
         </div>
       </div>
 
-      <dl className="mt-3 grid gap-1 text-[13px] text-ink sm:grid-cols-3">
+      <dl className="mt-3 grid gap-1 text-caption text-ink sm:grid-cols-3">
         <div>
           <dt className="inline text-ink-muted">약속 week </dt>
           <dd className="inline">{contract.weekFrom !== null && contract.weekTo !== null ? `${contract.weekFrom}~${contract.weekTo}` : "—"}</dd>
@@ -265,7 +265,7 @@ function ContractCard({
           <dd className="inline">{contract.maxClasses ?? "제한 없음"}</dd>
         </div>
       </dl>
-      <p className="mt-1 text-[13px] leading-relaxed text-ink">
+      <p className="mt-1 text-caption leading-relaxed text-ink">
         <span className="text-ink-muted">포함 기능 </span>
         {contract.features.length > 0
           ? contract.features
@@ -278,27 +278,27 @@ function ContractCard({
               .join(" · ")
           : "없음"}
       </p>
-      <p className="mt-1 text-[12px] text-ink-muted">실제 이용 가능 여부는 계약 상태 · 이용 기간 · 반 범위 · 기능 출시 상태로 서버가 판정합니다.</p>
+      <p className="mt-1 text-micro text-ink-muted">실제 이용 가능 여부는 계약 상태 · 이용 기간 · 반 범위 · 기능 출시 상태로 서버가 판정합니다.</p>
 
-      {contract.statusReason ? <p className="mt-2 text-[13px] text-ink-muted">최근 변경 사유: {contract.statusReason}</p> : null}
+      {contract.statusReason ? <p className="mt-2 text-caption text-ink-muted">최근 변경 사유: {contract.statusReason}</p> : null}
 
       <div className="mt-4">
-        <h3 className="text-[13px] font-bold text-ink">계약 반 범위</h3>
+        <h3 className="text-caption font-bold text-ink">계약 반 범위</h3>
         {contract.classes.length === 0 ? (
-          <p className="mt-1 text-[13px] text-ink-muted">범위에 포함된 반이 없습니다.</p>
+          <p className="mt-1 text-caption text-ink-muted">범위에 포함된 반이 없습니다.</p>
         ) : (
           <ul className="mt-2 flex flex-col gap-1.5">
             {contract.classes.map((item) => {
               const over = capacity !== null && item.activeChildren > capacity;
               return (
-                <li key={item.contractClassId} className="flex flex-wrap items-center justify-between gap-2 text-[14px] text-ink">
+                <li key={item.contractClassId} className="flex flex-wrap items-center justify-between gap-2 text-label text-ink">
                   <span>
                     {item.className}
-                    <span className="ml-2 text-[13px] text-ink-muted">
+                    <span className="ml-2 text-caption text-ink-muted">
                       재원 {item.activeChildren}명{capacity !== null ? ` / 기준 ${capacity}명` : ""}
                     </span>
                     {over ? (
-                      <span className="ml-2 text-[12px] font-semibold text-warning-text">
+                      <span className="ml-2 text-micro font-semibold text-warning-text">
                         {contract.offerType === "pilot" ? "Pilot 정원 초과 · 활성화 불가" : "기준 인원 초과 · 초과분은 기록만 됩니다"}
                       </span>
                     ) : null}
@@ -306,7 +306,7 @@ function ContractCard({
                   {editableScope ? (
                     <form action={removeContractClassAction}>
                       <input type="hidden" name="contractClassId" value={item.contractClassId} />
-                      <button type="submit" className="min-h-11 rounded-lg px-3 text-[13px] font-semibold text-danger hover:bg-danger-soft">
+                      <button type="submit" className="min-h-11 rounded-lg px-3 text-caption font-semibold text-danger hover:bg-danger-soft">
                         범위에서 제외
                       </button>
                     </form>
@@ -321,7 +321,7 @@ function ContractCard({
           <form action={addAction} className="mt-3 flex flex-wrap items-end gap-2">
             <input type="hidden" name="organizationId" value={organizationId} />
             <input type="hidden" name="contractId" value={contract.id} />
-            <label className="flex min-w-[200px] flex-1 flex-col gap-1 text-[13px] font-semibold text-ink">
+            <label className="flex min-w-[200px] flex-1 flex-col gap-1 text-caption font-semibold text-ink">
               반 추가
               <select name="classId" required defaultValue="" className={fieldClass}>
                 <option value="" disabled>
@@ -346,14 +346,14 @@ function ContractCard({
 
       {contract.readiness ? (
         <div className="mt-4">
-          <h3 className="text-[13px] font-bold text-ink">
+          <h3 className="text-caption font-bold text-ink">
             준비 상태 {contract.readiness.ready ? "· 모두 충족" : "· 미충족 항목 있음"}
           </h3>
           <ul className="mt-2 flex flex-col gap-1">
             {contract.readiness.items.map((item) => {
               const detail = readinessDetail(item);
               return (
-                <li key={item.code} className="text-[13px] leading-relaxed">
+                <li key={item.code} className="text-caption leading-relaxed">
                   <span className={item.ok ? "font-semibold text-success-text" : "font-semibold text-danger"}>
                     {item.ok ? "충족" : "미충족"}
                   </span>
@@ -368,7 +368,7 @@ function ContractCard({
           </ul>
         </div>
       ) : contract.status === "draft" || contract.status === "active" ? (
-        <p className="mt-4 text-[13px] text-ink-muted">준비 상태를 불러오지 못했습니다.</p>
+        <p className="mt-4 text-caption text-ink-muted">준비 상태를 불러오지 못했습니다.</p>
       ) : null}
 
       <div className="mt-4 flex flex-wrap justify-end gap-2">
@@ -473,7 +473,7 @@ function StatusDialog({
         <input type="hidden" name="contractId" value={contract.id} />
         <input type="hidden" name="status" value={target ?? ""} />
         <input type="hidden" name="expectedUpdatedAt" value={contract.updatedAt} />
-        <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+        <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
           사유 (필수)
           <textarea name="reason" required maxLength={500} rows={3} className={`${fieldClass} py-2`} />
         </label>

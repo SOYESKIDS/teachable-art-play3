@@ -35,11 +35,11 @@ export function LessonSectionEditor({
   const missing = REQUIRED_LESSON_SECTIONS.filter((code) => !sections[code]);
 
   return (
-    <section className="mt-6 rounded-xl border border-navy/10 bg-white p-5" aria-labelledby="lesson-sections-title">
-      <h2 id="lesson-sections-title" className="text-[15px] font-bold text-navy">
+    <section className="mt-6 rounded-xl border border-line bg-white p-5" aria-labelledby="lesson-sections-title">
+      <h2 id="lesson-sections-title" className="text-body-sm font-bold text-navy">
         수업 섹션
       </h2>
-      <p className="mt-1 text-[12px] text-ink-muted">
+      <p className="mt-1 text-micro text-ink-muted">
         필수 섹션이 모두 채워지고 차시가 게시되어야 Class Mode · 계약 준비 상태에서 &quot;준비됨&quot;으로 판정됩니다. 섹션이 있다고 검수가 끝난 것은 아닙니다.
       </p>
 
@@ -52,7 +52,7 @@ export function LessonSectionEditor({
       )}
 
       {!editable ? (
-        <p className="mt-3 text-[13px] text-ink-muted">게시 중이거나 보관된 차시는 섹션을 수정할 수 없습니다. 수정하려면 차시를 초안으로 되돌려 주세요.</p>
+        <p className="mt-3 text-caption text-ink-muted">게시 중이거나 보관된 차시는 섹션을 수정할 수 없습니다. 수정하려면 차시를 초안으로 되돌려 주세요.</p>
       ) : null}
 
       <div className="mt-4 flex flex-col gap-4">
@@ -92,16 +92,16 @@ function SectionForm({
   const sourceId = `section-${code}-source`;
 
   return (
-    <form action={formAction} className="rounded-lg border border-navy/10 p-4">
+    <form action={formAction} className="rounded-lg border border-line p-4">
       <input type="hidden" name="programId" value={programId} />
       <input type="hidden" name="lessonId" value={lessonId} />
       <input type="hidden" name="sectionCode" value={code} />
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label htmlFor={bodyId} className="text-[14px] font-semibold text-ink">
+        <label htmlFor={bodyId} className="text-label font-semibold text-ink">
           {LESSON_SECTION_LABELS[code]}
-          {required ? <span className="ml-2 text-[12px] font-semibold text-danger">필수</span> : null}
+          {required ? <span className="ml-2 text-micro font-semibold text-danger">필수</span> : null}
         </label>
-        <span className="text-[12px] text-ink-muted">{value ? "작성됨" : "비어 있음"}</span>
+        <span className="text-micro text-ink-muted">{value ? "작성됨" : "비어 있음"}</span>
       </div>
       <textarea
         id={bodyId}
@@ -110,9 +110,9 @@ function SectionForm({
         readOnly={!editable}
         maxLength={10000}
         rows={value ? 5 : 2}
-        className="mt-2 w-full rounded-lg border border-control-border px-3 py-2 text-[14px] leading-relaxed text-ink read-only:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+        className="mt-2 w-full rounded-lg border border-control-border px-3 py-2 text-label leading-relaxed text-ink read-only:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
       />
-      <label htmlFor={sourceId} className="mt-2 block text-[12px] font-semibold text-ink-muted">
+      <label htmlFor={sourceId} className="mt-2 block text-micro font-semibold text-ink-muted">
         원본 출처 메모 (선택 · 파일 · 페이지)
       </label>
       <input
@@ -121,14 +121,14 @@ function SectionForm({
         defaultValue={value?.sourceRef ?? ""}
         readOnly={!editable}
         maxLength={300}
-        className="mt-1 min-h-11 w-full rounded-lg border border-control-border px-3 text-[14px] text-ink read-only:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+        className="mt-1 min-h-11 w-full rounded-lg border border-control-border px-3 text-label text-ink read-only:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
       />
       {editable ? (
         <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
           {state.phase !== "idle" && state.message ? (
             <p
               role={state.phase === "error" ? "alert" : "status"}
-              className={state.phase === "error" ? noticeDanger : "text-[13px] font-semibold text-success-text"}
+              className={state.phase === "error" ? noticeDanger : "text-caption font-semibold text-success-text"}
             >
               {state.message}
             </p>

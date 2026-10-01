@@ -75,7 +75,7 @@ export function LeadFormDialog() {
           type="button"
           onClick={closeLeadForm}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-navy/50 transition-colors hover:bg-navy/5 hover:text-navy"
+          className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-navy/5 hover:text-navy"
         >
           <svg
             viewBox="0 0 24 24"

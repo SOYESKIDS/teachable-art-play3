@@ -75,13 +75,13 @@ export function ObservationBoard({
         <div>
           <Link
             href={backHref}
-            className="inline-flex min-h-11 items-center rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-3 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
           >
             ← 수업 목록
           </Link>
         </div>
 
-        <span className="rounded-md border border-navy/15 bg-white px-2.5 py-1 text-[12px] font-bold text-navy">
+        <span className="rounded-md border border-line-strong bg-white px-2.5 py-1 text-micro font-bold text-navy">
           {CLASS_SESSION_STATUS_LABELS[session.status]}
         </span>
       </div>
@@ -91,17 +91,17 @@ export function ObservationBoard({
         수업 정보 카드(h1 포함)로 스크롤될 때 제목 윗부분이 nav 아래로 들어가지 않도록
         그보다 조금 큰 여백(112px)을 둔다. 아래 목록·카드도 같은 값을 쓴다.
       */}
-      <section className="mt-4 scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
-        <p className="text-[13px] font-bold text-navy">
+      <section className="mt-4 scroll-mt-28 rounded-xl border border-line bg-white p-4 sm:p-5">
+        <p className="text-caption font-bold text-navy">
           {session.className ?? "반 정보 없음"}
           {session.classStatus === "archived" ? (
-            <span className="ml-1 font-normal text-navy/45">
+            <span className="ml-1 font-normal text-ink-muted">
               (보관)
             </span>
           ) : null}
         </p>
 
-        <p className="mt-1 text-[12px] text-navy/50">
+        <p className="mt-1 text-micro text-ink-muted">
           {formatLessonOrder(
             session.weekNo,
             session.sessionNo,
@@ -111,11 +111,11 @@ export function ObservationBoard({
             : ""}
         </p>
 
-        <h1 className="mt-1 break-words text-[20px] font-bold leading-snug text-navy">
+        <h1 className="mt-1 break-words text-title font-bold leading-snug text-navy">
           {session.lessonTitle ?? "차시 정보 없음"}
         </h1>
 
-        <p className="mt-2 text-[13px] text-navy/50">
+        <p className="mt-2 text-caption text-ink-muted">
           예정일{" "}
           {formatSessionDate(session.scheduledDate)}
           {session.programCode
@@ -125,7 +125,7 @@ export function ObservationBoard({
       </section>
 
       {sessionReadOnly ? (
-        <p className="mt-4 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+        <p className="mt-4 rounded-xl border border-line-strong bg-navy/5 px-4 py-3 text-caption leading-relaxed text-navy">
           취소된 수업입니다. 이미 남아 있는 관찰기록은 확인만 할 수 있습니다.
         </p>
       ) : null}
@@ -135,22 +135,22 @@ export function ObservationBoard({
         (교사 쪽 배너와 같은 기준 — 배너가 세 개 쌓이면 아무것도 읽지 않게 된다)
       */}
       {directorArchived && !sessionReadOnly ? (
-        <p className="mt-4 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+        <p className="mt-4 rounded-xl border border-line-strong bg-navy/5 px-4 py-3 text-caption leading-relaxed text-navy">
           보관된 반의 관찰기록입니다. 기존 기록을 그대로 조회할 수 있습니다.
         </p>
       ) : null}
 
-      <p className="mt-4 rounded-xl border border-navy/10 bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-navy/60">
+      <p className="mt-4 rounded-xl border border-line bg-white/60 px-4 py-3 text-caption leading-relaxed text-ink-muted">
         관찰기록은 수업을 담당한 교사가 작성합니다. 원장은 조회만 할 수 있습니다.
       </p>
 
       <section className="mt-5 scroll-mt-28">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-[17px] font-bold text-navy">
+            <h2 className="text-body-lg font-bold text-navy">
               원아 관찰기록
             </h2>
-            <p className="mt-1 text-[12px] text-navy/50">
+            <p className="mt-1 text-micro text-ink-muted">
               총 {children.length.toLocaleString("ko-KR")}명
             </p>
           </div>
@@ -179,12 +179,12 @@ export function ObservationBoard({
             ].map((item) => (
               <div
                 key={item.key}
-                className="rounded-lg border border-navy/10 bg-white px-2 py-2 text-center"
+                className="rounded-lg border border-line bg-white px-2 py-2 text-center"
               >
-                <dt className="text-[12px] font-semibold text-navy/55">
+                <dt className="text-micro font-semibold text-ink-muted">
                   {item.label}
                 </dt>
-                <dd className="mt-0.5 text-[15px] font-bold tabular-nums text-navy">
+                <dd className="mt-0.5 text-body-sm font-bold tabular-nums text-navy">
                   {item.value.toLocaleString("ko-KR")}
                 </dd>
               </div>
@@ -193,7 +193,7 @@ export function ObservationBoard({
         ) : null}
 
         {children.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/50">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
             이 수업에 표시할 원아가 없습니다.
           </p>
         ) : (
@@ -243,16 +243,16 @@ function ObservationChildCard({
     : "미작성";
 
   return (
-    <li className="scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4">
+    <li className="scroll-mt-28 rounded-xl border border-line bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="break-words text-[15px] font-bold text-navy">
+          <p className="break-words text-body-sm font-bold text-navy">
             {child.childName ?? "원아 이름 확인 불가"}
           </p>
 
-          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-navy/45">
+          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-micro text-ink-muted">
             {statusLabel ? (
-              <span className="rounded border border-navy/10 px-1.5 py-0.5">
+              <span className="rounded border border-line px-1.5 py-0.5">
                 {statusLabel}
               </span>
             ) : null}
@@ -263,14 +263,14 @@ function ObservationChildCard({
             */}
             {!child.isCurrentClassMember &&
             child.hasExistingObservation ? (
-              <span className="rounded border border-navy/10 px-1.5 py-0.5">
+              <span className="rounded border border-line px-1.5 py-0.5">
                 과거 기록
               </span>
             ) : null}
           </div>
         </div>
 
-        <span className="text-[12px] font-semibold text-navy/50">
+        <span className="text-micro font-semibold text-ink-muted">
           {recordLabel}
         </span>
       </div>
@@ -318,7 +318,7 @@ function ObservationChildReadOnly({
 
   if (!child.hasExistingObservation) {
     return (
-      <p className="mt-3 text-[13px] leading-relaxed text-navy/45">
+      <p className="mt-3 text-caption leading-relaxed text-ink-muted">
         아직 작성된 관찰기록이 없습니다.
       </p>
     );
@@ -327,12 +327,12 @@ function ObservationChildReadOnly({
   return (
     <div className="mt-3 flex flex-col gap-3">
       <div>
-        <p className="text-[11px] font-bold text-navy/55">
+        <p className="text-micro font-bold text-ink-muted">
           관찰영역
         </p>
 
         {child.domainCodes.length === 0 ? (
-          <p className="mt-1 text-[13px] text-navy/45">
+          <p className="mt-1 text-caption text-ink-muted">
             선택된 관찰영역이 없습니다.
           </p>
         ) : (
@@ -344,7 +344,7 @@ function ObservationChildReadOnly({
               return (
                 <li
                   key={code}
-                  className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-[12px] font-semibold text-navy"
+                  className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-micro font-semibold text-navy"
                 >
                   {/*
                     은퇴한 영역도 과거 기록에는 그대로 남는다.
@@ -353,7 +353,7 @@ function ObservationChildReadOnly({
                   */}
                   {domain?.label ?? code}
                   {domain && !domain.isActive ? (
-                    <span className="ml-1 font-normal text-navy/45">
+                    <span className="ml-1 font-normal text-ink-muted">
                       (사용 중지)
                     </span>
                   ) : null}
@@ -365,19 +365,19 @@ function ObservationChildReadOnly({
       </div>
 
       <div>
-        <p className="text-[11px] font-bold text-navy/55">
+        <p className="text-micro font-bold text-ink-muted">
           아이의 말
         </p>
-        <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+        <p className="mt-1 whitespace-pre-wrap break-words text-caption leading-relaxed text-navy">
           {child.childVoice ?? "기록 없음"}
         </p>
       </div>
 
       <div>
-        <p className="text-[11px] font-bold text-navy/55">
+        <p className="text-micro font-bold text-ink-muted">
           교사 관찰
         </p>
-        <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+        <p className="mt-1 whitespace-pre-wrap break-words text-caption leading-relaxed text-navy">
           {child.teacherNote ?? "기록 없음"}
         </p>
       </div>
@@ -387,7 +387,7 @@ function ObservationChildReadOnly({
         (complete만 내용을 요구한다). 빈 카드처럼 보이지 않게 알린다.
       */}
       {!hasText ? (
-        <p className="text-[12px] leading-relaxed text-navy/45">
+        <p className="text-micro leading-relaxed text-ink-muted">
           아직 서술 내용이 입력되지 않은 기록입니다.
         </p>
       ) : null}

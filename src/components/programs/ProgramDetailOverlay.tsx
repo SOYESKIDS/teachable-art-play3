@@ -199,7 +199,7 @@ export function ProgramDetailOverlay({
           <button
             type="button"
             onClick={requestClose}
-            className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-navy/60 transition-colors hover:bg-navy/5 hover:text-navy"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-caption font-semibold text-ink-muted transition-colors hover:bg-navy/5 hover:text-navy"
           >
             <span aria-hidden="true">←</span>
             상품 비교
@@ -207,10 +207,10 @@ export function ProgramDetailOverlay({
 
           <p
             id="program-overlay-title"
-            className="min-w-0 truncate text-[14px] font-bold text-navy"
+            className="min-w-0 truncate text-label font-bold text-navy"
           >
             {product.pkg.name}
-            <span className="ml-1.5 font-medium text-navy/50">
+            <span className="ml-1.5 font-medium text-ink-muted">
               {product.pkg.subtitle}
             </span>
           </p>
@@ -219,7 +219,7 @@ export function ProgramDetailOverlay({
             ref={closeButtonRef}
             type="button"
             onClick={requestClose}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-navy/60 transition-colors hover:bg-navy/5 hover:text-navy"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-navy/5 hover:text-navy"
           >
             <span className="sr-only">상품 상세 닫기</span>
             <svg
@@ -247,7 +247,7 @@ export function ProgramDetailOverlay({
         {/* ── 하단 고정 CTA ─────────────────────────────────────── */}
         <div className="shrink-0 border-t border-line-soft bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:rounded-b-3xl sm:px-6 sm:pb-3">
           <div className="mx-auto flex w-full max-w-[900px] flex-wrap items-center justify-between gap-3">
-            <p className="min-w-0 text-[13px] text-navy/60">
+            <p className="min-w-0 text-caption text-ink-muted">
               <span className="font-bold text-navy">
                 {product.pkg.name} · {product.pkg.durationWeeks}주
               </span>
@@ -264,7 +264,7 @@ export function ProgramDetailOverlay({
             <Link
               href="/#contact"
               onClick={goToConsult}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-yellow px-6 text-[14px] font-bold text-navy transition-colors hover:bg-yellow/90 sm:flex-none"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-navy px-6 text-label font-bold text-white transition-colors hover:bg-primary-hover sm:flex-none"
             >
               {consultLabel(product)}
             </Link>

@@ -58,13 +58,13 @@ export function PublishVersionButton({
           <p className={noticeWarning}>
             공식 확정된 값인지 확인한 뒤 발행해 주세요. 확인되지 않은 값이 있으면 발행하지 않습니다.
           </p>
-          <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+          <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
             확인을 위해 버전 이름 “{versionLabel}”을 입력해 주세요
             <input
               name="confirmLabel"
               autoComplete="off"
               required
-              className="min-h-11 rounded-lg border border-control-border px-3 text-[14px] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+              className="min-h-11 rounded-lg border border-control-border px-3 text-label text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
             />
           </label>
           <Notice state={state} />
@@ -122,14 +122,14 @@ export function CapabilityToggle({
           <input type="hidden" name="code" value={code} />
           <input type="hidden" name="released" value={released ? "false" : "true"} />
           <input type="hidden" name="expectedUpdatedAt" value={expectedUpdatedAt} />
-          <label className="flex flex-col gap-1 text-[13px] font-semibold text-ink">
+          <label className="flex flex-col gap-1 text-caption font-semibold text-ink">
             출시 · 미출시 변경 사유 (필수)
             <textarea
               name="reason"
               required
               maxLength={500}
               rows={3}
-              className="min-h-11 w-full rounded-lg border border-control-border bg-white px-3 py-2 text-[14px] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+              className="min-h-11 w-full rounded-lg border border-control-border bg-white px-3 py-2 text-label text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
             />
           </label>
           <Notice state={state} />

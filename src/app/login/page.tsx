@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthShell } from "@/components/auth/AuthShell";
 import { StaffLoginCard } from "@/components/auth/StaffLoginCard";
 import { resolveLoginNotice } from "./form-state";
 
@@ -28,16 +29,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
-      <div className="w-full max-w-[440px]">
-        <StaffLoginCard
-          title="기관 로그인"
-          description="원장님과 선생님을 위한 기관 운영 공간입니다."
-          initialError={resolveLoginNotice(params.error)}
-          idPrefix="login"
-          footnote="계정은 SOYESKIDS 담당자의 초대로 발급됩니다."
-        />
-      </div>
-    </main>
+    <AuthShell>
+      <StaffLoginCard
+        title="기관 로그인"
+        description="원장님과 선생님을 위한 기관 운영 공간입니다."
+        initialError={resolveLoginNotice(params.error)}
+        idPrefix="login"
+        footnote="계정은 SOYESKIDS 담당자의 초대로 발급됩니다."
+      />
+    </AuthShell>
   );
 }

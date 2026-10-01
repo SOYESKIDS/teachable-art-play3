@@ -66,13 +66,13 @@ export default async function ProductsPage() {
 
   return (
     <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
-      <h1 className="text-[22px] font-bold text-navy">상품 · 기능</h1>
-      <p className="mt-1 text-[13px] text-ink-muted">
+      <h1 className="text-headline font-bold text-navy">상품 · 기능</h1>
+      <p className="mt-1 text-caption text-ink-muted">
         계약은 발행된 상품 버전으로만 만들 수 있습니다. 발행한 버전은 수정할 수 없으며, 변경이 필요하면 새 버전을 만듭니다.
       </p>
 
       {failed ? (
-        <p className="mt-6 rounded-lg border border-danger/20 bg-danger-soft px-4 py-6 text-center text-[14px] text-danger">
+        <p className="mt-6 rounded-lg border border-danger/20 bg-danger-soft px-4 py-6 text-center text-label text-danger">
           상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
         </p>
       ) : (
@@ -81,23 +81,23 @@ export default async function ProductsPage() {
             {products.map((product) => {
               const productVersions = versions.filter((version) => version.product_id === product.id);
               return (
-                <article key={product.id} className="rounded-xl border border-navy/10 bg-white p-5">
-                  <h2 className="text-[16px] font-bold text-ink">
+                <article key={product.id} className="rounded-xl border border-line bg-white p-5">
+                  <h2 className="text-body font-bold text-ink">
                     {product.display_name}
-                    <span className="ml-2 text-[12px] font-medium text-ink-muted">
+                    <span className="ml-2 text-micro font-medium text-ink-muted">
                       {product.offer_type === "pilot" ? "Pilot" : "정규"}
                     </span>
                   </h2>
                   {productVersions.length === 0 ? (
-                    <p className="mt-2 text-[13px] text-ink-muted">등록된 버전이 없습니다.</p>
+                    <p className="mt-2 text-caption text-ink-muted">등록된 버전이 없습니다.</p>
                   ) : (
                     <ul className="mt-3 flex flex-col gap-3">
                       {productVersions.map((version) => (
-                        <li key={version.id} className="rounded-lg border border-navy/10 p-4">
+                        <li key={version.id} className="rounded-lg border border-line p-4">
                           <div className="flex flex-wrap items-center justify-between gap-2">
-                            <p className="text-[14px] font-semibold text-ink">
+                            <p className="text-label font-semibold text-ink">
                               {version.version_label}
-                              <span className="ml-2 rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[12px] font-semibold text-ink">
+                              <span className="ml-2 rounded-md border border-line-strong bg-surface-soft px-2 py-0.5 text-micro font-semibold text-ink">
                                 {PRODUCT_VERSION_LIFECYCLE_LABELS[version.lifecycle]}
                               </span>
                             </p>
@@ -110,7 +110,7 @@ export default async function ProductsPage() {
                               />
                             ) : null}
                           </div>
-                          <dl className="mt-2 grid gap-1 text-[13px] text-ink sm:grid-cols-3">
+                          <dl className="mt-2 grid gap-1 text-caption text-ink sm:grid-cols-3">
                             <div>
                               <dt className="inline text-ink-muted">약속 week </dt>
                               <dd className="inline">
@@ -126,7 +126,7 @@ export default async function ProductsPage() {
                               <dd className="inline">{version.max_classes ?? "제한 없음"}</dd>
                             </div>
                           </dl>
-                          <p className="mt-2 text-[13px] leading-relaxed text-ink">
+                          <p className="mt-2 text-caption leading-relaxed text-ink">
                             <span className="text-ink-muted">포함 기능 </span>
                             {(version.product_version_features ?? []).map(featureText).join(" · ") || "없음"}
                           </p>
@@ -139,19 +139,19 @@ export default async function ProductsPage() {
             })}
           </section>
 
-          <section className="mt-8 rounded-xl border border-navy/10 bg-white p-5" aria-labelledby="capability-title">
-            <h2 id="capability-title" className="text-[16px] font-bold text-ink">
+          <section className="mt-8 rounded-xl border border-line bg-white p-5" aria-labelledby="capability-title">
+            <h2 id="capability-title" className="text-body font-bold text-ink">
               플랫폼 기능 출시 상태
             </h2>
-            <p className="mt-1 text-[13px] text-ink-muted">
+            <p className="mt-1 text-caption text-ink-muted">
               계약 활성화 · 정지 후 재개는 상품에 포함된 기능이 모두 출시된 경우에만 가능합니다(그 시점 판정). 정책 결정 대기 기능은 이 화면에서 출시할 수 없습니다. 출시 · 미출시 변경은 사유와 함께 기록됩니다.
             </p>
             <ul className="mt-3 flex flex-col divide-y divide-navy/8">
               {capabilities.map((capability) => (
                 <li key={capability.code} className="flex flex-wrap items-center justify-between gap-2 py-3">
                   <div className="min-w-0">
-                    <p className="text-[14px] font-semibold text-ink">{FEATURE_LABELS[capability.code] ?? capability.code}</p>
-                    <p className="text-[12px] text-ink-muted">
+                    <p className="text-label font-semibold text-ink">{FEATURE_LABELS[capability.code] ?? capability.code}</p>
+                    <p className="text-micro text-ink-muted">
                       {capability.blocked_by.length > 0
                         ? `결정 대기: ${capability.blocked_by.join(", ")}`
                         : capability.is_released

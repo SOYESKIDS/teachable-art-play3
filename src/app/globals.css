@@ -1,112 +1,43 @@
 @import "tailwindcss";
 
 /*
- * TeachAble Art Play — Design System V2
- * Warm Premium EdTech · Editorial · Calm
+ * TeachAble Art Play — Design System V3 "Warm Atelier"
+ * Warm Premium Education SaaS (DEC-109) · Pretendard · WCAG 2.2 AA baseline (DEC-110)
  *
  * ─────────────────────────────────────────────────────────────────
- * V2 에서 무엇을 바꿨고, 무엇을 일부러 두었는가
+ * V3 에서 바꾼 것
  *
- * 감사 결과 실제로 흔들리던 것은 색이 아니라 **타이포와 선**이었다.
- *   · 제목 크기가 21가지 (text-[15px] ~ text-[4.25rem], Tailwind 스케일과 혼용)
- *   · 테두리 투명도가 10가지 (navy/8 · /10 · /12 · /15 · /20 · /25 · /30 · /35 · /40 · /45)
- *   · eyebrow 자간이 10가지 (tracking-wide · [0.06em] ~ [0.28em])
- *   · 본문이 12~13px 에 몰려 있어(594곳) 마케팅 화면까지 "관리자 화면"처럼 보였다
+ *   1. 팔레트를 하나로 합쳤다.
+ *      V2 까지는 마케팅(navy #152e4f · yellow) 과 운영 화면(brand-navy #142b4a)
+ *      두 팔레트가 나란히 있었다. 이제 기존 이름(navy · ivory · trust-blue …)도
+ *      모두 DEC-109 값을 가리킨다. 이름은 그대로라 1,800곳이 한 번에 같은 색이 된다.
  *
- * 그래서 V2 의 중심은 **타입 스케일과 선 체계**다.
- * 색 토큰(--color-navy · --color-yellow …)은 이미 잘 잡혀 있어 그대로 둔다 —
- * 이름을 바꾸면 500곳이 한꺼번에 흔들리고, 얻는 것은 이름뿐이다.
+ *   2. Yellow 를 없앴다 (DEC-109 "Yellow는 Target token이 아니다").
+ *      강조는 Coral(accent), 긍정 · 보조는 Green(secondary), 주의는 warning 토큰.
+ *      흰 바탕 위 yellow 글자(1.9:1)처럼 읽을 수 없던 조합이 함께 사라진다.
  *
- * ★ clamp 의 양 끝을 기존 값에 맞췄다.
- *   display 는 모바일 36px · 데스크톱 68px 로, 지금 Hero 가 쓰던
- *   2.25rem ~ 4.25rem 와 같다. 중간 구간만 매끄러워지고 양 끝은 그대로다 —
- *   그래서 이 스케일을 넣는 것만으로는 어느 화면도 갑자기 달라지지 않는다.
+ *   3. 의미 토큰을 만들었다 — primary · secondary · accent · neutral · bg · surface ·
+ *      muted · border · success · warning · error · info. 새 코드는 이 이름을 쓴다.
  *
- * ★ 앱 화면(admin · director · teacher)의 조밀한 12~13px 은 낮추지 않았다.
- *   운영 콘솔은 한 화면에 많이 보여야 하고, 그 밀도는 의도된 것이다.
- *   타입 스케일은 마케팅·상품·포털 화면에 적용한다.
+ *   4. 타입 스케일을 역할로 나눴다.
+ *      마케팅: display · h1 · h2 · h3 · lead  (V2 보다 한 단계 차분하게)
+ *      앱:     headline · title · body · label · caption · micro
+ *      11px 이하 글자는 없다 — 가장 작은 글자는 micro 12px.
+ *
+ *   5. 그림자는 띄우는 것(dialog · popover · 떠 있는 카드)에만. 카드는 선으로 구분한다.
+ *
+ * 색 대비는 WCAG 상대 휘도 공식으로 계산했다 (흰 바탕 기준, 괄호 안은 다른 바탕).
+ *   navy 14.3 · ink 12.6 · ink-muted 5.80 · info-text 7.9 · success-text 5.24 ·
+ *   accent-strong 5.14 · danger 6.57 · warning-text on warning-soft 5.90 ·
+ *   accent-on-dark on navy 7.0 · control-border 3.08 (UI 경계, 1.4.11)
+ *   brand-green 3.99 · brand-coral 3.15 → 큰 글씨 · 장식 · 아이콘에만.
  * ─────────────────────────────────────────────────────────────────
  */
 :root {
-  --background: #fbf8f1;
-  --foreground: #152e4f;
+  --background: #f8f5ee;
+  --foreground: #142b4a;
 
-  /* ── Brand core ─────────────────────────────────────────────── */
-  --color-navy: #152e4f;
-  --color-navy-deep: #102744;
-  --color-yellow: #f3ba18;
-  --color-yellow-soft: #fff7d9;
-  --color-trust-blue: #2d70c7;
-  --color-ivory: #fbf8f1;
-
-  /* Secondary (제한적으로만 사용) */
-  --color-light-blue: #a8c5e8; /* 교사 */
-  --color-soft-coral: #f0a98c; /* 학부모 */
-  --color-soft-green: #8fc9a9; /* 아이 · 활동 */
-  --color-pale-yellow: #fce9ae; /* BEST / 추천 */
-
-  /* ── Surface ────────────────────────────────────────────────── */
-  --color-surface: #ffffff;
-  --color-surface-soft: #f6f3ec;
-  /* 흰 카드가 흰 배경 위에 놓일 때 쓰는 아주 옅은 온기 */
-  --color-surface-warm: #faf7f0;
-
-  /*
-   * ── Line ──────────────────────────────────────────────────────
-   * 지금까지 테두리 투명도가 10가지였다. 세 단계면 충분하다.
-   *   soft   : 같은 면 안의 구분선(표 행, 목록 구분)
-   *   default: 카드의 바깥 테두리
-   *   strong : 눌리는 것(버튼 외곽선)
-   * navy 를 그대로 옅게 쓴다 — 회색을 새로 들이면 따뜻한 바탕과 어긋난다.
-   */
-  --color-line-soft: rgba(21, 46, 79, 0.08);
-  --color-line: rgba(21, 46, 79, 0.12);
-  --color-line-strong: rgba(21, 46, 79, 0.2);
-
-  /* 어두운 면(navy 섹션) 위에서 쓰는 선 */
-  --color-line-inverse: rgba(255, 255, 255, 0.14);
-
-  /* ── Shadow ─────────────────────────────────────────────────── */
-  /* 고급스러움을 그림자로 만들지 않는다. 네 단계에서 늘리지 않는다. */
-  --shadow-soft: 0 1px 2px rgba(21, 46, 79, 0.05);
-  --shadow-card: 0 6px 20px rgba(21, 46, 79, 0.08);
-  --shadow-elevated: 0 20px 48px rgba(21, 46, 79, 0.14);
-  --shadow-cta: 0 8px 20px rgba(243, 186, 24, 0.35);
-
-  /* ── Radius ─────────────────────────────────────────────────── */
-  /*
-   * lg 이상은 기존 값을 그대로 둔다 — 450곳 넘게 쓰이고 있어
-   * 여기서 바꾸면 그것만으로 사이트 전체가 달라진다.
-   * 손대는 것은 md 하나뿐이다(6px → 8px). 배지·작은 칩이 4px·6px·12px 로
-   * 세 갈래였던 것을 한 칸 좁힌다.
-   */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
-  --radius-3xl: 28px;
-  --radius-4xl: 32px;
-  --radius-card: 20px;
-
-  /* ── Container ──────────────────────────────────────────────── */
-  --container-marketing: 1280px; /* 마케팅 — 넓은 시각 구성 */
-  --container-app: 1200px; /* 운영 화면 */
-  --container-reading: 68ch; /* 긴 본문 한 줄 길이 */
-
-  /* ── Motion ─────────────────────────────────────────────────── */
-  --motion-fast: 120ms;
-  --motion-base: 200ms;
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-
-  --header-height: 72px;
-
-  /*
-   * ── PHASE 06 Target palette (DEC-109) ─────────────────────────
-   * Warm Premium Education SaaS. 운영 화면(teacher · director · HQ · parent)
-   * 부터 이 토큰을 쓴다. 마케팅의 기존 yellow 는 PHASE 07 마지막 단계에서 정리.
-   * Yellow 는 Target token 이 아니다. Coral 은 오류 색이 아니다.
-   */
+  /* ── Brand core (DEC-109 Target) ────────────────────────────── */
   --color-brand-navy: #142b4a;
   --color-brand-green: #2f8f6b;
   --color-brand-coral: #f1644b;
@@ -116,53 +47,118 @@
   --color-ink: #263238;
   --color-hairline: #e7e9ec;
 
-  /*
-   * Semantic — WCAG 대비 공식으로 측정 (implementation-status §Design 참고)
-   *   ink-muted 5.80:1 · success-text 5.24:1 · accent-text 5.14:1 ·
-   *   danger 6.57:1 · warning-text on warning-soft 5.90:1 ·
-   *   info-text on sky 7.13:1 · control-border 3.08:1 (UI 경계)
-   * brand-green(3.99:1) · brand-coral(3.15:1)은 본문 글자에 쓰지 않는다.
-   */
+  /* ── Legacy names → DEC-109 values (이름 유지 · 값 통일) ──────── */
+  --color-navy: #142b4a;
+  --color-navy-deep: #0e2039;
+  --color-ivory: #f8f5ee;
+  /* 링크 · 정보 · focus. 흰 바탕 6.4:1 */
+  --color-trust-blue: #245c99;
+  --color-light-blue: #b9d3ea; /* 교사 (장식 전용) */
+  --color-soft-coral: #f6b4a6; /* 학부모 (장식 전용) */
+  --color-soft-green: #9fd2b9; /* 아이 · 활동 (장식 전용) */
+
+  /* ── Semantic: primary / secondary / accent ─────────────────── */
+  --color-primary: #142b4a;
+  --color-primary-hover: #1d3a60;
+  --color-primary-active: #0e2039;
+  --color-primary-soft: #e9eef5;
+  --color-on-primary: #ffffff;
+
+  --color-secondary: #2f8f6b;
+  --color-secondary-strong: #257a5a;
+  --color-secondary-soft: #edf7f2;
+
+  --color-accent: #f1644b;
+  --color-accent-strong: #c2412b;
+  --color-accent-soft: #fdefea;
+  --color-accent-on-dark: #ffab98;
+
+  /* ── Neutral / surfaces ─────────────────────────────────────── */
+  --color-bg: #f8f5ee;
+  --color-surface: #ffffff;
+  /* 섹션 리듬용 두 번째 바탕 — ivory 와 눈으로 구분된다 */
+  --color-surface-soft: #f2eee5;
+  --color-surface-warm: #fbf9f4;
+  --color-muted: #f3f4f6;
   --color-ink-muted: #5b6770;
+  --color-ink-subtle: #77818a; /* 4.0:1 — 18px 이상 · 비활성 표시에만 */
+  --color-border: #e7e9ec;
+  --color-border-strong: #d3d8de;
   --color-control-border: #8a949e;
+
+  /*
+   * navy 를 옅게 쓴 선. 따뜻한 바탕 위에서 회색보다 덜 차갑다.
+   *   soft   : 같은 면 안의 구분선 · default : 카드 바깥 · strong : 눌리는 것의 외곽선
+   */
+  --color-line-soft: rgba(20, 43, 74, 0.07);
+  --color-line: rgba(20, 43, 74, 0.12);
+  --color-line-strong: rgba(20, 43, 74, 0.22);
+  --color-line-inverse: rgba(255, 255, 255, 0.16);
+
+  /* ── Status ─────────────────────────────────────────────────── */
+  --color-success: #2f8f6b;
   --color-success-text: #257a5a;
-  --color-accent-text: #c2412b;
-  --color-danger: #b42318;
-  --color-danger-soft: #fdecea;
+  --color-success-soft: #edf7f2;
+  --color-success-border: #b8dfcb;
+
+  --color-warning: #b26b00;
   --color-warning-text: #8a5300;
   --color-warning-soft: #fff6e5;
+  --color-warning-border: #f0d4a2;
+
+  --color-danger: #b42318;
+  --color-danger-hover: #8f1c13;
+  --color-danger-soft: #fdecea;
+  --color-danger-border: #f4c4bf;
+
+  --color-info: #245c99;
   --color-info-text: #1d5487;
+  --color-info-soft: #edf5fa;
+  --color-info-border: #c3d9ec;
+
+  --color-accent-text: #c2412b;
+
+  /* ── Shadow — 떠 있는 것에만 ────────────────────────────────── */
+  --shadow-soft: 0 1px 2px rgba(20, 43, 74, 0.05);
+  --shadow-card: 0 1px 2px rgba(20, 43, 74, 0.04), 0 8px 24px -8px rgba(20, 43, 74, 0.1);
+  --shadow-elevated: 0 2px 6px rgba(20, 43, 74, 0.06), 0 24px 48px -12px rgba(20, 43, 74, 0.18);
+  --shadow-cta: 0 1px 2px rgba(20, 43, 74, 0.08), 0 8px 20px -6px rgba(20, 43, 74, 0.35);
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  /* control 10 · card 16 · section panel 20 · sheet 24 · pill = chip · 마케팅 CTA */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+  --radius-card: 18px;
+
+  /* ── Container ──────────────────────────────────────────────── */
+  --container-marketing: 1280px; /* 좌우 여백을 빼면 본문 1200px */
+  --container-app: 1200px;
+  --container-reading: 68ch;
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --header-height: 68px;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --header-height: 80px;
+    --header-height: 76px;
   }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
-  --color-navy: var(--color-navy);
-  --color-navy-deep: var(--color-navy-deep);
-  --color-yellow: var(--color-yellow);
-  --color-yellow-soft: var(--color-yellow-soft);
-  --color-trust-blue: var(--color-trust-blue);
-  --color-ivory: var(--color-ivory);
-  --color-light-blue: var(--color-light-blue);
-  --color-soft-coral: var(--color-soft-coral);
-  --color-soft-green: var(--color-soft-green);
-  --color-pale-yellow: var(--color-pale-yellow);
-  --color-surface: var(--color-surface);
-  --color-surface-soft: var(--color-surface-soft);
-  --color-surface-warm: var(--color-surface-warm);
-
-  /* border-line / border-line-soft / border-line-strong 로 쓴다 */
-  --color-line: var(--color-line);
-  --color-line-soft: var(--color-line-soft);
-  --color-line-strong: var(--color-line-strong);
-  --color-line-inverse: var(--color-line-inverse);
 
   --color-brand-navy: var(--color-brand-navy);
   --color-brand-green: var(--color-brand-green);
@@ -172,20 +168,65 @@
   --color-brand-sky: var(--color-brand-sky);
   --color-ink: var(--color-ink);
   --color-hairline: var(--color-hairline);
+
+  --color-navy: var(--color-navy);
+  --color-navy-deep: var(--color-navy-deep);
+  --color-ivory: var(--color-ivory);
+  --color-trust-blue: var(--color-trust-blue);
+  --color-light-blue: var(--color-light-blue);
+  --color-soft-coral: var(--color-soft-coral);
+  --color-soft-green: var(--color-soft-green);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-on-primary: var(--color-on-primary);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-strong: var(--color-secondary-strong);
+  --color-secondary-soft: var(--color-secondary-soft);
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-accent-on-dark: var(--color-accent-on-dark);
+
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-soft: var(--color-surface-soft);
+  --color-surface-warm: var(--color-surface-warm);
+  --color-muted: var(--color-muted);
   --color-ink-muted: var(--color-ink-muted);
+  --color-ink-subtle: var(--color-ink-subtle);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
   --color-control-border: var(--color-control-border);
+
+  --color-line: var(--color-line);
+  --color-line-soft: var(--color-line-soft);
+  --color-line-strong: var(--color-line-strong);
+  --color-line-inverse: var(--color-line-inverse);
+
+  --color-success: var(--color-success);
   --color-success-text: var(--color-success-text);
-  --color-accent-text: var(--color-accent-text);
-  --color-danger: var(--color-danger);
-  --color-danger-soft: var(--color-danger-soft);
+  --color-success-soft: var(--color-success-soft);
+  --color-success-border: var(--color-success-border);
+  --color-warning: var(--color-warning);
   --color-warning-text: var(--color-warning-text);
   --color-warning-soft: var(--color-warning-soft);
+  --color-warning-border: var(--color-warning-border);
+  --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-danger-border: var(--color-danger-border);
+  --color-info: var(--color-info);
   --color-info-text: var(--color-info-text);
+  --color-info-soft: var(--color-info-soft);
+  --color-info-border: var(--color-info-border);
+  --color-accent-text: var(--color-accent-text);
 
   --font-sans: var(--font-pretendard);
-  --radius-card: var(--radius-card);
 
-  /* Tailwind 기본 radius scale을 재정의 — rounded-md/lg/xl/2xl/3xl/4xl 에 즉시 반영된다 */
+  --radius-card: var(--radius-card);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
@@ -194,67 +235,151 @@
   --radius-3xl: var(--radius-3xl);
   --radius-4xl: var(--radius-4xl);
 
+  /* shadow-soft · shadow-card · shadow-elevated · shadow-cta */
+  --shadow-soft: var(--shadow-soft);
+  --shadow-card: var(--shadow-card);
+  --shadow-elevated: var(--shadow-elevated);
+  --shadow-cta: var(--shadow-cta);
+
+  --ease-standard: var(--ease-standard);
+  --ease-out-soft: var(--ease-out);
+
   /*
-   * ── Type scale ───────────────────────────────────────────────
-   * clamp 의 양 끝이 지금 쓰이는 값과 같다. 중간만 매끄러워진다.
-   *   display 36 → 68px   (Hero)
-   *   h1      32 → 52px
-   *   h2      32 → 56px   (섹션 제목 — 기존 2rem ~ 3.5rem 과 동일)
-   *   h3      20 → 26px
-   *   lead    17 → 20px   (제목 아래 안내문)
-   * 본문 이하는 흔들릴 이유가 없어 고정값이다.
+   * ── Marketing type scale ─────────────────────────────────────
+   *   display 34 → 60px   Hero 한 곳
+   *   h1      30 → 44px   페이지 제목 (상품 상세 · 법적 고지)
+   *   h2      28 → 42px   섹션 제목
+   *   h3      19 → 24px   카드 · 블록 제목
+   *   lead    17 → 19px   제목 아래 안내문
+   * 한글은 자간을 좁히고(-0.02 ~ -0.035em) 행간을 영문보다 넉넉히 둔다.
    */
-  --text-display: clamp(2.25rem, 1.06rem + 5.29vw, 4.25rem);
-  --text-display--line-height: 1.12;
+  --text-display: clamp(2.125rem, 1.36rem + 3.4vw, 3.75rem);
+  --text-display--line-height: 1.16;
   --text-display--letter-spacing: -0.035em;
 
-  --text-h1: clamp(2rem, 1.4rem + 2.67vw, 3.25rem);
-  --text-h1--line-height: 1.18;
+  --text-h1: clamp(1.875rem, 1.44rem + 1.94vw, 2.75rem);
+  --text-h1--line-height: 1.22;
   --text-h1--letter-spacing: -0.03em;
 
-  --text-h2: clamp(2rem, 1.29rem + 3.17vw, 3.5rem);
-  --text-h2--line-height: 1.2;
+  --text-h2: clamp(1.75rem, 1.31rem + 1.94vw, 2.625rem);
+  --text-h2--line-height: 1.26;
   --text-h2--letter-spacing: -0.03em;
 
-  --text-h3: clamp(1.25rem, 1.14rem + 0.5vw, 1.625rem);
-  --text-h3--line-height: 1.3;
+  --text-h3: clamp(1.1875rem, 1.08rem + 0.47vw, 1.5rem);
+  --text-h3--line-height: 1.38;
   --text-h3--letter-spacing: -0.02em;
 
-  --text-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.25rem);
-  --text-lead--line-height: 1.65;
+  --text-lead: clamp(1.0625rem, 1.03rem + 0.14vw, 1.1875rem);
+  --text-lead--line-height: 1.72;
 
+  /*
+   * ── App type scale (고정 · 운영 화면 · 폼 · 표) ───────────────
+   *   headline-lg 28 · headline 24 (앱 페이지 h1) · title-lg 22 ·
+   *   title 20 · title-sm 18 (섹션 h2) · body-lg 17 · body 16 ·
+   *   body-sm 15 (앱 본문 · input) · label 14 (라벨 · 버튼 · 표) ·
+   *   caption 13 (보조 설명) · micro 12 (배지 · 표 머리 — 최소 크기)
+   */
+  --text-headline-lg: 1.75rem;
+  --text-headline-lg--line-height: 1.3;
+  --text-headline-lg--letter-spacing: -0.025em;
+  --text-headline: 1.5rem;
+  --text-headline--line-height: 1.34;
+  --text-headline--letter-spacing: -0.025em;
+  --text-title-lg: 1.375rem;
+  --text-title-lg--line-height: 1.4;
+  --text-title-lg--letter-spacing: -0.02em;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.42;
+  --text-title--letter-spacing: -0.02em;
+  --text-title-sm: 1.125rem;
+  --text-title-sm--line-height: 1.48;
+  --text-title-sm--letter-spacing: -0.015em;
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.72;
   --text-body: 1rem;
-  --text-body--line-height: 1.75;
-
+  --text-body--line-height: 1.72;
+  --text-body-sm: 0.9375rem;
+  --text-body-sm--line-height: 1.66;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.55;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.5;
   --text-meta: 0.8125rem;
-  --text-meta--line-height: 1.6;
+  --text-meta--line-height: 1.55;
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --animate-fade-in: fade-in var(--motion-base) var(--ease-out) both;
+  --animate-rise-in: rise-in var(--motion-slow) var(--ease-out) both;
+  --animate-sheet-in: sheet-in var(--motion-slow) var(--ease-out) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 /*
  * ── Eyebrow ───────────────────────────────────────────────────
- * 섹션 위에 얹는 작은 대문자 라벨. 지금까지 자간이 10가지였다.
- * 한 곳에서 정하고, 색은 쓰는 자리에서 정한다.
+ * 섹션 위 작은 라벨. 자간 · 크기 · 굵기를 한 곳에서 정한다. 색은 쓰는 자리에서.
+ * V2 의 11px 은 한글 · 숫자가 섞이면 흐려져 12px 로 올렸다.
  */
 @utility eyebrow {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* 한글 eyebrow — 한글은 자간을 벌리면 글자가 흩어져 읽힌다. 크기 · 굵기만 eyebrow 와 같게 */
+@utility eyebrow-ko {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0;
   line-height: 1.4;
 }
 
-/*
- * 긴 글 한 줄이 너무 길어지지 않게 한다.
- * 한 줄이 70자를 넘으면 다음 줄 첫 글자를 찾는 데 눈이 걸린다.
- */
+/* 긴 글 한 줄 길이 제한 — 70자를 넘으면 다음 줄 첫 글자를 찾는 데 눈이 걸린다 */
 @utility measure {
   max-width: var(--container-reading);
 }
 
-/*
- * 가로 스크롤 영역의 스크롤바만 시각적으로 감춘다.
- * 스크롤 기능 자체는 그대로이며(overflow 속성을 건드리지 않는다),
- * 적용하는 곳에서는 키보드 접근(tabIndex)을 반드시 함께 보장한다.
- */
+/* 스크롤바만 감춘다. 스크롤 기능 · 키보드 접근(tabIndex)은 쓰는 곳에서 보장한다 */
 @utility scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -264,39 +389,103 @@
   }
 }
 
+/* 숫자 열 정렬 */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Skeleton — 불러오는 동안의 자리 표시. 동작 줄이기에서는 정지한 회색 면이 된다 */
+@utility skeleton {
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/*
+ * Skip link — 키보드 사용자가 반복되는 머리글을 건너뛴다 (WCAG 2.4.1).
+ * 평소에는 화면 밖에 있다가 focus 를 받으면 왼쪽 위에 나타난다.
+ */
+@utility skip-link {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 200;
+  transform: translateY(-160%);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-elevated);
+  transition: transform var(--motion-base) var(--ease-standard);
+
+  &:focus,
+  &:focus-visible {
+    transform: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   /*
    * 앵커 스크롤 여백은 각 <section>의 scroll-mt-[calc(var(--header-height)+16px)] 하나로만 관리한다.
-   * 여기에 scroll-padding-top을 함께 두면 두 값이 합산되어(PC 192px / Mobile 176px)
-   * 앵커 이동 시 섹션이 필요 이상으로 아래로 밀려 하단 문구가 화면 밖으로 잘린다.
+   * 여기에 scroll-padding-top 을 함께 두면 두 값이 합산되어 섹션이 필요 이상으로 밀린다.
    */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   /* 한글 단어(음절) 중간 강제 줄바꿈 방지 — 공백 단위로만 줄바꿈 */
   word-break: keep-all;
   overflow-wrap: break-word;
-  /* 한글 Body Typography 최적값 */
-  letter-spacing: -0.01em;
+  letter-spacing: -0.011em;
   line-height: 1.7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
-/* Premium SaaS 기준 Focus-visible — 장식 때문에 접근성을 희생하지 않는다 */
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: rgba(241, 100, 75, 0.22);
+  color: var(--color-ink);
+}
+
+/* Focus-visible — 모든 바탕(ivory · white · navy)에서 보이도록 두 겹 링 */
 :focus-visible {
   outline: 2px solid var(--color-trust-blue);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* 어두운 면 위에서는 밝은 링 */
+.bg-navy :focus-visible,
+.bg-navy-deep :focus-visible,
+.bg-primary :focus-visible,
+[data-surface="dark"] :focus-visible {
+  outline-color: #ffffff;
 }
 
 /* Card / Button 등 Micro Interaction 공통 Timing */
@@ -305,7 +494,7 @@ h4 {
 }
 
 /*
- * 사용자가 OS에서 "동작 줄이기"를 켠 경우 smooth scroll과 애니메이션을 끈다.
+ * 사용자가 OS 에서 "동작 줄이기"를 켠 경우 smooth scroll 과 애니메이션을 끈다.
  * 앵커 이동 자체는 그대로 동작하고(즉시 이동), scroll-mt 여백도 그대로 적용된다.
  */
 @media (prefers-reduced-motion: reduce) {

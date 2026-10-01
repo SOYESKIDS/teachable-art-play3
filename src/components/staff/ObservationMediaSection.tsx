@@ -209,19 +209,19 @@ export function ObservationMediaSection({
     media.find((item) => item.id === expandedId) ?? null;
 
   return (
-    <section className="mt-4 border-t border-navy/8 pt-4">
+    <section className="mt-4 border-t border-line-soft pt-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-[11px] font-bold text-navy/55">
+        <h3 className="text-micro font-bold text-ink-muted">
           활동 사진
         </h3>
 
-        <span className="text-[11px] tabular-nums text-navy/45">
+        <span className="text-micro tabular-nums text-ink-muted">
           {media.length.toLocaleString("ko-KR")}장
         </span>
       </div>
 
       {media.length === 0 ? (
-        <p className="mt-2 text-[13px] leading-relaxed text-navy/45">
+        <p className="mt-2 text-caption leading-relaxed text-ink-muted">
           등록된 활동 사진이 없습니다.
         </p>
       ) : (
@@ -231,7 +231,7 @@ export function ObservationMediaSection({
             목록 위에 크게 한 장 띄우는 것으로 충분하다.
           */}
           {expanded ? (
-            <div className="mt-2 rounded-lg border border-navy/15 bg-navy/5 p-2">
+            <div className="mt-2 rounded-lg border border-line-strong bg-navy/5 p-2">
               {expanded.signedUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element -- signed URL은 매 요청 새로 발급되는 임시 주소라 next/image의 원격 도메인 최적화 대상이 아니다
                 <img
@@ -240,7 +240,7 @@ export function ObservationMediaSection({
                   className="mx-auto max-h-[70vh] w-auto max-w-full rounded-md"
                 />
               ) : (
-                <p className="px-3 py-8 text-center text-[13px] text-navy/45">
+                <p className="px-3 py-8 text-center text-caption text-ink-muted">
                   사진을 불러오지 못했습니다.
                 </p>
               )}
@@ -277,7 +277,7 @@ export function ObservationMediaSection({
                     )
                   }
                   aria-label={`${altText} 크게 보기`}
-                  className="block aspect-square w-full overflow-hidden rounded-lg border border-navy/15 bg-navy/5 transition-colors hover:border-trust-blue/40"
+                  className="block aspect-square w-full overflow-hidden rounded-lg border border-line-strong bg-navy/5 transition-colors hover:border-trust-blue/40"
                 >
                   {item.signedUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- 위와 같은 이유
@@ -288,7 +288,7 @@ export function ObservationMediaSection({
                       className="size-full object-cover"
                     />
                   ) : (
-                    <span className="flex size-full items-center justify-center px-1 text-center text-[11px] leading-tight text-navy/45">
+                    <span className="flex size-full items-center justify-center px-1 text-center text-micro leading-tight text-ink-muted">
                       불러오지 못함
                     </span>
                   )}
@@ -303,7 +303,7 @@ export function ObservationMediaSection({
         <div className="mt-3">
           <label
             htmlFor={fieldId}
-            className="text-[11px] font-bold text-navy/55"
+            className="text-micro font-bold text-ink-muted"
           >
             사진 추가
           </label>
@@ -314,15 +314,15 @@ export function ObservationMediaSection({
             accept={OBSERVATION_MEDIA_ACCEPT}
             onChange={handleSelect}
             disabled={isUploading}
-            className="mt-1.5 block w-full cursor-pointer rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[13px] text-navy file:mr-3 file:min-h-9 file:cursor-pointer file:rounded-md file:border file:border-navy/20 file:bg-white file:px-3 file:text-[13px] file:font-bold file:text-navy disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-1.5 block w-full cursor-pointer rounded-lg border border-line-strong bg-white px-3 py-2.5 text-caption text-navy file:mr-3 file:min-h-9 file:cursor-pointer file:rounded-md file:border file:border-line-strong file:bg-white file:px-3 file:text-caption file:font-bold file:text-navy disabled:cursor-not-allowed disabled:opacity-60"
           />
 
-          <p className="mt-1 text-[11px] leading-relaxed text-navy/45">
+          <p className="mt-1 text-micro leading-relaxed text-ink-muted">
             JPG · PNG · WEBP, {MAX_MB}MB 이내. 한 번에 한 장씩 올립니다.
           </p>
 
           {file ? (
-            <div className="mt-2 rounded-lg border border-navy/15 bg-white p-2">
+            <div className="mt-2 rounded-lg border border-line-strong bg-white p-2">
               <div className="flex items-center gap-3">
                 {previewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element -- 업로드 전 로컬 미리보기(blob URL)라 최적화 대상이 아니다
@@ -333,7 +333,7 @@ export function ObservationMediaSection({
                   />
                 ) : null}
 
-                <p className="min-w-0 break-all text-[12px] text-navy/60">
+                <p className="min-w-0 break-all text-micro text-ink-muted">
                   {file.name}
                 </p>
               </div>
@@ -343,7 +343,7 @@ export function ObservationMediaSection({
                   type="button"
                   onClick={handleUpload}
                   disabled={isUploading}
-                  className="min-h-12 flex-1 rounded-lg bg-navy px-4 text-[14px] font-bold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-45"
+                  className="min-h-12 flex-1 rounded-lg bg-navy px-4 text-label font-bold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   {isUploading ? "올리는 중..." : "사진 올리기"}
                 </button>
@@ -352,7 +352,7 @@ export function ObservationMediaSection({
                   type="button"
                   onClick={clearSelection}
                   disabled={isUploading}
-                  className="min-h-12 rounded-lg border border-navy/20 bg-white px-4 text-[14px] font-bold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-45"
+                  className="min-h-12 rounded-lg border border-line-strong bg-white px-4 text-label font-bold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   취소
                 </button>
@@ -361,7 +361,7 @@ export function ObservationMediaSection({
           ) : null}
         </div>
       ) : uploadBlockedReason ? (
-        <p className="mt-3 text-[12px] leading-relaxed text-navy/45">
+        <p className="mt-3 text-micro leading-relaxed text-ink-muted">
           {uploadBlockedReason}
         </p>
       ) : null}
@@ -373,7 +373,7 @@ export function ObservationMediaSection({
         busy={isHiding}
       >
         <div className="flex flex-col gap-4">
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             이 사진은 수업 기록과 학부모 공유 화면에서 더 이상 표시되지 않습니다.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row-reverse">
@@ -391,7 +391,7 @@ export function ObservationMediaSection({
         <p
           role={isError ? "alert" : "status"}
           aria-live="polite"
-          className={`mt-2 rounded-lg border px-3 py-2 text-[13px] leading-relaxed ${
+          className={`mt-2 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
             isError
               ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
               : "border-soft-green/50 bg-soft-green/15 text-navy"

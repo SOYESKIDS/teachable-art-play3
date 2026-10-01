@@ -100,7 +100,7 @@ export function StaffLoginForm({
           id={errorId}
           role="alert"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"
+          className="flex items-start gap-2.5 rounded-lg border border-danger-border bg-danger-soft px-4 py-3 text-label font-medium text-danger"
         >
           {message}
         </p>
@@ -109,9 +109,16 @@ export function StaffLoginForm({
       <button
         type="submit"
         disabled={isPending}
-        className="mt-1 h-12 w-full rounded-full bg-navy text-[15px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-navy text-body-sm font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,box-shadow] hover:bg-primary-hover hover:shadow-[var(--shadow-cta)] active:bg-primary-active disabled:cursor-wait disabled:opacity-70"
       >
-        {isPending ? "확인 중…" : "로그인"}
+        {isPending ? (
+          <>
+            <span aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            확인 중…
+          </>
+        ) : (
+          "로그인"
+        )}
       </button>
     </form>
   );

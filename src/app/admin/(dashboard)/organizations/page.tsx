@@ -41,8 +41,8 @@ export default async function AdminOrganizationsPage({
     <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-[22px] font-bold text-navy">기관 관리</h1>
-          <p className="text-[14px] text-navy/55">
+          <h1 className="text-headline font-bold text-navy">기관 관리</h1>
+          <p className="text-label text-ink-muted">
             TeachAble Art Play를 사용하는 유치원 및 교육기관을 관리합니다.
           </p>
         </div>
@@ -53,32 +53,36 @@ export default async function AdminOrganizationsPage({
       </div>
 
       {!listResult.ok || !kpiResult.ok ? (
-        <div className="mt-6 rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <div className="mt-6 rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             기관 데이터를 불러오지 못했습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             잠시 후 다시 시도해주세요.
           </p>
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-5">
-          <dl className="grid grid-cols-3 gap-3">
+          {/* 규모는 한 줄로 작게 — 화면의 주인공은 아래 목록이다 */}
+          <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line-soft">
             {[
-              { label: "전체 기관", value: kpiResult.kpis.total },
-              { label: "운영중", value: kpiResult.kpis.active, accent: true },
-              { label: "이용중지", value: kpiResult.kpis.suspended },
+              { label: "전체 기관", value: kpiResult.kpis.total, warn: false },
+              { label: "운영중", value: kpiResult.kpis.active, warn: false },
+              {
+                label: "이용중지",
+                value: kpiResult.kpis.suspended,
+                warn: kpiResult.kpis.suspended > 0,
+              },
             ].map((item) => (
-              <div
-                key={item.label}
-                className={`rounded-xl border bg-white px-4 py-3.5 ${
-                  item.accent ? "border-yellow/50" : "border-navy/10"
-                }`}
-              >
-                <dt className="text-[11px] font-semibold text-navy/45">
+              <div key={item.label} className="bg-white px-4 py-3">
+                <dt
+                  className={`text-micro font-semibold ${
+                    item.warn ? "text-warning-text" : "text-ink-muted"
+                  }`}
+                >
                   {item.label}
                 </dt>
-                <dd className="mt-1 text-[24px] font-bold tabular-nums text-navy">
+                <dd className="mt-0.5 text-title font-bold tabular-nums text-navy">
                   {item.value.toLocaleString("ko-KR")}
                 </dd>
               </div>
@@ -88,11 +92,11 @@ export default async function AdminOrganizationsPage({
           <OrganizationFilterBar filters={filters} />
 
           {kpiResult.kpis.total === 0 ? (
-            <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-              <p className="text-[15px] font-semibold text-navy">
+            <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+              <p className="text-body-sm font-semibold text-navy">
                 아직 등록된 기관이 없습니다.
               </p>
-              <p className="mt-1.5 text-[13px] text-navy/50">
+              <p className="mt-1.5 text-caption text-ink-muted">
                 첫 기관을 등록해 서비스 운영을 시작하세요.
               </p>
               <div className="mt-5 flex justify-center">
@@ -100,12 +104,12 @@ export default async function AdminOrganizationsPage({
               </div>
             </div>
           ) : listResult.total === 0 ? (
-            <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-              <p className="text-[15px] font-semibold text-navy">
+            <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+              <p className="text-body-sm font-semibold text-navy">
                 조건에 맞는 기관이 없습니다.
               </p>
               {filtered ? (
-                <p className="mt-1.5 text-[13px] text-navy/50">
+                <p className="mt-1.5 text-caption text-ink-muted">
                   검색어나 상태 필터를 조정해보세요.
                 </p>
               ) : null}

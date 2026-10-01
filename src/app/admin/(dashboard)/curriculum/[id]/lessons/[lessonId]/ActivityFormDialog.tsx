@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   ACTIVITY_DESCRIPTION_MAX,
   ACTIVITY_DURATION_MAX,
@@ -32,10 +33,10 @@ interface ActivityFormDialogProps {
 
 const buttonClasses = {
   primary:
-    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep",
+    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-caption font-semibold text-white transition-colors hover:bg-navy-deep",
   outline:
-    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
-  link: "inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70",
+    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-caption font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
+  link: "inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70",
 } as const;
 
 const inputClasses = fieldInput;
@@ -129,17 +130,6 @@ export function ActivityFormDialog({
     CURRICULUM_FORM_INITIAL_STATE,
   );
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsOpen(false);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
   /** 값이 바뀌면 지난 서버 오류는 더 이상 현재 입력을 설명하지 못하므로 감춘다 */
   function updateValue<K extends keyof ActivityFormValues>(
     key: K,
@@ -172,235 +162,204 @@ export function ActivityFormDialog({
         {isEdit ? "수정" : "활동 추가"}
       </button>
 
-      {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-navy/40"
-          />
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={title}
+        description="차시 안에서 진행되는 활동 단위입니다."
+        size="lg"
+        busy={isPending}
+      >
+        <form action={formAction} className="flex flex-col gap-4">
+          <input type="hidden" name="programId" value={programId} />
+          <input type="hidden" name="lessonId" value={lessonId} />
+          {isEdit ? (
+            <input type="hidden" name="activityId" value={activity.id} />
+          ) : null}
 
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="activity-form-title"
-            className="relative max-h-[92vh] w-full max-w-[560px] overflow-y-auto rounded-t-2xl bg-white shadow-[var(--shadow-elevated)] sm:rounded-2xl"
-          >
-            <header className="flex items-start justify-between gap-4 border-b border-navy/10 px-5 py-4">
-              <div className="min-w-0">
-                <h2
-                  id="activity-form-title"
-                  className="text-[17px] font-bold text-navy"
-                >
-                  {title}
-                </h2>
-                <p className="mt-0.5 text-[12px] text-navy/50">
-                  차시 안에서 진행되는 활동 단위입니다.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label={`${title} 닫기`}
-                className="shrink-0 rounded-lg border border-navy/15 px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="text-micro font-semibold text-ink-muted"
+                htmlFor="activity-sequence"
               >
-                닫기
-              </button>
-            </header>
-
-            <form action={formAction} className="flex flex-col gap-4 px-5 py-5">
-              <input type="hidden" name="programId" value={programId} />
-              <input type="hidden" name="lessonId" value={lessonId} />
-              {isEdit ? (
-                <input type="hidden" name="activityId" value={activity.id} />
-              ) : null}
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="text-[12px] font-semibold text-navy/60"
-                    htmlFor="activity-sequence"
-                  >
-                    순서 <span className="text-trust-blue">*</span>
-                  </label>
-                  {/*
-                    min / max를 두지 않는다 (LessonFormDialog R2와 같은 이유).
-                    <input type="number" max="100">에 스피너로 100을 넘기면 브라우저가
-                    값을 조용히 100으로 되돌린다. 100은 유효값이라 서버도 통과시켜
-                    사용자가 넣지 않은 값이 저장된다.
-                    범위 판정은 Server Action 한 곳에서만 하고, 아래 문구로 안내한다.
-                  */}
-                  <input
-                    id="activity-sequence"
-                    name="sequence_no"
-                    type="number"
-                    required
-                    step={1}
-                    inputMode="numeric"
-                    disabled={isPending}
-                    value={values.sequenceNo}
-                    onChange={(event) =>
-                      updateValue("sequenceNo", event.target.value)
-                    }
-                    aria-describedby="activity-sequence-hint"
-                    className={inputClasses}
-                  />
-                  <p
-                    id="activity-sequence-hint"
-                    className="text-[12px] text-navy/45"
-                  >
-                    {SEQUENCE_NO_MIN}~{SEQUENCE_NO_MAX} 사이로 입력합니다. 작은
-                    번호부터 진행됩니다.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="text-[12px] font-semibold text-navy/60"
-                    htmlFor="activity-type"
-                  >
-                    활동 유형 <span className="text-trust-blue">*</span>
-                  </label>
-                  <select
-                    id="activity-type"
-                    name="activity_type"
-                    required
-                    disabled={isPending}
-                    value={values.activityType}
-                    onChange={(event) =>
-                      updateValue("activityType", event.target.value as ActivityType)
-                    }
-                    className={inputClasses}
-                  >
-                    {ACTIVITY_TYPES.map((type) => (
-                      <option key={type} value={type}>
-                        {ACTIVITY_TYPE_LABELS[type]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="activity-title"
-                >
-                  활동명 <span className="text-trust-blue">*</span>
-                </label>
-                <input
-                  id="activity-title"
-                  name="title"
-                  type="text"
-                  required
-                  maxLength={ACTIVITY_TITLE_MAX}
-                  disabled={isPending}
-                  value={values.title}
-                  onChange={(event) => updateValue("title", event.target.value)}
-                  placeholder="예) 선을 따라 걷기"
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="activity-description"
-                >
-                  활동 설명
-                </label>
-                <textarea
-                  id="activity-description"
-                  name="description"
-                  maxLength={ACTIVITY_DESCRIPTION_MAX}
-                  disabled={isPending}
-                  value={values.description}
-                  onChange={(event) =>
-                    updateValue("description", event.target.value)
-                  }
-                  placeholder="교사가 수업에서 그대로 따라 할 수 있도록 진행 방법을 적습니다."
-                  className={textareaClasses}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="activity-materials"
-                >
-                  준비물
-                </label>
-                <textarea
-                  id="activity-materials"
-                  name="materials"
-                  maxLength={ACTIVITY_MATERIALS_MAX}
-                  disabled={isPending}
-                  value={values.materials}
-                  onChange={(event) =>
-                    updateValue("materials", event.target.value)
-                  }
-                  placeholder="예) 마스킹 테이프, 색연필"
-                  className={`${textareaClasses} min-h-[72px]`}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="activity-duration"
-                >
-                  활동 시간(분)
-                </label>
-                {/* sequence_no와 같은 이유로 min / max를 두지 않는다 */}
-                <input
-                  id="activity-duration"
-                  name="duration_minutes"
-                  type="number"
-                  step={1}
-                  inputMode="numeric"
-                  disabled={isPending}
-                  value={values.durationMinutes}
-                  onChange={(event) =>
-                    updateValue("durationMinutes", event.target.value)
-                  }
-                  placeholder="비워두면 미입력"
-                  aria-describedby="activity-duration-hint"
-                  className={inputClasses}
-                />
-                <p
-                  id="activity-duration-hint"
-                  className="text-[12px] text-navy/45"
-                >
-                  {ACTIVITY_DURATION_MIN}~{ACTIVITY_DURATION_MAX}분 사이로
-                  입력하거나 비워둡니다.
-                </p>
-              </div>
-
-              {visibleMessage ? (
-                <p
-                  role="alert"
-                  className={`rounded-lg border px-3 py-2 text-[13px] ${
-                    state.phase === "error"
-                      ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-                      : "border-soft-green/50 bg-soft-green/15 text-navy"
-                  }`}
-                >
-                  {visibleMessage}
-                </p>
-              ) : null}
-
-              <button
-                type="submit"
+                순서 <span className="text-trust-blue">*</span>
+              </label>
+              {/*
+                min / max를 두지 않는다 (LessonFormDialog R2와 같은 이유).
+                <input type="number" max="100">에 스피너로 100을 넘기면 브라우저가
+                값을 조용히 100으로 되돌린다. 100은 유효값이라 서버도 통과시켜
+                사용자가 넣지 않은 값이 저장된다.
+                범위 판정은 Server Action 한 곳에서만 하고, 아래 문구로 안내한다.
+              */}
+              <input
+                id="activity-sequence"
+                name="sequence_no"
+                type="number"
+                required
+                step={1}
+                inputMode="numeric"
                 disabled={isPending}
-                className="mt-1 h-11 rounded-lg bg-navy text-[14px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+                value={values.sequenceNo}
+                onChange={(event) =>
+                  updateValue("sequenceNo", event.target.value)
+                }
+                aria-describedby="activity-sequence-hint"
+                className={inputClasses}
+              />
+              <p
+                id="activity-sequence-hint"
+                className="text-micro text-ink-muted"
               >
-                {isPending ? "저장 중…" : "저장"}
-              </button>
-            </form>
+                {SEQUENCE_NO_MIN}~{SEQUENCE_NO_MAX} 사이로 입력합니다. 작은
+                번호부터 진행됩니다.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="text-micro font-semibold text-ink-muted"
+                htmlFor="activity-type"
+              >
+                활동 유형 <span className="text-trust-blue">*</span>
+              </label>
+              <select
+                id="activity-type"
+                name="activity_type"
+                required
+                disabled={isPending}
+                value={values.activityType}
+                onChange={(event) =>
+                  updateValue("activityType", event.target.value as ActivityType)
+                }
+                className={inputClasses}
+              >
+                {ACTIVITY_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {ACTIVITY_TYPE_LABELS[type]}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
-      ) : null}
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="activity-title"
+            >
+              활동명 <span className="text-trust-blue">*</span>
+            </label>
+            <input
+              id="activity-title"
+              name="title"
+              type="text"
+              required
+              maxLength={ACTIVITY_TITLE_MAX}
+              disabled={isPending}
+              value={values.title}
+              onChange={(event) => updateValue("title", event.target.value)}
+              placeholder="예) 선을 따라 걷기"
+              className={inputClasses}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="activity-description"
+            >
+              활동 설명
+            </label>
+            <textarea
+              id="activity-description"
+              name="description"
+              maxLength={ACTIVITY_DESCRIPTION_MAX}
+              disabled={isPending}
+              value={values.description}
+              onChange={(event) =>
+                updateValue("description", event.target.value)
+              }
+              placeholder="교사가 수업에서 그대로 따라 할 수 있도록 진행 방법을 적습니다."
+              className={textareaClasses}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="activity-materials"
+            >
+              준비물
+            </label>
+            <textarea
+              id="activity-materials"
+              name="materials"
+              maxLength={ACTIVITY_MATERIALS_MAX}
+              disabled={isPending}
+              value={values.materials}
+              onChange={(event) =>
+                updateValue("materials", event.target.value)
+              }
+              placeholder="예) 마스킹 테이프, 색연필"
+              className={`${textareaClasses} min-h-[72px]`}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="activity-duration"
+            >
+              활동 시간(분)
+            </label>
+            {/* sequence_no와 같은 이유로 min / max를 두지 않는다 */}
+            <input
+              id="activity-duration"
+              name="duration_minutes"
+              type="number"
+              step={1}
+              inputMode="numeric"
+              disabled={isPending}
+              value={values.durationMinutes}
+              onChange={(event) =>
+                updateValue("durationMinutes", event.target.value)
+              }
+              placeholder="비워두면 미입력"
+              aria-describedby="activity-duration-hint"
+              className={inputClasses}
+            />
+            <p
+              id="activity-duration-hint"
+              className="text-micro text-ink-muted"
+            >
+              {ACTIVITY_DURATION_MIN}~{ACTIVITY_DURATION_MAX}분 사이로
+              입력하거나 비워둡니다.
+            </p>
+          </div>
+
+          {visibleMessage ? (
+            <p
+              role="alert"
+              className={`rounded-lg border px-3 py-2 text-caption ${
+                state.phase === "error"
+                  ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
+                  : "border-soft-green/50 bg-soft-green/15 text-navy"
+              }`}
+            >
+              {visibleMessage}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="mt-1 h-11 rounded-lg bg-navy text-label font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isPending ? "저장 중…" : "활동 저장"}
+          </button>
+        </form>
+      </Dialog>
     </>
   );
 }

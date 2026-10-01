@@ -41,9 +41,9 @@ interface AssignmentSessionPageProps {
 
 function InfoCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-navy/8 py-3 sm:border-b-0">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="text-[14px] text-navy">{children}</dd>
+    <div className="flex flex-col gap-1 border-b border-line-soft py-3 sm:border-b-0">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="text-label text-navy">{children}</dd>
     </div>
   );
 }
@@ -77,11 +77,11 @@ export default async function AssignmentSessionPage({
   if (!assignmentResult.ok) {
     return (
       <div className="mx-auto w-full max-w-[1100px] px-5 py-8 lg:px-8">
-        <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             배정 정보를 불러오지 못했습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             잠시 후 다시 시도해주세요.
           </p>
         </div>
@@ -143,7 +143,7 @@ export default async function AssignmentSessionPage({
       {/* Breadcrumb — 모바일에서도 줄바꿈되도록 flex-wrap */}
       <nav
         aria-label="이동 경로"
-        className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px]"
+        className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption"
       >
         <Link
           href="/admin/organizations"
@@ -163,26 +163,26 @@ export default async function AssignmentSessionPage({
         <span aria-hidden className="text-navy/30">
           ›
         </span>
-        <span className="text-navy/55">수업 프로그램 운영</span>
+        <span className="text-ink-muted">수업 프로그램 운영</span>
       </nav>
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="text-[22px] font-bold text-navy">
+        <h1 className="text-headline font-bold text-navy">
           {classRow.name} · {program.title}
         </h1>
         <span
-          className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${ASSIGNMENT_STATUS_BADGE_CLASSES[assignment.status]}`}
+          className={`rounded-md border px-2.5 py-1 text-micro font-semibold ${ASSIGNMENT_STATUS_BADGE_CLASSES[assignment.status]}`}
         >
           {ASSIGNMENT_STATUS_LABELS[assignment.status]}
         </span>
       </div>
-      <p className="mt-1 text-[13px] text-navy/50">
+      <p className="mt-1 text-caption text-ink-muted">
         {program.code} · 배정 시작 {formatAssignmentDate(assignment.start_date)}
       </p>
 
       <div className="mt-6 flex flex-col gap-5">
-        <section className="rounded-xl border border-navy/10 bg-white p-5">
-          <h2 className="text-[15px] font-bold text-navy">배정 정보</h2>
+        <section className="rounded-xl border border-line bg-white p-5">
+          <h2 className="text-body-sm font-bold text-navy">배정 정보</h2>
           <dl className="mt-2 grid grid-cols-1 gap-x-6 sm:grid-cols-3 sm:gap-y-4">
             <InfoCell label="기관">{organization.name}</InfoCell>
             <InfoCell label="반">
@@ -192,7 +192,7 @@ export default async function AssignmentSessionPage({
                 classRow.school_year,
               )}
               {classRow.status !== "active" ? (
-                <span className="ml-1.5 text-[12px] text-navy/45">
+                <span className="ml-1.5 text-micro text-ink-muted">
                   ({CLASS_STATUS_LABELS[classRow.status]})
                 </span>
               ) : null}
@@ -201,7 +201,7 @@ export default async function AssignmentSessionPage({
               <span className="inline-flex flex-wrap items-center gap-1.5">
                 {program.title}
                 <span
-                  className={`rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[program.status]}`}
+                  className={`rounded-md border px-2 py-0.5 text-micro font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[program.status]}`}
                 >
                   {CURRICULUM_STATUS_LABELS[program.status]}
                 </span>
@@ -217,7 +217,7 @@ export default async function AssignmentSessionPage({
           </dl>
 
           {isAssignmentTerminal ? (
-            <p className="mt-4 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2 text-[12px] leading-relaxed text-navy/60">
+            <p className="mt-4 rounded-lg border border-line bg-surface-soft px-3 py-2 text-micro leading-relaxed text-ink-muted">
               이 프로그램 배정은 종료되었습니다. 기존 수업 이력을 확인하거나,
               남아 있는 열린 수업을 완료·취소로 정리할 수 있습니다. 새 수업
               일정은 등록할 수 없습니다.
@@ -225,7 +225,7 @@ export default async function AssignmentSessionPage({
           ) : null}
 
           {!isAssignmentTerminal && classRow.status !== "active" ? (
-            <p className="mt-4 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2 text-[12px] leading-relaxed text-navy/60">
+            <p className="mt-4 rounded-lg border border-line bg-surface-soft px-3 py-2 text-micro leading-relaxed text-ink-muted">
               보관된 반입니다. 기존 수업은 완료·취소로 정리할 수 있지만 새 수업은
               등록할 수 없습니다.
             </p>
@@ -234,7 +234,7 @@ export default async function AssignmentSessionPage({
           {!isAssignmentTerminal &&
           classRow.status === "active" &&
           program.status !== "published" ? (
-            <p className="mt-4 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2 text-[12px] leading-relaxed text-navy/60">
+            <p className="mt-4 rounded-lg border border-line bg-surface-soft px-3 py-2 text-micro leading-relaxed text-ink-muted">
               게시 중이 아닌 프로그램입니다. 기존 수업은 정리할 수 있지만 새
               수업은 등록할 수 없습니다.
             </p>

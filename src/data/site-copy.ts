@@ -29,7 +29,7 @@ import type {
 export const brandMessage = {
   mainHeadline: "아이의 놀이를,\n성장 이야기로 기록합니다.",
   subHeadline:
-    "담임교사가 운영하고, 수업 이후의 성장기록까지 남는 8·16·24주 유치원 교육 운영 시스템",
+    "담임교사가 운영하고, 수업 이후의 성장기록까지 이어지는 유치원 통합예술 교육 운영 시스템",
   coreMessage: "활동은 남습니다. 성장은 남지 않습니다.",
 };
 
@@ -367,13 +367,13 @@ export const publicNotice = {
 
 /** 기획서 23번: 헤더 내비게이션 (아직 없는 개별 라우트로 연결하지 않도록 전부 홈페이지 앵커로 구성) */
 export const navigation = [
-  { label: "서비스 소개", href: "#solution" },
-  { label: "프로그램", href: "#program" },
+  { label: "운영 흐름", href: "#solution" },
+  { label: "한 번의 수업", href: "#program" },
+  { label: "8주 프로그램", href: "#journey" },
   { label: "성장기록", href: "#growth-record" },
-  { label: "대시보드", href: "#dashboard" },
-  { label: "상품·가격", href: "#pricing" },
-  { label: "도입안내", href: "#adoption" },
-  { label: "도입문의", href: "#contact" },
+  { label: "상품", href: "#pricing" },
+  { label: "도입 안내", href: "#adoption" },
+  { label: "문의", href: "#contact" },
 ];
 
 /** VALUE Section 전용 카피 */
@@ -921,12 +921,12 @@ export const leadFormCopy = {
   pilot: {
     headline: "4주 파일럿 문의",
     description:
-      "1~2개 반에서 담임교사가 직접 4주를 운영해 보고 결정하는 과정입니다. 4주 후 운영지표를 함께 확인합니다.",
+      "1~2개 반에서 담임교사가 직접 4주를 운영해 보고 결정하는 과정입니다. 운영 조건은 상담 시 안내해 드립니다.",
   },
   demo: {
     headline: "20분 데모 신청",
     description:
-      "교사 화면 · 성장리포트 샘플 · 원장 운영 화면을 20분 안에 직접 확인하실 수 있습니다. 온라인 · 방문 모두 가능합니다.",
+      "교사 수업 화면 · 관찰 기록 흐름 · 원장 운영 화면을 20분 안에 직접 확인하실 수 있습니다. 진행 방식은 담당자가 연락드려 정합니다.",
   },
   consult: {
     headline: "기관 맞춤 도입 상담",
@@ -935,7 +935,7 @@ export const leadFormCopy = {
   purchase_interest: {
     headline: "상품 도입 신청",
     description:
-      "선택하신 상품으로 도입 절차를 진행합니다. 담당자가 확인 후 계약 방법을 안내해 드립니다.",
+      "선택하신 상품을 기준으로 담당자가 견적과 계약 방법을 안내해 드립니다.",
   },
 };
 
@@ -1021,7 +1021,7 @@ export const heroFlowSteps = coreSolutions.map((solution, index) => ({
 export const heroMicroProof = [
   "담임교사 1인 운영",
   "누리과정 연계",
-  "주간·월간·학기 성장기록",
+  "회차별 관찰 · 기록 가이드",
 ];
 
 /** Hero Section 전용 카피 */
@@ -1033,7 +1033,7 @@ export const heroCopy = {
   supportingMessage: brandMessage.coreMessage,
   ctaPrimary: ctaLabels.demo,
   ctaSecondary: ctaLabels.secondary,
-  visualBadge: "원장 대시보드 연동",
+  visualBadge: "실제 수업 현장",
   demoCard: {
     badge: "DEMO · 예시 화면",
     title: "이번 주 성장기록",

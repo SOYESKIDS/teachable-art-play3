@@ -47,9 +47,9 @@ export function WeeklyQueue({ organizationId, assignmentId, weekNo, rows, canWri
       ) : null}
 
       <div className="overflow-x-auto rounded-xl border border-hairline bg-white">
-        <table className="w-full min-w-[520px] border-collapse text-left text-[15px] text-ink">
+        <table className="w-full min-w-[520px] border-collapse text-left text-body-sm text-ink">
           <caption className="sr-only">{weekNo}주 주간 리포트 대기열</caption>
-          <thead className="bg-brand-ivory text-[14px] text-ink-muted">
+          <thead className="bg-brand-ivory text-label text-ink-muted">
             <tr>
               <th scope="col" className="px-4 py-3 font-semibold">원아</th>
               <th scope="col" className="px-4 py-3 font-semibold">상태</th>

@@ -24,8 +24,8 @@ export const ORGANIZATION_STATUS_BADGE_CLASSES: Record<
   OrganizationStatus,
   string
 > = {
-  active: "bg-soft-green/20 text-navy border-soft-green/50",
-  suspended: "bg-navy/5 text-navy/50 border-navy/15",
+  active: "bg-success-soft text-success-text border-success-border",
+  suspended: "bg-muted text-ink-muted border-border-strong",
 };
 
 export function formatInstitutionType(type: InstitutionType | null): string {

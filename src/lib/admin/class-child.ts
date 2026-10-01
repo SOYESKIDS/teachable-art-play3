@@ -54,14 +54,14 @@ export const CHILD_STATUS_LABELS: Record<ChildStatus, string> = {
 };
 
 export const CLASS_STATUS_BADGE_CLASSES: Record<ClassStatus, string> = {
-  active: "bg-soft-green/20 text-navy border-soft-green/50",
-  archived: "bg-navy/5 text-navy/50 border-navy/15",
+  active: "bg-success-soft text-success-text border-success-border",
+  archived: "bg-muted text-ink-muted border-border-strong",
 };
 
 export const CHILD_STATUS_BADGE_CLASSES: Record<ChildStatus, string> = {
-  active: "bg-soft-green/20 text-navy border-soft-green/50",
-  inactive: "bg-navy/5 text-navy/50 border-navy/15",
-  graduated: "bg-light-blue/25 text-navy border-light-blue/60",
+  active: "bg-success-soft text-success-text border-success-border",
+  inactive: "bg-muted text-ink-muted border-border-strong",
+  graduated: "bg-info-soft text-info-text border-info-border",
 };
 
 export function formatAgeGroup(ageGroup: AgeGroup | null): string {

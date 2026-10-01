@@ -7,7 +7,7 @@ interface DemoBadgeProps {
 export function DemoBadge({ label = "DEMO · 예시 화면", className = "" }: DemoBadgeProps) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full bg-navy/[0.07] px-2.5 py-1 text-[10px] font-semibold tracking-wide text-navy/55 ${className}`}
+      className={`inline-flex shrink-0 items-center rounded-full bg-navy/[0.07] px-2.5 py-1 text-micro font-semibold tracking-wide text-ink-muted ${className}`}
     >
       {label}
     </span>

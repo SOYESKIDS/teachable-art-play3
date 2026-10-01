@@ -21,8 +21,8 @@ export function OrganizationPicker({
 }: OrganizationPickerProps) {
   return (
     <div className="mx-auto w-full max-w-[600px] px-5 py-10">
-      <h1 className="text-[22px] font-bold text-navy">기관 선택</h1>
-      <p className="mt-1 text-[14px] text-navy/55">
+      <h1 className="text-headline font-bold text-navy">기관 선택</h1>
+      <p className="mt-1 text-label text-ink-muted">
         소속된 기관이 여러 곳입니다. 수업을 확인할 기관을 선택해주세요.
       </p>
 
@@ -31,12 +31,12 @@ export function OrganizationPicker({
           <li key={membership.organizationId}>
             <Link
               href={`${basePath}?org=${membership.organizationId}`}
-              className="block rounded-xl border border-navy/10 bg-white p-5 transition-colors hover:border-navy/25"
+              className="block rounded-xl border border-line bg-white p-5 transition-colors hover:border-navy/25"
             >
-              <p className="text-[15px] font-bold text-navy">
+              <p className="text-body-sm font-bold text-navy">
                 {membership.organizationName}
               </p>
-              <p className="mt-0.5 text-[12px] text-navy/50">{roleLabel}</p>
+              <p className="mt-0.5 text-micro text-ink-muted">{roleLabel}</p>
             </Link>
           </li>
         ))}

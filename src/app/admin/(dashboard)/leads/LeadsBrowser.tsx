@@ -1,5 +1,6 @@
 "use client";
 
+import { tableCell, tableHeadCell } from "@/components/ui/table";
 import { useState, type KeyboardEvent, type MouseEvent } from "react";
 import {
   LEAD_STATUS_BADGE_CLASSES,
@@ -17,15 +18,14 @@ interface LeadsBrowserProps {
   leads: LeadRow[];
 }
 
-const headerCellClasses =
-  "whitespace-nowrap px-4 py-3 text-[11px] font-semibold tracking-wide text-navy/45";
+const headerCellClasses = tableHeadCell;
 
-const bodyCellClasses = "whitespace-nowrap px-4 py-3 text-navy/75";
+const bodyCellClasses = tableCell;
 
 function StatusBadge({ status }: { status: LeadRow["status"] }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${LEAD_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${LEAD_STATUS_BADGE_CLASSES[status]}`}
     >
       {LEAD_STATUS_LABELS[status]}
     </span>
@@ -57,9 +57,9 @@ export function LeadsBrowser({ leads }: LeadsBrowserProps) {
   return (
     <>
       {/* Desktop Table */}
-      <div className="hidden overflow-x-auto rounded-xl border border-navy/10 bg-white md:block">
-        <table className="w-full min-w-[1040px] border-collapse text-left text-[13px]">
-          <thead className="border-b border-navy/10 bg-surface-soft">
+      <div className="hidden overflow-x-auto rounded-xl border border-line bg-white md:block">
+        <table className="w-full min-w-[1040px] border-collapse text-left text-caption">
+          <thead className="border-b border-line bg-surface-soft">
             <tr>
               <th scope="col" className={headerCellClasses}>
                 접수일
@@ -99,7 +99,7 @@ export function LeadsBrowser({ leads }: LeadsBrowserProps) {
                 aria-label={`${lead.institution_name} 문의 상세 보기`}
                 onClick={() => setSelectedId(lead.id)}
                 onKeyDown={(event) => handleRowKeyDown(event, lead.id)}
-                className="cursor-pointer border-b border-navy/8 transition-colors last:border-b-0 hover:bg-yellow/8 focus-visible:bg-yellow/8"
+                className="cursor-pointer border-b border-line-soft transition-colors last:border-b-0 hover:bg-primary-soft/70 focus-visible:bg-primary-soft/70"
               >
                 <td className={bodyCellClasses}>
                   {formatLeadDate(lead.created_at)}
@@ -109,7 +109,7 @@ export function LeadsBrowser({ leads }: LeadsBrowserProps) {
                 </td>
                 <th
                   scope="row"
-                  className="max-w-[240px] truncate px-4 py-3 text-left text-[14px] font-bold text-navy"
+                  className="max-w-[240px] truncate px-4 py-3 text-left text-label font-bold text-navy"
                 >
                   {lead.institution_name}
                 </th>
@@ -148,20 +148,20 @@ export function LeadsBrowser({ leads }: LeadsBrowserProps) {
             <button
               type="button"
               onClick={() => setSelectedId(lead.id)}
-              className="w-full rounded-xl border border-navy/10 bg-white p-4 text-left transition-colors hover:border-navy/25"
+              className="w-full rounded-xl border border-line bg-white p-4 text-left transition-colors hover:border-navy/25"
             >
               <div className="flex items-start justify-between gap-3">
-                <p className="min-w-0 flex-1 truncate text-[15px] font-bold text-navy">
+                <p className="min-w-0 flex-1 truncate text-body-sm font-bold text-navy">
                   {lead.institution_name}
                 </p>
                 <StatusBadge status={lead.status} />
               </div>
 
-              <p className="mt-1 text-[12px] font-semibold text-trust-blue">
+              <p className="mt-1 text-micro font-semibold text-trust-blue">
                 {SUBMISSION_TYPE_LABELS[lead.submission_type]}
               </p>
 
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-navy/8 pt-3 text-[13px] text-navy/65">
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-line-soft pt-3 text-caption text-navy/65">
                 <span className="truncate">{lead.contact_name}</span>
                 <span className="shrink-0 tabular-nums">
                   {formatLeadDate(lead.created_at)}

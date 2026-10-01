@@ -8,7 +8,7 @@ import { fieldAuth } from "@/components/ui/field";
 
 const fieldClasses = fieldAuth;
 
-const labelClasses = "block text-[13px] font-semibold text-navy/70";
+const labelClasses = "block text-caption font-semibold text-navy/70";
 
 interface LoginFormProps {
   /** 서버에서 전달된 초기 안내 메시지 (예: 권한 없는 세션으로 접근한 경우) */
@@ -67,7 +67,7 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
           id={errorId}
           role="alert"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"
+          className="flex items-start gap-2.5 rounded-lg border border-danger-border bg-danger-soft px-4 py-3 text-label font-medium text-danger"
         >
           {message}
         </p>
@@ -77,7 +77,7 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
         type="submit"
         variant="secondary"
         disabled={isPending}
-        className="mt-1 w-full px-6 text-[15px] font-semibold"
+        className="mt-1 w-full px-6 text-body-sm font-semibold"
       >
         {isPending ? "확인 중…" : "로그인"}
       </Button>

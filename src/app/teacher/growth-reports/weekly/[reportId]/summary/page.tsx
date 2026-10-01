@@ -52,7 +52,7 @@ export default async function TeacherProgramSummaryPage({ params, searchParams }
       navItems={TEACHER_NAV}
       currentHref="/teacher/growth-reports"
     >
-      <Link href={`/teacher/growth-reports/weekly/${reportId}${orgQuery}`} className="text-[14px] font-semibold text-brand-navy underline print:hidden">
+      <Link href={`/teacher/growth-reports/weekly/${reportId}${orgQuery}`} className="text-label font-semibold text-brand-navy underline print:hidden">
         ← 주간 리포트로
       </Link>
       <div className="mt-3">

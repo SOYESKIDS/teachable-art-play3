@@ -83,7 +83,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
     <>
       {/* ───────────────────────────────────────── stepper */}
       <nav aria-label="도입 단계" className="mt-6">
-        <p className="text-[12px] font-semibold text-navy/50">
+        <p className="text-micro font-semibold text-ink-muted">
           {`${TOTAL_STEPS}단계 중 ${doneCount}단계 설정 완료`}
         </p>
 
@@ -99,8 +99,8 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
         */}
         <ol className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
           <li>
-            <div className="flex min-h-12 w-full items-center gap-2 rounded-lg border border-soft-green/50 bg-soft-green/15 px-2.5 text-[13px] font-semibold text-navy">
-              <span aria-hidden className="text-[13px] leading-none">
+            <div className="flex min-h-12 w-full items-center gap-2 rounded-lg border border-soft-green/50 bg-soft-green/15 px-2.5 text-caption font-semibold text-navy">
+              <span aria-hidden className="text-caption leading-none">
                 ✓
               </span>
               <span className="min-w-0 break-keep">기관</span>
@@ -118,17 +118,17 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
                   type="button"
                   onClick={() => setStep(entry.no)}
                   aria-current={isCurrent ? "step" : undefined}
-                  className={`flex min-h-12 w-full items-center gap-2 rounded-lg border px-2.5 text-[13px] font-semibold transition-colors ${
+                  className={`flex min-h-12 w-full items-center gap-2 rounded-lg border px-2.5 text-caption font-semibold transition-colors ${
                     isCurrent
                       ? "border-navy bg-navy text-white"
                       : isDone
                         ? "border-soft-green/50 bg-soft-green/15 text-navy hover:bg-soft-green/25"
-                        : "border-navy/15 bg-white text-navy/55 hover:border-navy/30 hover:text-navy"
+                        : "border-line-strong bg-white text-ink-muted hover:border-navy/30 hover:text-navy"
                   }`}
                 >
                   <span
                     aria-hidden
-                    className="shrink-0 text-[13px] leading-none tabular-nums"
+                    className="shrink-0 text-caption leading-none tabular-nums"
                   >
                     {isDone && !isCurrent ? "✓" : entry.no}
                   </span>
@@ -165,7 +165,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
             type="button"
             onClick={() => setStep((n) => Math.max(2, n - 1))}
             disabled={step <= 2}
-            className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-semibold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-40"
           >
             이전 단계
           </button>
@@ -174,7 +174,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
             type="button"
             onClick={() => setStep((n) => Math.min(7, n + 1))}
             disabled={step >= 7}
-            className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-caption font-semibold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             다음 단계
           </button>
@@ -197,10 +197,10 @@ function Result({
   return (
     <p
       role="status"
-      className={`mt-3 rounded-lg border px-3 py-2 text-[13px] leading-relaxed ${
+      className={`mt-3 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
         phase === "success"
           ? "border-soft-green/50 bg-soft-green/10 text-navy"
-          : "border-navy/20 bg-surface-soft text-navy/75"
+          : "border-line-strong bg-surface-soft text-navy/75"
       }`}
     >
       {phase === "success" ? "완료 · " : "확인 필요 · "}
@@ -210,10 +210,10 @@ function Result({
 }
 
 const inputClass =
-  "min-h-11 w-full rounded-lg border border-navy/15 bg-white px-3 py-2.5 text-[14px] text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
+  "min-h-11 w-full rounded-lg border border-line-strong bg-white px-3 py-2.5 text-label text-navy outline-none transition-colors focus-visible:border-trust-blue focus-visible:ring-2 focus-visible:ring-trust-blue/20";
 
 const submitClass =
-  "inline-flex min-h-11 items-center justify-center rounded-lg bg-navy px-4 text-[13px] font-bold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center rounded-lg bg-navy px-4 text-caption font-bold text-white transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50";
 
 // ─────────────────────────────────────────────────────── Step 2 원장
 function DirectorStep({ state }: { state: OnboardingState }) {
@@ -232,9 +232,9 @@ function DirectorStep({ state }: { state: OnboardingState }) {
           {state.directors.map((director) => (
             <li
               key={director.membershipId}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface-soft px-3 py-2"
             >
-              <span className="text-[13px] font-semibold text-navy">
+              <span className="text-caption font-semibold text-navy">
                 {director.displayName}
               </span>
               <StatusPill tone="done">등록됨</StatusPill>
@@ -249,7 +249,7 @@ function DirectorStep({ state }: { state: OnboardingState }) {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="director-email"
-            className="text-[12px] font-semibold text-navy/60"
+            className="text-micro font-semibold text-ink-muted"
           >
             원장 이메일
           </label>
@@ -267,7 +267,7 @@ function DirectorStep({ state }: { state: OnboardingState }) {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="director-name"
-            className="text-[12px] font-semibold text-navy/60"
+            className="text-micro font-semibold text-ink-muted"
           >
             원장 이름
           </label>
@@ -313,11 +313,11 @@ function ClassStep({ state }: { state: OnboardingState }) {
           {state.classes.map((entry) => (
             <li
               key={entry.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface-soft px-3 py-2"
             >
-              <span className="min-w-0 break-words text-[13px] font-semibold text-navy">
+              <span className="min-w-0 break-words text-caption font-semibold text-navy">
                 {entry.name}
-                <span className="ml-2 text-[12px] font-normal tabular-nums text-navy/45">
+                <span className="ml-2 text-micro font-normal tabular-nums text-ink-muted">
                   {entry.schoolYear}학년도
                 </span>
               </span>
@@ -334,7 +334,7 @@ function ClassStep({ state }: { state: OnboardingState }) {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label htmlFor="class-name" className="text-[12px] font-semibold text-navy/60">
+            <label htmlFor="class-name" className="text-micro font-semibold text-ink-muted">
               반 이름
             </label>
             <input
@@ -349,7 +349,7 @@ function ClassStep({ state }: { state: OnboardingState }) {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="class-year" className="text-[12px] font-semibold text-navy/60">
+            <label htmlFor="class-year" className="text-micro font-semibold text-ink-muted">
               학년도
             </label>
             <input
@@ -364,7 +364,7 @@ function ClassStep({ state }: { state: OnboardingState }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="class-age" className="text-[12px] font-semibold text-navy/60">
+          <label htmlFor="class-age" className="text-micro font-semibold text-ink-muted">
             연령
           </label>
           <select id="class-age" name="age_group" defaultValue="mixed" className={inputClass}>
@@ -421,7 +421,7 @@ function TeacherStep({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="teacher-email" className="text-[12px] font-semibold text-navy/60">
+              <label htmlFor="teacher-email" className="text-micro font-semibold text-ink-muted">
                 교사 이메일
               </label>
               <input
@@ -436,7 +436,7 @@ function TeacherStep({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="teacher-name" className="text-[12px] font-semibold text-navy/60">
+              <label htmlFor="teacher-name" className="text-micro font-semibold text-ink-muted">
                 교사 이름
               </label>
               <input
@@ -466,11 +466,11 @@ function TeacherStep({
         description="초대한 교사에게 담당 반을 지정합니다. 반이 없으면 3단계에서 먼저 등록하세요."
       >
         {state.teachers.length === 0 ? (
-          <p className="text-[13px] text-navy/55">
+          <p className="text-caption text-ink-muted">
             아직 등록된 교사가 없습니다. 위에서 먼저 초대해주세요.
           </p>
         ) : activeClasses.length === 0 ? (
-          <p className="text-[13px] text-navy/55">
+          <p className="text-caption text-ink-muted">
             운영 중인 반이 없습니다. 3단계에서 반을 먼저 등록해주세요.
           </p>
         ) : (
@@ -479,7 +479,7 @@ function TeacherStep({
             <input type="hidden" name="organizationMemberId" value={selectedTeacher} />
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="teacher-select" className="text-[12px] font-semibold text-navy/60">
+              <label htmlFor="teacher-select" className="text-micro font-semibold text-ink-muted">
                 교사
               </label>
               <select
@@ -497,12 +497,12 @@ function TeacherStep({
             </div>
 
             <fieldset className="flex flex-col gap-2">
-              <legend className="text-[12px] font-semibold text-navy/60">담당 반</legend>
+              <legend className="text-micro font-semibold text-ink-muted">담당 반</legend>
 
               {activeClasses.map((entry) => (
                 <label
                   key={entry.id}
-                  className="flex min-h-11 items-center gap-2.5 rounded-lg border border-navy/10 bg-white px-3 text-[13px] text-navy"
+                  className="flex min-h-11 items-center gap-2.5 rounded-lg border border-line bg-white px-3 text-caption text-navy"
                 >
                   <input
                     type="checkbox"
@@ -549,7 +549,7 @@ function ChildStep({
       description={`반을 고르고 이름을 한 줄에 한 명씩 붙여 넣으세요. 한 번에 최대 ${BULK_CHILD_MAX_ROWS}명까지 등록합니다.`}
     >
       {activeClasses.length === 0 ? (
-        <p className="text-[13px] text-navy/55">
+        <p className="text-caption text-ink-muted">
           운영 중인 반이 없습니다. 3단계에서 반을 먼저 등록해주세요.
         </p>
       ) : (
@@ -557,7 +557,7 @@ function ChildStep({
           <input type="hidden" name="organizationId" value={state.organization.id} />
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="child-class" className="text-[12px] font-semibold text-navy/60">
+            <label htmlFor="child-class" className="text-micro font-semibold text-ink-muted">
               배정할 반
             </label>
             <select id="child-class" name="class_id" required className={inputClass}>
@@ -570,7 +570,7 @@ function ChildStep({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="child-roster" className="text-[12px] font-semibold text-navy/60">
+            <label htmlFor="child-roster" className="text-micro font-semibold text-ink-muted">
               원아 명단
             </label>
             <textarea
@@ -582,7 +582,7 @@ function ChildStep({
               aria-describedby="child-roster-help"
               className={`${inputClass} font-mono leading-relaxed`}
             />
-            <p id="child-roster-help" className="text-[12px] leading-relaxed text-navy/50">
+            <p id="child-roster-help" className="text-micro leading-relaxed text-ink-muted">
               한 줄에 한 명. 출생연도를 함께 넣으려면{" "}
               <span className="font-semibold">이름, 2021</span> 형식으로 적습니다.
               출생연도는 선택 입력이며 빈 줄은 무시합니다.
@@ -600,15 +600,15 @@ function ChildStep({
       <Result phase={result.phase} message={result.message} />
 
       {result.errors.length > 0 ? (
-        <div className="mt-3 rounded-lg border border-navy/15 bg-surface-soft p-3">
-          <p className="text-[12px] font-semibold text-navy/70">
+        <div className="mt-3 rounded-lg border border-line-strong bg-surface-soft p-3">
+          <p className="text-micro font-semibold text-navy/70">
             등록하지 못한 줄 ({result.failedCount.toLocaleString("ko-KR")}줄)
           </p>
           <ul className="mt-2 flex flex-col gap-1">
             {result.errors.map((entry) => (
               <li
                 key={`${entry.line}-${entry.input}`}
-                className="text-[12px] leading-relaxed text-navy/60"
+                className="text-micro leading-relaxed text-ink-muted"
               >
                 <span className="tabular-nums font-semibold">{entry.line}번째 줄</span>
                 {entry.input ? ` · "${entry.input}"` : ""} · {entry.reason}
@@ -640,11 +640,11 @@ function ProgramStep({
       description="반에 수업 프로그램을 배정합니다. 게시된 프로그램만 고를 수 있습니다."
     >
       {activeClasses.length === 0 ? (
-        <p className="text-[13px] text-navy/55">
+        <p className="text-caption text-ink-muted">
           운영 중인 반이 없습니다. 3단계에서 반을 먼저 등록해주세요.
         </p>
       ) : state.programs.length === 0 ? (
-        <p className="text-[13px] text-navy/55">
+        <p className="text-caption text-ink-muted">
           게시된 프로그램이 없습니다. 수업 프로그램 화면에서 먼저 게시해주세요.
         </p>
       ) : (
@@ -653,7 +653,7 @@ function ProgramStep({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="assign-class" className="text-[12px] font-semibold text-navy/60">
+              <label htmlFor="assign-class" className="text-micro font-semibold text-ink-muted">
                 반
               </label>
               <select id="assign-class" name="classId" required className={inputClass}>
@@ -666,7 +666,7 @@ function ProgramStep({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="assign-program" className="text-[12px] font-semibold text-navy/60">
+              <label htmlFor="assign-program" className="text-micro font-semibold text-ink-muted">
                 프로그램
               </label>
               <select id="assign-program" name="programId" required className={inputClass}>
@@ -680,7 +680,7 @@ function ProgramStep({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="assign-start" className="text-[12px] font-semibold text-navy/60">
+            <label htmlFor="assign-start" className="text-micro font-semibold text-ink-muted">
               시작일 (선택)
             </label>
             <input id="assign-start" name="start_date" type="date" className={inputClass} />
@@ -743,9 +743,9 @@ function SummaryStep({ state }: { state: OnboardingState }) {
             key={row.label}
             className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2.5"
           >
-            <span className="text-[13px] text-navy/70">{row.label}</span>
+            <span className="text-caption text-navy/70">{row.label}</span>
             <span className="flex items-center gap-2">
-              <span className="break-words text-[13px] font-semibold tabular-nums text-navy">
+              <span className="break-words text-caption font-semibold tabular-nums text-navy">
                 {row.value}
               </span>
               <StatusPill tone={row.done ? "done" : "pending"}>
@@ -756,28 +756,28 @@ function SummaryStep({ state }: { state: OnboardingState }) {
         ))}
       </ul>
 
-      <p className="mt-3 text-[12px] leading-relaxed text-navy/50">
+      <p className="mt-3 text-micro leading-relaxed text-ink-muted">
         {allDone
           ? "도입에 필요한 항목이 모두 설정되었습니다. 이제 원장이 수업 일정을 등록하면 운영이 시작됩니다."
           : "아직 설정하지 않은 항목이 있습니다. 지금 닫아도 저장된 내용은 남으며, 나중에 이어서 설정할 수 있습니다."}
       </p>
 
-      <div className="mt-4 flex flex-wrap gap-2 border-t border-navy/8 pt-4">
+      <div className="mt-4 flex flex-wrap gap-2 border-t border-line-soft pt-4">
         <Link
           href={`/admin/organizations/${state.organization.id}`}
-          className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-[13px] font-bold text-white transition-colors hover:bg-navy/90"
+          className="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 text-caption font-bold text-white transition-colors hover:bg-navy/90"
         >
           기관 상세 보기
         </Link>
         <Link
           href="/admin"
-          className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:bg-navy/5"
+          className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-bold text-navy transition-colors hover:bg-navy/5"
         >
           운영 대시보드
         </Link>
         <Link
           href="/admin/onboarding"
-          className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:bg-navy/5"
+          className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-bold text-navy transition-colors hover:bg-navy/5"
         >
           새 기관 추가
         </Link>

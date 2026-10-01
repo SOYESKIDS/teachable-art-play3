@@ -3,35 +3,35 @@
  *
  * ★ 왜 한곳으로 모았는가
  *   같은 역할의 입력칸이 19개 파일에 각각 적혀 있었고, 조금씩 달랐다.
- *   어떤 칸에는 placeholder 색이 있고 어떤 칸에는 없었으며,
- *   비활성 상태는 opacity-60 · opacity-70 · bg-surface-soft 세 갈래였다.
- *   한 화면 안에서 입력칸끼리 미묘하게 다르면 완성도가 먼저 떨어져 보인다.
+ *   각 파일은 inputClasses / controlClasses / fieldClasses 라는 이름을 그대로 두고
+ *   값만 여기서 받아 간다.
  *
- * ★ 40px 였던 것을 44px 로 올렸다.
- *   목록 위 필터에 쓰이던 h-10(40px)은 손가락 타깃 최소치(44px)에 못 미쳤다.
- *   모바일에서 원장·교사가 실제로 누르는 칸이라 높이를 맞춘다.
+ * ★ V3: 테두리를 control-border(흰 바탕 3.08:1)로 바꿨다.
+ *   예전 navy 20% 선은 1.9:1 로, 입력칸의 경계가 보여야 한다는 WCAG 1.4.11(3:1)에 못 미쳤다.
+ *   hover 는 한 단계 진하게, focus 는 파란 테두리 + 옅은 링(+ 전역 focus-visible 링),
+ *   오류(aria-invalid)는 danger 테두리로 — 상태마다 모양이 다르다.
  *
- * ★ 사용하는 쪽의 이름은 바꾸지 않았다.
- *   각 파일은 지금까지 쓰던 inputClasses / controlClasses / fieldClasses 라는
- *   이름을 그대로 두고 값만 여기서 받아 간다. 그래서 사용처(수백 곳의
- *   className={inputClasses})는 한 글자도 건드리지 않는다.
+ * ★ 높이: 대화상자 · 필터 44px · 인증 화면 48px. 글자는 15px 로 올려
+ *   모바일 Safari 의 입력 확대를 줄이고 한글 받침이 흐려지지 않게 한다.
  */
+const state =
+  "transition-[border-color,box-shadow,background-color] duration-150 hover:border-ink-muted focus:border-trust-blue focus:ring-4 focus:ring-trust-blue/12 aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/12 disabled:cursor-not-allowed disabled:border-border-strong disabled:bg-muted disabled:text-ink-muted";
 
 /** 대화상자 안의 한 줄 입력칸 (44px) */
-export const fieldInput =
-  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[14px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:bg-surface-soft disabled:opacity-70";
+export const fieldInput = `h-11 rounded-lg border border-control-border bg-white px-3 text-body-sm text-navy placeholder:text-ink-subtle ${state}`;
 
-/** 목록 위 필터·선택 (44px) — 예전 h-10 을 대체한다 */
-export const fieldControl =
-  "h-11 rounded-lg border border-line-strong bg-white px-3 text-[13px] font-medium text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-70";
+/** 목록 위 필터·선택 (44px) */
+export const fieldControl = `h-11 rounded-lg border border-control-border bg-white px-3 text-label font-medium text-navy placeholder:text-ink-subtle ${state}`;
 
 /** 로그인·비밀번호 등 인증 화면의 입력칸 (48px) */
-export const fieldAuth =
-  "min-h-12 w-full rounded-[var(--radius-lg)] border border-line-strong bg-white px-4 py-3 text-[15px] text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-60";
+export const fieldAuth = `min-h-12 w-full rounded-lg border border-control-border bg-white px-4 py-3 text-body-sm text-navy placeholder:text-ink-subtle ${state}`;
 
 /** 여러 줄 입력칸. 높이는 쓰는 곳에서 min-h 로 덮어쓴다. */
-export const fieldTextarea =
-  "min-h-[110px] rounded-lg border border-line-strong bg-white px-3 py-2.5 text-[14px] leading-relaxed text-navy placeholder:text-navy/40 transition-colors focus:border-trust-blue disabled:cursor-not-allowed disabled:opacity-70";
+export const fieldTextarea = `min-h-[110px] rounded-lg border border-control-border bg-white px-3 py-2.5 text-body-sm leading-relaxed text-navy placeholder:text-ink-subtle ${state}`;
 
 /** 입력칸 위의 라벨 */
-export const fieldLabel = "block text-[13px] font-semibold text-navy/70";
+export const fieldLabel = "block text-label font-semibold text-ink";
+
+/** 입력칸 아래 도움말 · 오류 */
+export const fieldHint = "mt-1.5 text-caption text-ink-muted";
+export const fieldError = "mt-1.5 text-caption font-medium text-danger";

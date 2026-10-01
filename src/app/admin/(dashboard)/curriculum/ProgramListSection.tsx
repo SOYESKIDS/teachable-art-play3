@@ -1,5 +1,6 @@
 "use client";
 
+import { tableCell, tableHeadCell } from "@/components/ui/table";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { formatAgeGroup } from "@/lib/admin/class-child";
@@ -19,15 +20,14 @@ interface ProgramListSectionProps {
 
 const controlClasses = fieldControl;
 
-const headerCellClasses =
-  "whitespace-nowrap px-4 py-3 text-[11px] font-semibold tracking-wide text-navy/45";
+const headerCellClasses = tableHeadCell;
 
-const bodyCellClasses = "whitespace-nowrap px-4 py-3 text-navy/75";
+const bodyCellClasses = tableCell;
 
 function StatusBadge({ status }: { status: CurriculumStatus }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
     >
       {CURRICULUM_STATUS_LABELS[status]}
     </span>
@@ -66,7 +66,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
 
   return (
     <>
-      <div className="rounded-xl border border-navy/10 bg-white p-4">
+      <div className="rounded-xl border border-line bg-white p-4">
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
           <label className="sr-only" htmlFor="program-search">
             프로그램 코드 또는 이름 검색
@@ -106,34 +106,34 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
                 setQuery("");
                 setStatusFilter("all");
               }}
-              className="inline-flex min-h-11 items-center self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
+              className="inline-flex min-h-11 items-center self-start text-micro font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
             >
               필터 초기화
             </button>
           ) : null}
         </div>
 
-        <p className="mt-3 text-[12px] text-navy/45">
+        <p className="mt-3 text-micro text-ink-muted">
           {visiblePrograms.length.toLocaleString("ko-KR")}개 표시 중 (전체{" "}
           {programs.length.toLocaleString("ko-KR")}개)
         </p>
       </div>
 
       {visiblePrograms.length === 0 ? (
-        <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             조건에 맞는 프로그램이 없습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             검색어나 상태 필터를 조정해보세요.
           </p>
         </div>
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden overflow-x-auto rounded-xl border border-navy/10 bg-white lg:block">
-            <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
-              <thead className="border-b border-navy/10 bg-surface-soft">
+          <div className="hidden overflow-x-auto rounded-xl border border-line bg-white lg:block">
+            <table className="w-full min-w-[900px] border-collapse text-left text-caption">
+              <thead className="border-b border-line bg-surface-soft">
                 <tr>
                   <th scope="col" className={headerCellClasses}>
                     프로그램 코드
@@ -163,7 +163,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
               </thead>
               <tbody>
                 {visiblePrograms.map((program) => (
-                  <tr key={program.id} className="border-b border-navy/8 last:border-b-0">
+                  <tr key={program.id} className="border-b border-line-soft last:border-b-0">
                     <td className={`${bodyCellClasses} font-semibold text-navy`}>
                       {program.code}
                     </td>
@@ -188,7 +188,7 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
                     <td className={`${bodyCellClasses} text-right`}>
                       <Link
                         href={`/admin/curriculum/${program.id}`}
-                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
                       >
                         상세
                       </Link>
@@ -204,32 +204,32 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
             {visiblePrograms.map((program) => (
               <li
                 key={program.id}
-                className="rounded-xl border border-navy/10 bg-white px-4 py-3.5"
+                className="rounded-xl border border-line bg-white px-4 py-3.5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[12px] font-semibold text-navy/50">
+                    <p className="text-micro font-semibold text-ink-muted">
                       {program.code}
                     </p>
-                    <p className="mt-0.5 break-words text-[14px] font-semibold text-navy">
+                    <p className="mt-0.5 break-words text-label font-semibold text-navy">
                       {program.title}
                     </p>
                   </div>
                   <StatusBadge status={program.status} />
                 </div>
 
-                <p className="mt-1.5 text-[12px] text-navy/50">
+                <p className="mt-1.5 text-micro text-ink-muted">
                   {formatAgeGroup(program.age_group)} · {program.duration_weeks}주
                   · {program.lessonCount.toLocaleString("ko-KR")}차시
                 </p>
-                <p className="mt-0.5 text-[12px] text-navy/45">
+                <p className="mt-0.5 text-micro text-ink-muted">
                   최근 수정 {formatOrganizationDate(program.updated_at)}
                 </p>
 
-                <div className="mt-2.5 flex justify-end border-t border-navy/8 pt-2.5">
+                <div className="mt-2.5 flex justify-end border-t border-line-soft pt-2.5">
                   <Link
                     href={`/admin/curriculum/${program.id}`}
-                    className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
                   >
                     상세
                   </Link>
@@ -246,11 +246,11 @@ export function ProgramListSection({ programs }: ProgramListSectionProps) {
 /** Empty State에서 쓰는 등록 버튼 (Section과 같은 파일에 두어 import를 단순하게 유지) */
 export function ProgramEmptyState() {
   return (
-    <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-      <p className="text-[15px] font-semibold text-navy">
+    <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+      <p className="text-body-sm font-semibold text-navy">
         등록된 수업 프로그램이 없습니다.
       </p>
-      <p className="mt-1.5 text-[13px] text-navy/50">
+      <p className="mt-1.5 text-caption text-ink-muted">
         첫 프로그램을 등록해 TeachAble Art Play 커리큘럼을 구성해보세요.
       </p>
       <div className="mt-5 flex justify-center">

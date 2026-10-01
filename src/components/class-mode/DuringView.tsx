@@ -59,18 +59,18 @@ export function DuringView({ sessionId, organizationId, steps, fallbackObjective
       ) : null}
 
       <section aria-labelledby="step-title" className="rounded-2xl border border-hairline bg-white p-6">
-        <p className="text-[16px] font-semibold text-ink-muted">
+        <p className="text-body font-semibold text-ink-muted">
           단계 {index + 1}/{effectiveSteps.length}
           {step.durationMinutes ? ` · 권장 ${step.durationMinutes}분` : ""}
         </p>
-        <h2 id="step-title" className="mt-1 text-[28px] font-bold leading-snug">
+        <h2 id="step-title" className="mt-1 text-headline-lg font-bold leading-snug">
           {step.title}
         </h2>
         {step.description ? (
-          <p className="mt-4 whitespace-pre-line text-[19px] leading-relaxed">{step.description}</p>
+          <p className="mt-4 whitespace-pre-line text-title-sm leading-relaxed">{step.description}</p>
         ) : null}
         {step.materials ? (
-          <p className="mt-4 rounded-xl bg-brand-sky px-4 py-3 text-[17px] text-info-text">
+          <p className="mt-4 rounded-xl bg-brand-sky px-4 py-3 text-body-lg text-info-text">
             이 단계 자료: {step.materials}
           </p>
         ) : null}
@@ -147,7 +147,7 @@ export function DuringView({ sessionId, organizationId, steps, fallbackObjective
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="sessionId" value={sessionId} />
           <input type="hidden" name="organizationId" value={organizationId} />
-          <p className="text-[16px] leading-relaxed">마친 뒤에는 다시 진행 중으로 돌아갈 수 없습니다.</p>
+          <p className="text-body leading-relaxed">마친 뒤에는 다시 진행 중으로 돌아갈 수 없습니다.</p>
           <div className="flex flex-col gap-2 sm:flex-row-reverse">
             <button type="submit" disabled={pending || !online} className={`${classModeButtonPrimary} sm:flex-1`}>
               {pending ? "마치는 중…" : "수업 마치기"}

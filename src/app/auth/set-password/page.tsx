@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthCard, AuthShell } from "@/components/auth/AuthShell";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SetPasswordForm } from "./SetPasswordForm";
@@ -43,28 +44,20 @@ export default async function SetPasswordPage({
     typeof data.claims.email === "string" ? data.claims.email : null;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
-      <div className="w-full max-w-[440px]">
-        <div className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-8 shadow-[var(--shadow-card)] sm:p-10">
-          <p className="text-[12px] font-bold tracking-[0.18em] text-yellow">
-            TEACHABLE ART PLAY
+    <AuthShell>
+      <AuthCard
+        eyebrow="계정 설정"
+        title={copy.heading}
+        description={copy.description}
+      >
+        {email ? (
+          <p className="mt-4 rounded-lg bg-surface-soft px-4 py-3 text-caption font-medium text-ink">
+            {email}
           </p>
-          <h1 className="mt-3 text-[24px] font-bold text-navy">
-            {copy.heading}
-          </h1>
-          <p className="mt-2 text-[14px] leading-relaxed text-navy/60">
-            {copy.description}
-          </p>
+        ) : null}
 
-          {email ? (
-            <p className="mt-4 rounded-[var(--radius-lg)] bg-surface-soft px-4 py-3 text-[13px] text-navy/70">
-              {email}
-            </p>
-          ) : null}
-
-          <SetPasswordForm mode={mode} />
-        </div>
-      </div>
-    </main>
+        <SetPasswordForm mode={mode} />
+      </AuthCard>
+    </AuthShell>
   );
 }

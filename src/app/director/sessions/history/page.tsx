@@ -60,8 +60,8 @@ export default async function DirectorHistoryPage({
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions/history"
     >
-      <h1 className="text-[22px] font-bold text-navy">수업 이력</h1>
-      <p className="mt-1 text-[14px] text-navy/55">
+      <h1 className="text-headline font-bold text-navy">수업 이력</h1>
+      <p className="mt-1 text-label text-ink-muted">
         기관 전체 수업 기록입니다.
       </p>
 

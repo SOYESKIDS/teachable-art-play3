@@ -31,11 +31,11 @@ export function PurchaseSection() {
             <h3 className="whitespace-pre-line text-2xl font-bold leading-[1.3] text-navy sm:text-3xl">
               {purchaseCopy.direct.title}
             </h3>
-            <p className="text-base leading-relaxed text-navy/60">
+            <p className="text-base leading-relaxed text-ink-muted">
               {purchaseCopy.direct.description}
             </p>
 
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-navy/40">
+            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-ink-muted">
               {purchaseCopy.direct.flow.map((step, index) => (
                 <li key={step} className="flex items-center gap-2">
                   {step}
@@ -61,11 +61,11 @@ export function PurchaseSection() {
             <h3 className="whitespace-pre-line text-2xl font-bold leading-[1.3] text-navy sm:text-3xl">
               {purchaseCopy.consult.title}
             </h3>
-            <p className="text-base leading-relaxed text-navy/60">
+            <p className="text-base leading-relaxed text-ink-muted">
               {purchaseCopy.consult.description}
             </p>
 
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-navy/40">
+            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-ink-muted">
               {purchaseCopy.consult.flow.map((step, index) => (
                 <li key={step} className="flex items-center gap-2">
                   {step}

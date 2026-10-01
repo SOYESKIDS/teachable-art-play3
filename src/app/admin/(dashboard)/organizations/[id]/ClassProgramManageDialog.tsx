@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   ASSIGNMENT_STATUS_LABELS,
   formatAssignmentDate,
@@ -27,8 +28,8 @@ const inputClasses = fieldInput;
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <dt className="shrink-0 text-[12px] text-navy/45">{label}</dt>
-      <dd className="min-w-0 truncate text-[13px] font-medium text-navy">
+      <dt className="shrink-0 text-micro text-ink-muted">{label}</dt>
+      <dd className="min-w-0 truncate text-caption font-medium text-navy">
         {value}
       </dd>
     </div>
@@ -72,17 +73,6 @@ export function ClassProgramManageDialog({
     CLASS_CHILD_FORM_INITIAL_STATE,
   );
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsOpen(false);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
   function openDialog() {
     setStatus("");
     setIsMessageHidden(true);
@@ -96,135 +86,104 @@ export function ClassProgramManageDialog({
       <button
         type="button"
         onClick={openDialog}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
       >
         운영 관리
       </button>
 
-      {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-navy/40"
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="운영 관리"
+        description="운영 중인 배정을 완료 또는 취소로 종료합니다."
+        size="md"
+        busy={isPending}
+      >
+        <form action={formAction} className="flex flex-col gap-4">
+          <input
+            type="hidden"
+            name="organizationId"
+            value={organizationId}
           />
+          <input type="hidden" name="assignmentId" value={assignment.id} />
 
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="manage-assignment-title"
-            className="relative max-h-[92vh] w-full max-w-[480px] overflow-y-auto rounded-t-2xl bg-white shadow-[var(--shadow-elevated)] sm:rounded-2xl"
-          >
-            <header className="flex items-start justify-between gap-4 border-b border-navy/10 px-5 py-4">
-              <div className="min-w-0">
-                <h2
-                  id="manage-assignment-title"
-                  className="text-[17px] font-bold text-navy"
-                >
-                  운영 관리
-                </h2>
-                <p className="mt-0.5 text-[12px] text-navy/50">
-                  운영 중인 배정을 완료 또는 취소로 종료합니다.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="운영 관리 닫기"
-                className="shrink-0 rounded-lg border border-navy/15 px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
-              >
-                닫기
-              </button>
-            </header>
+          {/* 배정 정보는 전부 읽기 전용이다. 이 화면에서 바꿀 수 있는 값은 상태뿐이다. */}
+          <dl className="flex flex-col gap-2 rounded-lg border border-line bg-surface-soft px-4 py-3">
+            <InfoRow label="반" value={assignment.className ?? "—"} />
+            <InfoRow
+              label="프로그램"
+              value={assignment.programTitle ?? "—"}
+            />
+            <InfoRow
+              label="시작일"
+              value={formatAssignmentDate(assignment.start_date)}
+            />
+            <InfoRow
+              label="현재 상태"
+              value={ASSIGNMENT_STATUS_LABELS[assignment.status]}
+            />
+          </dl>
 
-            <form action={formAction} className="flex flex-col gap-4 px-5 py-5">
-              <input
-                type="hidden"
-                name="organizationId"
-                value={organizationId}
-              />
-              <input type="hidden" name="assignmentId" value={assignment.id} />
-
-              {/* 배정 정보는 전부 읽기 전용이다. 이 화면에서 바꿀 수 있는 값은 상태뿐이다. */}
-              <dl className="flex flex-col gap-2 rounded-lg border border-navy/10 bg-surface-soft px-4 py-3">
-                <InfoRow label="반" value={assignment.className ?? "—"} />
-                <InfoRow
-                  label="프로그램"
-                  value={assignment.programTitle ?? "—"}
-                />
-                <InfoRow
-                  label="시작일"
-                  value={formatAssignmentDate(assignment.start_date)}
-                />
-                <InfoRow
-                  label="현재 상태"
-                  value={ASSIGNMENT_STATUS_LABELS[assignment.status]}
-                />
-              </dl>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="manage-status"
-                >
-                  운영 종료 <span className="text-trust-blue">*</span>
-                </label>
-                <select
-                  id="manage-status"
-                  name="status"
-                  required
-                  disabled={isPending}
-                  value={status}
-                  onChange={(event) => {
-                    setStatus(event.target.value as AssignmentCloseStatus | "");
-                    setIsMessageHidden(true);
-                  }}
-                  className={inputClasses}
-                >
-                  <option value="">처리할 상태를 선택하세요</option>
-                  <option value="completed">완료 처리</option>
-                  <option value="cancelled">취소 처리</option>
-                </select>
-                <p className="text-[12px] text-navy/45">
-                  시작일과 배정 대상(반·프로그램)은 변경할 수 없습니다.
-                </p>
-              </div>
-
-              {status ? (
-                <p className="rounded-lg border border-yellow/50 bg-yellow-soft px-3 py-2 text-[13px] leading-relaxed text-navy">
-                  {status === "completed"
-                    ? "완료 처리하면 다시 운영 중으로 되돌릴 수 없습니다."
-                    : "취소된 운영 이력은 다시 운영 중으로 되돌릴 수 없습니다."}{" "}
-                  같은 프로그램을 다시 운영하려면 새로 배정하면 됩니다. 기존
-                  이력은 그대로 남습니다.
-                </p>
-              ) : null}
-
-              {visibleMessage ? (
-                <p
-                  role="alert"
-                  className={`rounded-lg border px-3 py-2 text-[13px] ${
-                    state.phase === "error"
-                      ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-                      : "border-soft-green/50 bg-soft-green/15 text-navy"
-                  }`}
-                >
-                  {visibleMessage}
-                </p>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={isPending || status === ""}
-                className="mt-1 h-11 rounded-lg bg-navy text-[14px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isPending ? "처리 중…" : "운영 종료"}
-              </button>
-            </form>
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="manage-status"
+            >
+              운영 종료 <span className="text-trust-blue">*</span>
+            </label>
+            <select
+              id="manage-status"
+              name="status"
+              required
+              disabled={isPending}
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value as AssignmentCloseStatus | "");
+                setIsMessageHidden(true);
+              }}
+              className={inputClasses}
+            >
+              <option value="">처리할 상태를 선택하세요</option>
+              <option value="completed">완료 처리</option>
+              <option value="cancelled">취소 처리</option>
+            </select>
+            <p className="text-micro text-ink-muted">
+              시작일과 배정 대상(반·프로그램)은 변경할 수 없습니다.
+            </p>
           </div>
-        </div>
-      ) : null}
+
+          {status ? (
+            <p className="rounded-lg border border-warning-border bg-warning-soft px-3 py-2 text-caption leading-relaxed text-navy">
+              {status === "completed"
+                ? "완료 처리하면 다시 운영 중으로 되돌릴 수 없습니다."
+                : "취소된 운영 이력은 다시 운영 중으로 되돌릴 수 없습니다."}{" "}
+              같은 프로그램을 다시 운영하려면 새로 배정하면 됩니다. 기존
+              이력은 그대로 남습니다.
+            </p>
+          ) : null}
+
+          {visibleMessage ? (
+            <p
+              role="alert"
+              className={`rounded-lg border px-3 py-2 text-caption ${
+                state.phase === "error"
+                  ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
+                  : "border-soft-green/50 bg-soft-green/15 text-navy"
+              }`}
+            >
+              {visibleMessage}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isPending || status === ""}
+            className="mt-1 h-11 rounded-lg bg-navy text-label font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isPending ? "처리 중…" : "운영 종료"}
+          </button>
+        </form>
+      </Dialog>
     </>
   );
 }

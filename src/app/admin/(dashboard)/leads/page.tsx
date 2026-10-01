@@ -27,10 +27,10 @@ function PanelMessage({
   description?: string;
 }) {
   return (
-    <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-      <p className="text-[15px] font-semibold text-navy">{title}</p>
+    <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+      <p className="text-body-sm font-semibold text-navy">{title}</p>
       {description ? (
-        <p className="mt-1.5 text-[13px] text-navy/50">{description}</p>
+        <p className="mt-1.5 text-caption text-ink-muted">{description}</p>
       ) : null}
     </div>
   );
@@ -55,8 +55,8 @@ export default async function AdminLeadsPage({
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-[22px] font-bold text-navy">기관 문의 관리</h1>
-        <p className="text-[14px] text-navy/55">
+        <h1 className="text-headline font-bold text-navy">기관 문의 관리</h1>
+        <p className="text-label text-ink-muted">
           TeachAble Art Play 도입 문의와 파일럿 신청 현황을 관리합니다.
         </p>
       </div>
@@ -70,7 +70,7 @@ export default async function AdminLeadsPage({
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-5">
-          <LeadKpiRow kpis={kpiResult.kpis} />
+          <LeadKpiRow kpis={kpiResult.kpis} filters={filters} />
 
           <LeadFilterBar filters={filters} />
 

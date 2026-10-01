@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
 import { contactSectionCopy, ctaLabels } from "@/data/site-copy";
+import { finalNarrative } from "@/data/home-narrative";
 
 /**
  * 공개 홈페이지 마지막 결정 지점.
@@ -23,31 +24,32 @@ export function FinalCTASection() {
           (navy-deep) Footer 를 한 단계 밝게 남긴다. 선을 하나 더 긋는 것보다
           면의 밝기 차이가 자연스럽다.
       */
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy-deep py-20 sm:py-24 lg:py-32"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy-deep py-20 sm:py-24 lg:py-28"
     >
       <Container>
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <p className="eyebrow text-yellow">{contactSectionCopy.eyebrow}</p>
+          <p className="eyebrow text-accent-on-dark">{contactSectionCopy.eyebrow}</p>
 
-          <h2 className="mt-5 text-h2 font-bold text-white">
-            {contactSectionCopy.headline}
+          <h2 className="mt-5 whitespace-pre-line text-h2 font-bold text-white">
+            {finalNarrative.headline}
           </h2>
 
           <span
             aria-hidden="true"
-            className="mt-7 block h-px w-16 bg-yellow/60"
+            className="mt-7 block h-px w-16 bg-accent/70"
           />
 
           <p className="measure mt-7 whitespace-pre-line text-lead text-white/70">
-            {contactSectionCopy.description}
+            {finalNarrative.subCopy}
           </p>
 
           <div className="mt-11 flex justify-center">
             <LeadCtaButton
               type="demo"
-              variant="primary"
+              variant="inverse"
+              size="lg"
               dataCta="demo-final-cta"
-              className="px-8 py-4 text-base font-bold sm:text-lg"
+              className="font-bold"
             >
               {ctaLabels.demo}
             </LeadCtaButton>
@@ -60,15 +62,15 @@ export function FinalCTASection() {
                 key={channel.label}
                 className="rounded-2xl border border-line-inverse bg-white/[0.04] px-6 py-8 text-left transition-colors hover:border-white/25"
               >
-                <dt className="eyebrow text-white/45">{channel.label}</dt>
-                <dd className="mt-3 select-all break-all text-[22px] font-bold tabular-nums text-white sm:text-[26px]">
+                <dt className="eyebrow text-white/60">{channel.label}</dt>
+                <dd className="mt-3 select-all break-all text-title-lg font-bold tabular-nums text-white sm:text-headline-lg">
                   {channel.value}
                 </dd>
               </div>
             ))}
           </dl>
 
-          <p className="mt-10 whitespace-pre-line text-sm leading-relaxed text-white/45 sm:text-[15px]">
+          <p className="mt-10 whitespace-pre-line text-sm leading-relaxed text-white/60 sm:text-body-sm">
             {contactSectionCopy.note}
           </p>
         </div>

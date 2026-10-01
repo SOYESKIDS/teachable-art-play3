@@ -177,6 +177,32 @@ export interface PricingPackage {
   totalPriceNote: string;
   contentItems: string[];
   accentColor: "light-blue" | "ivory-yellow" | "navy-yellow";
+
+  /*
+    ── 아래는 추가 필드(선택). 기존 화면은 위 필드만 읽어도 그대로 동작한다.
+    B2B 결정 순서: 어떤 원에 적합 → 무엇을 운영 → 기간 → 포함 내용 → 비용.
+  */
+  /** 어떤 원에 적합한가 (한 줄) */
+  fit?: string;
+  /** 무엇을 운영하는가 (한 줄) */
+  operation?: string;
+  /** 포함 내용 + 현재 제공 상태. contentItems 는 이 목록에서 만든 문자열이다. */
+  features?: PackageFeature[];
+}
+
+/**
+ * 상품 구성 항목의 제공 상태.
+ * - "포함": 지금 만들어져 있고 상품에 들어 있다.
+ * - "준비 중": 상품에 약속된 항목이지만 아직 만들어지지 않았거나 공개 전이다.
+ * - "계약 범위": 실물 · 맞춤 납품물이라 계약 조건에 따라 제공된다.
+ */
+export type PackageFeatureAvailability = "포함" | "준비 중" | "계약 범위";
+
+export interface PackageFeature {
+  label: string;
+  availability: PackageFeatureAvailability;
+  /** 상태에 대한 짧은 보충 (예: "9~16주 콘텐츠 준비 중") */
+  note?: string;
 }
 
 /**

@@ -231,7 +231,7 @@ export function ParentGrowthReportView({ shareId }: ParentGrowthReportViewProps)
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/20 bg-white px-5 text-[14px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-5 text-label font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
         >
           <PrinterIcon />
           인쇄 / PDF 저장
@@ -256,16 +256,16 @@ function ReportCover({ report }: { report: ParentSharedReport }) {
     .join(" · ");
 
   return (
-    <header className="gr-block gr-cover rounded-2xl border border-navy/10 bg-white px-6 py-8 sm:px-9 sm:py-10">
+    <header className="gr-block gr-cover rounded-2xl border border-line bg-white px-6 py-8 sm:px-9 sm:py-10">
       <span
         aria-hidden="true"
-        className="gr-accent block h-[3px] w-12 rounded-full bg-yellow"
+        className="gr-accent block h-[3px] w-12 rounded-full bg-accent"
       />
 
-      <p className="gr-eyebrow mt-5 text-[10px] font-bold tracking-[0.2em] text-navy/45">
+      <p className="gr-eyebrow mt-5 text-micro font-bold tracking-[0.2em] text-ink-muted">
         SOYESKIDS · TEACHABLE ART PLAY
       </p>
-      <p className="gr-eyebrow mt-1.5 text-[10px] font-bold tracking-[0.28em] text-trust-blue">
+      <p className="gr-eyebrow mt-1.5 text-micro font-bold tracking-[0.28em] text-trust-blue">
         GROWTH REPORT
       </p>
 
@@ -281,11 +281,11 @@ function ReportCover({ report }: { report: ParentSharedReport }) {
         )}
       </h1>
 
-      <p className="gr-subtitle mt-4 max-w-[46ch] break-words text-[14px] leading-relaxed text-navy/65 sm:text-[15px]">
+      <p className="gr-subtitle mt-4 max-w-[46ch] break-words text-label leading-relaxed text-navy/65 sm:text-body-sm">
         {report.title}
       </p>
 
-      <dl className="gr-cover-meta mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-navy/10 pt-5">
+      <dl className="gr-cover-meta mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-5">
         {place ? <MetaItem label="기관" value={place} /> : null}
         <MetaItem
           label="기간"
@@ -305,10 +305,10 @@ function ReportCover({ report }: { report: ParentSharedReport }) {
 function MetaItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <dt className="gr-meta-label text-[10px] font-bold tracking-[0.14em] text-navy/40">
+      <dt className="gr-meta-label text-micro font-bold tracking-[0.14em] text-ink-muted">
         {label}
       </dt>
-      <dd className="gr-meta mt-1 break-words text-[13px] font-medium tabular-nums text-navy/75">
+      <dd className="gr-meta mt-1 break-words text-caption font-medium tabular-nums text-navy/75">
         {value}
       </dd>
     </div>
@@ -332,15 +332,15 @@ function MetaItem({ label, value }: { label: string; value: string }) {
 type Emphasis = "primary" | "neutral" | "soft";
 
 const EMPHASIS_SURFACE: Record<Emphasis, string> = {
-  primary: "border-navy/15 bg-white border-l-[3px] border-l-navy",
-  neutral: "border-navy/10 bg-white border-l-[3px] border-l-navy/25",
-  soft: "border-navy/10 bg-surface-soft border-l-[3px] border-l-soft-green",
+  primary: "border-line-strong bg-white border-l-[3px] border-l-navy",
+  neutral: "border-line bg-white border-l-[3px] border-l-navy/25",
+  soft: "border-line bg-surface-soft border-l-[3px] border-l-soft-green",
 };
 
 const EMPHASIS_BODY: Record<Emphasis, string> = {
-  primary: "text-[17px] leading-[1.85]",
-  neutral: "text-[15px] leading-[1.8]",
-  soft: "text-[15px] leading-[1.8]",
+  primary: "text-body-lg leading-[1.85]",
+  neutral: "text-body-sm leading-[1.8]",
+  soft: "text-body-sm leading-[1.8]",
 };
 
 function Narrative({
@@ -361,14 +361,14 @@ function Narrative({
       data-emphasis={emphasis}
       className={`gr-block gr-narrative h-full rounded-2xl border px-6 py-6 sm:px-8 sm:py-7 ${EMPHASIS_SURFACE[emphasis]}`}
     >
-      <p className="gr-index text-[11px] font-bold tabular-nums tracking-[0.1em] text-navy/35">
+      <p className="gr-index text-micro font-bold tabular-nums tracking-[0.1em] text-ink-muted">
         {index}
       </p>
-      <p className="gr-eyebrow mt-1 text-[10px] font-bold tracking-[0.18em] text-trust-blue">
+      <p className="gr-eyebrow mt-1 text-micro font-bold tracking-[0.18em] text-trust-blue">
         {eyebrow}
       </p>
 
-      <h2 className="gr-heading mt-3 break-keep text-[18px] font-bold leading-snug text-navy sm:text-[20px]">
+      <h2 className="gr-heading mt-3 break-keep text-title-sm font-bold leading-snug text-navy sm:text-title">
         {heading}
       </h2>
 
@@ -396,11 +396,11 @@ function ActivityHighlight({
   activities: ParentSharedActivity[];
 }) {
   return (
-    <section className="gr-block gr-activities rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8 sm:py-7">
-      <h2 className="gr-heading text-[16px] font-bold text-navy sm:text-[17px]">
+    <section className="gr-block gr-activities rounded-2xl border border-line bg-white px-6 py-6 sm:px-8 sm:py-7">
+      <h2 className="gr-heading text-body font-bold text-navy sm:text-body-lg">
         함께한 활동
       </h2>
-      <p className="gr-meta mt-1 text-[12px] leading-relaxed text-navy/45">
+      <p className="gr-meta mt-1 text-micro leading-relaxed text-ink-muted">
         이 기간에 함께한 수업입니다.
       </p>
 
@@ -419,12 +419,12 @@ function ActivityHighlight({
 function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
   return (
     <li className="gr-activity flex flex-col gap-1 py-2.5 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4">
-      <p className="gr-meta shrink-0 text-[12px] tabular-nums text-navy/40 sm:w-[86px]">
+      <p className="gr-meta shrink-0 text-micro tabular-nums text-ink-muted sm:w-[86px]">
         {activity.observedOn ? formatDate(activity.observedOn) : ""}
       </p>
 
       <div className="min-w-0 flex-1">
-        <p className="gr-activity-title break-words text-[15px] font-bold leading-snug text-navy">
+        <p className="gr-activity-title break-words text-body-sm font-bold leading-snug text-navy">
           {activity.lessonTitle ?? "활동"}
         </p>
 
@@ -433,7 +433,7 @@ function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
             {activity.domainLabels.map((label) => (
               <span
                 key={label}
-                className="gr-tag break-keep rounded border border-navy/15 px-1.5 text-[11px] leading-[1.6] text-navy/60"
+                className="gr-tag break-keep rounded border border-line-strong px-1.5 text-micro leading-[1.6] text-ink-muted"
               >
                 {label}
               </span>
@@ -450,24 +450,24 @@ function ActivityRow({ activity }: { activity: ParentSharedActivity }) {
 /** 문서의 끝. 여기까지 읽으면 정식 결과물로 마무리되게 한다. */
 function ReportFooter({ completedAt }: { completedAt: string | null }) {
   return (
-    <footer className="gr-block gr-footer rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8">
-      <p className="gr-body text-[13px] leading-relaxed text-navy/65">
+    <footer className="gr-block gr-footer rounded-2xl border border-line bg-white px-6 py-6 sm:px-8">
+      <p className="gr-body text-caption leading-relaxed text-navy/65">
         이 기록은 TeachAble Art Play 수업 중 관찰과 교사의 검토를 바탕으로
         작성되었습니다.
       </p>
 
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-navy/10 pt-4">
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-t border-line pt-4">
         {completedAt ? (
-          <p className="gr-meta text-[12px] tabular-nums text-navy/45">
+          <p className="gr-meta text-micro tabular-nums text-ink-muted">
             {`작성 완료 ${formatDate(completedAt.slice(0, 10))}`}
           </p>
         ) : null}
 
         <p className="gr-brand text-right">
-          <span className="block text-[10px] font-bold tracking-[0.18em] text-navy/45">
+          <span className="block text-micro font-bold tracking-[0.18em] text-ink-muted">
             SOYESKIDS
           </span>
-          <span className="mt-0.5 block font-serif text-[15px] font-semibold italic text-navy">
+          <span className="mt-0.5 block text-body-sm font-bold text-navy">
             TeachAble Art Play
           </span>
         </p>
@@ -484,7 +484,7 @@ function LoadingSkeleton() {
     <div aria-live="polite" className="flex flex-col gap-4 sm:gap-5">
       <span className="sr-only">성장 기록을 불러오는 중입니다.</span>
 
-      <div className="rounded-2xl border border-navy/10 bg-white px-6 py-8 sm:px-9 sm:py-10">
+      <div className="rounded-2xl border border-line bg-white px-6 py-8 sm:px-9 sm:py-10">
         <div className="h-[3px] w-12 rounded-full bg-navy/10" />
         <div className="mt-5 h-2.5 w-40 rounded bg-navy/10" />
         <div className="mt-6 h-8 w-56 rounded bg-navy/10" />
@@ -494,7 +494,7 @@ function LoadingSkeleton() {
       {[0, 1].map((n) => (
         <div
           key={n}
-          className="rounded-2xl border border-navy/10 bg-white px-6 py-6 sm:px-8"
+          className="rounded-2xl border border-line bg-white px-6 py-6 sm:px-8"
         >
           <div className="h-2.5 w-24 rounded bg-navy/10" />
           <div className="mt-4 h-4 w-48 rounded bg-navy/10" />
@@ -516,13 +516,13 @@ function NoticeCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-navy/10 bg-white px-6 py-14 text-center">
+    <div className="rounded-2xl border border-line bg-white px-6 py-14 text-center">
       <span
         aria-hidden="true"
-        className="mx-auto block h-[3px] w-12 rounded-full bg-yellow"
+        className="mx-auto block h-[3px] w-12 rounded-full bg-accent"
       />
-      <p className="mt-6 text-[17px] font-bold text-navy">{title}</p>
-      <p className="mx-auto mt-3 max-w-[34ch] text-[14px] leading-relaxed text-navy/55">
+      <p className="mt-6 text-body-lg font-bold text-navy">{title}</p>
+      <p className="mx-auto mt-3 max-w-[34ch] text-label leading-relaxed text-ink-muted">
         {children}
       </p>
     </div>

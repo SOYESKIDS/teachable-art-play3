@@ -50,15 +50,15 @@ export default async function TeacherWeeklyReportPage({ params, searchParams }: 
       navItems={TEACHER_NAV}
       currentHref="/teacher/growth-reports"
     >
-      <h1 className="text-[24px] font-bold text-ink">
+      <h1 className="text-headline font-bold text-navy">
         주간 리포트 · {result.data.report.childName ?? "이름 없음"}
       </h1>
-      <p className="mt-1 text-[15px] text-ink-muted">
+      <p className="mt-1 text-body-sm text-ink-muted">
         {result.data.report.className ?? ""} · {result.data.report.weekNo}주
       </p>
       <Link
         href={`/teacher/growth-reports/weekly/${reportId}/summary?org=${encodeURIComponent(membership.organizationId)}`}
-        className="mt-2 inline-flex min-h-11 items-center text-[14px] font-semibold text-brand-navy underline print:hidden"
+        className="mt-2 inline-flex min-h-11 items-center text-label font-semibold text-brand-navy underline print:hidden"
       >
         8주 기록 모아보기
       </Link>

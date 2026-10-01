@@ -121,10 +121,10 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
   return (
     <div className="flex flex-col gap-6">
       <section aria-labelledby="revision-state" className="rounded-2xl border border-hairline bg-white p-5">
-        <h2 id="revision-state" className="text-[17px] font-bold text-ink">
+        <h2 id="revision-state" className="text-body-lg font-bold text-ink">
           리포트 상태
         </h2>
-        <dl className="mt-3 grid gap-2 text-[15px] sm:grid-cols-2">
+        <dl className="mt-3 grid gap-2 text-body-sm sm:grid-cols-2">
           <div>
             <dt className="text-ink-muted">최근 완료본</dt>
             <dd className="font-semibold text-ink">{latest ? `${formatDot(latest.completedAt)} 완료` : "아직 없음"}</dd>
@@ -149,16 +149,16 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
       {editing && draft ? (
         <>
           <section aria-labelledby="evidence-heading" className="rounded-2xl border border-hairline bg-white p-5">
-            <h2 id="evidence-heading" className="text-[17px] font-bold text-ink">
+            <h2 id="evidence-heading" className="text-body-lg font-bold text-ink">
               이번 주 관찰 기록 (근거)
             </h2>
             {data.evidence.length === 0 ? (
-              <p className="mt-2 text-[15px] text-warning-text">완료된 관찰 기록이 1건 이상 필요합니다.</p>
+              <p className="mt-2 text-body-sm text-warning-text">완료된 관찰 기록이 1건 이상 필요합니다.</p>
             ) : (
               <ul className="mt-3 flex flex-col gap-3">
                 {data.evidence.map((item) => (
-                  <li key={item.observationId} className="rounded-xl bg-brand-ivory p-4 text-[15px]">
-                    <p className="text-[13px] text-ink-muted">{formatDot(item.sessionDate)}</p>
+                  <li key={item.observationId} className="rounded-xl bg-brand-ivory p-4 text-body-sm">
+                    <p className="text-caption text-ink-muted">{formatDot(item.sessionDate)}</p>
                     {item.teacherNote ? <p className="mt-1 whitespace-pre-line">{item.teacherNote}</p> : null}
                     {item.childVoice ? <p className="mt-1">아이의 말: &ldquo;{item.childVoice}&rdquo;</p> : null}
                     {item.growthLabels.length > 0 ? (
@@ -171,17 +171,17 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
           </section>
 
           <section aria-labelledby="composer-heading" className="flex flex-col gap-5 rounded-2xl border border-hairline bg-white p-5">
-            <h2 id="composer-heading" className="text-[17px] font-bold text-ink">
+            <h2 id="composer-heading" className="text-body-lg font-bold text-ink">
               주간 리포트 작성
             </h2>
             {SECTIONS.map((section) => {
               const id = `weekly-${section.key}`;
               return (
                 <div key={section.key} className="flex flex-col gap-1.5">
-                  <label htmlFor={id} className="text-[16px] font-bold text-ink">
+                  <label htmlFor={id} className="text-body font-bold text-ink">
                     {section.label}
                   </label>
-                  <p id={`${id}-source`} className="text-[13px] text-ink-muted">
+                  <p id={`${id}-source`} className="text-caption text-ink-muted">
                     {section.source}
                   </p>
                   {section.editable ? (
@@ -192,10 +192,10 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
                       maxLength={section.limit}
                       rows={section.rows}
                       onChange={(event) => setContent((prev) => ({ ...prev, [section.key]: event.target.value }))}
-                      className={`${fieldTextarea} min-h-0 text-[16px]`}
+                      className={`${fieldTextarea} min-h-0 text-body`}
                     />
                   ) : (
-                    <p id={id} className="whitespace-pre-line rounded-lg bg-brand-ivory px-3 py-2 text-[15px] text-ink">
+                    <p id={id} className="whitespace-pre-line rounded-lg bg-brand-ivory px-3 py-2 text-body-sm text-ink">
                       {content[section.key] ?? "수업 자료에 내용이 없습니다."}
                     </p>
                   )}
@@ -206,7 +206,7 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
             <fieldset>
               <legend className={fieldLabel}>작품 · 활동 장면 — 사진 0~3장 선택 · 선택 사항</legend>
               {data.mediaOptions.length === 0 ? (
-                <p className="mt-2 text-[14px] text-ink-muted">선택할 수 있는 사진이 없습니다. 사진 없이도 완료할 수 있습니다.</p>
+                <p className="mt-2 text-label text-ink-muted">선택할 수 있는 사진이 없습니다. 사진 없이도 완료할 수 있습니다.</p>
               ) : (
                 <ul className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {data.mediaOptions.map((media, mediaIndex) => {
@@ -225,9 +225,9 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
                             // eslint-disable-next-line @next/next/no-img-element -- 요청마다 발급되는 임시 서명 URL
                             <img src={media.signedUrl} alt={`활동 사진 ${mediaIndex + 1}`} className="aspect-square w-full object-cover" />
                           ) : (
-                            <span className="flex aspect-square items-center justify-center text-[13px] text-ink-muted">불러오지 못함</span>
+                            <span className="flex aspect-square items-center justify-center text-caption text-ink-muted">불러오지 못함</span>
                           )}
-                          <span className="block bg-white px-2 py-1 text-center text-[13px] font-semibold text-ink">
+                          <span className="block bg-white px-2 py-1 text-center text-caption font-semibold text-ink">
                             {checked ? `선택 ${mediaIds.indexOf(media.id) + 1}` : "선택 안 함"}
                           </span>
                         </label>
@@ -236,7 +236,7 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
                   })}
                 </ul>
               )}
-              <p className="mt-2 text-[13px] text-ink-muted">
+              <p className="mt-2 text-caption text-ink-muted">
                 학부모 화면의 사진 표시는 사진 공유 기록과 기관 운영 기준에 따라 결정됩니다.
               </p>
             </fieldset>
@@ -262,14 +262,14 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
         </>
       ) : latest ? (
         <section aria-labelledby="final-heading" className="flex flex-col gap-4 rounded-2xl border border-hairline bg-white p-5">
-          <h2 id="final-heading" className="text-[17px] font-bold text-ink">
+          <h2 id="final-heading" className="text-body-lg font-bold text-ink">
             최근 완료본
           </h2>
           {SECTIONS.map((section) =>
             latest.content[section.key] ? (
               <div key={section.key}>
-                <h3 className="text-[15px] font-bold text-ink">{section.label}</h3>
-                <p className="mt-1 whitespace-pre-line text-[16px] leading-relaxed text-ink">{latest.content[section.key]}</p>
+                <h3 className="text-body-sm font-bold text-ink">{section.label}</h3>
+                <p className="mt-1 whitespace-pre-line text-body leading-relaxed text-ink">{latest.content[section.key]}</p>
               </div>
             ) : null,
           )}
@@ -287,14 +287,14 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
           </div>
         </section>
       ) : (
-        <p className="rounded-xl border border-hairline bg-white px-4 py-8 text-center text-[15px] text-ink">
+        <p className="rounded-xl border border-hairline bg-white px-4 py-8 text-center text-body-sm text-ink">
           작성 중인 리포트가 없습니다.
         </p>
       )}
 
       <Dialog open={completeOpen} onClose={() => setCompleteOpen(false)} title="리포트 완료" busy={busy}>
         <div className="flex flex-col gap-4">
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             완료하면 직접 수정할 수 없습니다. 수정이 필요하면 수정본을 만듭니다.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row-reverse">
@@ -311,7 +311,7 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
       <Dialog open={correctionOpen} onClose={() => setCorrectionOpen(false)} title="수정본 만들기" busy={correctionPending}>
         <form action={correctionAction} className="flex flex-col gap-4">
           <input type="hidden" name="reportId" value={data.report.id} />
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             완료본은 그대로 두고 새 수정본을 만듭니다. 수정본을 완료하기 전까지 학부모 화면에는 최근 완료본 기준으로 표시됩니다.
           </p>
           <div className="flex flex-col gap-1.5">

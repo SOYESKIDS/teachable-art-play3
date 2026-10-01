@@ -76,11 +76,11 @@ export default async function TeacherAttendancePage({
     >
       {!result.ok ? (
         <div>
-          <h1 className="text-[22px] font-bold text-navy">
+          <h1 className="text-headline font-bold text-navy">
             출결 체크
           </h1>
 
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/55">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
             {result.reason ===
             "load_failed"
               ? "출결 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
@@ -100,7 +100,7 @@ export default async function TeacherAttendancePage({
           <div className="mt-6 flex justify-end">
             <Link
               href={`/teacher/sessions/${sessionId}/observations?org=${encodeURIComponent(membership.organizationId)}`}
-              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-brand-navy px-5 text-[15px] font-bold text-white hover:bg-navy-deep"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-brand-navy px-5 text-body-sm font-bold text-white hover:bg-navy-deep"
             >
               관찰 기록으로
             </Link>

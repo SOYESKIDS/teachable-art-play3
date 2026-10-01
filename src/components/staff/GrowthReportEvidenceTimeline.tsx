@@ -23,19 +23,19 @@ export function GrowthReportEvidenceTimeline({
   return (
     <section className="mt-6 scroll-mt-28">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-[15px] font-bold text-navy">근거 관찰기록</h2>
-        <span className="text-[12px] tabular-nums text-navy/45">
+        <h2 className="text-body-sm font-bold text-navy">근거 관찰기록</h2>
+        <span className="text-micro tabular-nums text-ink-muted">
           {sources.length.toLocaleString("ko-KR")}건
         </span>
       </div>
 
-      <p className="mt-1 text-[11px] leading-relaxed text-navy/45">
+      <p className="mt-1 text-micro leading-relaxed text-ink-muted">
         교사가 검토 완료한 기록만 근거로 사용합니다. 채택 시점의 내용이 그대로
         보관됩니다.
       </p>
 
       {sources.length === 0 ? (
-        <p className="mt-3 rounded-xl border border-navy/10 bg-white px-4 py-8 text-center text-[13px] leading-relaxed text-navy/50">
+        <p className="mt-3 rounded-xl border border-line bg-white px-4 py-8 text-center text-caption leading-relaxed text-ink-muted">
           아직 근거로 모인 관찰기록이 없습니다.
         </p>
       ) : (
@@ -43,10 +43,10 @@ export function GrowthReportEvidenceTimeline({
           {sources.map((source) => (
             <li
               key={source.id}
-              className="scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4"
+              className="scroll-mt-28 rounded-xl border border-line bg-white p-4"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="text-[12px] tabular-nums font-semibold text-navy/55">
+                <p className="text-micro tabular-nums font-semibold text-ink-muted">
                   {source.observedOn
                     ? source.observedOn.replaceAll("-", ".")
                     : "날짜 정보 없음"}
@@ -54,7 +54,7 @@ export function GrowthReportEvidenceTimeline({
                 </p>
               </div>
 
-              <p className="mt-0.5 break-words text-[14px] font-bold leading-snug text-navy">
+              <p className="mt-0.5 break-words text-label font-bold leading-snug text-navy">
                 {source.lessonTitle ?? "차시 정보 없음"}
               </p>
 
@@ -63,7 +63,7 @@ export function GrowthReportEvidenceTimeline({
                   {source.domainLabels.map((label) => (
                     <li
                       key={label}
-                      className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-[12px] font-semibold text-navy"
+                      className="rounded-md border border-trust-blue/30 bg-trust-blue/5 px-2 py-1 text-micro font-semibold text-navy"
                     >
                       {label}
                     </li>
@@ -74,10 +74,10 @@ export function GrowthReportEvidenceTimeline({
               <div className="mt-3 flex flex-col gap-3">
                 {source.childVoice ? (
                   <div>
-                    <p className="text-[11px] font-bold text-navy/55">
+                    <p className="text-micro font-bold text-ink-muted">
                       아이의 말
                     </p>
-                    <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+                    <p className="mt-1 whitespace-pre-wrap break-words text-caption leading-relaxed text-navy">
                       {source.childVoice}
                     </p>
                   </div>
@@ -85,20 +85,20 @@ export function GrowthReportEvidenceTimeline({
 
                 {source.teacherNote ? (
                   <div>
-                    <p className="text-[11px] font-bold text-navy/55">
+                    <p className="text-micro font-bold text-ink-muted">
                       교사 관찰
                     </p>
-                    <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-navy">
+                    <p className="mt-1 whitespace-pre-wrap break-words text-caption leading-relaxed text-navy">
                       {source.teacherNote}
                     </p>
                   </div>
                 ) : null}
 
                 <div>
-                  <p className="text-[11px] font-bold text-navy/55">
+                  <p className="text-micro font-bold text-ink-muted">
                     교사 검토 완료 기록
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-soft-green/40 bg-soft-green/10 px-3 py-2.5 text-[13px] leading-relaxed text-navy">
+                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-soft-green/40 bg-soft-green/10 px-3 py-2.5 text-caption leading-relaxed text-navy">
                     {source.reviewedText}
                   </p>
                 </div>

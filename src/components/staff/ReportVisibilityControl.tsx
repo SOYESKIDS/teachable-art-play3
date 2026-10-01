@@ -59,7 +59,7 @@ export function ReportVisibilityControl({ reportId, hidden, label }: ReportVisib
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="reportId" value={reportId} />
           <input type="hidden" name="action" value={action} />
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             {hidden
               ? "가장 최근에 완료된 기록을 학부모 화면에 다시 표시합니다."
               : "학부모 화면에서 이 기록을 즉시 숨깁니다. 내부 기록은 삭제되지 않습니다."}
@@ -69,7 +69,7 @@ export function ReportVisibilityControl({ reportId, hidden, label }: ReportVisib
             <fieldset className="flex flex-col gap-1">
               <legend className={fieldLabel}>숨김 사유</legend>
               {HIDE_REASONS.map((kind) => (
-                <label key={kind} className="flex min-h-11 items-center gap-2 text-[15px]">
+                <label key={kind} className="flex min-h-11 items-center gap-2 text-body-sm">
                   <input type="radio" name="reasonKind" checked={reasonKind === kind} onChange={() => setReasonKind(kind)} />
                   {kind}
                 </label>
@@ -88,7 +88,7 @@ export function ReportVisibilityControl({ reportId, hidden, label }: ReportVisib
               maxLength={450}
               className={`${fieldTextarea} min-h-[80px]`}
             />
-            <p className="text-[13px] text-ink-muted">아이의 이름이나 기록 내용은 적지 말아 주세요.</p>
+            <p className="text-caption text-ink-muted">아이의 이름이나 기록 내용은 적지 말아 주세요.</p>
           </div>
 
           {state.phase === "error" && state.message ? (

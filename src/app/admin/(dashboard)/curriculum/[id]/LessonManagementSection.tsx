@@ -23,9 +23,9 @@ interface LessonManagementSectionProps {
 
 function SummaryItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-navy/10 bg-surface-soft px-3.5 py-2.5">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-bold tabular-nums text-navy">
+    <div className="rounded-lg border border-line bg-surface-soft px-3.5 py-2.5">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="mt-0.5 text-title font-bold tabular-nums text-navy">
         {value.toLocaleString("ko-KR")}
       </dd>
     </div>
@@ -35,7 +35,7 @@ function SummaryItem({ label, value }: { label: string; value: number }) {
 function StatusBadge({ status }: { status: CurriculumStatus }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[status]}`}
     >
       {CURRICULUM_STATUS_LABELS[status]}
     </span>
@@ -58,11 +58,11 @@ export function LessonManagementSection({
   hasError,
 }: LessonManagementSectionProps) {
   return (
-    <section className="rounded-xl border border-navy/10 bg-white p-5">
+    <section className="rounded-xl border border-line bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-bold text-navy">차시 관리</h2>
-          <p className="mt-1 text-[12px] text-navy/50">
+          <h2 className="text-body-sm font-bold text-navy">차시 관리</h2>
+          <p className="mt-1 text-micro text-ink-muted">
             주차와 차시 번호로 수업 순서를 구성합니다. 차시는 삭제하지 않고
             보관합니다.
           </p>
@@ -77,7 +77,7 @@ export function LessonManagementSection({
       </div>
 
       {hasError ? (
-        <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+        <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
           차시 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
         </p>
       ) : (
@@ -90,18 +90,18 @@ export function LessonManagementSection({
           </dl>
 
           {isProgramArchived ? (
-            <p className="mt-3 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2 text-[12px] text-navy/55">
+            <p className="mt-3 rounded-lg border border-line bg-surface-soft px-3 py-2 text-micro text-ink-muted">
               보관된 프로그램입니다. 기존 차시는 확인·수정할 수 있지만 새 차시는
               추가할 수 없습니다.
             </p>
           ) : null}
 
           {lessons.length === 0 ? (
-            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-navy">
+            <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+              <p className="text-label font-semibold text-navy">
                 등록된 차시가 없습니다.
               </p>
-              <p className="mt-1 text-[13px] text-navy/50">
+              <p className="mt-1 text-caption text-ink-muted">
                 차시를 추가하면 프로그램을 게시할 수 있습니다.
               </p>
               {!isProgramArchived ? (
@@ -116,10 +116,10 @@ export function LessonManagementSection({
           ) : (
             <>
               {/* PC: compact table */}
-              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
-                <table className="w-full border-collapse text-[13px]">
+              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-line lg:block">
+                <table className="w-full border-collapse text-caption">
                   <thead>
-                    <tr className="bg-surface-soft text-navy/50">
+                    <tr className="bg-surface-soft text-ink-muted">
                       <th className="px-4 py-2.5 text-left font-semibold">주차</th>
                       <th className="px-4 py-2.5 text-left font-semibold">차시</th>
                       <th className="px-4 py-2.5 text-left font-semibold">
@@ -139,7 +139,7 @@ export function LessonManagementSection({
                     {lessons.map((lesson) => (
                       <tr
                         key={lesson.id}
-                        className="border-t border-navy/8 bg-white"
+                        className="border-t border-line-soft bg-white"
                       >
                         <td className="whitespace-nowrap px-4 py-3 tabular-nums font-semibold text-navy">
                           {lesson.week_no}주차
@@ -169,7 +169,7 @@ export function LessonManagementSection({
                             />
                             <Link
                               href={`/admin/curriculum/${programId}/lessons/${lesson.id}`}
-                              className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                              className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
                             >
                               활동 관리
                             </Link>
@@ -186,24 +186,24 @@ export function LessonManagementSection({
                 {lessons.map((lesson) => (
                   <li
                     key={lesson.id}
-                    className="rounded-lg border border-navy/10 px-4 py-3"
+                    className="rounded-lg border border-line px-4 py-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[12px] font-semibold text-navy/50">
+                        <p className="text-micro font-semibold text-ink-muted">
                           {lesson.week_no}주차 · {lesson.session_no}차시
                         </p>
-                        <p className="mt-0.5 break-words text-[14px] font-semibold text-navy">
+                        <p className="mt-0.5 break-words text-label font-semibold text-navy">
                           {lesson.title}
                         </p>
-                        <p className="mt-0.5 text-[12px] text-navy/50">
+                        <p className="mt-0.5 text-micro text-ink-muted">
                           {formatMinutes(lesson.duration_minutes)} · 활동{" "}
                           {lesson.activityCount.toLocaleString("ko-KR")}개
                         </p>
                       </div>
                       <StatusBadge status={lesson.status} />
                     </div>
-                    <div className="mt-2.5 flex items-center justify-end gap-3 border-t border-navy/8 pt-2.5">
+                    <div className="mt-2.5 flex items-center justify-end gap-3 border-t border-line-soft pt-2.5">
                       <LessonFormDialog
                         programId={programId}
                         durationWeeks={durationWeeks}
@@ -212,7 +212,7 @@ export function LessonManagementSection({
                       />
                       <Link
                         href={`/admin/curriculum/${programId}/lessons/${lesson.id}`}
-                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
                       >
                         활동 관리
                       </Link>

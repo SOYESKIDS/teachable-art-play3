@@ -58,8 +58,8 @@ export default async function TeacherHistoryPage({
       navItems={TEACHER_NAV}
       currentHref="/teacher/history"
     >
-      <h1 className="text-[22px] font-bold text-navy">수업 이력</h1>
-      <p className="mt-1 text-[14px] text-navy/55">
+      <h1 className="text-headline font-bold text-navy">수업 이력</h1>
+      <p className="mt-1 text-label text-ink-muted">
         담당 반에서 진행한 수업 기록입니다.
       </p>
 

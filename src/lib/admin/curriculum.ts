@@ -56,9 +56,9 @@ export const CURRICULUM_STATUS_LABELS: Record<CurriculumStatus, string> = {
 
 export const CURRICULUM_STATUS_BADGE_CLASSES: Record<CurriculumStatus, string> =
   {
-    draft: "bg-pale-yellow/40 text-navy border-yellow/50",
-    published: "bg-soft-green/20 text-navy border-soft-green/50",
-    archived: "bg-navy/5 text-navy/50 border-navy/15",
+    draft: "bg-warning-soft text-warning-text border-warning-border",
+    published: "bg-success-soft text-success-text border-success-border",
+    archived: "bg-muted text-ink-muted border-border-strong",
   };
 
 export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {

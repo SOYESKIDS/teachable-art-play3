@@ -16,9 +16,9 @@ export const TEACHER_MEMBER_STATUS_BADGE_CLASSES: Record<
   TeacherMemberStatus,
   string
 > = {
-  active: "bg-soft-green/20 text-navy border-soft-green/50",
-  invited: "bg-pale-yellow/40 text-navy border-yellow/50",
-  disabled: "bg-navy/5 text-navy/50 border-navy/15",
+  active: "bg-success-soft text-success-text border-success-border",
+  invited: "bg-warning-soft text-warning-text border-warning-border",
+  disabled: "bg-muted text-ink-muted border-border-strong",
 };
 
 /** 배정 대상이 될 수 있는 멤버 상태는 active 하나뿐이다 */

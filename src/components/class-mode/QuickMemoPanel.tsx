@@ -83,14 +83,14 @@ export function QuickMemoPanel({ sessionId, initialBody, initialUpdatedAt }: Qui
   return (
     <section aria-labelledby="quick-memo-title" className="rounded-2xl border border-hairline bg-white p-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="quick-memo-title" className="text-[18px] font-bold">
+        <h2 id="quick-memo-title" className="text-title-sm font-bold">
           빠른 메모
         </h2>
-        <span aria-live="polite" className="text-[14px] font-semibold text-ink-muted">
+        <span aria-live="polite" className="text-label font-semibold text-ink-muted">
           {statusText}
         </span>
       </div>
-      <p id="quick-memo-help" className="mt-1 text-[14px] leading-relaxed text-ink-muted">
+      <p id="quick-memo-help" className="mt-1 text-label leading-relaxed text-ink-muted">
         나만 보는 메모입니다. 리포트·학부모 화면·AI에 자동으로 사용되지 않습니다.
       </p>
       <label htmlFor="quick-memo-body" className={`${fieldLabel} sr-only`}>
@@ -102,10 +102,10 @@ export function QuickMemoPanel({ sessionId, initialBody, initialUpdatedAt }: Qui
         maxLength={2000}
         aria-describedby="quick-memo-help"
         onChange={(event) => setBody(event.target.value)}
-        className={`${fieldTextarea} mt-3 min-h-[140px] w-full text-[17px]`}
+        className={`${fieldTextarea} mt-3 min-h-[140px] w-full text-body-lg`}
       />
       {status === "failed" && message ? (
-        <p role="alert" className="mt-2 text-[14px] text-danger">
+        <p role="alert" className="mt-2 text-label text-danger">
           {message}
         </p>
       ) : null}

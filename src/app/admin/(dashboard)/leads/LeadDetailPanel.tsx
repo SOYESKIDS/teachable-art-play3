@@ -22,16 +22,16 @@ interface LeadDetailPanelProps {
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-navy/8 py-3">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="text-[14px] text-navy">{children}</dd>
+    <div className="flex flex-col gap-1 border-b border-line-soft py-3">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="text-label text-navy">{children}</dd>
     </div>
   );
 }
 
 function AgreementMark({ agreed }: { agreed: boolean }) {
   return (
-    <span className={agreed ? "text-navy" : "text-navy/40"}>
+    <span className={agreed ? "text-navy" : "text-ink-muted"}>
       {agreed ? "동의" : "미동의"}
     </span>
   );
@@ -71,12 +71,12 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
         aria-label={`${lead.institution_name} 문의 상세`}
         className="relative flex max-h-[88vh] w-full flex-col rounded-t-2xl bg-white shadow-[var(--shadow-elevated)] sm:max-h-none sm:h-full sm:max-w-[480px] sm:rounded-none sm:rounded-l-2xl"
       >
-        <header className="flex items-start justify-between gap-4 border-b border-navy/10 px-5 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold text-navy/45">
+            <p className="text-micro font-semibold text-ink-muted">
               {SUBMISSION_TYPE_LABELS[lead.submission_type]}
             </p>
-            <h2 className="truncate text-[18px] font-bold text-navy">
+            <h2 className="truncate text-title-sm font-bold text-navy">
               {lead.institution_name}
             </h2>
           </div>
@@ -84,7 +84,7 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
             type="button"
             onClick={onClose}
             aria-label="상세 닫기"
-            className="shrink-0 rounded-lg border border-navy/15 px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+            className="shrink-0 rounded-lg border border-line-strong px-3 py-1.5 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
           >
             닫기
           </button>
@@ -139,11 +139,11 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
           </dl>
         </div>
 
-        <footer className="border-t border-navy/10 bg-surface-soft px-5 py-4">
+        <footer className="border-t border-line bg-surface-soft px-5 py-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold text-navy/45">현재 상태</p>
+            <p className="text-micro font-semibold text-ink-muted">현재 상태</p>
             <span
-              className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${LEAD_STATUS_BADGE_CLASSES[lead.status]}`}
+              className={`rounded-md border px-2.5 py-1 text-micro font-semibold ${LEAD_STATUS_BADGE_CLASSES[lead.status]}`}
             >
               {LEAD_STATUS_LABELS[lead.status]}
             </span>
@@ -162,10 +162,10 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
                     name="status"
                     value={status}
                     disabled={isPending || isCurrent}
-                    className={`rounded-lg border px-3 py-2 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed ${
+                    className={`rounded-lg border px-3 py-2 text-caption font-semibold transition-colors disabled:cursor-not-allowed ${
                       isCurrent
                         ? "border-navy bg-navy text-white opacity-100"
-                        : "border-navy/20 bg-white text-navy hover:border-navy/40 hover:bg-navy/5 disabled:opacity-50"
+                        : "border-line-strong bg-white text-navy hover:border-navy/40 hover:bg-navy/5 disabled:opacity-50"
                     }`}
                   >
                     {LEAD_STATUS_LABELS[status]}
@@ -178,14 +178,14 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
           {state.phase === "error" && state.message ? (
             <p
               role="alert"
-              className="mt-3 rounded-lg border border-soft-coral/50 bg-soft-coral/10 px-3 py-2 text-[13px] text-navy"
+              className="mt-3 rounded-lg border border-soft-coral/50 bg-soft-coral/10 px-3 py-2 text-caption text-navy"
             >
               {state.message}
             </p>
           ) : null}
 
           {isPending ? (
-            <p className="mt-3 text-[12px] text-navy/50">상태를 변경하는 중…</p>
+            <p className="mt-3 text-micro text-ink-muted">상태를 변경하는 중…</p>
           ) : null}
         </footer>
       </aside>

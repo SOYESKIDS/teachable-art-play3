@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   formatClassOptionLabel,
   formatProgramOptionLabel,
@@ -29,9 +30,9 @@ interface ClassProgramAssignDialogProps {
 
 const buttonClasses = {
   primary:
-    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep",
+    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-caption font-semibold text-white transition-colors hover:bg-navy-deep",
   outline:
-    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
+    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-caption font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
 } as const;
 
 const inputClasses = fieldInput;
@@ -87,17 +88,6 @@ export function ClassProgramAssignDialog({
     },
     CLASS_CHILD_FORM_INITIAL_STATE,
   );
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsOpen(false);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
 
   function updateValue<K extends keyof AssignFormValues>(
     key: K,
@@ -173,203 +163,172 @@ export function ClassProgramAssignDialog({
         프로그램 배정
       </button>
 
-      {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-navy/40"
-          />
-
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="assign-program-title"
-            className="relative max-h-[92vh] w-full max-w-[520px] overflow-y-auto rounded-t-2xl bg-white shadow-[var(--shadow-elevated)] sm:rounded-2xl"
-          >
-            <header className="flex items-start justify-between gap-4 border-b border-navy/10 px-5 py-4">
-              <div className="min-w-0">
-                <h2
-                  id="assign-program-title"
-                  className="text-[17px] font-bold text-navy"
-                >
-                  프로그램 배정
-                </h2>
-                <p className="mt-0.5 text-[12px] text-navy/50">
-                  운영 중인 반에 게시된 프로그램을 배정합니다.
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="프로그램 배정"
+        description="운영 중인 반에 게시된 프로그램을 배정합니다."
+        size="lg"
+        busy={isPending}
+      >
+        {hasNoClass || hasNoProgram ? (
+          <div className="py-3 text-center">
+            {hasNoClass ? (
+              <>
+                <p className="text-label font-semibold text-navy">
+                  운영 중인 반이 없습니다.
                 </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="프로그램 배정 닫기"
-                className="shrink-0 rounded-lg border border-navy/15 px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
-              >
-                닫기
-              </button>
-            </header>
-
-            {hasNoClass || hasNoProgram ? (
-              <div className="px-5 py-8 text-center">
-                {hasNoClass ? (
-                  <>
-                    <p className="text-[14px] font-semibold text-navy">
-                      운영 중인 반이 없습니다.
-                    </p>
-                    <p className="mt-1.5 text-[13px] text-navy/55">
-                      먼저 반을 등록하거나 운영 상태로 변경해주세요.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[14px] font-semibold text-navy">
-                      배정할 수 있는 게시 프로그램이 없습니다.
-                    </p>
-                    <p className="mt-1.5 text-[13px] text-navy/55">
-                      먼저 수업 프로그램을 게시해주세요.
-                    </p>
-                    <Link
-                      href="/admin/curriculum"
-                      className="mt-4 inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
-                    >
-                      수업 프로그램 관리로 이동 →
-                    </Link>
-                  </>
-                )}
-              </div>
+                <p className="mt-1.5 text-caption text-ink-muted">
+                  먼저 반을 등록하거나 운영 상태로 변경해주세요.
+                </p>
+              </>
             ) : (
-              <form action={formAction} className="flex flex-col gap-4 px-5 py-5">
-                <input
-                  type="hidden"
-                  name="organizationId"
-                  value={organizationId}
-                />
-
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="text-[12px] font-semibold text-navy/60"
-                    htmlFor="assign-class"
-                  >
-                    반 <span className="text-trust-blue">*</span>
-                  </label>
-                  <select
-                    id="assign-class"
-                    name="classId"
-                    required
-                    disabled={isPending}
-                    value={values.classId}
-                    onChange={(event) => selectClass(event.target.value)}
-                    className={inputClasses}
-                  >
-                    <option value="">반을 선택하세요</option>
-                    {assignableClasses.map((classOption) => (
-                      <option key={classOption.id} value={classOption.id}>
-                        {formatClassOptionLabel(
-                          classOption.name,
-                          classOption.ageGroup,
-                          classOption.schoolYear,
-                        )}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[12px] text-navy/45">
-                    보관된 반은 새로 배정할 수 없어 목록에 없습니다.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="text-[12px] font-semibold text-navy/60"
-                    htmlFor="assign-program"
-                  >
-                    프로그램 <span className="text-trust-blue">*</span>
-                  </label>
-                  <select
-                    id="assign-program"
-                    name="programId"
-                    required
-                    disabled={isPending}
-                    value={values.programId}
-                    onChange={(event) =>
-                      updateValue("programId", event.target.value)
-                    }
-                    className={inputClasses}
-                  >
-                    <option value="">프로그램을 선택하세요</option>
-                    {programOptions.map((program) => (
-                      <option key={program.id} value={program.id}>
-                        {formatProgramOptionLabel(
-                          program.code,
-                          program.title,
-                          program.durationWeeks,
-                          program.ageGroup,
-                        )}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[12px] text-navy/45">
-                    {selectedClass && programOptions.length === 0
-                      ? "이 반은 게시된 프로그램을 이미 모두 운영 중입니다."
-                      : "게시된 프로그램만 배정할 수 있습니다. 이미 운영 중인 프로그램은 제외됩니다."}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="text-[12px] font-semibold text-navy/60"
-                    htmlFor="assign-start-date"
-                  >
-                    시작일
-                  </label>
-                  <input
-                    id="assign-start-date"
-                    name="start_date"
-                    type="date"
-                    disabled={isPending}
-                    value={values.startDate}
-                    onChange={(event) =>
-                      updateValue("startDate", event.target.value)
-                    }
-                    className={inputClasses}
-                  />
-                  <p className="text-[12px] text-navy/45">
-                    아직 정해지지 않았다면 비워두세요.
-                  </p>
-                </div>
-
-                {showAgeMismatch ? (
-                  <p className="rounded-lg border border-yellow/50 bg-yellow-soft px-3 py-2 text-[13px] text-navy">
-                    반 연령과 프로그램 권장 연령이 다릅니다. 그대로 배정할 수
-                    있습니다.
-                  </p>
-                ) : null}
-
-                {visibleMessage ? (
-                  <p
-                    role="alert"
-                    className={`rounded-lg border px-3 py-2 text-[13px] ${
-                      state.phase === "error"
-                        ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-                        : "border-soft-green/50 bg-soft-green/15 text-navy"
-                    }`}
-                  >
-                    {visibleMessage}
-                  </p>
-                ) : null}
-
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="mt-1 h-11 rounded-lg bg-navy text-[14px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+              <>
+                <p className="text-label font-semibold text-navy">
+                  배정할 수 있는 게시 프로그램이 없습니다.
+                </p>
+                <p className="mt-1.5 text-caption text-ink-muted">
+                  먼저 수업 프로그램을 게시해주세요.
+                </p>
+                <Link
+                  href="/admin/curriculum"
+                  className="mt-4 inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
                 >
-                  {isPending ? "배정 중…" : "배정하기"}
-                </button>
-              </form>
+                  수업 프로그램 관리로 이동 →
+                </Link>
+              </>
             )}
           </div>
-        </div>
-      ) : null}
+        ) : (
+          <form action={formAction} className="flex flex-col gap-4">
+            <input
+              type="hidden"
+              name="organizationId"
+              value={organizationId}
+            />
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="text-micro font-semibold text-ink-muted"
+                htmlFor="assign-class"
+              >
+                반 <span className="text-trust-blue">*</span>
+              </label>
+              <select
+                id="assign-class"
+                name="classId"
+                required
+                disabled={isPending}
+                value={values.classId}
+                onChange={(event) => selectClass(event.target.value)}
+                className={inputClasses}
+              >
+                <option value="">반을 선택하세요</option>
+                {assignableClasses.map((classOption) => (
+                  <option key={classOption.id} value={classOption.id}>
+                    {formatClassOptionLabel(
+                      classOption.name,
+                      classOption.ageGroup,
+                      classOption.schoolYear,
+                    )}
+                  </option>
+                ))}
+              </select>
+              <p className="text-micro text-ink-muted">
+                보관된 반은 새로 배정할 수 없어 목록에 없습니다.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="text-micro font-semibold text-ink-muted"
+                htmlFor="assign-program"
+              >
+                프로그램 <span className="text-trust-blue">*</span>
+              </label>
+              <select
+                id="assign-program"
+                name="programId"
+                required
+                disabled={isPending}
+                value={values.programId}
+                onChange={(event) =>
+                  updateValue("programId", event.target.value)
+                }
+                className={inputClasses}
+              >
+                <option value="">프로그램을 선택하세요</option>
+                {programOptions.map((program) => (
+                  <option key={program.id} value={program.id}>
+                    {formatProgramOptionLabel(
+                      program.code,
+                      program.title,
+                      program.durationWeeks,
+                      program.ageGroup,
+                    )}
+                  </option>
+                ))}
+              </select>
+              <p className="text-micro text-ink-muted">
+                {selectedClass && programOptions.length === 0
+                  ? "이 반은 게시된 프로그램을 이미 모두 운영 중입니다."
+                  : "게시된 프로그램만 배정할 수 있습니다. 이미 운영 중인 프로그램은 제외됩니다."}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="text-micro font-semibold text-ink-muted"
+                htmlFor="assign-start-date"
+              >
+                시작일
+              </label>
+              <input
+                id="assign-start-date"
+                name="start_date"
+                type="date"
+                disabled={isPending}
+                value={values.startDate}
+                onChange={(event) =>
+                  updateValue("startDate", event.target.value)
+                }
+                className={inputClasses}
+              />
+              <p className="text-micro text-ink-muted">
+                아직 정해지지 않았다면 비워두세요.
+              </p>
+            </div>
+
+            {showAgeMismatch ? (
+              <p className="rounded-lg border border-warning-border bg-warning-soft px-3 py-2 text-caption text-navy">
+                반 연령과 프로그램 권장 연령이 다릅니다. 그대로 배정할 수
+                있습니다.
+              </p>
+            ) : null}
+
+            {visibleMessage ? (
+              <p
+                role="alert"
+                className={`rounded-lg border px-3 py-2 text-caption ${
+                  state.phase === "error"
+                    ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
+                    : "border-soft-green/50 bg-soft-green/15 text-navy"
+                }`}
+              >
+                {visibleMessage}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={isPending}
+              className="mt-1 h-11 rounded-lg bg-navy text-label font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isPending ? "배정 중…" : "배정하기"}
+            </button>
+          </form>
+        )}
+      </Dialog>
     </>
   );
 }

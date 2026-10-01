@@ -99,7 +99,7 @@ export function SessionHistoryBoard({
 
   if (hasError) {
     return (
-      <p className="rounded-xl border border-navy/10 bg-white px-4 py-12 text-center text-[14px] text-navy/55">
+      <p className="rounded-xl border border-line bg-white px-4 py-12 text-center text-label text-ink-muted">
         수업 이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
       </p>
     );
@@ -107,7 +107,7 @@ export function SessionHistoryBoard({
 
   if (sessions.length === 0) {
     return (
-      <p className="rounded-xl border border-navy/10 bg-white px-4 py-12 text-center text-[14px] text-navy/55">
+      <p className="rounded-xl border border-line bg-white px-4 py-12 text-center text-label text-ink-muted">
         아직 진행한 수업이 없습니다.
       </p>
     );
@@ -127,10 +127,10 @@ export function SessionHistoryBoard({
         ).map(([label, value]) => (
           <div
             key={label}
-            className="rounded-xl border border-navy/10 bg-white px-4 py-3"
+            className="rounded-xl border border-line bg-white px-4 py-3"
           >
-            <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-            <dd className="mt-0.5 text-[22px] font-bold tabular-nums leading-none text-navy">
+            <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+            <dd className="mt-0.5 text-title-lg font-bold tabular-nums leading-none text-navy">
               {value.toLocaleString("ko-KR")}
             </dd>
           </div>
@@ -180,13 +180,13 @@ export function SessionHistoryBoard({
           </>
         ) : null}
 
-        <p className="text-[13px] tabular-nums text-navy/45">
+        <p className="text-caption tabular-nums text-ink-muted">
           {visible.length.toLocaleString("ko-KR")}건 표시 중
         </p>
       </div>
 
       {visible.length === 0 ? (
-        <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] text-navy/55">
+        <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label text-ink-muted">
           해당 조건의 수업이 없습니다.
         </p>
       ) : (

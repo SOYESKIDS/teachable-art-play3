@@ -97,7 +97,7 @@ export function SessionActions({ session, actorRole, classModeBasePath }: Sessio
       </div>
 
       {session.status === "scheduled" && !session.parentsActive ? (
-        <p className="mt-2 text-[13px] leading-relaxed text-ink-muted">
+        <p className="mt-2 text-caption leading-relaxed text-ink-muted">
           반 보관 또는 프로그램 배정 종료로 진행할 수 없는 수업입니다. 필요하면 수업 취소로 정리해 주세요.
         </p>
       ) : null}
@@ -117,7 +117,7 @@ export function SessionActions({ session, actorRole, classModeBasePath }: Sessio
       >
         <form action={cancelAction} className="flex flex-col gap-4">
           <input type="hidden" name="sessionId" value={session.id} />
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             취소한 수업은 다시 진행할 수 없습니다. 이미 남긴 기록은 이력에 그대로 남습니다.
           </p>
           <div className="flex flex-col gap-1.5">
@@ -172,7 +172,7 @@ export function SessionActions({ session, actorRole, classModeBasePath }: Sessio
               aria-describedby={`recovery-reason-help-${session.id}`}
               className={`${fieldTextarea} min-h-[88px]`}
             />
-            <p id={`recovery-reason-help-${session.id}`} className="text-[13px] text-ink-muted">
+            <p id={`recovery-reason-help-${session.id}`} className="text-caption text-ink-muted">
               아이의 이름이나 기록 내용은 적지 말아 주세요.
             </p>
           </div>

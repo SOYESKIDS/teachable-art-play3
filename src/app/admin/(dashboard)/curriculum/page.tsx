@@ -23,12 +23,12 @@ export default async function AdminCurriculumPage() {
   if (!result.ok) {
     return (
       <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
-        <h1 className="text-[22px] font-bold text-navy">수업 프로그램</h1>
-        <div className="mt-6 rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <h1 className="text-headline font-bold text-navy">수업 프로그램</h1>
+        <div className="mt-6 rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             프로그램 데이터를 불러오지 못했습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             잠시 후 다시 시도해주세요.
           </p>
         </div>
@@ -46,8 +46,8 @@ export default async function AdminCurriculumPage() {
     <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-[22px] font-bold text-navy">수업 프로그램</h1>
-          <p className="text-[14px] text-navy/55">
+          <h1 className="text-headline font-bold text-navy">수업 프로그램</h1>
+          <p className="text-label text-ink-muted">
             TeachAble Art Play에서 사용하는 공용 교육 프로그램을 관리합니다.
           </p>
         </div>
@@ -70,13 +70,13 @@ export default async function AdminCurriculumPage() {
             <div
               key={item.label}
               className={`rounded-xl border bg-white px-4 py-3.5 ${
-                item.accent ? "border-yellow/50" : "border-navy/10"
+                item.accent ? "border-accent/40" : "border-line"
               }`}
             >
-              <dt className="text-[11px] font-semibold text-navy/45">
+              <dt className="text-micro font-semibold text-ink-muted">
                 {item.label}
               </dt>
-              <dd className="mt-1 text-[24px] font-bold tabular-nums text-navy">
+              <dd className="mt-1 text-headline font-bold tabular-nums text-navy">
                 {item.value.toLocaleString("ko-KR")}
               </dd>
             </div>

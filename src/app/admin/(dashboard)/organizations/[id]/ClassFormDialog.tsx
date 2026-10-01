@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useState, type FormEvent } from "react";
+import { useActionState, useState, type FormEvent } from "react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   AGE_GROUPS,
   AGE_GROUP_LABELS,
@@ -29,10 +30,10 @@ interface ClassFormDialogProps {
 
 const buttonClasses = {
   primary:
-    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep",
+    "min-h-11 rounded-lg bg-navy px-4 py-2.5 text-caption font-semibold text-white transition-colors hover:bg-navy-deep",
   outline:
-    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
-  link: "inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70",
+    "min-h-11 rounded-lg border border-navy/25 bg-white px-4 py-2.5 text-caption font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-navy/5",
+  link: "inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70",
 } as const;
 
 const ARCHIVE_CONFIRM =
@@ -69,17 +70,6 @@ export function ClassFormDialog({
     CLASS_CHILD_FORM_INITIAL_STATE,
   );
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsOpen(false);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
   /** 운영 중 → 보관 전환은 되돌리기 번거로운 동작이라 한 번 확인한다 */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (!isEdit || classRow.status !== "active") return;
@@ -103,170 +93,139 @@ export function ClassFormDialog({
         {isEdit ? "수정" : "반 추가"}
       </button>
 
-      {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-navy/40"
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={title}
+        description="같은 학년도에 같은 이름의 운영 중인 반은 만들 수 없습니다."
+        size="md"
+        busy={isPending}
+      >
+        <form
+          action={formAction}
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+        >
+          <input
+            type="hidden"
+            name="organizationId"
+            value={organizationId}
           />
+          {isEdit ? (
+            <input type="hidden" name="classId" value={classRow.id} />
+          ) : null}
 
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="class-form-title"
-            className="relative max-h-[92vh] w-full max-w-[460px] overflow-y-auto rounded-t-2xl bg-white shadow-[var(--shadow-elevated)] sm:rounded-2xl"
-          >
-            <header className="flex items-start justify-between gap-4 border-b border-navy/10 px-5 py-4">
-              <div>
-                <h2
-                  id="class-form-title"
-                  className="text-[17px] font-bold text-navy"
-                >
-                  {title}
-                </h2>
-                <p className="mt-0.5 text-[12px] text-navy/50">
-                  같은 학년도에 같은 이름의 운영 중인 반은 만들 수 없습니다.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label={`${title} 닫기`}
-                className="shrink-0 rounded-lg border border-navy/15 px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
-              >
-                닫기
-              </button>
-            </header>
-
-            <form
-              action={formAction}
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-4 px-5 py-5"
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="class-name"
             >
-              <input
-                type="hidden"
-                name="organizationId"
-                value={organizationId}
-              />
-              {isEdit ? (
-                <input type="hidden" name="classId" value={classRow.id} />
-              ) : null}
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="class-name"
-                >
-                  반 이름 <span className="text-trust-blue">*</span>
-                </label>
-                <input
-                  id="class-name"
-                  name="name"
-                  type="text"
-                  required
-                  maxLength={NAME_MAX_LENGTH}
-                  disabled={isPending}
-                  defaultValue={classRow?.name ?? ""}
-                  placeholder="예) 햇살반"
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="class-age-group"
-                >
-                  연령
-                </label>
-                <select
-                  id="class-age-group"
-                  name="age_group"
-                  disabled={isPending}
-                  defaultValue={classRow?.age_group ?? ""}
-                  className={inputClasses}
-                >
-                  <option value="">미설정</option>
-                  {AGE_GROUPS.map((ageGroup) => (
-                    <option key={ageGroup} value={ageGroup}>
-                      {AGE_GROUP_LABELS[ageGroup]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="class-school-year"
-                >
-                  학년도 <span className="text-trust-blue">*</span>
-                </label>
-                <input
-                  id="class-school-year"
-                  name="school_year"
-                  type="number"
-                  required
-                  min={SCHOOL_YEAR_MIN}
-                  max={SCHOOL_YEAR_MAX}
-                  step={1}
-                  disabled={isPending}
-                  defaultValue={classRow?.school_year ?? defaultSchoolYear}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[12px] font-semibold text-navy/60"
-                  htmlFor="class-status"
-                >
-                  상태
-                </label>
-                <select
-                  id="class-status"
-                  name="status"
-                  disabled={isPending}
-                  defaultValue={classRow?.status ?? "active"}
-                  className={inputClasses}
-                >
-                  {CLASS_STATUSES.map((status) => (
-                    <option key={status} value={status}>
-                      {CLASS_STATUS_LABELS[status]}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-[12px] text-navy/45">
-                  보관해도 원아 정보는 삭제되지 않습니다. 반은 삭제할 수 없습니다.
-                </p>
-              </div>
-
-              {state.message ? (
-                <p
-                  role="alert"
-                  className={`rounded-lg border px-3 py-2 text-[13px] ${
-                    state.phase === "error"
-                      ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-                      : "border-soft-green/50 bg-soft-green/15 text-navy"
-                  }`}
-                >
-                  {state.message}
-                </p>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={isPending}
-                className="mt-1 h-11 rounded-lg bg-navy text-[14px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isPending ? "저장 중…" : "저장"}
-              </button>
-            </form>
+              반 이름 <span className="text-trust-blue">*</span>
+            </label>
+            <input
+              id="class-name"
+              name="name"
+              type="text"
+              required
+              maxLength={NAME_MAX_LENGTH}
+              disabled={isPending}
+              defaultValue={classRow?.name ?? ""}
+              placeholder="예) 햇살반"
+              className={inputClasses}
+            />
           </div>
-        </div>
-      ) : null}
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="class-age-group"
+            >
+              연령
+            </label>
+            <select
+              id="class-age-group"
+              name="age_group"
+              disabled={isPending}
+              defaultValue={classRow?.age_group ?? ""}
+              className={inputClasses}
+            >
+              <option value="">미설정</option>
+              {AGE_GROUPS.map((ageGroup) => (
+                <option key={ageGroup} value={ageGroup}>
+                  {AGE_GROUP_LABELS[ageGroup]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="class-school-year"
+            >
+              학년도 <span className="text-trust-blue">*</span>
+            </label>
+            <input
+              id="class-school-year"
+              name="school_year"
+              type="number"
+              required
+              min={SCHOOL_YEAR_MIN}
+              max={SCHOOL_YEAR_MAX}
+              step={1}
+              disabled={isPending}
+              defaultValue={classRow?.school_year ?? defaultSchoolYear}
+              className={inputClasses}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="text-micro font-semibold text-ink-muted"
+              htmlFor="class-status"
+            >
+              상태
+            </label>
+            <select
+              id="class-status"
+              name="status"
+              disabled={isPending}
+              defaultValue={classRow?.status ?? "active"}
+              className={inputClasses}
+            >
+              {CLASS_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {CLASS_STATUS_LABELS[status]}
+                </option>
+              ))}
+            </select>
+            <p className="text-micro text-ink-muted">
+              보관해도 원아 정보는 삭제되지 않습니다. 반은 삭제할 수 없습니다.
+            </p>
+          </div>
+
+          {state.message ? (
+            <p
+              role="alert"
+              className={`rounded-lg border px-3 py-2 text-caption ${
+                state.phase === "error"
+                  ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
+                  : "border-soft-green/50 bg-soft-green/15 text-navy"
+              }`}
+            >
+              {state.message}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="mt-1 h-11 rounded-lg bg-navy text-label font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isPending ? "저장 중…" : "반 정보 저장"}
+          </button>
+        </form>
+      </Dialog>
     </>
   );
 }

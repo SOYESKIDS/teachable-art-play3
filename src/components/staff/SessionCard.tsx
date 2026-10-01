@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { appButtonSecondary } from "@/components/ui/app-button";
 import {
   CLASS_SESSION_STATUS_BADGE_CLASSES,
   CLASS_SESSION_STATUS_LABELS,
@@ -62,8 +63,9 @@ export function SessionStatusBadge({
 }) {
   return (
     <span
-      className={`inline-block shrink-0 rounded-md border px-2.5 py-1 text-[12px] font-bold ${CLASS_SESSION_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-micro font-bold ${CLASS_SESSION_STATUS_BADGE_CLASSES[status]}`}
     >
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
       {CLASS_SESSION_STATUS_LABELS[status]}
     </span>
   );
@@ -92,30 +94,37 @@ export function SessionCard({
   const hasDetailLinks = Boolean(attendanceHref || observationHref);
 
   return (
-    <li className="rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
+    <li
+      id={`session-${session.id}`}
+      className="scroll-mt-24 rounded-2xl border border-line bg-white p-5 transition-[border-color,box-shadow] duration-200 target:border-navy target:shadow-[var(--shadow-card)] hover:border-line-strong hover:shadow-[var(--shadow-card)] sm:p-6"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           {showClassName ? (
-            <p className="truncate text-[13px] font-bold text-navy">
+            <p className="truncate text-label font-bold text-navy">
               {session.className ?? "반 정보 없음"}
               {session.classStatus === "archived" ? (
-                <span className="ml-1 text-[12px] font-normal text-navy/40">
+                <span className="ml-1 text-micro font-normal text-ink-muted">
                   (보관)
                 </span>
               ) : null}
             </p>
           ) : null}
 
-          <p className="mt-0.5 text-[12px] text-navy/50">
+          <p className="mt-0.5 text-caption text-ink-muted">
             {formatLessonOrder(session.weekNo, session.sessionNo)}
             {session.programTitle ? ` · ${session.programTitle}` : ""}
           </p>
 
-          <p className="mt-1 break-words text-[16px] font-bold leading-snug text-navy">
+          <p className="mt-2 break-words text-title-sm font-bold leading-snug text-navy">
             {session.lessonTitle ?? "차시 정보 없음"}
           </p>
 
-          <p className="mt-1 text-[12px] text-navy/50">
+          <p className="mt-1.5 inline-flex items-center gap-1.5 text-caption tabular-nums text-ink-muted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="4" y="5" width="16" height="15" rx="2" />
+              <path d="M8 3v4M16 3v4M4 10h16" />
+            </svg>
             예정일 {formatSessionDate(session.scheduled_date)}
             {session.programCode ? ` · ${session.programCode}` : ""}
           </p>
@@ -130,11 +139,11 @@ export function SessionCard({
         좁은 화면에서 "출결 확인·정정"이 두 줄로 깨지기 때문이다.
       */}
       {hasDetailLinks ? (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-navy/8 pt-4">
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-line-soft pt-4">
           {attendanceHref ? (
             <Link
               href={attendanceHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[14px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+              className={appButtonSecondary}
             >
               {attendanceButtonLabel(session.status)}
             </Link>
@@ -149,7 +158,7 @@ export function SessionCard({
             <Link
               href={observationHref}
               aria-label={`${sessionAriaName(session)} 관찰기록`}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-navy/20 bg-white px-4 text-[14px] font-bold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+              className={appButtonSecondary}
             >
               관찰기록
             </Link>
@@ -160,7 +169,7 @@ export function SessionCard({
       {showActions ? (
         <div
           className={
-            hasDetailLinks ? "mt-3" : "mt-4 border-t border-navy/8 pt-4"
+            hasDetailLinks ? "mt-3" : "mt-5 border-t border-line-soft pt-4"
           }
         >
           {/* 수업 상태 변경은 SaaS 2.0 전환 RPC 경로만 (start · finish · recovery · cancel) */}
@@ -169,7 +178,7 @@ export function SessionCard({
       ) : null}
 
       {readOnly && !isTerminal ? (
-        <p className="mt-3 border-t border-navy/8 pt-3 text-[12px] text-navy/45">
+        <p className="mt-4 border-t border-line-soft pt-3 text-caption text-ink-muted">
           상태 변경은 오늘의 수업 화면에서 할 수 있습니다.
         </p>
       ) : null}

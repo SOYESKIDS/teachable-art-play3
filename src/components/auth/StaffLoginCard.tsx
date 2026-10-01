@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthCard } from "./AuthShell";
 import { StaffLoginForm } from "./StaffLoginForm";
 
 /**
@@ -24,28 +25,21 @@ export function StaffLoginCard({
   footnote: string;
 }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-line bg-white p-7 shadow-[var(--shadow-card)] sm:p-9">
-      <p className="eyebrow text-yellow">TEACHABLE ART PLAY</p>
-
-      <h1 className="mt-3 text-h3 font-bold text-navy">{title}</h1>
-      <p className="mt-2 text-[15px] leading-relaxed text-navy/60">
-        {description}
-      </p>
-
+    <AuthCard eyebrow="원장 · 교사" title={title} description={description}>
       <StaffLoginForm initialError={initialError} idPrefix={idPrefix} />
 
-      <p className="mt-5 text-center text-[13px] text-navy/50">
+      <p className="mt-4 text-center text-caption">
         <Link
           href="/auth/forgot-password"
-          className="inline-flex min-h-11 items-center font-semibold text-navy/70 underline-offset-4 transition-colors hover:text-navy hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-ink-muted underline-offset-4 transition-colors hover:text-navy hover:underline"
         >
           비밀번호를 잊으셨나요?
         </Link>
       </p>
 
-      <p className="mt-2 border-t border-line-soft pt-5 text-center text-[12px] leading-relaxed text-navy/45">
+      <p className="mt-3 border-t border-line-soft pt-5 text-center text-caption text-ink-muted">
         {footnote}
       </p>
-    </div>
+    </AuthCard>
   );
 }

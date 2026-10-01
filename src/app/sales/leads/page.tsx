@@ -13,8 +13,8 @@ interface SalesLeadsPageProps {
 function PanelMessage({ title, description }: { title: string; description?: string }) {
   return (
     <div className="rounded-xl border border-hairline bg-white px-6 py-16 text-center">
-      <p className="text-[15px] font-semibold text-ink">{title}</p>
-      {description ? <p className="mt-1.5 text-[14px] text-ink-muted">{description}</p> : null}
+      <p className="text-body-sm font-semibold text-ink">{title}</p>
+      {description ? <p className="mt-1.5 text-label text-ink-muted">{description}</p> : null}
     </div>
   );
 }
@@ -34,8 +34,8 @@ export default async function SalesLeadsPage({ searchParams }: SalesLeadsPagePro
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
-      <h1 className="text-[22px] font-bold text-ink">문의 관리</h1>
-      <p className="mt-1 text-[14px] text-ink-muted">도입 문의 · 데모 · Pilot 문의를 관리합니다.</p>
+      <h1 className="text-headline font-bold text-navy">문의 관리</h1>
+      <p className="mt-1 text-label text-ink-muted">도입 문의 · 데모 · Pilot 문의를 관리합니다.</p>
 
       {!listResult.ok || !kpiResult.ok ? (
         <div className="mt-6">
@@ -43,7 +43,7 @@ export default async function SalesLeadsPage({ searchParams }: SalesLeadsPagePro
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-5">
-          <LeadKpiRow kpis={kpiResult.kpis} />
+          <LeadKpiRow kpis={kpiResult.kpis} filters={filters} basePath={basePath} />
           <LeadFilterBar filters={filters} basePath={basePath} />
           {kpiResult.kpis.total === 0 ? (
             <PanelMessage title="아직 접수된 문의가 없습니다." />

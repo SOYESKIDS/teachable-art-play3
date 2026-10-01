@@ -58,11 +58,11 @@ export default async function LessonDetailPage({
   if (!programResult.ok || !lessonResult.ok) {
     return (
       <div className="mx-auto w-full max-w-[1100px] px-5 py-8 lg:px-8">
-        <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             차시 데이터를 불러오지 못했습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             잠시 후 다시 시도해주세요.
           </p>
         </div>
@@ -108,7 +108,7 @@ export default async function LessonDetailPage({
       {/* Breadcrumb — 모바일에서도 줄바꿈되도록 flex-wrap */}
       <nav
         aria-label="이동 경로"
-        className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px]"
+        className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption"
       >
         <Link
           href="/admin/curriculum"
@@ -128,51 +128,51 @@ export default async function LessonDetailPage({
         <span aria-hidden className="text-navy/30">
           ›
         </span>
-        <span className="text-navy/55">
+        <span className="text-ink-muted">
           {lesson.week_no}주차 {lesson.session_no}차시
         </span>
       </nav>
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="text-[22px] font-bold text-navy">{lesson.title}</h1>
+        <h1 className="text-headline font-bold text-navy">{lesson.title}</h1>
         <span
-          className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[lesson.status]}`}
+          className={`rounded-md border px-2.5 py-1 text-micro font-semibold ${CURRICULUM_STATUS_BADGE_CLASSES[lesson.status]}`}
         >
           {CURRICULUM_STATUS_LABELS[lesson.status]}
         </span>
       </div>
-      <p className="mt-1 text-[13px] text-navy/50">
+      <p className="mt-1 text-caption text-ink-muted">
         {program.code} · {lesson.week_no}주차 {lesson.session_no}차시 ·{" "}
         {formatMinutes(lesson.duration_minutes)}
       </p>
 
       <div className="mt-6 flex flex-col gap-5">
-        <section className="rounded-xl border border-navy/10 bg-white p-5">
-          <h2 className="text-[15px] font-bold text-navy">차시 정보</h2>
+        <section className="rounded-xl border border-line bg-white p-5">
+          <h2 className="text-body-sm font-bold text-navy">차시 정보</h2>
           <dl className="mt-2">
-            <div className="flex flex-col gap-1 border-b border-navy/8 py-3">
-              <dt className="text-[11px] font-semibold text-navy/45">차시명</dt>
-              <dd className="text-[14px] text-navy">{lesson.title}</dd>
+            <div className="flex flex-col gap-1 border-b border-line-soft py-3">
+              <dt className="text-micro font-semibold text-ink-muted">차시명</dt>
+              <dd className="text-label text-navy">{lesson.title}</dd>
             </div>
             <div className="flex flex-col gap-1 py-3">
-              <dt className="text-[11px] font-semibold text-navy/45">
+              <dt className="text-micro font-semibold text-ink-muted">
                 교육 목표
               </dt>
-              <dd className="whitespace-pre-line text-[14px] leading-relaxed text-navy">
+              <dd className="whitespace-pre-line text-label leading-relaxed text-navy">
                 {formatOptionalText(lesson.objective)}
               </dd>
             </div>
           </dl>
-          <p className="mt-1 text-[12px] text-navy/45">
+          <p className="mt-1 text-micro text-ink-muted">
             차시 정보 수정은 프로그램 상세의 차시 목록에서 할 수 있습니다.
           </p>
         </section>
 
-        <section className="rounded-xl border border-navy/10 bg-white p-5">
+        <section className="rounded-xl border border-line bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-[15px] font-bold text-navy">활동 관리</h2>
-              <p className="mt-1 text-[12px] text-navy/50">
+              <h2 className="text-body-sm font-bold text-navy">활동 관리</h2>
+              <p className="mt-1 text-micro text-ink-muted">
                 순서 번호가 작은 활동부터 진행됩니다. 활동은 삭제할 수 없습니다.
               </p>
             </div>
@@ -187,24 +187,24 @@ export default async function LessonDetailPage({
           </div>
 
           {!activityResult.ok ? (
-            <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+            <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
               활동 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
             </p>
           ) : (
             <>
               {!canAddActivity ? (
-                <p className="mt-4 rounded-lg border border-navy/10 bg-surface-soft px-3 py-2 text-[12px] text-navy/55">
+                <p className="mt-4 rounded-lg border border-line bg-surface-soft px-3 py-2 text-micro text-ink-muted">
                   보관된 차시 또는 프로그램입니다. 기존 활동은 확인·수정할 수
                   있지만 새 활동은 추가할 수 없습니다.
                 </p>
               ) : null}
 
               {activities.length === 0 ? (
-                <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-                  <p className="text-[14px] font-semibold text-navy">
+                <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+                  <p className="text-label font-semibold text-navy">
                     등록된 활동이 없습니다.
                   </p>
-                  <p className="mt-1 text-[13px] text-navy/50">
+                  <p className="mt-1 text-caption text-ink-muted">
                     도입부터 마무리까지 수업 흐름을 활동으로 구성해보세요.
                   </p>
                   {canAddActivity ? (
@@ -220,10 +220,10 @@ export default async function LessonDetailPage({
               ) : (
                 <>
                   {/* PC: compact table */}
-                  <div className="mt-4 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
-                    <table className="w-full border-collapse text-[13px]">
+                  <div className="mt-4 hidden overflow-x-auto rounded-lg border border-line lg:block">
+                    <table className="w-full border-collapse text-caption">
                       <thead>
-                        <tr className="bg-surface-soft text-navy/50">
+                        <tr className="bg-surface-soft text-ink-muted">
                           <th className="px-4 py-2.5 text-left font-semibold">
                             순서
                           </th>
@@ -248,7 +248,7 @@ export default async function LessonDetailPage({
                         {activities.map((activity) => (
                           <tr
                             key={activity.id}
-                            className="border-t border-navy/8 bg-white"
+                            className="border-t border-line-soft bg-white"
                           >
                             <td className="whitespace-nowrap px-4 py-3 tabular-nums font-semibold text-navy">
                               {activity.sequence_no}
@@ -285,26 +285,26 @@ export default async function LessonDetailPage({
                     {activities.map((activity) => (
                       <li
                         key={activity.id}
-                        className="rounded-lg border border-navy/10 px-4 py-3"
+                        className="rounded-lg border border-line px-4 py-3"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="text-[12px] font-semibold text-navy/50">
+                            <p className="text-micro font-semibold text-ink-muted">
                               {activity.sequence_no}.{" "}
                               {ACTIVITY_TYPE_LABELS[activity.activity_type]} ·{" "}
                               {formatMinutes(activity.duration_minutes)}
                             </p>
-                            <p className="mt-0.5 break-words text-[14px] font-semibold text-navy">
+                            <p className="mt-0.5 break-words text-label font-semibold text-navy">
                               {activity.title}
                             </p>
                             {activity.materials ? (
-                              <p className="mt-0.5 break-words text-[12px] text-navy/50">
+                              <p className="mt-0.5 break-words text-micro text-ink-muted">
                                 준비물: {activity.materials}
                               </p>
                             ) : null}
                           </div>
                         </div>
-                        <div className="mt-2.5 flex justify-end border-t border-navy/8 pt-2.5">
+                        <div className="mt-2.5 flex justify-end border-t border-line-soft pt-2.5">
                           <ActivityFormDialog
                             programId={program.id}
                             lessonId={lesson.id}
@@ -324,7 +324,7 @@ export default async function LessonDetailPage({
       </div>
 
       {sectionResult.error ? (
-        <p className="mt-6 rounded-lg border border-danger/20 bg-danger-soft px-4 py-6 text-center text-[14px] text-danger">
+        <p className="mt-6 rounded-lg border border-danger/20 bg-danger-soft px-4 py-6 text-center text-label text-danger">
           수업 섹션을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
         </p>
       ) : (

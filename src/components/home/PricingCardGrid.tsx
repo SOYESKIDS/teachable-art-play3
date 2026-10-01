@@ -66,8 +66,8 @@ const CheckIcon = ({ className = "" }: { className?: string }) => (
  */
 const TIER_RULE: Record<PricingPackage["accentColor"], string> = {
   "light-blue": "bg-trust-blue/50",
-  "ivory-yellow": "bg-yellow",
-  "navy-yellow": "bg-yellow",
+  "ivory-yellow": "bg-accent",
+  "navy-yellow": "bg-accent",
 };
 
 export function PricingCardGrid() {
@@ -107,7 +107,7 @@ export function PricingCardGrid() {
                   같은 재질이어야 하고, 다른 것은 테두리와 위치뿐이면 된다.
               */
               className={`flex cursor-pointer flex-col gap-5 p-7 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] sm:p-8 ${
-                pkg.isBest ? "border-yellow sm:-mt-4" : ""
+                pkg.isBest ? "border-accent sm:-mt-4" : ""
               }`}
               onClick={(event) => {
                 // 글자를 끌어 선택하던 중이라면 열지 않는다.
@@ -128,14 +128,14 @@ export function PricingCardGrid() {
 
               <div className="flex items-center justify-between">
                 <span
-                  className={`eyebrow rounded-full px-3 py-1.5 ${
-                    isNavy ? "bg-white/10 text-white/80" : "bg-navy/5 text-navy/60"
+                  className={`eyebrow-ko rounded-full px-3 py-1.5 ${
+                    isNavy ? "bg-white/10 text-white/80" : "bg-navy/5 text-ink-muted"
                   }`}
                 >
                   {pkg.label}
                 </span>
                 {pkg.isBest && (
-                  <span className="eyebrow rounded-full bg-yellow px-3 py-1.5 text-navy">
+                  <span className="eyebrow rounded-full bg-accent-strong px-3 py-1.5 text-white">
                     BEST
                   </span>
                 )}
@@ -148,15 +148,15 @@ export function PricingCardGrid() {
                   {pkg.name}
                 </h3>
                 <p
-                  className={`mt-1.5 text-[15px] font-medium ${
-                    isNavy ? "text-white/60" : "text-navy/50"
+                  className={`mt-1.5 text-body-sm font-medium ${
+                    isNavy ? "text-white/60" : "text-ink-muted"
                   }`}
                 >
                   {pkg.subtitle}
                 </p>
                 <p
-                  className={`mt-2 text-[15px] font-bold ${
-                    isNavy ? "text-yellow" : "text-trust-blue"
+                  className={`mt-2 text-body-sm font-bold ${
+                    isNavy ? "text-accent-on-dark" : "text-trust-blue"
                   }`}
                 >
                   {pkg.tagline}
@@ -165,7 +165,7 @@ export function PricingCardGrid() {
 
               <dl
                 className={`grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs sm:text-sm ${
-                  isNavy ? "text-white/70" : "text-navy/60"
+                  isNavy ? "text-white/70" : "text-ink-muted"
                 }`}
               >
                 <dt className="font-medium opacity-70">운영기간</dt>
@@ -200,7 +200,7 @@ export function PricingCardGrid() {
                 */}
                 <p
                   className={`mt-2 text-sm font-semibold tabular-nums ${
-                    isNavy ? "text-white/60" : "text-navy/55"
+                    isNavy ? "text-white/60" : "text-ink-muted"
                   }`}
                 >
                   {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원`}
@@ -215,7 +215,7 @@ export function PricingCardGrid() {
                 {pkg.contentItems.map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckIcon
-                      className={isNavy ? "text-yellow" : "text-trust-blue"}
+                      className={isNavy ? "text-accent-on-dark" : "text-trust-blue"}
                     />
                     {item}
                   </li>
@@ -227,12 +227,16 @@ export function PricingCardGrid() {
                 읽고 나서 할 수 있는 행동이 없어 카드가 거기서 끝났다.
                 같은 자리에 홈페이지의 Primary conversion을 둔다.
               */}
-              <div className="mt-auto">
+              {/*
+                ★ 카드 전체가 상세 보기(onClick)를 연다. 이 버튼의 클릭이 카드까지
+                  올라가면 상담 폼과 상세 오버레이가 동시에 열린다 — 여기서 멈춘다.
+              */}
+              <div className="mt-auto" onClick={(event) => event.stopPropagation()}>
                 <LeadCtaButton
                   type="demo"
-                  variant="primary"
+                  variant={isNavy ? "inverse" : "primary"}
                   dataCta={`demo-pricing-${pkg.id}`}
-                  className="w-full px-5 py-3.5 text-[15px] font-bold"
+                  className="w-full font-bold"
                 >
                   {ctaLabels.demo}
                 </LeadCtaButton>

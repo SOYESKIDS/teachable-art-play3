@@ -45,11 +45,11 @@ export function AdminOperationsDashboard({
     <div className="mx-auto w-full max-w-[1440px] px-5 py-8 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-[22px] font-bold text-navy">운영 대시보드</h1>
-          <p className="text-[14px] text-navy/55">
-            도입기관과 수업 운영 현황을 한눈에 확인합니다.
+          <h1 className="text-headline font-bold text-navy">운영 대시보드</h1>
+          <p className="text-label text-ink-muted">
+            확인이 필요한 기관부터 보여 드립니다. 그다음 운영 중 기관과 최근 활동입니다.
           </p>
-          <p className="text-[13px] tabular-nums text-navy/45">
+          <p className="text-caption tabular-nums text-ink-muted">
             {data.todayLabel} 기준 · 운영 중인 기관만
           </p>
         </div>
@@ -64,55 +64,101 @@ export function AdminOperationsDashboard({
         </nav>
       </div>
 
-      {/* ─────────────────────────────────────────────── KPI */}
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-6">
-        <Kpi label="운영 기관" value={kpis.activeOrganizations} unit="곳" note="운영 중" />
-        <Kpi label="운영 반" value={kpis.activeClasses} unit="개" note="운영 중" />
-        <Kpi
-          label="등록 교사"
-          value={kpis.teacherMemberships}
-          unit="명"
-          note="기관 소속 기준"
-        />
-        <Kpi label="등록 원아" value={kpis.activeChildren} unit="명" note="재원 중" />
-        <Kpi
-          label={`최근 ${data.windowDays}일 수업`}
-          value={kpis.recentSessions}
-          unit="회"
-          note="취소 제외"
-        />
-        <Kpi
-          label="성장 리포트"
-          value={kpis.completedReports}
-          unit="건"
-          note="작성 완료"
-        />
-      </div>
-
-      {!data.rosterReliable || !data.sessionsReliable || !data.activityReliable ? (
-        <p className="mt-3 rounded-xl border border-navy/10 bg-white px-4 py-3 text-[12px] leading-relaxed text-navy/55">
-          일부 집계가 조회 범위를 넘었거나 실패했습니다. 기관별 숫자와 확인 항목이
-          실제와 다를 수 있어 해당 값은 표시하지 않습니다. 상단 KPI는 DB 집계라
-          영향을 받지 않습니다.
+      {/* ───────────────────────────────── 확인이 필요한 기관 */}
+      <section className="mt-8">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <h2 className="text-title-sm font-bold text-navy">확인이 필요한 기관</h2>
+          {data.organizationsOk ? (
+            <span className="rounded-full bg-white px-2 py-0.5 text-caption font-semibold tabular-nums text-ink-muted ring-1 ring-line">
+              {data.attentionOrganizations.length.toLocaleString("ko-KR")}곳
+            </span>
+          ) : null}
+        </div>
+        <p className="mt-1 text-micro leading-relaxed text-ink-muted">
+          오늘 먼저 열어 볼 기관입니다. 확인 항목이 많은 순, 같으면 최근 수업이 오래된 순이며 점수를 매기지
+          않습니다.
         </p>
-      ) : null}
 
-      {/* ─────────────────────────────────────── 기관 운영 현황 */}
+        {!data.organizationsOk ? (
+          <ErrorBox text="운영 현황을 불러오지 못했습니다." />
+        ) : data.attentionOrganizations.length === 0 ? (
+          <EmptyBox text="현재 확인이 필요한 운영 항목이 없습니다. 아래 운영 중 기관 목록에서 전체 현황을 볼 수 있습니다." />
+        ) : (
+          <ul className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {data.attentionOrganizations.map((org) => (
+              <li
+                key={org.id}
+                className="rounded-xl border border-warning-border bg-white p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="min-w-0 break-words text-label font-bold text-navy">
+                    {org.name}
+                  </p>
+                  <StatusBadge status={org.status} />
+                </div>
+
+                <ul className="mt-2 flex flex-col gap-1">
+                  {org.attention.map((item) => (
+                    <li
+                      key={item.kind}
+                      className="text-micro leading-relaxed text-ink-muted"
+                    >
+                      · {formatAttentionItem(item)}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-3 border-t border-line-soft pt-3">
+                  <DetailLink id={org.id} label="기관 열기" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* ─────────────────────────────────────── 운영 중 기관 (규모 + 기관별 현황) */}
       <section className="mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <h2 className="text-[16px] font-bold text-navy">기관 운영 현황</h2>
+          <h2 className="text-title-sm font-bold text-navy">운영 중 기관</h2>
           <Link
             href="/admin/organizations"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             전체 기관 관리
           </Link>
         </div>
-        <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
+        <p className="mt-1 text-micro leading-relaxed text-ink-muted">
           운영 중인 기관만, 최근 {data.windowDays}일 기준입니다. 운영이 끝난 기관을
           포함한 전체 목록은 기관 관리에서 확인합니다. 확인 항목은 운영 사실만
           표시하며 평가가 아닙니다.
         </p>
+
+      {/*
+        ─────────────────────────────────────────────── 규모 (보조)
+        KPI 는 화면의 주인공이 아니다. 한 줄의 작은 숫자로 두고,
+        먼저 볼 것은 위의 "확인이 필요한 기관"이다.
+      */}
+      <dl className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line-soft sm:grid-cols-3 lg:grid-cols-6">
+        <Kpi label="운영 기관" value={kpis.activeOrganizations} unit="곳" />
+        <Kpi label="운영 반" value={kpis.activeClasses} unit="개" />
+        <Kpi label="등록 교사" value={kpis.teacherMemberships} unit="명" />
+        <Kpi label="재원 원아" value={kpis.activeChildren} unit="명" />
+        <Kpi
+          label={`최근 ${data.windowDays}일 수업 (취소 제외)`}
+          value={kpis.recentSessions}
+          unit="회"
+        />
+        <Kpi label="작성 완료 리포트" value={kpis.completedReports} unit="건" />
+      </dl>
+
+      {!data.rosterReliable || !data.sessionsReliable || !data.activityReliable ? (
+        <p className="mt-3 rounded-xl border border-line bg-white px-4 py-3 text-micro leading-relaxed text-ink-muted">
+          일부 집계가 조회 범위를 넘었거나 실패했습니다. 기관별 숫자와 확인 항목이
+          실제와 다를 수 있어 해당 값은 표시하지 않습니다. 위 규모 숫자는 DB 집계라
+          영향을 받지 않습니다.
+        </p>
+      ) : null}
 
         {!data.organizationsOk ? (
           <ErrorBox text="운영 현황을 불러오지 못했습니다. 잠시 후 다시 시도해주세요." />
@@ -121,10 +167,10 @@ export function AdminOperationsDashboard({
         ) : (
           <>
             {/* 데스크톱: 표 */}
-            <div className="mt-3 hidden overflow-hidden rounded-xl border border-navy/10 bg-white lg:block">
+            <div className="mt-3 hidden overflow-hidden rounded-xl border border-line bg-white lg:block">
               <table className="w-full table-fixed border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-navy/10 bg-surface-soft/60">
+                  <tr className="border-b border-line bg-surface-soft/60">
                     <Th className="w-[20%]">기관명</Th>
                     <Th className="w-[8%]">상태</Th>
                     <Th className="w-[6%] text-right">반</Th>
@@ -143,7 +189,7 @@ export function AdminOperationsDashboard({
                   {data.organizations.map((org) => (
                     <tr
                       key={org.id}
-                      className="border-b border-navy/8 last:border-b-0"
+                      className="border-b border-line-soft last:border-b-0"
                     >
                       <Td>
                         <span className="break-words font-semibold text-navy">
@@ -168,7 +214,7 @@ export function AdminOperationsDashboard({
                           reliable={data.rosterReliable}
                         />
                       </Td>
-                      <Td className="tabular-nums text-navy/60">
+                      <Td className="tabular-nums text-ink-muted">
                         {data.sessionsReliable
                           ? formatAdminShortDate(org.lastSessionDate)
                           : "—"}
@@ -196,16 +242,16 @@ export function AdminOperationsDashboard({
               {data.organizations.map((org) => (
                 <li
                   key={org.id}
-                  className="rounded-xl border border-navy/10 bg-white p-4"
+                  className="rounded-xl border border-line bg-white p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
-                    <p className="min-w-0 break-words text-[15px] font-bold text-navy">
+                    <p className="min-w-0 break-words text-body-sm font-bold text-navy">
                       {org.name}
                     </p>
                     <StatusBadge status={org.status} />
                   </div>
 
-                  <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[12px]">
+                  <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-micro">
                     <Row label="반" value={org.classCount} reliable={data.rosterReliable} />
                     <Row label="교사" value={org.teacherCount} reliable={data.rosterReliable} />
                     <Row label="원아" value={org.childCount} reliable={data.rosterReliable} />
@@ -220,7 +266,7 @@ export function AdminOperationsDashboard({
                       reliable={data.sessionsReliable}
                     />
                     <div className="flex flex-wrap gap-x-2">
-                      <dt className="text-navy/45">최근 수업일</dt>
+                      <dt className="text-ink-muted">최근 수업일</dt>
                       <dd className="tabular-nums text-navy/70">
                         {data.sessionsReliable
                           ? formatAdminShortDate(org.lastSessionDate)
@@ -233,7 +279,7 @@ export function AdminOperationsDashboard({
                     <AttentionBadges org={org} />
                   </div>
 
-                  <div className="mt-3 border-t border-navy/8 pt-3">
+                  <div className="mt-3 border-t border-line-soft pt-3">
                     <DetailLink id={org.id} />
                   </div>
                 </li>
@@ -243,57 +289,12 @@ export function AdminOperationsDashboard({
         )}
       </section>
 
-      {/* ───────────────────────────────── 확인이 필요한 기관 */}
-      <section className="mt-8">
-        <h2 className="text-[16px] font-bold text-navy">확인이 필요한 기관</h2>
-        <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
-          확인 항목이 많은 순, 같으면 최근 수업이 오래된 순입니다. 점수를 매기지
-          않습니다.
-        </p>
-
-        {!data.organizationsOk ? (
-          <ErrorBox text="운영 현황을 불러오지 못했습니다." />
-        ) : data.attentionOrganizations.length === 0 ? (
-          <EmptyBox text="현재 확인이 필요한 운영 항목이 없습니다." />
-        ) : (
-          <ul className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {data.attentionOrganizations.map((org) => (
-              <li
-                key={org.id}
-                className="rounded-xl border border-navy/10 bg-white p-4"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <p className="min-w-0 break-words text-[14px] font-bold text-navy">
-                    {org.name}
-                  </p>
-                  <StatusBadge status={org.status} />
-                </div>
-
-                <ul className="mt-2 flex flex-col gap-1">
-                  {org.attention.map((item) => (
-                    <li
-                      key={item.kind}
-                      className="text-[12px] leading-relaxed text-navy/60"
-                    >
-                      · {formatAttentionItem(item)}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-3 border-t border-navy/8 pt-3">
-                  <DetailLink id={org.id} label="기관 열기" />
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* ───────────────────────────────────────── 최근 운영 활동 */}
-      <section className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* ───────────────────────────────────────── 최근 활동 */}
+      <h2 className="mt-10 text-title-sm font-bold text-navy">최근 활동</h2>
+      <section className="mt-3 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h2 className="text-[16px] font-bold text-navy">최근 수업</h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
+          <h3 className="text-label font-bold text-navy">최근 수업</h3>
+          <p className="mt-1 text-micro leading-relaxed text-ink-muted">
             운영 중인 기관의 수업을 기관 · 날짜별로 묶어 보여줍니다. (취소 제외)
           </p>
 
@@ -302,21 +303,21 @@ export function AdminOperationsDashboard({
           ) : data.recentSessions.length === 0 ? (
             <EmptyBox text="최근 수업 기록이 없습니다." />
           ) : (
-            <ul className="mt-3 flex flex-col divide-y divide-navy/8 rounded-xl border border-navy/10 bg-white px-4">
+            <ul className="mt-3 flex flex-col divide-y divide-navy/8 rounded-xl border border-line bg-white px-4">
               {data.recentSessions.map((item) => (
                 <li
                   key={`${item.organizationId}-${item.scheduledDate}`}
                   className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[12px] tabular-nums text-navy/45">
+                    <p className="text-micro tabular-nums text-ink-muted">
                       {formatAdminShortDate(item.scheduledDate)}
                     </p>
-                    <p className="mt-0.5 break-words text-[13px] font-semibold text-navy">
+                    <p className="mt-0.5 break-words text-caption font-semibold text-navy">
                       {item.organizationName}
                     </p>
                   </div>
-                  <p className="shrink-0 text-[13px] tabular-nums text-navy/60">
+                  <p className="shrink-0 text-caption tabular-nums text-ink-muted">
                     수업 {item.completedCount.toLocaleString("ko-KR")}회
                   </p>
                 </li>
@@ -326,10 +327,10 @@ export function AdminOperationsDashboard({
         </div>
 
         <div>
-          <h2 className="text-[16px] font-bold text-navy">
+          <h3 className="text-label font-bold text-navy">
             최근 작성 완료 성장 리포트
-          </h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-navy/50">
+          </h3>
+          <p className="mt-1 text-micro leading-relaxed text-ink-muted">
             기관과 기간만 표시합니다. 원아 정보와 본문은 이 화면에 열지 않습니다.
           </p>
 
@@ -338,21 +339,21 @@ export function AdminOperationsDashboard({
           ) : data.recentReports.length === 0 ? (
             <EmptyBox text="작성 완료된 성장 리포트가 아직 없습니다." />
           ) : (
-            <ul className="mt-3 flex flex-col divide-y divide-navy/8 rounded-xl border border-navy/10 bg-white px-4">
+            <ul className="mt-3 flex flex-col divide-y divide-navy/8 rounded-xl border border-line bg-white px-4">
               {data.recentReports.map((item) => (
                 <li
                   key={item.id}
                   className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[12px] tabular-nums text-navy/45">
+                    <p className="text-micro tabular-nums text-ink-muted">
                       {formatAdminShortDate(item.completedAt.slice(0, 10))} 완료
                     </p>
-                    <p className="mt-0.5 break-words text-[13px] font-semibold text-navy">
+                    <p className="mt-0.5 break-words text-caption font-semibold text-navy">
                       {item.organizationName}
                     </p>
                   </div>
-                  <p className="shrink-0 text-[12px] tabular-nums text-navy/55">
+                  <p className="shrink-0 text-micro tabular-nums text-ink-muted">
                     {formatAdminShortDate(item.periodStart)} ~{" "}
                     {formatAdminShortDate(item.periodEnd)}
                   </p>
@@ -370,7 +371,7 @@ function QuickLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="inline-flex min-h-11 items-center rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
+      className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-4 text-caption font-semibold text-navy transition-colors hover:border-navy/35 hover:bg-navy/5"
     >
       {label}
     </Link>
@@ -382,31 +383,22 @@ function Kpi({
   label,
   value,
   unit,
-  note,
 }: {
   label: string;
   value: number | null;
   unit: string;
-  note: string;
 }) {
   return (
-    <div className="flex min-h-[104px] flex-col justify-between rounded-xl border border-navy/10 bg-white p-4">
-      <p className="break-keep text-[12px] font-semibold text-navy/50">{label}</p>
-
-      <p className="mt-2 text-navy">
-        <span className="text-[24px] font-bold tabular-nums leading-none">
+    <div className="flex flex-col gap-1 bg-white px-4 py-3">
+      <dt className="break-keep text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="text-navy">
+        <span className="text-title font-bold tabular-nums leading-none">
           {value === null ? "—" : value.toLocaleString("ko-KR")}
         </span>
-        {value === null ? null : (
-          <span className="ml-1 text-[13px] font-semibold text-navy/60">
-            {unit}
-          </span>
-        )}
-      </p>
-
-      <p className="mt-2 break-keep text-[11px] leading-relaxed text-navy/45">
-        {value === null ? "집계할 수 없습니다" : note}
-      </p>
+        <span className="ml-1 text-micro font-semibold text-ink-muted">
+          {value === null ? "집계할 수 없음" : unit}
+        </span>
+      </dd>
     </div>
   );
 }
@@ -426,7 +418,7 @@ function Row({
 }) {
   return (
     <div className="flex flex-wrap gap-x-2">
-      <dt className="text-navy/45">{label}</dt>
+      <dt className="text-ink-muted">{label}</dt>
       <dd className="tabular-nums text-navy/70">
         <Count value={value} reliable={reliable} />
       </dd>
@@ -441,7 +433,7 @@ function StatusBadge({
 }) {
   return (
     <span
-      className={`shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[status]}`}
+      className={`shrink-0 rounded-md border px-2 py-0.5 text-micro font-bold ${ORGANIZATION_STATUS_BADGE_CLASSES[status]}`}
     >
       {ORGANIZATION_STATUS_LABELS[status]}
     </span>
@@ -456,7 +448,7 @@ function StatusBadge({
  */
 function AttentionBadges({ org }: { org: AdminOrganizationRow }) {
   if (org.attention.length === 0) {
-    return <span className="text-[12px] text-navy/35">—</span>;
+    return <span className="text-micro text-navy/35">—</span>;
   }
 
   const shown = org.attention.slice(0, MAX_ADMIN_ATTENTION_BADGES);
@@ -467,14 +459,14 @@ function AttentionBadges({ org }: { org: AdminOrganizationRow }) {
       {shown.map((item) => (
         <span
           key={item.kind}
-          className="inline-block break-keep rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[11px] font-semibold text-navy/70"
+          className="inline-block break-keep rounded-md border border-line-strong bg-surface-soft px-2 py-0.5 text-micro font-semibold text-navy/70"
         >
           {formatAttentionItem(item)}
         </span>
       ))}
 
       {hidden > 0 ? (
-        <span className="inline-block rounded-md border border-navy/10 px-2 py-0.5 text-[11px] font-semibold text-navy/45">
+        <span className="inline-block rounded-md border border-line px-2 py-0.5 text-micro font-semibold text-ink-muted">
           +{hidden}
         </span>
       ) : null}
@@ -486,7 +478,7 @@ function DetailLink({ id, label = "상세 보기" }: { id: string; label?: strin
   return (
     <Link
       href={`/admin/organizations/${id}`}
-      className="inline-flex min-h-11 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-[13px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+      className="inline-flex min-h-11 items-center rounded-lg border border-trust-blue/30 bg-white px-3 text-caption font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
     >
       {label}
     </Link>
@@ -503,7 +495,7 @@ function Th({
   return (
     <th
       scope="col"
-      className={`px-3 py-2.5 text-[11px] font-bold text-navy/50 ${className}`}
+      className={`px-3 py-2.5 text-micro font-bold text-ink-muted ${className}`}
     >
       {children}
     </th>
@@ -518,7 +510,7 @@ function Td({
   className?: string;
 }) {
   return (
-    <td className={`px-3 py-3 align-middle text-[13px] text-navy ${className}`}>
+    <td className={`px-3 py-3 align-middle text-caption text-navy ${className}`}>
       {children}
     </td>
   );
@@ -526,7 +518,7 @@ function Td({
 
 function EmptyBox({ text }: { text: string }) {
   return (
-    <p className="mt-3 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/50">
+    <p className="mt-3 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
       {text}
     </p>
   );
@@ -534,7 +526,7 @@ function EmptyBox({ text }: { text: string }) {
 
 function ErrorBox({ text }: { text: string }) {
   return (
-    <p className="mt-3 rounded-xl border border-navy/15 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/60">
+    <p className="mt-3 rounded-xl border border-line-strong bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
       {text}
     </p>
   );

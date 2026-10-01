@@ -62,23 +62,23 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
       navItems={TEACHER_NAV}
       currentHref="/teacher/growth-reports"
     >
-      <h1 className="text-[24px] font-bold text-ink">리포트</h1>
+      <h1 className="text-headline font-bold text-navy">리포트</h1>
 
       <section aria-labelledby="weekly-heading" className="mt-6">
-        <h2 id="weekly-heading" className="text-[19px] font-bold text-ink">
+        <h2 id="weekly-heading" className="text-title-sm font-bold text-ink">
           주간 리포트
         </h2>
 
         {!queue ? (
-          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             주간 리포트를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
           </p>
         ) : queue.classes.length === 0 ? (
-          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             담당 반의 진행 중인 프로그램이 없습니다. 원장님께 문의해 주세요.
           </p>
         ) : !selected || !selectedOption ? (
-          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             아직 진행한 수업이 없습니다. 수업을 마치면 이곳에서 주간 리포트를 작성합니다.
           </p>
         ) : (
@@ -91,7 +91,7 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
                     key={option.assignmentId}
                     href={`/teacher/growth-reports?${orgQuery}&class=${option.classId}`}
                     aria-current={option.assignmentId === selected.assignmentId ? "page" : undefined}
-                    className={`inline-flex min-h-11 items-center rounded-lg border px-3 text-[14px] font-semibold ${
+                    className={`inline-flex min-h-11 items-center rounded-lg border px-3 text-label font-semibold ${
                       option.assignmentId === selected.assignmentId
                         ? "border-brand-navy bg-brand-sky text-ink"
                         : "border-hairline bg-white text-ink"
@@ -107,7 +107,7 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
                   key={week}
                   href={`/teacher/growth-reports?${orgQuery}&class=${selected.classId}&week=${week}`}
                   aria-current={week === selected.weekNo ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-lg border px-3 text-[14px] ${
+                  className={`inline-flex min-h-11 items-center rounded-lg border px-3 text-label ${
                     week === selected.weekNo ? "border-brand-navy bg-brand-sky font-bold text-ink" : "border-hairline bg-white text-ink"
                   }`}
                 >
@@ -116,7 +116,7 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
               ))}
             </nav>
             {entitlements && !entitlements.weeklyReportWrite ? (
-              <p className="mt-3 rounded-lg border border-warning-soft bg-warning-soft px-4 py-3 text-[14px] text-warning-text">
+              <p className="mt-3 rounded-lg border border-warning-soft bg-warning-soft px-4 py-3 text-label text-warning-text">
                 현재 읽기 전용 상태이거나 이용 상품에 포함되지 않아 새 리포트를 작성할 수 없습니다. 원장님께 문의해 주세요.
               </p>
             ) : null}
@@ -134,12 +134,12 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
       </section>
 
       <section aria-labelledby="legacy-heading" className="mt-10">
-        <h2 id="legacy-heading" className="text-[19px] font-bold text-ink">
+        <h2 id="legacy-heading" className="text-title-sm font-bold text-ink">
           이전 형식 리포트 (기간형)
         </h2>
-        <p className="mt-1 text-[14px] text-ink-muted">이전 방식으로 만든 리포트입니다. 새 리포트는 주간 리포트로 작성합니다.</p>
+        <p className="mt-1 text-label text-ink-muted">이전 방식으로 만든 리포트입니다. 새 리포트는 주간 리포트로 작성합니다.</p>
         {!legacyResult.ok ? (
-          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-8 text-center text-[15px] text-ink">
+          <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-8 text-center text-body-sm text-ink">
             이전 리포트를 불러오지 못했습니다.
           </p>
         ) : (

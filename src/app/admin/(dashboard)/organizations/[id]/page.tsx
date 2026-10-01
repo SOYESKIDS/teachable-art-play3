@@ -64,9 +64,9 @@ interface OrganizationDetailPageProps {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-navy/8 py-3 last:border-b-0">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="text-[14px] text-navy">{value}</dd>
+    <div className="flex flex-col gap-1 border-b border-line-soft py-3 last:border-b-0">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="text-label text-navy">{value}</dd>
     </div>
   );
 }
@@ -91,11 +91,11 @@ export default async function OrganizationDetailPage({
   if (!result.ok) {
     return (
       <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
-        <div className="rounded-xl border border-navy/10 bg-white px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold text-navy">
+        <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
+          <p className="text-body-sm font-semibold text-navy">
             기관 데이터를 불러오지 못했습니다.
           </p>
-          <p className="mt-1.5 text-[13px] text-navy/50">
+          <p className="mt-1.5 text-caption text-ink-muted">
             잠시 후 다시 시도해주세요.
           </p>
         </div>
@@ -207,16 +207,16 @@ export default async function OrganizationDetailPage({
     <div className="mx-auto w-full max-w-[900px] px-5 py-8 lg:px-8">
       <Link
         href="/admin/organizations"
-        className="inline-flex min-h-11 min-w-11 items-center justify-center text-[13px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center text-caption font-semibold text-trust-blue transition-opacity hover:opacity-70"
       >
         ← 기관 목록
       </Link>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <h1 className="text-[22px] font-bold text-navy">{organization.name}</h1>
+          <h1 className="text-headline font-bold text-navy">{organization.name}</h1>
           <span
-            className={`rounded-md border px-2.5 py-1 text-[12px] font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[organization.status]}`}
+            className={`rounded-md border px-2.5 py-1 text-micro font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[organization.status]}`}
           >
             {ORGANIZATION_STATUS_LABELS[organization.status]}
           </span>
@@ -228,7 +228,7 @@ export default async function OrganizationDetailPage({
         */}
         <Link
           href={`/admin/onboarding?organization=${organization.id}`}
-          className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-trust-blue/30 bg-white px-4 text-[13px] font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
+          className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-trust-blue/30 bg-white px-4 text-caption font-bold text-trust-blue transition-colors hover:border-trust-blue/50 hover:bg-trust-blue/5"
         >
           도입 설정 계속
         </Link>
@@ -237,8 +237,8 @@ export default async function OrganizationDetailPage({
       <AdminOrganizationOperationsSummary summary={operationsSummary} />
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        <section className="rounded-xl border border-navy/10 bg-white p-5">
-          <h2 className="text-[15px] font-bold text-navy">기관 정보</h2>
+        <section className="rounded-xl border border-line bg-white p-5">
+          <h2 className="text-body-sm font-bold text-navy">기관 정보</h2>
           <dl className="mt-2">
             <Field label="기관명" value={organization.name} />
             <Field
@@ -260,20 +260,20 @@ export default async function OrganizationDetailPage({
           </dl>
         </section>
 
-        <section className="rounded-xl border border-navy/10 bg-white p-5">
-          <h2 className="text-[15px] font-bold text-navy">기관 정보 수정</h2>
-          <p className="mt-1 mb-4 text-[12px] text-navy/50">
+        <section className="rounded-xl border border-line bg-white p-5">
+          <h2 className="text-body-sm font-bold text-navy">기관 정보 수정</h2>
+          <p className="mt-1 mb-4 text-micro text-ink-muted">
             기관명과 기관 유형만 수정할 수 있습니다. 상태 변경은 후속 단계에서
             제공됩니다.
           </p>
           <OrganizationEditForm organization={organization} />
         </section>
 
-        <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2">
+        <section className="rounded-xl border border-line bg-white p-5 lg:col-span-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-[15px] font-bold text-navy">원장 관리</h2>
-              <p className="mt-1 text-[12px] text-navy/50">
+              <h2 className="text-body-sm font-bold text-navy">원장 관리</h2>
+              <p className="mt-1 text-micro text-ink-muted">
                 초대 메일을 받은 원장이 비밀번호를 설정하면 바로 로그인할 수
                 있습니다.
               </p>
@@ -287,12 +287,12 @@ export default async function OrganizationDetailPage({
           </div>
 
           {!directorResult.ok ? (
-            <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+            <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
               원장 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
             </p>
           ) : directors.length === 0 ? (
-            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-navy">
+            <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+              <p className="text-label font-semibold text-navy">
                 등록된 원장이 없습니다.
               </p>
               <div className="mt-4 flex justify-center">
@@ -304,21 +304,21 @@ export default async function OrganizationDetailPage({
               {directors.map((director) => (
                 <li
                   key={director.userId}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-navy/10 px-4 py-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line px-4 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[14px] font-semibold text-navy">
+                    <p className="text-label font-semibold text-navy">
                       {director.displayName}
                     </p>
-                    <p className="truncate text-[12px] text-navy/50">
+                    <p className="truncate text-micro text-ink-muted">
                       {director.email ?? "—"}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <span className="rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[12px] font-semibold text-navy/70">
+                    <span className="rounded-md border border-line-strong bg-surface-soft px-2 py-0.5 text-micro font-semibold text-navy/70">
                       원장
                     </span>
-                    <span className="rounded-md border border-navy/15 bg-surface-soft px-2 py-0.5 text-[12px] font-semibold text-navy/70">
+                    <span className="rounded-md border border-line-strong bg-surface-soft px-2 py-0.5 text-micro font-semibold text-navy/70">
                       {director.status === "active"
                         ? "활성"
                         : director.status === "invited"

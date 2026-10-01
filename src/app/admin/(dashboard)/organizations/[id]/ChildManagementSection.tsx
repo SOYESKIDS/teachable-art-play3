@@ -32,9 +32,9 @@ const CLASS_FILTER_UNASSIGNED = "unassigned";
 
 function SummaryItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-navy/10 bg-surface-soft px-3.5 py-2.5">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-bold tabular-nums text-navy">
+    <div className="rounded-lg border border-line bg-surface-soft px-3.5 py-2.5">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="mt-0.5 text-title font-bold tabular-nums text-navy">
         {value.toLocaleString("ko-KR")}
       </dd>
     </div>
@@ -93,11 +93,11 @@ export function ChildManagementSection({
     classFilter !== CLASS_FILTER_ALL;
 
   return (
-    <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2">
+    <section className="rounded-xl border border-line bg-white p-5 lg:col-span-2">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-bold text-navy">원아 관리</h2>
-          <p className="mt-1 text-[12px] text-navy/50">
+          <h2 className="text-body-sm font-bold text-navy">원아 관리</h2>
+          <p className="mt-1 text-micro text-ink-muted">
             운영에 필요한 최소 정보(이름 · 출생연도 · 반 · 상태)만 관리합니다.
             원아는 삭제하지 않고 상태로 관리합니다.
           </p>
@@ -112,7 +112,7 @@ export function ChildManagementSection({
       </div>
 
       {hasError ? (
-        <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+        <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
           원아 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
         </p>
       ) : (
@@ -126,18 +126,18 @@ export function ChildManagementSection({
           </dl>
 
           {reachedLimit ? (
-            <p className="mt-3 rounded-lg border border-yellow/50 bg-yellow-soft px-3 py-2 text-[12px] text-navy">
+            <p className="mt-3 rounded-lg border border-warning-border bg-warning-soft px-3 py-2 text-micro text-navy">
               표시 가능한 최대 인원에 도달했습니다. 일부 원아가 목록에 보이지
               않을 수 있습니다.
             </p>
           ) : null}
 
           {childRows.length === 0 ? (
-            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-navy">
+            <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+              <p className="text-label font-semibold text-navy">
                 아직 등록된 원아가 없습니다.
               </p>
-              <p className="mt-1 text-[13px] text-navy/50">
+              <p className="mt-1 text-caption text-ink-muted">
                 원아를 등록하면 반 배정과 상태 관리를 할 수 있습니다.
               </p>
               <div className="mt-4 flex justify-center">
@@ -208,29 +208,29 @@ export function ChildManagementSection({
                       setStatusFilter("all");
                       setClassFilter(CLASS_FILTER_ALL);
                     }}
-                    className="inline-flex min-h-11 items-center self-start text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
+                    className="inline-flex min-h-11 items-center self-start text-micro font-semibold text-trust-blue transition-opacity hover:opacity-70 sm:self-auto"
                   >
                     필터 초기화
                   </button>
                 ) : null}
               </div>
 
-              <p className="mt-3 text-[12px] text-navy/45">
+              <p className="mt-3 text-micro text-ink-muted">
                 {visibleChildren.length.toLocaleString("ko-KR")}명 표시 중 (전체{" "}
                 {childRows.length.toLocaleString("ko-KR")}명)
               </p>
 
               {visibleChildren.length === 0 ? (
-                <p className="mt-3 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center text-[13px] text-navy/55">
+                <p className="mt-3 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center text-caption text-ink-muted">
                   조건에 맞는 원아가 없습니다.
                 </p>
               ) : (
                 <>
                   {/* PC: compact table */}
-                  <div className="mt-3 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
-                    <table className="w-full border-collapse text-[13px]">
+                  <div className="mt-3 hidden overflow-x-auto rounded-lg border border-line lg:block">
+                    <table className="w-full border-collapse text-caption">
                       <thead>
-                        <tr className="bg-surface-soft text-navy/50">
+                        <tr className="bg-surface-soft text-ink-muted">
                           <th className="px-4 py-2.5 text-left font-semibold">
                             이름
                           </th>
@@ -252,7 +252,7 @@ export function ChildManagementSection({
                         {visibleChildren.map((child) => (
                           <tr
                             key={child.id}
-                            className="border-t border-navy/8 bg-white"
+                            className="border-t border-line-soft bg-white"
                           >
                             <td className="px-4 py-3 font-semibold text-navy">
                               {child.name}
@@ -263,12 +263,12 @@ export function ChildManagementSection({
                             <td className="px-4 py-3 text-navy/70">
                               {formatClassName(child.className)}
                               {child.classStatus === "archived" ? (
-                                <span className="ml-1 text-navy/40">(보관)</span>
+                                <span className="ml-1 text-ink-muted">(보관)</span>
                               ) : null}
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CHILD_STATUS_BADGE_CLASSES[child.status]}`}
+                                className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${CHILD_STATUS_BADGE_CLASSES[child.status]}`}
                               >
                                 {CHILD_STATUS_LABELS[child.status]}
                               </span>
@@ -292,26 +292,26 @@ export function ChildManagementSection({
                     {visibleChildren.map((child) => (
                       <li
                         key={child.id}
-                        className="rounded-lg border border-navy/10 px-4 py-3"
+                        className="rounded-lg border border-line px-4 py-3"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="text-[14px] font-semibold text-navy">
+                            <p className="text-label font-semibold text-navy">
                               {child.name}
                             </p>
-                            <p className="mt-0.5 text-[12px] text-navy/50">
+                            <p className="mt-0.5 text-micro text-ink-muted">
                               {formatBirthYear(child.birth_year)} ·{" "}
                               {formatClassName(child.className)}
                               {child.classStatus === "archived" ? " (보관)" : ""}
                             </p>
                           </div>
                           <span
-                            className={`shrink-0 rounded-md border px-2 py-0.5 text-[12px] font-semibold ${CHILD_STATUS_BADGE_CLASSES[child.status]}`}
+                            className={`shrink-0 rounded-md border px-2 py-0.5 text-micro font-semibold ${CHILD_STATUS_BADGE_CLASSES[child.status]}`}
                           >
                             {CHILD_STATUS_LABELS[child.status]}
                           </span>
                         </div>
-                        <div className="mt-2.5 flex justify-end border-t border-navy/8 pt-2.5">
+                        <div className="mt-2.5 flex justify-end border-t border-line-soft pt-2.5">
                           <ChildFormDialog
                             organizationId={organizationId}
                             activeClasses={activeClasses}

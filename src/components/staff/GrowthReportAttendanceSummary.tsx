@@ -30,8 +30,8 @@ export function GrowthReportAttendanceSummary({
   return (
     <section className="mt-5 scroll-mt-28">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-[15px] font-bold text-navy">기간 출결</h2>
-        <span className="text-[12px] tabular-nums text-navy/45">
+        <h2 className="text-body-sm font-bold text-navy">기간 출결</h2>
+        <span className="text-micro tabular-nums text-ink-muted">
           기간 내 수업 {attendance.sessionCount.toLocaleString("ko-KR")}회
         </span>
       </div>
@@ -40,19 +40,19 @@ export function GrowthReportAttendanceSummary({
         {items.map((item) => (
           <div
             key={item.key}
-            className="rounded-lg border border-navy/10 bg-white px-2 py-2 text-center"
+            className="rounded-lg border border-line bg-white px-2 py-2 text-center"
           >
-            <dt className="text-[12px] font-semibold text-navy/55">
+            <dt className="text-micro font-semibold text-ink-muted">
               {item.label}
             </dt>
-            <dd className="mt-0.5 text-[15px] font-bold tabular-nums text-navy">
+            <dd className="mt-0.5 text-body-sm font-bold tabular-nums text-navy">
               {item.value.toLocaleString("ko-KR")}
             </dd>
           </div>
         ))}
       </dl>
 
-      <p className="mt-1.5 text-[11px] leading-relaxed text-navy/45">
+      <p className="mt-1.5 text-micro leading-relaxed text-ink-muted">
         기록된 출결을 그대로 센 숫자입니다. 평가 점수가 아닙니다.
       </p>
     </section>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { AppMark } from "@/components/layout/AppMark";
+import { SalesNav } from "@/components/layout/SalesNav";
 import { requireHqSales } from "@/lib/auth/admin";
 
 export const metadata: Metadata = {
@@ -23,52 +24,41 @@ export default async function SalesLayout({ children }: { children: ReactNode })
   const { email } = await requireHqSales();
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-ivory">
-      <a
-        href="#sales-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-ink"
-      >
-        본문으로 건너뛰기
+    <div className="flex min-h-screen flex-col bg-ivory">
+      <a href="#sales-main" className="skip-link">
+        본문 바로가기
       </a>
-      <header className="sticky top-0 z-30 border-b border-hairline bg-white">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-3 px-5 py-3 lg:px-8">
-          <div className="leading-tight">
-            <p className="text-[12px] font-semibold text-ink-muted">SOYE KIDS 본사 · 영업</p>
-            <p className="text-[15px] font-bold text-ink">TeachAble Art Play</p>
+      <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-2.5 lg:px-8">
+          <div className="flex items-center gap-6">
+            <AppMark area="본사 · 영업" />
+            <span aria-hidden="true" className="hidden h-7 w-px bg-line md:block" />
+            <div className="hidden md:block">
+              <SalesNav items={NAV_ITEMS} />
+            </div>
           </div>
-
-          <nav aria-label="영업 메뉴">
-            <ul className="flex flex-wrap gap-1">
-              {NAV_ITEMS.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="inline-flex min-h-11 items-center rounded-lg px-3 text-[14px] font-semibold text-ink hover:bg-brand-ivory"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
 
           <div className="flex items-center gap-3">
             {email ? (
-              <span className="hidden max-w-[220px] truncate text-[13px] text-ink-muted sm:inline">{email}</span>
+              <span className="hidden max-w-[220px] truncate text-caption text-ink-muted sm:inline">{email}</span>
             ) : null}
+            {/* prefetch로 인한 의도치 않은 로그아웃을 막기 위해 Link가 아닌 form POST를 쓴다 */}
             <form method="post" action="/admin/logout">
               <button
                 type="submit"
-                className="inline-flex min-h-11 items-center rounded-lg border border-control-border px-3 text-[13px] font-semibold text-ink hover:bg-brand-ivory"
+                className="inline-flex min-h-11 items-center rounded-lg border border-control-border/60 bg-white px-3 text-caption font-semibold text-ink transition-colors hover:border-ink-muted hover:bg-bg"
               >
                 로그아웃
               </button>
             </form>
           </div>
         </div>
+        <div className="border-t border-line-soft px-5 py-1.5 md:hidden">
+          <SalesNav items={NAV_ITEMS} />
+        </div>
       </header>
 
-      <main id="sales-main" className="flex-1">
+      <main id="sales-main" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
     </div>

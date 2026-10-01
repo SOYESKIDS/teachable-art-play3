@@ -43,22 +43,22 @@ export default async function DirectorPortalPage({ searchParams }: DirectorPorta
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/portal"
     >
-      <h1 className="text-[24px] font-bold text-ink">학부모 공유</h1>
+      <h1 className="text-headline font-bold text-navy">학부모 공유</h1>
       <p className={`mt-3 ${noticeInfo}`}>
         이제 아동별 공유 링크 하나에서 공개된 기록을 함께 확인할 수 있습니다. 기존 리포트별 공유 링크는 사용이 끝날 때까지
         별도로 유지됩니다.
       </p>
-      <p className="mt-2 text-[14px] text-ink-muted">
+      <p className="mt-2 text-label text-ink-muted">
         사진 공유 기록은 기관 운영 기록입니다. 학부모 화면의 사진 표시는 관련 운영 기준이 확정된 뒤 제공됩니다.
       </p>
 
       <div className="mt-5">
         {!rows.ok ? (
-          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             학부모 공유 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
           </p>
         ) : rows.rows.length === 0 ? (
-          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             재원 중인 원아가 없습니다.
           </p>
         ) : (

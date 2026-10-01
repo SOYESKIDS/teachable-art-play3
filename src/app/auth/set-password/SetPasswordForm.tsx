@@ -12,7 +12,7 @@ import {
 
 const fieldClasses = fieldAuth;
 
-const labelClasses = "block text-[13px] font-semibold text-navy/70";
+const labelClasses = "block text-caption font-semibold text-navy/70";
 
 interface SetPasswordFormProps {
   /** 문구 선택에만 쓴다. 서버는 이 값으로 권한이나 대상을 판단하지 않는다. */
@@ -69,7 +69,7 @@ export function SetPasswordForm({ mode }: SetPasswordFormProps) {
         <p
           role="alert"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"
+          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-label font-medium text-navy"
         >
           {state.error}
         </p>
@@ -78,7 +78,7 @@ export function SetPasswordForm({ mode }: SetPasswordFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="mt-1 h-12 w-full rounded-full bg-navy text-[15px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-1 h-12 w-full rounded-full bg-navy text-body-sm font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? copy.pendingLabel : copy.submitLabel}
       </button>

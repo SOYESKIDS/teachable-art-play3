@@ -1,3 +1,4 @@
+import { tableCell, tableHeadCell } from "@/components/ui/table";
 import Link from "next/link";
 import {
   ORGANIZATION_STATUS_BADGE_CLASSES,
@@ -11,15 +12,14 @@ interface OrganizationsTableProps {
   organizations: OrganizationRow[];
 }
 
-const headerCellClasses =
-  "whitespace-nowrap px-4 py-3 text-[11px] font-semibold tracking-wide text-navy/45";
+const headerCellClasses = tableHeadCell;
 
-const bodyCellClasses = "whitespace-nowrap px-4 py-3 text-navy/75";
+const bodyCellClasses = tableCell;
 
 function StatusBadge({ status }: { status: OrganizationRow["status"] }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[status]}`}
+      className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${ORGANIZATION_STATUS_BADGE_CLASSES[status]}`}
     >
       {ORGANIZATION_STATUS_LABELS[status]}
     </span>
@@ -36,9 +36,9 @@ export function OrganizationsTable({ organizations }: OrganizationsTableProps) {
   return (
     <>
       {/* Desktop Table */}
-      <div className="hidden overflow-x-auto rounded-xl border border-navy/10 bg-white md:block">
-        <table className="w-full min-w-[720px] border-collapse text-left text-[13px]">
-          <thead className="border-b border-navy/10 bg-surface-soft">
+      <div className="hidden overflow-x-auto rounded-xl border border-line bg-white md:block">
+        <table className="w-full min-w-[720px] border-collapse text-left text-caption">
+          <thead className="border-b border-line bg-surface-soft">
             <tr>
               <th scope="col" className={headerCellClasses}>
                 기관명
@@ -61,11 +61,11 @@ export function OrganizationsTable({ organizations }: OrganizationsTableProps) {
             {organizations.map((organization) => (
               <tr
                 key={organization.id}
-                className="relative border-b border-navy/8 transition-colors last:border-b-0 hover:bg-yellow/8 focus-within:bg-yellow/8"
+                className="relative border-b border-line-soft transition-colors last:border-b-0 hover:bg-primary-soft/70 focus-within:bg-primary-soft/70"
               >
                 <th
                   scope="row"
-                  className="max-w-[320px] truncate px-4 py-3 text-left text-[14px] font-bold text-navy"
+                  className="max-w-[320px] truncate px-4 py-3 text-left text-label font-bold text-navy"
                 >
                   <Link
                     href={`/admin/organizations/${organization.id}`}
@@ -98,16 +98,16 @@ export function OrganizationsTable({ organizations }: OrganizationsTableProps) {
           <li key={organization.id}>
             <Link
               href={`/admin/organizations/${organization.id}`}
-              className="block rounded-xl border border-navy/10 bg-white p-4 transition-colors hover:border-navy/25"
+              className="block rounded-xl border border-line bg-white p-4 transition-colors hover:border-navy/25"
             >
               <div className="flex items-start justify-between gap-3">
-                <p className="min-w-0 flex-1 truncate text-[15px] font-bold text-navy">
+                <p className="min-w-0 flex-1 truncate text-body-sm font-bold text-navy">
                   {organization.name}
                 </p>
                 <StatusBadge status={organization.status} />
               </div>
 
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-navy/8 pt-3 text-[13px] text-navy/65">
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-line-soft pt-3 text-caption text-navy/65">
                 <span>{formatInstitutionType(organization.institution_type)}</span>
                 <span className="shrink-0 tabular-nums">
                   {formatOrganizationDate(organization.created_at)}

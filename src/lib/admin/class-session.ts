@@ -33,10 +33,10 @@ export const CLASS_SESSION_STATUS_BADGE_CLASSES: Record<
   ClassSessionStatus,
   string
 > = {
-  scheduled: "bg-pale-yellow/40 text-navy border-yellow/50",
-  in_progress: "bg-soft-green/20 text-navy border-soft-green/50",
-  completed: "bg-light-blue/25 text-navy border-light-blue/60",
-  cancelled: "bg-navy/5 text-navy/50 border-navy/15",
+  scheduled: "bg-info-soft text-info-text border-info-border",
+  in_progress: "bg-primary-soft text-navy border-line-strong",
+  completed: "bg-success-soft text-success-text border-success-border",
+  cancelled: "bg-muted text-ink-muted border-border-strong",
 };
 
 /** 완료·취소는 종착 상태다. 되돌리지 않고, 다시 하려면 새 수업을 만든다. */

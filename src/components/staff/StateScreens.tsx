@@ -27,17 +27,17 @@ export function NotEntitledState({
       aria-labelledby="not-entitled-title"
       className="rounded-2xl border border-hairline bg-white px-6 py-12 text-center"
     >
-      <h1 id="not-entitled-title" className="text-[20px] font-bold text-ink">
+      <h1 id="not-entitled-title" className="text-title font-bold text-ink">
         {title}
       </h1>
-      <p className="mx-auto mt-2 max-w-[460px] text-[15px] leading-relaxed text-ink-muted">
+      <p className="mx-auto mt-2 max-w-[460px] text-body-sm leading-relaxed text-ink-muted">
         {audience === "teacher"
           ? "원장님께 문의해 주세요."
           : "이용 상품 · 포함 기능 관련 문의는 본사 담당자에게 연락해 주세요."}
       </p>
       <Link
         href={backHref}
-        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg border border-control-border bg-white px-4 text-[14px] font-semibold text-ink hover:bg-brand-ivory"
+        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg border border-control-border bg-white px-4 text-label font-semibold text-ink hover:bg-brand-ivory"
       >
         {backLabel}
       </Link>
@@ -57,7 +57,7 @@ export function ServiceModeBanner({ mode, audience }: { mode: ServiceMode; audie
         : "현재 읽기 전용 상태입니다. 기존 기록은 확인할 수 있지만 새 기록은 작성할 수 없습니다.";
 
   return (
-    <div role="status" className="rounded-lg border border-warning-soft bg-warning-soft px-4 py-3 text-[14px] leading-relaxed text-warning-text">
+    <div role="status" className="rounded-lg border border-warning-soft bg-warning-soft px-4 py-3 text-label leading-relaxed text-warning-text">
       {message} {audience === "teacher" ? "원장님께 문의해 주세요." : "본사 담당자에게 문의해 주세요."}
     </div>
   );
@@ -66,11 +66,11 @@ export function ServiceModeBanner({ mode, audience }: { mode: ServiceMode; audie
 export function ContentNotReadyState({ backHref }: { backHref: string }) {
   return (
     <section className="rounded-2xl border border-hairline bg-white px-6 py-12 text-center">
-      <h1 className="text-[20px] font-bold text-ink">수업 내용이 아직 준비되지 않았습니다.</h1>
-      <p className="mt-2 text-[15px] text-ink-muted">원장님께 문의해 주세요.</p>
+      <h1 className="text-title font-bold text-ink">수업 내용이 아직 준비되지 않았습니다.</h1>
+      <p className="mt-2 text-body-sm text-ink-muted">원장님께 문의해 주세요.</p>
       <Link
         href={backHref}
-        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg border border-control-border bg-white px-4 text-[14px] font-semibold text-ink hover:bg-brand-ivory"
+        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg border border-control-border bg-white px-4 text-label font-semibold text-ink hover:bg-brand-ivory"
       >
         오늘의 수업으로
       </Link>

@@ -93,7 +93,7 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
 
   if (state.phase === "loading") {
     return (
-      <p role="status" aria-live="polite" className="py-16 text-center text-[17px] text-ink-muted">
+      <p role="status" aria-live="polite" className="py-16 text-center text-body-lg text-ink-muted">
         기록을 불러오고 있어요
       </p>
     );
@@ -102,8 +102,8 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
   if (state.phase === "needsLink") {
     return (
       <section className="py-16 text-center">
-        <h1 className="text-[20px] font-bold text-ink">처음 받으신 링크에서 열어 주세요</h1>
-        <p className="mt-2 text-[16px] leading-relaxed text-ink-muted">
+        <h1 className="text-title font-bold text-ink">처음 받으신 링크에서 열어 주세요</h1>
+        <p className="mt-2 text-body leading-relaxed text-ink-muted">
           보안을 위해 새로고침한 화면에서는 기록을 다시 불러올 수 없습니다. 전달받으신 링크를 다시 눌러 주세요.
         </p>
       </section>
@@ -113,8 +113,8 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
   if (state.phase === "unavailable") {
     return (
       <section className="py-16 text-center">
-        <h1 className="text-[20px] font-bold text-ink">이 링크로는 기록을 확인할 수 없습니다.</h1>
-        <p className="mt-2 text-[16px] leading-relaxed text-ink-muted">기관에 새 공유 링크를 요청해 주세요.</p>
+        <h1 className="text-title font-bold text-ink">이 링크로는 기록을 확인할 수 없습니다.</h1>
+        <p className="mt-2 text-body leading-relaxed text-ink-muted">기관에 새 공유 링크를 요청해 주세요.</p>
       </section>
     );
   }
@@ -125,11 +125,11 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
   return (
     <div className="flex flex-col gap-5">
       <header>
-        <p className="text-[15px] text-ink-muted">
+        <p className="text-body-sm text-ink-muted">
           {portal.organizationName}
           {portal.className ? ` · ${portal.className}` : ""}
         </p>
-        <h1 className="text-[24px] font-bold text-ink">{portal.childName}의 기록</h1>
+        <h1 className="text-headline font-bold text-navy">{portal.childName}의 기록</h1>
       </header>
 
       <div role="tablist" aria-label="기록 보기" className="grid grid-cols-2 gap-2">
@@ -150,7 +150,7 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
               setTab(key);
               setOpenPast(null);
             }}
-            className={`min-h-12 rounded-xl border text-[17px] font-semibold ${
+            className={`min-h-12 rounded-xl border text-body-lg font-semibold ${
               tab === key ? "border-brand-navy bg-brand-navy text-white" : "border-hairline bg-white text-ink"
             }`}
           >
@@ -163,19 +163,19 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
         <section role="tabpanel" id="panel-this_week" aria-labelledby="tab-this_week" className="flex flex-col gap-5">
           {portal.thisWeek.length === 0 ? (
             <>
-              <p className="rounded-2xl border border-hairline bg-white px-5 py-10 text-center text-[17px] text-ink">
+              <p className="rounded-2xl border border-hairline bg-white px-5 py-10 text-center text-body-lg text-ink">
                 {hasAny ? "현재 새로 공유된 기록이 없습니다." : "아직 공유된 기록이 없습니다."}
               </p>
               {portal.past.length > 0 ? (
                 <div>
-                  <h2 className="text-[17px] font-bold text-ink">최근 공유 기록</h2>
+                  <h2 className="text-body-lg font-bold text-ink">최근 공유 기록</h2>
                   <button
                     type="button"
                     onClick={() => {
                       setTab("past");
                       setOpenPast(0);
                     }}
-                    className="mt-2 flex min-h-12 w-full items-center rounded-xl border border-hairline bg-white px-4 text-left text-[16px] text-ink"
+                    className="mt-2 flex min-h-12 w-full items-center rounded-xl border border-hairline bg-white px-4 text-left text-body text-ink"
                   >
                     {weekLabel(portal.past[0])}
                   </button>
@@ -189,7 +189,7 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
       ) : (
         <section role="tabpanel" id="panel-past" aria-labelledby="tab-past" className="flex flex-col gap-3">
           {portal.past.length === 0 ? (
-            <p className="rounded-2xl border border-hairline bg-white px-5 py-10 text-center text-[17px] text-ink">
+            <p className="rounded-2xl border border-hairline bg-white px-5 py-10 text-center text-body-lg text-ink">
               아직 공유된 기록이 없습니다.
             </p>
           ) : openPast !== null && portal.past[openPast] ? (
@@ -197,7 +197,7 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
               <button
                 type="button"
                 onClick={() => setOpenPast(null)}
-                className="min-h-12 self-start rounded-xl border border-hairline bg-white px-4 text-[16px] text-ink"
+                className="min-h-12 self-start rounded-xl border border-hairline bg-white px-4 text-body text-ink"
               >
                 목록으로
               </button>
@@ -212,8 +212,8 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
                     onClick={() => setOpenPast(index)}
                     className="flex min-h-14 w-full flex-col items-start justify-center rounded-xl border border-hairline bg-white px-4 py-2 text-left"
                   >
-                    <span className="text-[16px] font-semibold text-ink">{weekLabel(item)}</span>
-                    {item.content.topic ? <span className="text-[15px] text-ink-muted">{item.content.topic}</span> : null}
+                    <span className="text-body font-semibold text-ink">{weekLabel(item)}</span>
+                    {item.content.topic ? <span className="text-body-sm text-ink-muted">{item.content.topic}</span> : null}
                   </button>
                 </li>
               ))}
@@ -222,7 +222,7 @@ export function ChildPortalView({ portalId }: { portalId: string }) {
         </section>
       )}
 
-      <footer className="border-t border-hairline pt-4 text-[14px] leading-relaxed text-ink-muted print:hidden">
+      <footer className="border-t border-hairline pt-4 text-label leading-relaxed text-ink-muted print:hidden">
         이 링크는 해당 보호자에게만 전달해 주세요.
       </footer>
     </div>
@@ -235,8 +235,8 @@ function WeeklyRecord({ item }: { item: PortalWeekly }) {
   return (
     <article className="flex flex-col gap-4 rounded-2xl border border-hairline bg-white p-5">
       <div>
-        <p className="text-[15px] text-ink-muted">{weekLabel(item)}</p>
-        {item.updatedOn ? <p className="text-[14px] text-ink-muted">업데이트됨 {item.updatedOn}</p> : null}
+        <p className="text-body-sm text-ink-muted">{weekLabel(item)}</p>
+        {item.updatedOn ? <p className="text-label text-ink-muted">업데이트됨 {item.updatedOn}</p> : null}
       </div>
 
       {content.topic ? <Section title="이번 주 활동 주제" body={content.topic} /> : null}
@@ -245,9 +245,9 @@ function WeeklyRecord({ item }: { item: PortalWeekly }) {
 
       {item.observedMoments.length > 0 ? (
         <section>
-          <h2 className="text-[17px] font-bold text-ink">관찰된 모습</h2>
-          <p className="mt-1 text-[16px] leading-relaxed text-ink">{item.observedMoments.join(" · ")}</p>
-          <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">
+          <h2 className="text-body-lg font-bold text-ink">관찰된 모습</h2>
+          <p className="mt-1 text-body leading-relaxed text-ink">{item.observedMoments.join(" · ")}</p>
+          <p className="mt-1 text-label leading-relaxed text-ink-muted">
             이 기록은 점수나 평가가 아니라, 이번 활동에서 보인 아이의 모습을 담은 것입니다.
           </p>
         </section>
@@ -259,7 +259,7 @@ function WeeklyRecord({ item }: { item: PortalWeekly }) {
       <button
         type="button"
         onClick={() => window.print()}
-        className="min-h-12 self-start rounded-xl border border-hairline bg-white px-4 text-[16px] text-ink print:hidden"
+        className="min-h-12 self-start rounded-xl border border-hairline bg-white px-4 text-body text-ink print:hidden"
       >
         인쇄
       </button>
@@ -270,8 +270,8 @@ function WeeklyRecord({ item }: { item: PortalWeekly }) {
 function Section({ title, body }: { title: string; body: string }) {
   return (
     <section>
-      <h2 className="text-[17px] font-bold text-ink">{title}</h2>
-      <p className="mt-1 whitespace-pre-line text-[17px] leading-relaxed text-ink">{body}</p>
+      <h2 className="text-body-lg font-bold text-ink">{title}</h2>
+      <p className="mt-1 whitespace-pre-line text-body-lg leading-relaxed text-ink">{body}</p>
     </section>
   );
 }

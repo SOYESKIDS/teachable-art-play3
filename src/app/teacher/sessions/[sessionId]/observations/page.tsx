@@ -87,16 +87,16 @@ export default async function TeacherObservationPage({ params, searchParams }: T
       navItems={TEACHER_NAV}
       currentHref="/teacher"
     >
-      <h1 className="text-[24px] font-bold text-ink">관찰 기록</h1>
+      <h1 className="text-headline font-bold text-navy">관찰 기록</h1>
       {result.ok ? (
-        <p className="mt-1 text-[15px] text-ink-muted">
+        <p className="mt-1 text-body-sm text-ink-muted">
           {result.data.session.className ?? ""} · {result.data.session.lessonTitle ?? ""}
         </p>
       ) : null}
 
       <div className="mt-5">
         {!result.ok ? (
-          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-[15px] text-ink">
+          <p className="rounded-xl border border-hairline bg-white px-4 py-10 text-center text-body-sm text-ink">
             {result.reason === "load_failed"
               ? "관찰 기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
               : "찾을 수 없거나 접근 권한이 없습니다."}

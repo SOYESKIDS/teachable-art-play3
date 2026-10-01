@@ -334,28 +334,28 @@ export function AttendanceEditor({
         <div>
           <Link
             href={backHref}
-            className="inline-flex min-h-11 items-center rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-3 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
           >
             ← 수업 목록
           </Link>
         </div>
 
-        <span className="rounded-md border border-navy/15 bg-white px-2.5 py-1 text-[12px] font-bold text-navy">
+        <span className="rounded-md border border-line-strong bg-white px-2.5 py-1 text-micro font-bold text-navy">
           {CLASS_SESSION_STATUS_LABELS[session.status]}
         </span>
       </div>
 
-      <section className="mt-4 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
-        <p className="text-[13px] font-bold text-navy">
+      <section className="mt-4 rounded-xl border border-line bg-white p-4 sm:p-5">
+        <p className="text-caption font-bold text-navy">
           {session.className ?? "반 정보 없음"}
           {session.classStatus === "archived" ? (
-            <span className="ml-1 font-normal text-navy/45">
+            <span className="ml-1 font-normal text-ink-muted">
               (보관)
             </span>
           ) : null}
         </p>
 
-        <p className="mt-1 text-[12px] text-navy/50">
+        <p className="mt-1 text-micro text-ink-muted">
           {formatLessonOrder(
             session.weekNo,
             session.sessionNo,
@@ -365,12 +365,12 @@ export function AttendanceEditor({
             : ""}
         </p>
 
-        <h1 className="mt-1 break-words text-[20px] font-bold leading-snug text-navy">
+        <h1 className="mt-1 break-words text-title font-bold leading-snug text-navy">
           {session.lessonTitle ??
             "차시 정보 없음"}
         </h1>
 
-        <p className="mt-2 text-[13px] text-navy/50">
+        <p className="mt-2 text-caption text-ink-muted">
           예정일{" "}
           {formatSessionDate(
             session.scheduledDate,
@@ -382,13 +382,13 @@ export function AttendanceEditor({
       </section>
 
       {sessionReadOnly ? (
-        <p className="mt-4 rounded-xl border border-navy/15 bg-navy/5 px-4 py-3 text-[13px] leading-relaxed text-navy">
+        <p className="mt-4 rounded-xl border border-line-strong bg-navy/5 px-4 py-3 text-caption leading-relaxed text-navy">
           취소된 수업의 출결은 조회만 할 수 있습니다.
         </p>
       ) : null}
 
       {teacherArchived ? (
-        <p className="mt-4 rounded-xl border border-yellow/50 bg-yellow-soft px-4 py-3 text-[13px] leading-relaxed text-navy">
+        <p className="mt-4 rounded-xl border border-warning-border bg-warning-soft px-4 py-3 text-caption leading-relaxed text-navy">
           보관된 반에서는 새 출결 기록을 추가할 수 없습니다.
           기존에 기록된 출결만 정정할 수 있습니다.
         </p>
@@ -402,10 +402,10 @@ export function AttendanceEditor({
       <section className="mt-5 pb-28 sm:pb-0">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-[17px] font-bold text-navy">
+            <h2 className="text-body-lg font-bold text-navy">
               원아 출결
             </h2>
-            <p className="mt-1 text-[12px] text-navy/50">
+            <p className="mt-1 text-micro text-ink-muted">
               총{" "}
               {children.length.toLocaleString(
                 "ko-KR",
@@ -421,7 +421,7 @@ export function AttendanceEditor({
                 type="button"
                 onClick={markUnrecordedPresent}
                 disabled={isPending}
-                className="min-h-11 rounded-lg border border-navy/20 bg-white px-4 text-[13px] font-bold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-h-11 rounded-lg border border-line-strong bg-white px-4 text-caption font-bold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 미기록{" "}
                 {writableUnrecordedCount.toLocaleString(
@@ -433,7 +433,7 @@ export function AttendanceEditor({
               {/* 편집 불가 원아가 섞여 있으면 숫자가 달라 보이는 이유를 알려준다 */}
               {counts.unrecorded >
               writableUnrecordedCount ? (
-                <p className="mt-1 text-[11px] leading-relaxed text-navy/45">
+                <p className="mt-1 text-micro leading-relaxed text-ink-muted">
                   미기록{" "}
                   {counts.unrecorded.toLocaleString(
                     "ko-KR",
@@ -450,13 +450,13 @@ export function AttendanceEditor({
           ) : null}
         </div>
 
-        <div className="mt-4 rounded-xl border border-navy/10 bg-white/60 p-3">
+        <div className="mt-4 rounded-xl border border-line bg-white/60 p-3">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-[12px] font-bold text-navy">
+              <p className="text-micro font-bold text-navy">
                 보기 필터
               </p>
-              <p className="mt-0.5 text-[11px] leading-relaxed text-navy/45">
+              <p className="mt-0.5 text-micro leading-relaxed text-ink-muted">
                 상태별 원아를 찾아보기 위한 필터입니다. 출결을 변경하는 버튼이 아닙니다.
                 {filter !== "all"
                   ? " 목록은 필터를 누른 시점 기준으로 유지되며, 같은 필터를 다시 누르면 갱신됩니다."
@@ -484,13 +484,13 @@ export function AttendanceEditor({
                 className={`min-h-12 rounded-lg border px-2 py-2 text-center transition-colors ${
                   selected
                     ? "border-trust-blue/50 bg-trust-blue/10 text-navy"
-                    : "border-navy/10 bg-white text-navy hover:border-trust-blue/30 hover:bg-trust-blue/5"
+                    : "border-line bg-white text-navy hover:border-trust-blue/30 hover:bg-trust-blue/5"
                 }`}
               >
-                <span className="block text-[12px] font-semibold">
+                <span className="block text-micro font-semibold">
                   {item.label}
                 </span>
-                <span className="mt-0.5 block text-[15px] font-bold tabular-nums">
+                <span className="mt-0.5 block text-body-sm font-bold tabular-nums">
                   {count.toLocaleString(
                     "ko-KR",
                   )}
@@ -502,11 +502,11 @@ export function AttendanceEditor({
         </div>
 
         {children.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/50">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
             이 수업에 표시할 원아가 없습니다.
           </p>
         ) : visibleChildren.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] text-navy/50">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label text-ink-muted">
             해당 조건의 원아가 없습니다.
           </p>
         ) : (
@@ -529,39 +529,39 @@ export function AttendanceEditor({
                 return (
                   <li
                     key={child.childId}
-                    className="rounded-xl border border-navy/10 bg-white p-4"
+                    className="rounded-xl border border-line bg-white p-4"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="break-words text-[15px] font-bold text-navy">
+                        <p className="break-words text-body-sm font-bold text-navy">
                           {child.childName ??
                             "원아 이름 확인 불가"}
                         </p>
 
-                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-navy/45">
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-micro text-ink-muted">
                           {statusLabel ? (
-                            <span className="rounded border border-navy/10 px-1.5 py-0.5">
+                            <span className="rounded border border-line px-1.5 py-0.5">
                               {statusLabel}
                             </span>
                           ) : null}
 
                           {!child.isCurrentClassMember &&
                           child.hasExistingAttendance ? (
-                            <span className="rounded border border-navy/10 px-1.5 py-0.5">
+                            <span className="rounded border border-line px-1.5 py-0.5">
                               과거 출결
                             </span>
                           ) : null}
 
                           {teacherArchived &&
                           !child.hasExistingAttendance ? (
-                            <span className="rounded border border-yellow/40 bg-yellow-soft px-1.5 py-0.5 text-navy">
+                            <span className="rounded border border-warning-border bg-warning-soft px-1.5 py-0.5 text-navy">
                               신규 기록 불가
                             </span>
                           ) : null}
                         </div>
                       </div>
 
-                      <span className="text-[12px] font-semibold text-navy/50">
+                      <span className="text-micro font-semibold text-ink-muted">
                         {currentStatus
                           ? STATUS_LABELS[
                               currentStatus
@@ -572,7 +572,7 @@ export function AttendanceEditor({
 
                     <div className="mt-3">
                       <p
-                        className="mb-2 text-[11px] font-bold text-navy/55"
+                        className="mb-2 text-micro font-bold text-ink-muted"
                         id={`attendance-label-${child.childId}`}
                       >
                         출결 선택
@@ -616,10 +616,10 @@ export function AttendanceEditor({
                             aria-pressed={
                               selected
                             }
-                            className={`min-h-11 rounded-lg border px-1.5 text-[12px] font-bold transition-colors sm:text-[13px] ${
+                            className={`min-h-11 rounded-lg border px-1.5 text-micro font-bold transition-colors sm:text-caption ${
                               selected
                                 ? "border-navy bg-navy text-white"
-                                : "border-navy/15 bg-white text-navy hover:border-navy/30 hover:bg-navy/5"
+                                : "border-line-strong bg-white text-navy hover:border-navy/30 hover:bg-navy/5"
                             } disabled:cursor-not-allowed disabled:opacity-45`}
                           >
                             {
@@ -644,7 +644,7 @@ export function AttendanceEditor({
       children.length > 0 ? (
         <form
           action={formAction}
-          className="sticky bottom-3 mt-5 rounded-xl border border-navy/15 bg-white/95 p-3 shadow-[var(--shadow-elevated)] backdrop-blur sm:static sm:bg-white sm:p-4"
+          className="sticky bottom-3 mt-5 rounded-xl border border-line-strong bg-white/95 p-3 shadow-[var(--shadow-elevated)] backdrop-blur sm:static sm:bg-white sm:p-4"
         >
           <input
             type="hidden"
@@ -664,7 +664,7 @@ export function AttendanceEditor({
             <p
               role={state.phase === "error" ? "alert" : "status"}
               aria-live={state.phase === "error" ? "assertive" : "polite"}
-              className={`mb-3 rounded-lg border px-3 py-2 text-[13px] leading-relaxed ${
+              className={`mb-3 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
                 state.phase === "error"
                   ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
                   : "border-soft-green/50 bg-soft-green/15 text-navy"
@@ -675,7 +675,7 @@ export function AttendanceEditor({
           ) : null}
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[12px] text-navy/50">
+            <p className="text-micro text-ink-muted">
               변경된 출결{" "}
               <strong className="text-navy">
                 {dirtyEntries.length.toLocaleString(
@@ -688,7 +688,7 @@ export function AttendanceEditor({
             <button
               type="submit"
               disabled={!canSubmit}
-              className="min-h-12 w-full rounded-lg bg-navy px-6 text-[14px] font-bold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
+              className="min-h-12 w-full rounded-lg bg-navy px-6 text-label font-bold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
             >
               {isPending
                 ? "저장 중..."

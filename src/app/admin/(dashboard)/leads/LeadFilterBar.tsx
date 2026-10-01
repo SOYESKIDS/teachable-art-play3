@@ -20,9 +20,9 @@ import type { LeadStatus } from "@/types/lead";
 import type { SubmissionType } from "@/types/leadForm";
 
 const selectClasses =
-  "h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-medium text-navy transition-colors focus:border-trust-blue sm:w-auto";
+  "h-11 w-full rounded-lg border border-line-strong bg-white px-3 text-caption font-medium text-navy transition-colors focus:border-trust-blue sm:w-auto";
 
-const labelClasses = "text-[11px] font-semibold text-navy/45";
+const labelClasses = "text-micro font-semibold text-ink-muted";
 
 interface LeadFilterBarProps {
   filters: LeadListFilters;
@@ -49,7 +49,7 @@ export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilter
   }
 
   return (
-    <div className="rounded-xl border border-navy/10 bg-white p-4">
+    <div className="rounded-xl border border-line bg-white p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <form onSubmit={handleSearch} className="flex flex-col gap-1.5">
           <label className={labelClasses} htmlFor="lead-search">
@@ -64,11 +64,11 @@ export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilter
               name="q"
               defaultValue={filters.q}
               placeholder="기관명 · 담당자 · 연락처"
-              className="h-11 w-full rounded-lg border border-navy/15 bg-white px-3 text-[13px] text-navy placeholder:text-navy/35 transition-colors focus:border-trust-blue sm:w-[260px]"
+              className="h-11 w-full rounded-lg border border-line-strong bg-white px-3 text-caption text-navy placeholder:text-ink-subtle transition-colors focus:border-trust-blue sm:w-[260px]"
             />
             <button
               type="submit"
-              className="h-11 shrink-0 rounded-lg bg-navy px-4 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
+              className="h-11 shrink-0 rounded-lg bg-navy px-4 text-caption font-semibold text-white transition-colors hover:bg-navy-deep"
             >
               검색
             </button>
@@ -143,11 +143,11 @@ export function LeadFilterBar({ filters, basePath = "/admin/leads" }: LeadFilter
       </div>
 
       {hasActiveFilters(filters) ? (
-        <div className="mt-3 border-t border-navy/8 pt-3">
+        <div className="mt-3 border-t border-line-soft pt-3">
           <button
             type="button"
             onClick={() => router.push(basePath)}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[12px] font-semibold text-trust-blue transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-micro font-semibold text-trust-blue transition-opacity hover:opacity-70"
           >
             필터 초기화
           </button>

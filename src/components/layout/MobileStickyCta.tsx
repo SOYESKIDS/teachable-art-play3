@@ -16,12 +16,12 @@ import { ctaLabels } from "@/data/site-copy";
  */
 export function MobileStickyCta() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-navy/10 bg-ivory/95 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] backdrop-blur lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ivory/95 p-3 shadow-[0_-8px_24px_-12px_rgba(20,43,74,0.18)] pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] backdrop-blur lg:hidden">
       <LeadCtaButton
         type="demo"
         variant="primary"
         dataCta="demo-mobile-sticky"
-        className="flex w-full items-center justify-center px-6 py-3.5 text-base font-bold"
+        className="flex w-full font-bold"
       >
         {ctaLabels.demo}
       </LeadCtaButton>

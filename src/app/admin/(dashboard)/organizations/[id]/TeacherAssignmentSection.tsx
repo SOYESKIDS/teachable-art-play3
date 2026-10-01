@@ -23,9 +23,9 @@ interface TeacherAssignmentSectionProps {
 
 function SummaryItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-navy/10 bg-surface-soft px-3.5 py-2.5">
-      <dt className="text-[11px] font-semibold text-navy/45">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-bold tabular-nums text-navy">
+    <div className="rounded-lg border border-line bg-surface-soft px-3.5 py-2.5">
+      <dt className="text-micro font-semibold text-ink-muted">{label}</dt>
+      <dd className="mt-0.5 text-title font-bold tabular-nums text-navy">
         {value.toLocaleString("ko-KR")}
       </dd>
     </div>
@@ -39,7 +39,7 @@ function AssignedClasses({
   teacher: TeacherAssignmentViewModel;
 }) {
   if (teacher.assignedClasses.length === 0) {
-    return <span className="text-navy/45">미배정</span>;
+    return <span className="text-ink-muted">미배정</span>;
   }
 
   return (
@@ -48,7 +48,7 @@ function AssignedClasses({
         <span key={item.classId}>
           {index > 0 ? <span className="text-navy/30"> · </span> : null}
           <span
-            className={item.classStatus === "archived" ? "text-navy/45" : ""}
+            className={item.classStatus === "archived" ? "text-ink-muted" : ""}
           >
             {item.className}
             {item.classStatus === "archived" ? " (보관)" : ""}
@@ -73,11 +73,11 @@ export function TeacherAssignmentSection({
   hasError,
 }: TeacherAssignmentSectionProps) {
   return (
-    <section className="rounded-xl border border-navy/10 bg-white p-5 lg:col-span-2">
+    <section className="rounded-xl border border-line bg-white p-5 lg:col-span-2">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-bold text-navy">담당 교사 관리</h2>
-          <p className="mt-1 text-[12px] text-navy/50">
+          <h2 className="text-body-sm font-bold text-navy">담당 교사 관리</h2>
+          <p className="mt-1 text-micro text-ink-muted">
             교사를 초대한 뒤 반의 담당 교사로 배정할 수 있습니다. 한 교사가 여러
             반을 담당할 수 있습니다.
           </p>
@@ -91,7 +91,7 @@ export function TeacherAssignmentSection({
       </div>
 
       {hasError ? (
-        <p className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-6 text-center text-[13px] text-navy/55">
+        <p className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-6 text-center text-caption text-ink-muted">
           교사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
         </p>
       ) : (
@@ -104,11 +104,11 @@ export function TeacherAssignmentSection({
           </dl>
 
           {teachers.length === 0 ? (
-            <div className="mt-5 rounded-lg border border-navy/10 bg-surface-soft px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-navy">
+            <div className="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-8 text-center">
+              <p className="text-label font-semibold text-navy">
                 아직 등록된 교사가 없습니다.
               </p>
-              <p className="mt-1 text-[13px] text-navy/50">
+              <p className="mt-1 text-caption text-ink-muted">
                 교사를 초대한 뒤 담당 반을 배정해주세요.
               </p>
               <div className="mt-4 flex justify-center">
@@ -118,10 +118,10 @@ export function TeacherAssignmentSection({
           ) : (
             <>
               {/* PC: compact table */}
-              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-navy/10 lg:block">
-                <table className="w-full border-collapse text-[13px]">
+              <div className="mt-4 hidden overflow-x-auto rounded-lg border border-line lg:block">
+                <table className="w-full border-collapse text-caption">
                   <thead>
-                    <tr className="bg-surface-soft text-navy/50">
+                    <tr className="bg-surface-soft text-ink-muted">
                       <th className="px-4 py-2.5 text-left font-semibold">
                         교사명
                       </th>
@@ -140,14 +140,14 @@ export function TeacherAssignmentSection({
                     {teachers.map((teacher) => (
                       <tr
                         key={teacher.membershipId}
-                        className="border-t border-navy/8 bg-white"
+                        className="border-t border-line-soft bg-white"
                       >
                         <td className="px-4 py-3 font-semibold text-navy">
                           {teacher.displayName}
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-block rounded-md border px-2 py-0.5 text-[12px] font-semibold ${TEACHER_MEMBER_STATUS_BADGE_CLASSES[teacher.membershipStatus]}`}
+                            className={`inline-block rounded-md border px-2 py-0.5 text-micro font-semibold ${TEACHER_MEMBER_STATUS_BADGE_CLASSES[teacher.membershipStatus]}`}
                           >
                             {
                               TEACHER_MEMBER_STATUS_LABELS[
@@ -167,7 +167,7 @@ export function TeacherAssignmentSection({
                               assignableClasses={assignableClasses}
                             />
                           ) : (
-                            <span className="text-[12px] text-navy/40">
+                            <span className="text-micro text-ink-muted">
                               활성 교사만 배정 가능
                             </span>
                           )}
@@ -183,14 +183,14 @@ export function TeacherAssignmentSection({
                 {teachers.map((teacher) => (
                   <li
                     key={teacher.membershipId}
-                    className="rounded-lg border border-navy/10 px-4 py-3"
+                    className="rounded-lg border border-line px-4 py-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[14px] font-semibold text-navy">
+                        <p className="text-label font-semibold text-navy">
                           {teacher.displayName}
                         </p>
-                        <p className="mt-0.5 break-words text-[12px] text-navy/55">
+                        <p className="mt-0.5 break-words text-micro text-ink-muted">
                           담당 반:{" "}
                           {formatAssignedClassNames(
                             teacher.assignedClasses.map((item) =>
@@ -202,12 +202,12 @@ export function TeacherAssignmentSection({
                         </p>
                       </div>
                       <span
-                        className={`shrink-0 rounded-md border px-2 py-0.5 text-[12px] font-semibold ${TEACHER_MEMBER_STATUS_BADGE_CLASSES[teacher.membershipStatus]}`}
+                        className={`shrink-0 rounded-md border px-2 py-0.5 text-micro font-semibold ${TEACHER_MEMBER_STATUS_BADGE_CLASSES[teacher.membershipStatus]}`}
                       >
                         {TEACHER_MEMBER_STATUS_LABELS[teacher.membershipStatus]}
                       </span>
                     </div>
-                    <div className="mt-2.5 flex justify-end border-t border-navy/8 pt-2.5">
+                    <div className="mt-2.5 flex justify-end border-t border-line-soft pt-2.5">
                       {canAssignClasses(teacher.membershipStatus) ? (
                         <TeacherAssignmentDialog
                           organizationId={organizationId}
@@ -215,7 +215,7 @@ export function TeacherAssignmentSection({
                           assignableClasses={assignableClasses}
                         />
                       ) : (
-                        <span className="text-[12px] text-navy/40">
+                        <span className="text-micro text-ink-muted">
                           활성 교사만 배정 가능
                         </span>
                       )}

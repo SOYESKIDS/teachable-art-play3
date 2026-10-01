@@ -77,9 +77,9 @@ export default async function DirectorGrowthReportDetailPage({
     >
       {!result.ok ? (
         <div>
-          <h1 className="text-[22px] font-bold text-navy">성장 리포트</h1>
+          <h1 className="text-headline font-bold text-navy">성장 리포트</h1>
 
-          <p className="mt-4 rounded-xl border border-navy/10 bg-white px-4 py-10 text-center text-[14px] leading-relaxed text-navy/55">
+          <p className="mt-4 rounded-xl border border-line bg-white px-4 py-10 text-center text-label leading-relaxed text-ink-muted">
             {result.reason === "load_failed"
               ? "성장 리포트를 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
               : "리포트를 찾을 수 없거나 접근 권한이 없습니다."}
@@ -90,41 +90,41 @@ export default async function DirectorGrowthReportDetailPage({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href={backHref}
-              className="inline-flex min-h-11 items-center rounded-lg border border-navy/15 bg-white px-3 text-[13px] font-semibold text-navy transition-colors hover:bg-navy/5"
+              className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-3 text-caption font-semibold text-navy transition-colors hover:bg-navy/5"
             >
               ← 리포트 목록
             </Link>
 
-            <span className="rounded-md border border-soft-green/50 bg-soft-green/15 px-2.5 py-1 text-[12px] font-bold text-navy">
+            <span className="rounded-md border border-soft-green/50 bg-soft-green/15 px-2.5 py-1 text-micro font-bold text-navy">
               교사 작성 완료
             </span>
           </div>
 
-          <section className="mt-4 scroll-mt-28 rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
-            <p className="text-[13px] font-bold text-navy">
+          <section className="mt-4 scroll-mt-28 rounded-xl border border-line bg-white p-4 sm:p-5">
+            <p className="text-caption font-bold text-navy">
               {result.report.className ?? "반 정보 없음"}
               {result.report.classStatus === "archived" ? (
-                <span className="ml-1 font-normal text-navy/45">(보관)</span>
+                <span className="ml-1 font-normal text-ink-muted">(보관)</span>
               ) : null}
             </p>
 
-            <h1 className="mt-1 break-words text-[20px] font-bold leading-snug text-navy">
+            <h1 className="mt-1 break-words text-title font-bold leading-snug text-navy">
               {result.report.childName ?? "원아 이름 확인 불가"}
             </h1>
 
-            <p className="mt-1.5 text-[13px] tabular-nums text-navy/55">
+            <p className="mt-1.5 text-caption tabular-nums text-ink-muted">
               {formatReportPeriod(
                 result.report.periodStart,
                 result.report.periodEnd,
               )}
             </p>
 
-            <p className="mt-2 break-words text-[13px] text-navy/60">
+            <p className="mt-2 break-words text-caption text-ink-muted">
               {result.report.title}
             </p>
 
             {result.report.completedAt ? (
-              <p className="mt-1 text-[12px] tabular-nums text-navy/45">
+              <p className="mt-1 text-micro tabular-nums text-ink-muted">
                 작성 완료{" "}
                 {result.report.completedAt
                   .slice(0, 10)

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AuthCard, AuthShell } from "@/components/auth/AuthShell";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 
 export const metadata: Metadata = {
@@ -15,29 +16,23 @@ export const metadata: Metadata = {
  */
 export default function ForgotPasswordPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
-      <div className="w-full max-w-[440px]">
-        <div className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-8 shadow-[var(--shadow-card)] sm:p-10">
-          <p className="text-[12px] font-bold tracking-[0.18em] text-yellow">
-            TEACHABLE ART PLAY
-          </p>
-          <h1 className="mt-3 text-[24px] font-bold text-navy">비밀번호 찾기</h1>
-          <p className="mt-2 text-[14px] leading-relaxed text-navy/60">
-            가입하신 이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다.
-          </p>
+    <AuthShell>
+      <AuthCard
+        eyebrow="계정 도움"
+        title="비밀번호 찾기"
+        description="가입하신 이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다."
+      >
+        <ForgotPasswordForm />
+      </AuthCard>
 
-          <ForgotPasswordForm />
-        </div>
-
-        <p className="mt-6 text-center text-[13px] text-navy/50">
-          <Link
-            href="/login"
-            className="font-semibold text-navy/70 underline-offset-4 transition-colors hover:text-navy hover:underline"
-          >
-            로그인으로 돌아가기
-          </Link>
-        </p>
-      </div>
-    </main>
+      <p className="mt-5 text-center text-caption">
+        <Link
+          href="/login"
+          className="inline-flex min-h-11 items-center font-semibold text-ink-muted underline-offset-4 transition-colors hover:text-navy hover:underline"
+        >
+          로그인으로 돌아가기
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

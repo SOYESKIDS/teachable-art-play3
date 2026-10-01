@@ -18,6 +18,9 @@ import {
 } from "@/lib/staff/weekly-report-actions";
 import type { PortalChildRow } from "@/lib/staff/director-report-queries";
 
+/** 좁은 화면에서 카드로 바뀔 때만 보이는 칸 이름 (넓은 화면은 표 머리칸이 대신한다) */
+const MOBILE_LABEL = "mb-0.5 block text-caption font-semibold text-ink-muted md:hidden";
+
 const CONSENT_LABELS: Record<PortalChildRow["consentStatus"], string> = {
   unknown: "미확인",
   declined: "공유 안 함",
@@ -95,10 +98,10 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
 
       {issuedLink ? (
         <section aria-labelledby="issued-link-title" className="rounded-xl border border-brand-mint bg-brand-mint p-4">
-          <h2 id="issued-link-title" className="text-[16px] font-bold text-success-text">
+          <h2 id="issued-link-title" className="text-body font-bold text-success-text">
             {issuedLink.childName} 공유 링크
           </h2>
-          <p className="mt-1 text-[14px] text-ink">
+          <p className="mt-1 text-label text-ink">
             보안을 위해 이 주소는 지금만 확인할 수 있습니다. 해당 보호자에게만 전달해 주세요.
           </p>
           <input
@@ -119,10 +122,10 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
         </section>
       ) : null}
 
-      <div className="overflow-x-auto rounded-xl border border-hairline bg-white">
-        <table className="w-full min-w-[820px] border-collapse text-left text-[15px] text-ink">
+      <div className="md:overflow-x-auto md:rounded-xl md:border md:border-hairline md:bg-white">
+        <table className="block w-full border-collapse text-left text-body-sm text-ink md:table md:min-w-[820px]">
           <caption className="sr-only">아동별 학부모 공유 링크와 사진 공유 기록</caption>
-          <thead className="bg-brand-ivory text-[14px] text-ink-muted">
+          <thead className="hidden bg-brand-ivory text-label text-ink-muted md:table-header-group">
             <tr>
               <th scope="col" className="px-4 py-3 font-semibold">원아</th>
               <th scope="col" className="px-4 py-3 font-semibold">반</th>
@@ -133,17 +136,27 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="flex flex-col gap-3 md:table-row-group">
             {rows.map((row) => {
               const busy = busyChild === row.childId;
               return (
-                <tr key={row.childId} className="border-t border-hairline">
-                  <th scope="row" className="px-4 py-3 font-semibold">
+                <tr
+                  key={row.childId}
+                  className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-xl border border-hairline bg-white p-4 md:table-row md:rounded-none md:border-0 md:border-t md:p-0"
+                >
+                  <th scope="row" className="col-span-2 text-body font-bold md:px-4 md:py-3 md:text-body-sm md:font-semibold">
                     {row.childName}
                   </th>
-                  <td className="px-4 py-3">{row.className ?? "—"}</td>
-                  <td className="px-4 py-3">{row.portalId ? "공유 중" : "공유 안 함"}</td>
-                  <td className="px-4 py-3">
+                  <td className="md:px-4 md:py-3">
+                    <span className={MOBILE_LABEL}>반</span>
+                    {row.className ?? "—"}
+                  </td>
+                  <td className="md:px-4 md:py-3">
+                    <span className={MOBILE_LABEL}>공유 링크</span>
+                    {row.portalId ? "공유 중" : "공유 안 함"}
+                  </td>
+                  <td className="col-span-2 md:px-4 md:py-3">
+                    <span className={MOBILE_LABEL} aria-hidden="true">사진 공유 기록</span>
                     <label className="sr-only" htmlFor={`consent-${row.childId}`}>
                       {row.childName} 사진 공유 기록
                     </label>
@@ -152,7 +165,7 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
                       value={row.consentStatus}
                       disabled={busy}
                       onChange={(event) => changeConsent(row, event.target.value as PortalChildRow["consentStatus"])}
-                      className={fieldControl}
+                      className={`${fieldControl} w-full md:w-auto`}
                     >
                       {(Object.keys(CONSENT_LABELS) as PortalChildRow["consentStatus"][]).map((status) => (
                         <option key={status} value={status}>
@@ -161,8 +174,12 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap justify-end gap-2">
+                  <td
+                    className={`col-span-2 border-t border-hairline pt-3 md:table-cell md:border-t-0 md:px-4 md:py-3 ${
+                      portalAvailable || row.portalId ? "" : "hidden"
+                    }`}
+                  >
+                    <div className="flex flex-wrap gap-2 md:justify-end">
                       {portalAvailable ? (
                         <button type="button" disabled={busy} onClick={() => issue(row)} className={row.portalId ? appButtonSecondary : appButtonPrimary}>
                           {busy ? "처리 중…" : row.portalId ? "새 링크 발급" : "링크 만들기"}
@@ -190,7 +207,7 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
         busy={busyChild !== null}
       >
         <div className="flex flex-col gap-4">
-          <p className="text-[15px] leading-relaxed text-ink">
+          <p className="text-body-sm leading-relaxed text-ink">
             이 링크는 즉시 열리지 않습니다. 다시 공유하려면 새 링크를 발급해야 합니다.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row-reverse">

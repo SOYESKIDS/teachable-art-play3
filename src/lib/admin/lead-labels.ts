@@ -31,11 +31,11 @@ export const PACKAGE_LABELS: Record<PackageCode, string> = {
 
 /** 상태 Badge — 업무용이므로 채도를 낮추고 대비만 확보한다 */
 export const LEAD_STATUS_BADGE_CLASSES: Record<LeadStatus, string> = {
-  new: "bg-yellow/15 text-navy border-yellow/40",
-  contacted: "bg-trust-blue/10 text-trust-blue border-trust-blue/25",
-  qualified: "bg-navy/8 text-navy border-navy/25",
-  converted: "bg-soft-green/20 text-navy border-soft-green/50",
-  closed: "bg-navy/5 text-navy/50 border-navy/15",
+  new: "bg-accent-soft text-accent-strong border-accent/30",
+  contacted: "bg-info-soft text-info-text border-info-border",
+  qualified: "bg-primary-soft text-navy border-line-strong",
+  converted: "bg-success-soft text-success-text border-success-border",
+  closed: "bg-muted text-ink-muted border-border-strong",
 };
 
 export function formatPackage(code: PackageCode | null): string {

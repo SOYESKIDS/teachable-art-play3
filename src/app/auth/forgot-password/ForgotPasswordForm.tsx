@@ -10,7 +10,7 @@ import {
 
 const fieldClasses = fieldAuth;
 
-const labelClasses = "block text-[13px] font-semibold text-navy/70";
+const labelClasses = "block text-caption font-semibold text-navy/70";
 
 export function ForgotPasswordForm() {
   const [state, formAction, isPending] = useActionState(
@@ -40,7 +40,7 @@ export function ForgotPasswordForm() {
         <p
           role="status"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-trust-blue/40 bg-trust-blue/10 px-4 py-3 text-[14px] font-medium text-navy"
+          className="rounded-[var(--radius-lg)] border border-trust-blue/40 bg-trust-blue/10 px-4 py-3 text-label font-medium text-navy"
         >
           {FORGOT_PASSWORD_SENT_MESSAGE}
         </p>
@@ -50,7 +50,7 @@ export function ForgotPasswordForm() {
         <p
           role="alert"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-[14px] font-medium text-navy"
+          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-label font-medium text-navy"
         >
           {state.error}
         </p>
@@ -59,7 +59,7 @@ export function ForgotPasswordForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="mt-1 h-12 w-full rounded-full bg-navy text-[15px] font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-1 h-12 w-full rounded-full bg-navy text-body-sm font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? "보내는 중…" : "재설정 메일 보내기"}
       </button>
