@@ -222,6 +222,18 @@ export async function fetchTodayBoard(
 
   if (items === null) return { ok: false };
 
+  return { ok: true, board: buildTodayBoard(items, today) };
+}
+
+/**
+ * 오늘 · 진행 중 · 지난 예정 · 날짜 없는 예정 갈래 (순수 함수 · PHASE 10G).
+ *
+ * ★ 종료된 배정(completed · cancelled)의 "예정" 수업은 현재 · 예정 보드에 넣지 않는다.
+ *   그 수업은 시작할 수 없다(enforce_class_session_update · parentsActive=false) — 반이 다른 프로그램으로
+ *   옮겨 간 뒤 남은 이력이다. 데이터는 그대로 두고 이력 화면(fetchSessionHistory · status 무관)에서 본다.
+ *   진행 중 수업은 배정과 무관하게 남긴다 (마치기 · 복구가 필요하다). 완료 · 취소 이력도 그대로.
+ */
+export function buildTodayBoard(items: StaffSessionItem[], today: string): TodaySessionBoard {
   const summary: TodaySessionSummary = {
     scheduledToday: 0,
     inProgress: 0,
@@ -235,6 +247,8 @@ export async function fetchTodayBoard(
   const undatedSessions: StaffSessionItem[] = [];
 
   for (const item of items) {
+    if (item.status === "scheduled" && item.assignmentStatus !== "active") continue;
+
     const isToday = item.scheduled_date === today;
 
     if (item.status === "in_progress") summary.inProgress += 1;
@@ -255,15 +269,12 @@ export async function fetchTodayBoard(
   }
 
   return {
-    ok: true,
-    board: {
-      today,
-      summary,
-      todaySessions: sortForBoard(todaySessions),
-      ongoingFromOtherDays: sortForBoard(ongoingFromOtherDays),
-      overdueSessions: sortForBoard(overdueSessions),
-      undatedSessions: sortForBoard(undatedSessions),
-    },
+    today,
+    summary,
+    todaySessions: sortForBoard(todaySessions),
+    ongoingFromOtherDays: sortForBoard(ongoingFromOtherDays),
+    overdueSessions: sortForBoard(overdueSessions),
+    undatedSessions: sortForBoard(undatedSessions),
   };
 }
 

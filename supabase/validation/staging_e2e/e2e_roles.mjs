@@ -227,6 +227,28 @@ async function main() {
       await step("teacher", "login → /teacher", async () => (await login("teacher")) === "/teacher" || `landed ${await path()}`);
       await step("teacher", "today board h1 = 오늘의 수업", async () => (await h1()) === "오늘의 수업" || `h1=${await h1()}`);
       await step("teacher", "no AI UI on V2 teacher screen", async () => !(await bodyHas("AI 정리")) && !(await bodyHas("AI 초안")));
+      // PHASE 10G (읽기 전용): 실제 STARTER W1 수업 카드 · 준비 화면이 canonical 콘텐츠를 보여 준다 · 종료된 STAGING-P8 예정 수업은 보드에 없다
+      if (staging) {
+        const { loadPackage } = await import("../../../content/starter/2026.1/build-sql.mjs");
+        const w1 = loadPackage().weeks[0];
+        const s1First = w1.sections.find((s) => s.code === "s1").body.split("\n")[0];
+        await step("teacher", "today board: no ended STAGING-P8 scheduled session", async () => !(await bodyHas("색과 모양 놀이(가상)")) || "STAGING-P8 session still on board");
+        let w1Href = null;
+        await step("teacher", `today board: real STARTER W1 card (${w1.title}) with start link`, async () => {
+          w1Href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/"][href*="/before"]')].find((x) => (x.closest('li, article, section, div')?.innerText || '').includes(${JSON.stringify(w1.title)})); return a ? a.getAttribute('href') : null; })()`);
+          return Boolean(w1Href) || "W1 card or start link not found";
+        });
+        if (w1Href) {
+          await step("teacher", "open real W1 lesson (준비 화면 · 읽기만): canonical title · s1 · objective · no (가상)", async () => {
+            await go(w1Href);
+            const okTitle = await bodyHas(w1.title);
+            const okS1 = await bodyHas(s1First);
+            const okObjective = await bodyHas(w1.objective);
+            const noSynthetic = !(await bodyHas("(가상)"));
+            return (okTitle && okS1 && okObjective && noSynthetic) || `title=${okTitle} s1=${okS1} objective=${okObjective} noSynthetic=${noSynthetic}`;
+          });
+        }
+      }
       if (ctx.sessionId) {
         await step("teacher", "target session card present on today board (no auto-pick)", async () => {
           const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/${ctx.sessionId}/before"]')][0]; return a ? a.getAttribute('href') : null; })()`);

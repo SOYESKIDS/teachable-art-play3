@@ -1,13 +1,14 @@
 // PHASE 10F — STARTER 2026.1 콘텐츠 Staging 적용기 (쓰기 · 좁은 용도 · 한 번에 한 단계)
 // ---------------------------------------------------------------------
 // 사용:
-//   node supabase/content/apply_staging_content.mjs <load|publish|uat-switch> --confirm-staging itcddooiuqsqingfhxkk [--dry-run]
+//   node supabase/content/apply_staging_content.mjs <load|publish|uat-switch|uat-sessions> --confirm-staging itcddooiuqsqingfhxkk [--dry-run]
 //
 // 안전장치 (하나라도 어긋나면 REFUSE TO RUN · 쓰기 전에 판정 · fail closed):
 //   1. 단계 이름 allow-list → 고정 파일 3개만 (임의 SQL · 파일 인자 없음)
 //        load       supabase/content/starter_2026_1_load.sql        (canonical 에서 생성된 그대로여야 함)
 //        publish    supabase/content/starter_2026_1_publish.sql     (canonical 에서 생성된 그대로여야 함)
 //        uat-switch supabase/content/starter_2026_1_staging_uat_switch.sql (SHA-256 고정 · 바뀌면 거부)
+//        uat-sessions supabase/content/starter_2026_1_staging_uat_sessions.sql (PHASE 10G · SHA-256 고정)
 //   2. 대상: supabase/.temp/project-ref == Staging (Production · 다른 ref 명시 거부 · CLI 대상 env 거부 — guards.mjs)
 //      + supabase/.temp/linked-project.json ref 도 Staging · + 명령줄 --confirm-staging 값도 Staging
 //   3. 쓰기 전 읽기 전용 확인 (remote_readonly_query 경로 · 그 안전장치 그대로): 합성 아닌 사용자 0 · active 계약 1 · suspended 0
@@ -28,9 +29,12 @@ export const STEPS = Object.freeze({
   load: "supabase/content/starter_2026_1_load.sql",
   publish: "supabase/content/starter_2026_1_publish.sql",
   "uat-switch": "supabase/content/starter_2026_1_staging_uat_switch.sql",
+  "uat-sessions": "supabase/content/starter_2026_1_staging_uat_sessions.sql",
 });
 
 // uat-switch 파일 고정 해시 (LF 기준). 파일을 바꾸면 검토 후 이 값을 함께 바꿔야 실행된다.
+// uat-sessions 파일 고정 해시 (PHASE 10G · LF 기준).
+export const UAT_SESSIONS_SHA256 = "668a0dce7ef2d239d9696786a1745b36746919eef0a95370dac7232bf9f0cb9b";
 export const UAT_SWITCH_SHA256 = "d5536b4181fa7a926ddacb629595f20ff70c25882513ef9a6b1f41774a6e27b8";
 
 const STATE_SQL = "supabase/validation/staging_e2e/sql/p10f_staging_content_state.sql";
@@ -59,7 +63,7 @@ export async function prepareStep(step, { root = ROOT } = {}) {
     const build = await import(pathToFileURL(join(root, "content", "starter", "2026.1", "build-sql.mjs")).href);
     const generated = build.buildSql();
     if (text !== (step === "load" ? generated.load : generated.publish)) refuse(`${rel} 가 canonical 생성 결과와 다르다 (build-sql.mjs 로 다시 생성)`);
-  } else if (sha256(text) !== UAT_SWITCH_SHA256) {
+  } else if (sha256(text) !== (step === "uat-switch" ? UAT_SWITCH_SHA256 : UAT_SESSIONS_SHA256)) {
     refuse(`${rel} SHA-256 이 고정값과 다르다 (${sha256(text).slice(0, 16)}…)`);
   }
   return { rel, sql: text, sha256: sha256(text) };

@@ -15,7 +15,7 @@ const refuses = (fn) => assert.throws(fn, (e) => e?.name === "RefuseToRun");
 const STAGING = "itcddooiuqsqingfhxkk";
 
 test("단계 allow-list: load · publish · uat-switch → 고정 파일 3개 (임의 SQL · 파일 인자 없음)", () => {
-  assert.deepEqual(Object.keys(R.STEPS), ["load", "publish", "uat-switch"]);
+  assert.deepEqual(Object.keys(R.STEPS), ["load", "publish", "uat-switch", "uat-sessions"]);
   assert.ok(Object.isFrozen(R.STEPS));
   for (const file of Object.values(R.STEPS)) assert.match(file, /^supabase\/content\/starter_2026_1_[a-z_]+\.sql$/);
   assert.deepEqual(R.parseArgs(["load", "--confirm-staging", STAGING]), { step: "load", dryRun: false });
@@ -28,11 +28,13 @@ test("단계 allow-list: load · publish · uat-switch → 고정 파일 3개 (�
 });
 
 test("load · publish = canonical 생성 결과 · uat-switch = 고정 SHA-256", async () => {
-  for (const step of ["load", "publish", "uat-switch"]) {
+  for (const step of ["load", "publish", "uat-switch", "uat-sessions"]) {
     const p = await R.prepareStep(step);
     assert.match(p.sha256, /^[0-9a-f]{64}$/);
   }
   assert.match(R.UAT_SWITCH_SHA256, /^[0-9a-f]{64}$/);
+  assert.match(R.UAT_SESSIONS_SHA256, /^[0-9a-f]{64}$/);
+  assert.equal(R.sha256(readFileSync(join(root, R.STEPS["uat-sessions"]), "utf8")), R.UAT_SESSIONS_SHA256);
   const sw = readFileSync(join(root, R.STEPS["uat-switch"]), "utf8");
   assert.equal(R.sha256(sw), R.UAT_SWITCH_SHA256);
   assert.equal(R.sha256(sw.replace(/\n/g, "\r\n")), R.UAT_SWITCH_SHA256, "CRLF checkout 에서도 같은 해시");
