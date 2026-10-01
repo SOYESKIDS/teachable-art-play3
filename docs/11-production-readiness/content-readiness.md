@@ -11,8 +11,8 @@
 
 | 범위 | 상태 | 근거 |
 |---|---|---|
-| W1~6 | **SOURCE CONTENT AVAILABLE · canonical 적재 local 완료 (PHASE 10E) · Staging 실제 콘텐츠 미적용 · 사람 승인 필요** (이전 표기 OPERATIONAL 은 원본 서술 기준 — 저장소 · DB 적재 · 승인 기록은 없었다) — 표준화 규격 v1.0 확정본 | `docs/01-product/content-governance.md:19` |
-| W7~8 | **PHASE 10E: SOURCE CONTENT AVAILABLE · canonical 적재 local 완료 · Staging 미적용 · 사람 승인 필요 (BC-3 = TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED)** · 이전 기록(PHASE 10D): **B. TECHNICALLY INCOMPLETE** — 규격 콘텐츠 · 승인 증거 없음 · Staging 은 합성 "(가상)" 차시. 이전 기록: **CONFLICT**: content-governance 는 "PDF 존재 · 규격 미적용 · `DRAFT` 고정" (BC-3 · STARTER Service Ready 조건) / 직원 UAT 문서는 "W1~8 운영 자료" | `content-governance.md:20,265,283` · `docs/03-commerce/open-items.md:84` vs `docs/10-employee-uat/known-limitations.md:30` |
+| W1~6 | **PHASE 10F: 사람 승인(2026-10-01 · Staging) · Staging published · UAT 반 활성 · Production 미적재** · 이전 PHASE 10E: SOURCE CONTENT AVAILABLE · canonical 적재 local 완료 (이전 표기 OPERATIONAL 은 원본 서술 기준 — 저장소 · DB 적재 · 승인 기록은 없었다) — 표준화 규격 v1.0 확정본 | `docs/01-product/content-governance.md:19` |
+| W7~8 | **PHASE 10F: Staging published · UAT 반 활성 (CLOSED FOR STAGING EMPLOYEE UAT) · Production 미적재** · 이전 PHASE 10E: SOURCE CONTENT AVAILABLE · canonical 적재 local 완료 · Staging 미적용 · 사람 승인 필요 (BC-3 = TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED)** · 이전 기록(PHASE 10D): **B. TECHNICALLY INCOMPLETE** — 규격 콘텐츠 · 승인 증거 없음 · Staging 은 합성 "(가상)" 차시. 이전 기록: **CONFLICT**: content-governance 는 "PDF 존재 · 규격 미적용 · `DRAFT` 고정" (BC-3 · STARTER Service Ready 조건) / 직원 UAT 문서는 "W1~8 운영 자료" | `content-governance.md:20,265,283` · `docs/03-commerce/open-items.md:84` vs `docs/10-employee-uat/known-limitations.md:30` |
 | W9~16 | **SOURCE EXISTS / MIXED** ("우리 그리고 모두의 사계절") | `docs/03-commerce/product-catalog.md:35` · BC-1 |
 | W17~24 | **SOURCE EXISTS / DRAFT OR PROPOSAL** ("두근두근 세계여행") | `product-catalog.md:36` · BC-2 |
 

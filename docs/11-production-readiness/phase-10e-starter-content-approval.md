@@ -1,6 +1,6 @@
 # PHASE 10E — STARTER W1~W8 콘텐츠 승인 패키지
 
-> **HUMAN CONTENT APPROVAL REQUIRED.** 아래 체크박스는 사람이 표시한다 (자동 표시 없음).
+> **HUMAN CONTENT APPROVAL RECORDED — 2026-10-01 · APPROVED FOR STAGING EMPLOYEE UAT · NOT APPROVED FOR PRODUCTION.** (§9 · 사용자 명시 승인 기록)
 > 이 패키지는 원본 교사용 수업가이드를 저장소 · DB 모델로 옮긴 **기술 적재본**이다. Staging · Production 에는 적용하지 않았다.
 
 | | |
@@ -9,7 +9,7 @@
 | canonical 경로 | [`content/starter/2026.1/`](../../content/starter/2026.1/) — `manifest.json` · `week-01.txt` ~ `week-08.txt` · `build-sql.mjs` · `README.md` |
 | DB 적재 패키지 | `supabase/content/starter_2026_1_load.sql` (draft 적재) · `supabase/content/starter_2026_1_publish.sql` (**승인 후에만** 게시) — migration 아님 |
 | 적재 결과 (local) | 프로그램 `SOYE-STARTER-2026.1` 1 · 차시 W1~W8 · section 136 (8 × 17 · 필수 11 전부) · pgTAP **26/26** |
-| Staging · Production 변경 | **0 · 0** |
+| Staging · Production 변경 | PHASE 10E 시점 0 · 0 → **PHASE 10F: Staging load · publish · UAT 반 전환 완료** ([phase-10f](./phase-10f-starter-staging-content.md)) · Production 0 |
 
 ## 1. 원본 목록 (Source inventory)
 
@@ -187,15 +187,24 @@ W8 의 현수막 이름: W6 는 ‘우리 반 성장 숲’, W8 은 ‘대형 �
 
 교육 내용 · 원본 대조(특히 W1 · W3~W6)를 확인한 뒤 표시한다. 승인자 · 날짜를 함께 적는다.
 
-- [ ] W1 approved
-- [ ] W2 approved
-- [ ] W3 approved
-- [ ] W4 approved
-- [ ] W5 approved
-- [ ] W6 approved
-- [ ] W7 approved
-- [ ] W8 approved
+- [x] W1 approved
+- [x] W2 approved
+- [x] W3 approved
+- [x] W4 approved
+- [x] W5 approved
+- [x] W6 approved
+- [x] W7 approved
+- [x] W8 approved
 
-승인자: ______________________ · 날짜: ____________ · W4 성장키워드 결정: ☐ ‘시작’ 유지 ☐ 원본 수정 후 재적재
+승인 기록 (사람 · 2026-10-01 · 사용자가 PHASE 10F 지시에서 명시):
+1. 공식 원본: 2026-09-11 "교사용 수업 가이드" **Version A** = STARTER 2026.1 커리큘럼 원본
+2. W1~W8 canonical 콘텐츠: **Staging 사용 승인**
+3. W4 성장키워드: **‘시작’** (원본 표기 유지 · 확정)
+4. Staging 콘텐츠 load 승인 · 검증 후 Staging publish 승인
+5. 합성 직원 UAT 반을 `STAGING-P8 (가상)` 에서 `SOYE-STARTER-2026.1` 으로 전환 승인 · STARTER UAT 계약은 ACTIVE 유지
+6. **Production 배포 · Production DB 변경: 승인되지 않음**
 
-승인 전에는 `starter_2026_1_publish.sql` 을 어떤 환경에서도 실행하지 않는다.
+범위: **APPROVED FOR STAGING EMPLOYEE UAT. NOT APPROVED FOR PRODUCTION.**
+승인자 성명 · 서명은 별도 기록되지 않았다 (사용자 지시로 승인 · 이 문서는 그 기록). 추가 승인을 만들어 넣지 않는다.
+
+`starter_2026_1_publish.sql` 은 **Staging 에서만** 실행 승인됨 (PHASE 10F). Production 실행은 별도 승인 전까지 금지.

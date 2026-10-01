@@ -47,7 +47,7 @@
 | 11 | 수업 흐름 (local) | BEFORE → 시작 → 관찰 · Growth5 · 메모 → 마치기 · 오류 0 | local role E2E 48 PASS (PHASE 10C) | **PASS** |
 | 12 | Staging 화면 (읽기) | 교사 · 원장 로그인 · 오늘의 수업 · AI UI 없음 · 원장 STARTER 화면 · 오류 0 | Staging read-only role smoke 25 PASS (PHASE 10C.2 · 2026-09-30) | **PASS** |
 | 13 | Growth5 의미 | 5개 지표 · stage 텍스트 · 선택 안 함 = 기록 없음 · 점수 · 순위 · 진단 아님 · AI 가 고르지 않음 | GM005 · DEC-065 · `20261001092000…:427-430` · PHASE 10D 문구 검사 | **PASS** |
-| 14 | 필수 콘텐츠 | 약속 주차(W1~8) 게시 차시 + 필수 section 11개 (SS008 · Readiness content) | PHASE 10E: 원본 W1~W8 canonical 적재 · local Readiness content ok (pgTAP 10E R4) · **사람 콘텐츠 승인 전 · Staging 은 여전히 합성 "(가상)" 차시** | **BLOCKED BY BC-3** (TECHNICALLY READY — HUMAN CONTENT APPROVAL REQUIRED) |
+| 14 | 필수 콘텐츠 | 약속 주차(W1~8) 게시 차시 + 필수 section 11개 (SS008 · Readiness content) | PHASE 10F: 사람 승인(2026-10-01 · Staging 한정) · **Staging 실제 W1~W8 published · UAT 반 현재 프로그램 · content ok** · Production 미승인 · 미적재 | **BLOCKED BY BC-3** (Production — Staging 은 CLOSED FOR STAGING EMPLOYEE UAT) |
 | 15 | Staging 수업 흐름 (쓰기) · 직원 UAT | 실제 사람이 Staging 에서 수업 시작 → 마치기를 수행하고 결과 기록 | 직원 UAT 기록 = 읽기 · 화면 이동만 (`docs/10-employee-uat/role-test-matrix.md:7`) · 쓰기 흐름 UAT 기록 없음 | **HUMAN APPROVAL REQUIRED** |
 
 ## 4. DB · RLS · audit · rollback
