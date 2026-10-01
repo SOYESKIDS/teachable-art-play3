@@ -330,6 +330,15 @@ async function main() {
     // ── Director ────────────────────────────────────────────
     if (roles.director) {
       await step("director", "login → /director/sessions (STARTER · no dashboard)", async () => (await login("director")) === "/director/sessions" || `landed ${await path()}`);
+      // PHASE 10H (읽기 전용 · Staging): 원장 수업 현황 = 실제 STARTER 프로그램 · 종료된 합성 수업 없음
+      if (staging) {
+        await step("director", "sessions: real STARTER program (SOYE-STARTER-2026.1 · W1 유치원 가는 날) · no ended synthetic session", async () => {
+          const okProgram = await bodyHas("SOYE-STARTER-2026.1");
+          const okW1 = await bodyHas("유치원 가는 날");
+          const noOld = !(await bodyHas("색과 모양 놀이(가상)"));
+          return (okProgram && okW1 && noOld) || `program=${okProgram} w1=${okW1} noOld=${noOld}`;
+        });
+      }
       await step("director", "nav has no 홈 (director_dashboard)", async () =>
         !(await page.eval(`[...document.querySelectorAll('nav a')].some((a) => (a.innerText||'').trim() === '홈')`)));
       await step("director", "/director shows not-entitled (no aggregates)", async () => {
@@ -499,7 +508,14 @@ async function main() {
         const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href^="/admin/organizations/"]')].find((x) => /\\/admin\\/organizations\\/[0-9a-f-]{36}$/.test(x.getAttribute('href'))); return a ? a.getAttribute('href') : null; })()`);
         if (!href) return "no org link";
         await go(href);
-        return (await path()) === href;
+        if ((await path()) !== href) return `path=${await path()}`;
+        // PHASE 10H (Staging): 기관 상세에 반 · 현재 프로그램이 보인다 (읽기만)
+        if (staging) {
+          const okProgram = (await bodyHas("SOYE-STARTER-2026.1")) || (await bodyHas("SOYE KIDS 8주 프로그램"));
+          const okClass = await bodyHas("반");
+          return (okProgram && okClass) || `program=${okProgram} class=${okClass}`;
+        }
+        return true;
       });
       await step("hqAdmin", "no console errors / failed requests", async () => noErrors());
     } else record("hqAdmin", "all", "BLOCKED", PASSWORDS_BLOCKED);

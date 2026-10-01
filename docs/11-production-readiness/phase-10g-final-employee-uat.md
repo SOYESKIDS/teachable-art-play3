@@ -1,6 +1,7 @@
 # PHASE 10G — 최종 직원 UAT (Staging Preview)
 
 > **배포 상태: PREVIEW TECHNICALLY READY — SECURITY ROTATION REQUIRED BEFORE STAFF DISTRIBUTION**
+> **PHASE 10H (2026-10-01):** 교사 자격증명 CLOSED · **P09D-C2 OPEN — 운영자가 미룸** → **DO NOT DISTRIBUTE YET**. 인계: [phase-10h-employee-uat-handoff.md](./phase-10h-employee-uat-handoff.md)
 > 아래 §6 의 두 보안 항목 중 **교사 계정 자격증명 = CLOSED (2026-10-01)** · **P09D-C2 = OPEN** — P09D-C2 가 닫히기 전에는 **직원에게 URL · 계정을 배포하지 않는다**. 운영자 기술 확인은 계속 가능.
 > 학부모 화면(Parent Portal)은 이번 UAT 범위가 아니다 — CO-12 OPEN.
 
@@ -33,58 +34,67 @@
 | cutover · 기능 | 10C ACTIVE · G-2 ACTIVE — VERIFIED · G-1 NOT APPLIED · M5 NOT APPLIED · class_mode · weekly_report 미출시 · parent_portal CO-12 · ai_assist AR-8 · branding CO-8 |
 | local 회귀 | pgTAP 8 files **368/368** · cutover 24 · 67 · 70 · 46 · 앱 테스트 96 · M5 7/7 · JKL READY · G2 17/18 (기대) · lint · tsc · build |
 
-## 3. 직원 UAT 시트
+## 3. 직원 UAT 시트 (staff-facing · PHASE 10H 최종)
 
-로그인 경로: 교사 · 원장 = `/login` · HQ Admin · HQ Sales = `/admin/login`. 계정은 합성 `@example.test` (비밀번호는 이 문서에 쓰지 않는다 · 운영자가 별도 전달 — §6 이후).
-**쓰기 시험 범위**: 이번 UAT 는 화면 · 흐름 확인 중심이다. 수업 시작 · 출결 · 관찰 · Weekly 작성 등 쓰기는 운영자가 정한 합성 수업 1건에서만 한다 (실제 아동 정보 입력 금지).
+> **DO NOT DISTRIBUTE YET — P09D-C2 OPEN.** 비밀번호는 이 문서에 쓰지 않는다 (운영자가 배포 시 별도 전달).
+> 기기: 데스크톱 · 태블릿 · 휴대폰 중 가능한 것으로 확인. 결과는 ☐ 에 표시하고 문제가 있으면 "메모" 칸에 화면 · 시각 · 증상을 적는다 (아동 실명 · 개인정보 쓰지 않음).
 
-### 3-1. 교사 (`staging-teacher@example.test` · `/login`)
+| 역할 | 로그인 주소 | 계정 (합성) |
+|---|---|---|
+| HQ Admin | https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/admin/login | `staging-hq-admin@example.test` |
+| HQ Sales | https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/admin/login | `staging-hq-sales@example.test` |
+| 원장 | https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/kindergarten | `staging-director@example.test` |
+| 교사 | https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/kindergarten | `staging-teacher@example.test` |
 
-| # | 확인 | 기대 결과 | PASS | FAIL |
-|---|---|---|---|---|
-| T1 | 로그인 | `/teacher` · "오늘의 수업" | ☐ | ☐ |
-| T2 | 오늘의 수업 보드 | 무지개반(가상) · **1주차 · 1차시 · SOYE KIDS 8주 프로그램 (STARTER 2026.1) · 「유치원 가는 날」 · 예정일 2026.10.01** 카드 1건 | ☐ | ☐ |
-| T3 | 예전 합성 수업 | "색과 모양 놀이(가상)" 예정 수업이 보드에 **없다** | ☐ | ☐ |
-| T4 | W1 수업 준비 열기 | 「유치원 가는 날」 · "1주차는 아이가 새로운 공간에 빠르게 적응하도록 요구하는 시간이 아닙니다." · 수업 목표 "‘빨리 적응시키기’ X · 새로운 공간을 자기 속도로 알아가며 안전감과 소속감을 만드는 첫 시작 O" | ☐ | ☐ |
-| T5 | W1 실제 콘텐츠 | 수업 준비 · 진행 화면의 차시 내용이 원본 가이드와 같다 (그림책 《유치원 가는 날》 · 교실/어린이집 탐험 · 이름표 만들기) · "(가상)" 차시 문구 없음 | ☐ | ☐ |
-| T6 | AI | 교사 화면에 AI 정리 · AI 초안 버튼 없음 | ☐ | ☐ |
-| T7 | 수업 이력 | 이력 화면에서 지난 · 예정 수업 확인 가능 | ☐ | ☐ |
-| T8 | (음성) 다른 반 | 담당하지 않은 반 · 다른 기관 수업이 보이지 않는다 | ☐ | ☐ |
+### 시험 범위
 
-### 3-2. 원장 (`staging-director@example.test` · `/login`)
+**IN SCOPE**: HQ Admin 로그인 · 메뉴 이동 · HQ Sales 제한 화면 · 원장 기관 · 반 화면 · 교사 오늘의 수업 · 실제 STARTER W1 수업 · 8주 실제 커리큘럼 열람 · 수업 일정 · 현재 프로그램 동작 · 데스크톱 · 태블릿 · 휴대폰 화면.
+**OUT OF SCOPE (실패로 보지 않음 · 시도하지 않음)**: 학부모 화면(Parent Portal · CO-12) · AI 기능(STARTER 제외 · AR-8) · Production · 실제 아동 · 학부모 정보 · 기능 출시(class_mode · weekly_report).
 
-| # | 확인 | 기대 결과 | PASS | FAIL |
-|---|---|---|---|---|
-| D1 | 로그인 | `/director/sessions` (STARTER = 홈 대시보드 없음) | ☐ | ☐ |
-| D2 | 수업 현황 | 무지개반(가상) · SOYE-STARTER-2026.1 W1 수업 | ☐ | ☐ |
-| D3 | STARTER 범위 | 홈 메뉴 없음 · 집계 없음 · 누락 자동 탐지 없음 · 일괄 인쇄 없음 | ☐ | ☐ |
-| D4 | 수업 이력 · 완료 Weekly 목록 | 화면 열림 (현재 완료 Weekly 0 일 수 있음) | ☐ | ☐ |
-| D5 | (음성) 다른 기관 | 다른 기관 · 반 데이터가 보이지 않는다 | ☐ | ☐ |
-| D6 | (음성) 학부모 링크 | 학부모 공유 링크 발급은 이번 UAT 에서 하지 않는다 (CO-12) | ☐ | ☐ |
+### 3-1. 교사 — https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/kindergarten
 
-### 3-3. HQ Admin (`staging-hq-admin@example.test` · `/admin/login`)
+| # | 무엇을 누르나 | 보여야 하는 것 | 보이면 안 되는 것 | PASS | FAIL | 메모 |
+|---|---|---|---|---|---|---|
+| T1 | 로그인 | "오늘의 수업" 화면 | 오류 알림 | ☐ | ☐ | |
+| T2 | (첫 화면) | 무지개반(가상) · **1주차 · 1차시 · SOYE KIDS 8주 프로그램 (STARTER 2026.1) · 「유치원 가는 날」 · 예정일 2026.10.01** | "색과 모양 놀이(가상)" 예전 합성 수업 | ☐ | ☐ | |
+| T3 | W1 카드의 **수업 준비** | 「유치원 가는 날」 · "1주차는 아이가 새로운 공간에 빠르게 적응하도록 요구하는 시간이 아닙니다." · 수업 목표 "‘빨리 적응시키기’ X · … 첫 시작 O" | "(가상)" 차시 문구 · 빈 화면 | ☐ | ☐ | |
+| T4 | 수업 준비 화면 내용 훑어보기 | 그림책 《유치원 가는 날》 · 교실/어린이집 탐험 · 이름표 만들기 등 원본 가이드 내용 | 엉뚱한 차시 · 깨진 문장 | ☐ | ☐ | |
+| T5 | 메뉴 **수업 이력** | 지난 · 예정 수업 목록 (W2 10-05 … W8 11-16) | 다른 반 · 다른 기관 수업 | ☐ | ☐ | |
+| T6 | (모든 교사 화면) | — | AI 정리 · AI 초안 버튼 | ☐ | ☐ | |
+| T7 | (주의) | **수업 시작 · 출결 · 관찰 · Weekly 저장은 운영자가 지정한 경우에만** | — | ☐ | ☐ | |
 
-| # | 확인 | 기대 결과 | PASS | FAIL |
-|---|---|---|---|---|
-| A1 | 로그인 | `/admin/leads` | ☐ | ☐ |
-| A2 | 기관 · 준비 상태 | 기관 목록 · 기관 상세 · readiness 화면 열림 | ☐ | ☐ |
-| A3 | 상품 · 기능 | 기능 출시 화면 — "출시" 를 누르면 **사유(필수)** 입력이 있는 확인 창 | ☐ | ☐ |
-| A4 | (음성) 출시 금지 | 확인 창은 **취소**한다 — class_mode · weekly_report 를 출시하지 않는다 | ☐ | ☐ |
-| A5 | 커리큘럼 | SOYE-STARTER-2026.1 · W1~W8 게시 차시 · 섹션 열람 | ☐ | ☐ |
-| A6 | (음성) 계약 상태 | UAT 계약을 정지 · 종료하지 않는다 (정지하면 CO-12 해결 전 재개 불가) | ☐ | ☐ |
+### 3-2. 원장 — https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/kindergarten
 
-### 3-4. HQ Sales (`staging-hq-sales@example.test` · `/admin/login`)
+| # | 무엇을 누르나 | 보여야 하는 것 | 보이면 안 되는 것 | PASS | FAIL | 메모 |
+|---|---|---|---|---|---|---|
+| D1 | 로그인 | **수업 운영** 화면 (STARTER = 홈 대시보드 없음) | 오류 알림 | ☐ | ☐ | |
+| D2 | (첫 화면) | SOYE-STARTER-2026.1 · W1 「유치원 가는 날」 수업 | "색과 모양 놀이(가상)" 예전 합성 수업 | ☐ | ☐ | |
+| D3 | 메뉴 전체 | 수업 운영 · 수업 이력 · 리포트 · 학부모 공유 | 홈 · 집계 · 누락 자동 탐지 · 일괄 인쇄 | ☐ | ☐ | |
+| D4 | **수업 이력** · **리포트** | 화면이 열린다 (완료 리포트 0건일 수 있음) | 다른 기관 데이터 | ☐ | ☐ | |
+| D5 | (주의) | — | 학부모 공유 링크 발급 (이번 UAT 제외 · CO-12) | ☐ | ☐ | |
 
-| # | 확인 | 기대 결과 | PASS | FAIL |
-|---|---|---|---|---|
-| S1 | 로그인 | `/sales/leads` | ☐ | ☐ |
-| S2 | 기관 요약 | `/sales/organizations` · 상업 요약 (원아 수 · 계약 상태) | ☐ | ☐ |
-| S3 | (음성) 원아 정보 | 원아 이름 열 · 아동 기록이 보이지 않는다 | ☐ | ☐ |
-| S4 | (음성) 관리자 화면 | `/admin/organizations` 접근 시 `/sales` 로 이동 (G-2) | ☐ | ☐ |
+### 3-3. HQ Admin — https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/admin/login
+
+| # | 무엇을 누르나 | 보여야 하는 것 | 보이면 안 되는 것 | PASS | FAIL | 메모 |
+|---|---|---|---|---|---|---|
+| A1 | 로그인 | **기관 문의 관리** 화면 | 오류 알림 | ☐ | ☐ | |
+| A2 | **기관 관리** → 기관 이름 | 기관 · 반(무지개반(가상)) · 현재 프로그램 SOYE KIDS 8주 프로그램 (STARTER 2026.1) | — | ☐ | ☐ | |
+| A3 | **서비스 오픈 준비** | 계약 준비 항목 (기능 출시 안 됨 · CO-12 표시는 정상) | — | ☐ | ☐ | |
+| A4 | **수업 프로그램** → SOYE-STARTER-2026.1 | W1~W8 게시 차시 · 각 차시 섹션 | "(가상)" 차시 | ☐ | ☐ | |
+| A5 | **상품 · 기능** → 기능의 "출시" | **사유(필수)** 입력이 있는 확인 창 → **취소** | 사유 없이 바로 출시 | ☐ | ☐ | |
+| A6 | (주의) | — | 기능 출시 제출 · 계약 정지/종료 | ☐ | ☐ | |
+
+### 3-4. HQ Sales — https://teachable-art-play3-git-saas-v2-soyeskids-projects.vercel.app/admin/login
+
+| # | 무엇을 누르나 | 보여야 하는 것 | 보이면 안 되는 것 | PASS | FAIL | 메모 |
+|---|---|---|---|---|---|---|
+| S1 | 로그인 | **문의 관리** 화면 | 오류 알림 | ☐ | ☐ | |
+| S2 | **기관 영업 현황** | 기관 상업 요약 (원아 수 · 계약 상태) | **원아 이름 · 아동 기록** | ☐ | ☐ | |
+| S3 | 주소창에 `/admin/organizations` | `/sales` 화면으로 이동 | HQ Admin 기관 상세 · 아동 정보 | ☐ | ☐ | |
 
 ### 3-5. 학부모 화면
 
-**이번 UAT 의 PASS 조건이 아니다** — CO-12 (portal 만료 · 재발급 정책) OPEN · `parent_portal` 미출시.
+**제외** — CO-12 (portal 만료 · 재발급 정책) OPEN · `parent_portal` 미출시. PASS 조건 아님.
 
 ## 4. 남은 범위 밖 항목 (UAT 에서 실패로 보지 않는다)
 

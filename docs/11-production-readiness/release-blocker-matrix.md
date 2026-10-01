@@ -35,7 +35,7 @@
 
 | ID | 제목 | 현재 상태 | 증거 | PU | EU | 다음 조치 |
 |---|---|---|---|---|---|---|
-| P09D-C2 | 노출된 Staging `SUPABASE_SECRET_KEY` | **OPEN** | `docs/09-staging-validation/open-items.md:18` | yes | no | Production 활성화 전 회전/폐기 (사람) |
+| P09D-C2 | 노출된 Staging `SUPABASE_SECRET_KEY` | **OPEN — OPERATOR DEFERRED (2026-10-01)** · 직원 UAT 배포 차단 항목 · 절차 [phase-10h §6](./phase-10h-employee-uat-handoff.md) | `docs/09-staging-validation/open-items.md:18` | yes | no | Production 활성화 전 회전/폐기 (사람) |
 | SEC-NEW-1 | 출시 플래그 직접 UPDATE · 사유 · `updated_by` 없음 · `blocked_by` guard 는 앱에만 | 신규 (코드 확인) | `20261001091000_m1…:452` (column grant) · `src/app/admin/(dashboard)/products/actions.ts` | yes (JUDGEMENT: 활성화 판정 근거의 감사성) | no | audited release RPC ([class-mode-readiness.md](./class-mode-readiness.md)) |
 | SEC-NEW-2 | `suspended → active` Readiness 재확인 없음 | 신규 (코드 확인) | `20261001111000_m3…:306,359-369` | JUDGEMENT: yes (재개 시 준비 미충족 계약 활성) | no | trigger 에 재확인 (migration · 승인) |
 | SEC-NEW-3 | 새 Child Portal 만료 없음 vs 공개 법적 문구 "30일" | 신규 (코드 확인) — 현재 Production 의 legacy 공유 링크는 30일 만료가 **맞다** | `src/data/legal.ts:216,371,571` · `20260903090000…:189` · m4 `:1140` | yes (portal 출시 시) | no | CO-12 결정과 함께 문구 · 동작 일치 |
