@@ -235,16 +235,17 @@ async function main() {
         await step("teacher", "today board: no ended STAGING-P8 scheduled session", async () => !(await bodyHas("색과 모양 놀이(가상)")) || "STAGING-P8 session still on board");
         let w1Href = null;
         await step("teacher", `today board: real STARTER W1 card (${w1.title}) with start link`, async () => {
-          w1Href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/"][href*="/before"]')].find((x) => (x.closest('li, article, section, div')?.innerText || '').includes(${JSON.stringify(w1.title)})); return a ? a.getAttribute('href') : null; })()`);
+          w1Href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/"][href*="/before"]')].find((x) => { for (let el = x.parentElement; el && el !== document.body; el = el.parentElement) { if ((el.innerText || '').includes(${JSON.stringify(w1.title)})) return el.querySelectorAll('a[href*="/before"]').length === 1; } return false; }); return a ? a.getAttribute('href') : null; })()`);
           return Boolean(w1Href) || "W1 card or start link not found";
         });
         if (w1Href) {
-          await step("teacher", "open real W1 lesson (준비 화면 · 읽기만): canonical title · s1 · objective · no (가상)", async () => {
+          await step("teacher", "open real W1 lesson (준비 화면 · 읽기만): canonical title · s1 · objective · no synthetic lesson", async () => {
             await go(w1Href);
             const okTitle = await bodyHas(w1.title);
             const okS1 = await bodyHas(s1First);
             const okObjective = await bodyHas(w1.objective);
-            const noSynthetic = !(await bodyHas("(가상)"));
+            // 반 이름은 합성 표시("…(가상)")가 정상이다 — 합성 *차시* 표시("…놀이(가상)")가 없어야 한다
+            const noSynthetic = !(await bodyHas("놀이(가상)"));
             return (okTitle && okS1 && okObjective && noSynthetic) || `title=${okTitle} s1=${okS1} objective=${okObjective} noSynthetic=${noSynthetic}`;
           });
         }

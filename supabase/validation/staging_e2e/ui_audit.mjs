@@ -88,9 +88,9 @@ async function main() {
     assertStagingProjectRef();
     const p = secretPresence();
     roles = Object.fromEntries(
-      ["teacher", "director", "hqAdmin"]
+      ["teacher", "director", "hqAdmin", "hqSales"]
         .filter((k) => p[k] === "PRESENT")
-        .map((k) => [k, { email: ACCOUNTS[k], password: getSecret(k), admin: k === "hqAdmin" }]),
+        .map((k) => [k, { email: ACCOUNTS[k], password: getSecret(k), admin: k === "hqAdmin" || k === "hqSales" }]),
     );
   } else {
     refuse(`알 수 없는 target (${target})`);
@@ -142,12 +142,25 @@ async function main() {
     if (roles.teacher) targets.push({ key: "teacher_today", role: "teacher" });
     if (roles.director) targets.push({ key: "director_landing", role: "director" });
     if (roles.hqAdmin) targets.push({ key: "hq_organizations", role: "hqAdmin", path: "/admin/organizations" });
+    // PHASE 10G (읽기 전용 GET): 교사 W1 수업 준비 화면(보드의 W1 링크에서 찾음) · HQ Sales 기관 화면
+    if (roles.teacher && staging) targets.push({ key: "teacher_w1_lesson", role: "teacher", resolve: "w1_before" });
+    if (roles.hqSales) targets.push({ key: "hq_sales_organizations", role: "hqSales", path: "/sales/organizations" });
 
     for (const t of targets) {
       let landing = t.path ?? null;
       if (t.role) {
         landing = await login(roles[t.role]);
         if (t.path) landing = t.path;
+        if (t.resolve === "w1_before") {
+          const { loadPackage } = await import("../../../content/starter/2026.1/build-sql.mjs");
+          const title = loadPackage().weeks[0].title;
+          const href = await page.eval(`(() => { const a = [...document.querySelectorAll('a[href*="/teacher/sessions/"][href*="/before"]')].find((x) => { for (let el = x.parentElement; el && el !== document.body; el = el.parentElement) { if ((el.innerText || '').includes(${JSON.stringify(title)})) return el.querySelectorAll('a[href*="/before"]').length === 1; } return false; }); return a ? a.getAttribute('href') : null; })()`);
+          if (!href) {
+            out.pages.push({ page: t.key, error: "W1 lesson link not found on teacher board" });
+            continue;
+          }
+          landing = href;
+        }
       } else {
         await page.clearCookies();
       }
