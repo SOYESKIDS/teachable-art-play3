@@ -1,7 +1,7 @@
 # PHASE 10G — 최종 직원 UAT (Staging Preview)
 
 > **배포 상태: PREVIEW TECHNICALLY READY — SECURITY ROTATION REQUIRED BEFORE STAFF DISTRIBUTION**
-> 아래 §6 의 두 보안 항목(교사 계정 자격증명 · P09D-C2)이 닫히기 전에는 **직원에게 URL · 계정을 배포하지 않는다**. 운영자 기술 확인은 계속 가능.
+> 아래 §6 의 두 보안 항목 중 **교사 계정 자격증명 = CLOSED (2026-10-01)** · **P09D-C2 = OPEN** — P09D-C2 가 닫히기 전에는 **직원에게 URL · 계정을 배포하지 않는다**. 운영자 기술 확인은 계속 가능.
 > 학부모 화면(Parent Portal)은 이번 UAT 범위가 아니다 — CO-12 OPEN.
 
 | | |
@@ -97,9 +97,18 @@ class_mode · weekly_report 미출시 (Readiness 표시는 "출시 안 됨") · 
 
 ## 6. 배포 전 필수 — 보안 회전 (운영자 작업 · 값은 어디에도 쓰지 않는다)
 
-두 항목 모두 **OPEN** (저장소 · 문서에 회전 완료 기록 없음). 환경 변수 존재 · git secret scan 은 회전 증거가 아니다.
+A = **CLOSED (2026-10-01)** · B = **OPEN**. 환경 변수 존재 · git secret scan 은 회전 증거가 아니다.
 
-### A. TEACHER CREDENTIAL ROTATION
+### A. TEACHER CREDENTIAL ROTATION — **CLOSED — 2026-10-01**
+
+Evidence:
+- Staging Supabase password reset confirmed by operator (`staging-teacher@example.test` · Staging `itcddooiuqsqingfhxkk`)
+- manual new-password Preview login confirmed by operator
+- automated new-credential Preview login **PASS** (단 1회 · 재시도 없음 · 이전 비밀번호 시험 없음 · Preview 번들 Supabase = Staging 만)
+- real STARTER W1 screen **PASS** (교사 보드 W1 「유치원 가는 날」 카드 · 준비 화면 canonical 제목 · §1 · 수업 목표 · 읽기만 · 쓰기 없음)
+- credential value never recorded (출력 · 로그 · 해시 · 파일 없음)
+
+(아래는 수행한 절차 — 기록용)
 1. Supabase Dashboard → **Staging 프로젝트 `itcddooiuqsqingfhxkk`** (Production 아님 확인) → Authentication → Users → `staging-teacher@example.test` → 새 비밀번호로 재설정 (이전 노출 값과 다른 값).
 2. 운영자 PC 의 User 환경 변수 `SOYE_STAGING_TEACHER_PASSWORD` 를 새 값으로 갱신 (PowerShell `Read-Host -AsSecureString` 스크립트 · 채팅 · 파일에 쓰지 않음).
 3. 교사 로그인 1회 확인 → 이 문서 · `phase-10d` 에 "회전 완료 · 날짜 · 확인자" 기록.
@@ -111,4 +120,4 @@ class_mode · weekly_report 미출시 (Readiness 표시는 "출시 안 됨") · 
 4. saas-v2 Preview 재배포 (Preview 만) → HQ Admin 서버 기능(기관 구성원 초대 화면 열기 등 · 실제 초대 발송 없이) 동작 확인.
 5. 이전 secret key 폐기(revoke) → 이 문서 · `release-blocker-matrix.md` P09D-C2 에 "회전 완료 · 날짜 · 확인자" 기록.
 
-두 항목이 닫히면 분류를 **FINAL EMPLOYEE UAT READY — SAFE TO DISTRIBUTE** 로 바꿀 수 있다 (그 전에는 직원 배포 금지).
+A 는 닫혔다. **B (P09D-C2) 가 닫히면** 분류를 **FINAL EMPLOYEE UAT READY — SAFE TO DISTRIBUTE** 로 바꿀 수 있다 (그 전에는 직원 배포 금지).
