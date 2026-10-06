@@ -9,7 +9,7 @@ import { cx } from "@/components/ui/cx";
  *   기기마다 서비스명이 다른 글꼴로 보였다. 이제 Pretendard Bold 하나로,
  *   "Art Play" 만 Coral 로 구분한다 — 같은 글꼴 안에서 색으로만 리듬을 만든다.
  *
- *   layout="auto"    좁은 화면 2줄(로고 위 · 서비스명 아래), sm 이상 한 줄
+ *   layout="auto"    항상 한 줄 — 좁은 화면(sm 미만)은 로고 14px · 서비스명 15px 로 줄여 맞춘다
  *   layout="stacked" 항상 2줄 (로그인 카드 · 푸터)
  *   tone="inverse"   어두운 바탕 위 (로고는 흰색으로 반전)
  */
@@ -33,7 +33,7 @@ export function BrandMark({
         "flex leading-none",
         stacked
           ? "flex-col items-start gap-2"
-          : "flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3",
+          : "flex-row items-center gap-2 sm:gap-3",
         className,
       )}
     >
@@ -44,20 +44,21 @@ export function BrandMark({
         height={77}
         priority={priority}
         /* 워드마크에 흰 외곽선이 있어 Navy 바탕에서도 원본 그대로 읽힌다 — 색을 뒤집지 않는다 */
-        className="h-[17px] w-auto lg:h-[19px]"
+        className={cx("w-auto", stacked ? "h-[17px] lg:h-[19px]" : "h-[14px] sm:h-[17px] lg:h-[19px]")}
       />
       {stacked ? null : (
         <span
           aria-hidden="true"
           className={cx(
-            "hidden h-4 w-px sm:block",
+            "block h-3.5 w-px sm:h-4",
             inverse ? "bg-white/25" : "bg-line-strong",
           )}
         />
       )}
       <span
         className={cx(
-          "whitespace-nowrap text-[17px] font-bold tracking-[-0.025em] lg:text-lg",
+          "whitespace-nowrap font-bold tracking-[-0.025em]",
+          stacked ? "text-body-lg lg:text-lg" : "text-body-sm sm:text-body-lg lg:text-lg",
           inverse ? "text-white" : "text-navy",
         )}
       >

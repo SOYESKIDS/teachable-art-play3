@@ -90,3 +90,14 @@
 | **P1** | V-1 navy 면 정리 · V-5 상품 카드 같은 재질 · V-3 타입 스케일 · V-4 섹션 여백 · V-7 Hero 단순화 |
 | **P2** | V-9 대시보드 그림자 · V-10 곡률 토큰 · Roles 역할별 위계 · Adoption 타임라인 |
 | **P3** | 표 공통 클래스 확대 · 임의 font-size 10곳 · 마케팅 secondary 버튼 정리 |
+
+## 16. P1 BUSINESS COPY DECISION (DESIGN-FINAL PATCH · 2026-10-06)
+
+| 항목 | 내용 |
+|---|---|
+| 위치 | 공개 Footer 브랜드 마감 문장 · `src/data/site-copy.ts` `brandMessage.coreMessage` → `src/components/layout/Footer.tsx` |
+| 현재 문구 | "활동은 남습니다. 성장은 남지 않습니다." |
+| 문제 | 문제 제기(지금은 성장이 기록되지 않는다)로 쓰인 문장이 페이지 **마지막 브랜드 문장**으로 놓여, 핵심 메시지 "아이의 놀이를, 성장 이야기로 기록합니다."와 반대로 읽힐 수 있다 (방문자가 마지막에 "성장은 남지 않는다"를 읽고 떠난다). |
+| 이번 patch 조치 | **변경하지 않음.** 공개 문구는 그대로 두고 결정만 요청한다 (CONTENT LOCK). |
+| 결정 필요 | 1) 유지 · 2) Footer 에서 빼고 문제 섹션 문맥으로만 사용 · 3) 승인된 다른 브랜드 문장(예: Final CTA 위 "수업은 끝나도, 아이의 과정은 기록으로 남습니다.")으로 교체 — 셋 중 하나를 운영자가 정한다. |
+| 영향 범위 | Footer 1곳 (`brandMessage.coreMessage` 는 다른 화면에서 쓰지 않음) |

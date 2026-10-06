@@ -174,7 +174,9 @@ export function PricingCardGrid() {
                       {feature.availability !== "포함" ? (
                         <span
                           className={`shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold ${
-                            feature.availability === "준비 중" ? "bg-warning-soft text-warning-text" : "bg-info-soft text-info-text"
+                            feature.availability === "준비 중"
+                              ? "border border-warning-border bg-warning-soft text-warning-text"
+                              : "border border-dashed border-control-border bg-white text-ink"
                           }`}
                         >
                           {feature.availability}

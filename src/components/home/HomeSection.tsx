@@ -90,11 +90,18 @@ export function HomeHeading({
   );
 }
 
+/**
+ * 제공 상태 배지 — 기존 의미 토큰만 쓴다 (새 색 없음 · Growth5 단계와 무관).
+ *   포함          success  — 상품에 들어 있음
+ *   준비 중       warning  — 아직 출시 · 구현 전
+ *   STANDARD 이상 info     — 상품 등급(플랜)에 따라 열림
+ *   계약 범위     neutral  — 흰 면 + 점선 테두리: 계약 조건으로 정해짐 (등급 · 출시 상태가 아님)
+ */
 const TAG_TONES: Record<Availability, string> = {
   포함: "border-success-border bg-success-soft text-success-text",
   "준비 중": "border-warning-border bg-warning-soft text-warning-text",
   "STANDARD 이상": "border-info-border bg-info-soft text-info-text",
-  "계약 범위": "border-info-border bg-info-soft text-info-text",
+  "계약 범위": "border-dashed border-control-border bg-white text-ink",
 };
 
 /** 기능 제공 상태 배지 — 출시되지 않은 것을 쓸 수 있는 것처럼 보이지 않게 한다 */
