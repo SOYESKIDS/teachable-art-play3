@@ -18,8 +18,8 @@ import { isFutureSessionDate } from "@/lib/staff/session-dates";
  * ★ 권한은 여기서 판정하지 않는다. 조회는 사용자 세션(RLS)으로 하고, 최종 권한 · 상태 판정은
  *   기존 RPC · RLS 가 그대로 한다. 이 가드는 그 앞에 "날짜 · 배정" 조건 하나를 더할 뿐이다.
  *
- * 한계: 같은 RPC 를 PostgREST 로 직접 부르면 이 가드를 지나지 않는다 — DB 쪽 가드는
- *   별도 migration 승인이 필요하다 (docs/11-production-readiness/uat-stabilization.md §Risks).
+ * DB 최종 판정: 20261002110000_uat_db_guard.sql (SS009) 이 같은 규칙을 trigger 로 강제한다 —
+ *   Staging 적용 전까지는 이 앱 가드가 유일한 방어선이다 (docs/11-production-readiness/uat-db-guard.md).
  */
 export const FUTURE_SESSION_MESSAGE = "수업일에 열립니다.";
 export const ENDED_ASSIGNMENT_MESSAGE = "종료된 프로그램 배정의 수업은 시작할 수 없습니다.";

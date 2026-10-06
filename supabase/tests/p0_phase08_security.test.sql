@@ -442,9 +442,11 @@ select lives_ok(
      values ('10000000-0000-0000-0000-00000000000a', '90000000-0000-0000-0000-0000000000a3', 'creative_attempt', 'independent') $$,
   'WS5: Growth5 selection allowed on an in-progress entitled session');
 
--- legacy 직접 status 변경 (M5 전): 계약 적용 기관 · 반 쓰기 가능 → legacy 화면 계열 그대로 동작
+-- legacy 직접 status 변경 (M5 전): 계약 적용 기관 · 반 쓰기 가능 → legacy 화면 계열 그대로 동작.
+-- PHASE UAT-DB-GUARD: a4 는 미래 수업(local_today()+7)이라 이제 SS009 로 거부된다.
+--   오늘 · 지난 수업의 legacy 직접 시작은 p0_uat_db_guard.test.sql 이 rows=1 로 검증한다.
 select is(pg_temp.try_sql($f$update public.class_sessions set status = 'in_progress' where id = '80000000-0000-0000-0000-0000000000a4'$f$),
-  'rows=1', 'WS7: PRE-M5 legacy direct start still works in an entitled class');
+  'SS009', 'WS7 + UAT-DB-GUARD: PRE-M5 legacy direct start on a FUTURE session is rejected (SS009)');
 
 select pg_temp.act_as('00000000-0000-0000-0000-00000000e002');
 select lives_ok(

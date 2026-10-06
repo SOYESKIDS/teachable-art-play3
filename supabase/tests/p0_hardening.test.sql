@@ -328,6 +328,13 @@ select is((select count(*) from public.quick_memos)::int, 0, 'I: HQ Sales cannot
 -- =====================================================================
 -- F · C — Portal 발급 · 숨김 · 중지
 -- =====================================================================
+-- PHASE UAT-DB-GUARD: 신규 발급은 parent_portal 출시 전 거부(PT004 · p0_uat_db_guard 가 검증).
+-- 이 묶음은 "출시된 뒤"의 발급 · 조회 · 중지 규칙을 검증하므로 fixture 로 출시 상태를 만든다.
+reset role;
+set local session_replication_role = replica;
+update public.platform_capabilities set is_released = true, blocked_by = '{}' where code = 'parent_portal';
+set local session_replication_role = origin;
+set local role authenticated;
 select pg_temp.act_as('00000000-0000-0000-0000-00000000b001');
 select lives_ok($$ select public.issue_child_portal('40000000-0000-0000-0000-0000000000a1', current_setting('test.hash')) $$,
   'F: director issues child portal with hash only');
@@ -409,6 +416,11 @@ select is(
   (select reason from public.audit_events where event_type = 'report.hidden'), 'HIDE-REASON-Q9 동의 확인 중',
   'C: hide reason recorded in audit (staff-only)');
 
+
+-- UAT-DB-GUARD: F 묶음을 위해 만든 "출시 상태"를 되돌린다 (G 묶음은 CO-12 미출시를 검증한다)
+set local session_replication_role = replica;
+update public.platform_capabilities set is_released = false, blocked_by = array['CO-12'] where code = 'parent_portal';
+set local session_replication_role = origin;
 
 -- =====================================================================
 -- G — Entitlement · 정책 blocker · write gate
@@ -632,8 +644,9 @@ select is(
 -- legacy 화면 계열(G-2 rollout · Production 기본)의 수업 시작: M5 전에는 담당 교사의 직접 status UPDATE 가 동작한다
 set local role authenticated;
 select pg_temp.act_as('00000000-0000-0000-0000-00000000b002');
+-- UAT-DB-GUARD: a2 는 미래 수업(+7)이라 legacy 직접 시작도 SS009 로 거부된다 (오늘 · 지난 수업은 p0_uat_db_guard 가 검증)
 select is(pg_temp.try_sql($f$update public.class_sessions set status = 'in_progress' where id = '80000000-0000-0000-0000-0000000000a2'$f$),
-  'rows=1', 'PRE-M5: legacy route direct start (scheduled -> in_progress) still works for the assigned teacher');
+  'SS009', 'PRE-M5 + UAT-DB-GUARD: legacy direct start on a FUTURE session is rejected (SS009)');
 reset role;
 
 -- M5 cutover 시뮬레이션 (이 transaction 안에서만 · rollback): 직접 status UPDATE 회수

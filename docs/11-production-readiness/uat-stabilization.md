@@ -46,7 +46,7 @@ Class Mode 출시 · Parent Account · AI 다음 수업 추천 · 24주 포트�
 
 | # | 위험 | 대응 |
 |---|---|---|
-| R-1 | **DB 직접 호출 우회** — 학부모 공유 · 미래 수업 가드는 앱 서버 행동 기준이다. 로그인 사용자가 PostgREST 로 `issue_child_portal` · `start_class_session` 등을 직접 부르면 지나간다 | DB 가드(capability · 날짜 확인)는 migration 승인 후. 직원 UAT 는 내부 직원 · 합성 데이터라 위험이 낮다 |
+| R-1 | **DB 직접 호출 우회** — 학부모 공유 · 미래 수업 가드는 앱 서버 행동 기준이다. 로그인 사용자가 PostgREST 로 `issue_child_portal` · `start_class_session` 등을 직접 부르면 지나간다 | **UAT-DB-GUARD 에서 준비** — `20261002110000_uat_db_guard.sql` (SS009 · PT004 · pgTAP 30/30) · Staging 적용 대기 ([uat-db-guard.md](./uat-db-guard.md)) |
 | R-2 | 기존에 발급된 학부모 링크는 계속 열린다 (잠금은 **새 발급**만) | 필요하면 원장 화면의 "공유 링크 중지"로 정리 (Staging 합성 데이터) |
 | R-3 | 미래 판정이 브라우저 시계 기반인 화면(일정·이력 카드)은 자정 전후 몇 분 차이 가능 | 서버 가드가 최종 판정 |
 | R-4 | E2E 쓰기 단계("링크 만들기")는 잠금으로 실패한다 | 출시 전까지 해당 쓰기 단계는 실행하지 않는다 (읽기 smoke 는 영향 없음) |

@@ -15,7 +15,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(46);
+select plan(47);
 
 set local session_replication_role = replica;
 
@@ -258,6 +258,9 @@ select lives_ok(
   'M5: attendance still works (G-1 entitled)');
 select lives_ok($$ select public.finish_class_session('80000000-0000-0000-0000-0000000000a1') $$,
   'M5: SaaS 2.0 finish RPC still works');
+-- UAT-DB-GUARD: 미래 수업은 시작할 수 없다 — a2(앞에서 +8 로 옮긴 예정 수업)를 오늘로 다시 옮긴 뒤 SaaS 2.0 시작 경로를 확인한다
+select lives_ok($$ update public.class_sessions set scheduled_date = private.local_today() where id = '80000000-0000-0000-0000-0000000000a2' $$,
+  'M5 + UAT-DB-GUARD: re-date the scheduled session to today (future sessions cannot start)');
 select lives_ok($$ select public.confirm_session_before('80000000-0000-0000-0000-0000000000a2', true, true) $$,
   'M5: BEFORE confirmation still works');
 select lives_ok($$ select public.start_class_session('80000000-0000-0000-0000-0000000000a2') $$,
