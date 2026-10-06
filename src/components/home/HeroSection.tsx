@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/Button";
 import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
-import { heroCopy } from "@/data/site-copy";
+import { ctaLabels } from "@/data/site-copy";
 import { heroNarrative as copy } from "@/data/home-narrative";
 import { STARTER_WEEKS } from "@/lib/content/starter-journey";
 
@@ -14,12 +14,12 @@ import { STARTER_WEEKS } from "@/lib/content/starter-journey";
  *   H1          아이의 놀이를, 성장 이야기로 기록합니다.  (승인된 브랜드 문장 · 페이지에서 한 번)
  *   DESCRIPTION 수업 준비 → 관찰 → 성장기록 → 원 운영     (무엇이 다른지)
  *   PROOF       원본 근거가 있는 사실 네 가지만
- *   CTA         20분 데모 신청 · 8주 프로그램 보기
+ *   CTA         도입 상담 신청 · 8주 프로그램 보기 · (작은 링크) 20분 데모 · 4주 파일럿
  *
  * ★ V2 의 5단계 미니 흐름 · "활동은 남습니다…" 보조 문장을 걷었다 — 바로 아래
  *   WHY · HOW 섹션이 같은 말을 더 정확하게 한다. 첫 화면은 덜어 낸 만큼 빨리 읽힌다.
  * ★ 떠 있는 카드는 지어낸 리포트가 아니라 STARTER 1주차 수업안(canonical)의 실제 내용이다.
- * ★ 모바일(lg 미만)에서는 하단 고정 CTA 가 데모 신청을 맡아, 첫 화면의 데모 버튼은 lg 이상에서만 보인다.
+ * ★ 모바일(lg 미만)에서는 하단 고정 CTA 가 도입 상담을 맡아, 첫 화면의 상담 버튼은 lg 이상에서만 보인다.
  */
 export function HeroSection() {
   const week1 = STARTER_WEEKS[0];
@@ -62,8 +62,8 @@ export function HeroSection() {
           <p className="measure whitespace-pre-line text-lead text-ink">{copy.description}</p>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <LeadCtaButton type="demo" variant="primary" size="lg" dataCta="demo-hero" className="font-bold max-lg:hidden">
-              {heroCopy.ctaPrimary}
+            <LeadCtaButton type="consult" variant="primary" size="lg" dataCta="consult-hero" className="font-bold max-lg:hidden">
+              {ctaLabels.consultApply}
             </LeadCtaButton>
             <Link
               href={copy.ctaSecondary.href}
@@ -77,6 +77,14 @@ export function HeroSection() {
               <span aria-hidden="true">→</span>
             </Link>
           </div>
+
+          <a
+            href={copy.ctaTertiary.href}
+            className="-mt-2 inline-flex min-h-11 items-center gap-1.5 text-label font-semibold text-ink-muted underline-offset-4 transition-colors hover:text-navy hover:underline"
+          >
+            {copy.ctaTertiary.label}
+            <span aria-hidden="true">↓</span>
+          </a>
 
           {/* Proof bar — 원본 근거가 있는 사실만 */}
           <ul className="mt-2 grid w-full grid-cols-2 gap-x-6 gap-y-3 border-t border-line pt-6 sm:grid-cols-4 sm:gap-x-4">

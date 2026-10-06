@@ -73,11 +73,6 @@ export function PricingSection() {
                   {pricingPackages.map((pkg) => (
                     <th key={pkg.id} className="px-5 py-4 text-left font-bold">
                       {pkg.name}
-                      {pkg.isBest && (
-                        <span className="ml-2 rounded-full bg-accent-strong px-2 py-0.5 text-micro font-bold text-white">
-                          BEST
-                        </span>
-                      )}
                     </th>
                   ))}
                 </tr>
@@ -107,11 +102,6 @@ export function PricingSection() {
               <div key={pkg.id} className="rounded-xl border border-line bg-white p-5">
                 <p className="text-sm font-bold text-navy">
                   {pkg.name}
-                  {pkg.isBest && (
-                    <span className="ml-2 rounded-full bg-accent-strong px-2 py-0.5 text-micro font-bold text-white">
-                      BEST
-                    </span>
-                  )}
                 </p>
                 <dl className="mt-3 flex flex-col gap-2 text-xs">
                   {comparisonRows.map((row) => (

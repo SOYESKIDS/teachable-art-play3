@@ -106,9 +106,7 @@ export function PricingCardGrid() {
                   카드 하나가 다른 재질처럼 보였다. 세 장은 비교 대상이므로
                   같은 재질이어야 하고, 다른 것은 테두리와 위치뿐이면 된다.
               */
-              className={`flex cursor-pointer flex-col gap-5 p-7 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] sm:p-8 ${
-                pkg.isBest ? "border-accent sm:-mt-4" : ""
-              }`}
+              className="flex cursor-pointer flex-col gap-5 p-7 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] sm:p-8"
               onClick={(event) => {
                 // 글자를 끌어 선택하던 중이라면 열지 않는다.
                 if (window.getSelection()?.toString()) return;
@@ -121,124 +119,118 @@ export function PricingCardGrid() {
                 });
               }}
             >
+              {/*
+                ★ 순서 = WHO → WHAT → HOW → OUTCOME → LIMIT → 비용 (final-content-system.md §5).
+                  B2B 유치원 구매의 첫 질문은 "얼마인가"보다 "우리 원에 맞는가"다.
+                ★ 근거 없는 추천 배지(BEST) · 위치 올림을 걷었다.
+              */}
               <span
                 aria-hidden="true"
                 className={`block h-[3px] w-10 rounded-full ${TIER_RULE[pkg.accentColor]}`}
               />
 
-              <div className="flex items-center justify-between">
+              <div>
                 <span
-                  className={`eyebrow-ko rounded-full px-3 py-1.5 ${
+                  className={`eyebrow-ko inline-flex rounded-full px-3 py-1.5 ${
                     isNavy ? "bg-white/10 text-white/80" : "bg-navy/5 text-ink-muted"
                   }`}
                 >
-                  {pkg.label}
+                  {pkg.label} · {pkg.durationWeeks}주
                 </span>
-                {pkg.isBest && (
-                  <span className="eyebrow rounded-full bg-accent-strong px-3 py-1.5 text-white">
-                    BEST
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <h3
-                  className={`text-h3 font-bold ${isNavy ? "text-white" : "text-navy"}`}
-                >
+                <h3 className={`mt-4 text-h3 font-bold ${isNavy ? "text-white" : "text-navy"}`}>
                   {pkg.name}
+                  <span className={`ml-2 text-body-sm font-medium ${isNavy ? "text-white/60" : "text-ink-muted"}`}>
+                    {pkg.subtitle}
+                  </span>
                 </h3>
-                <p
-                  className={`mt-1.5 text-body-sm font-medium ${
-                    isNavy ? "text-white/60" : "text-ink-muted"
-                  }`}
-                >
-                  {pkg.subtitle}
-                </p>
-                <p
-                  className={`mt-2 text-body-sm font-bold ${
-                    isNavy ? "text-accent-on-dark" : "text-trust-blue"
-                  }`}
-                >
-                  {pkg.tagline}
-                </p>
+                {pkg.definition ? (
+                  <p className={`mt-2 text-body-sm font-semibold ${isNavy ? "text-white/90" : "text-navy"}`}>
+                    {pkg.definition}
+                  </p>
+                ) : null}
               </div>
 
-              <dl
-                className={`grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs sm:text-sm ${
-                  isNavy ? "text-white/70" : "text-ink-muted"
-                }`}
-              >
-                <dt className="font-medium opacity-70">운영기간</dt>
-                <dd className="text-right font-semibold">{pkg.durationWeeks}주</dd>
-                <dt className="font-medium opacity-70">운영</dt>
-                <dd className="text-right font-semibold">{pkg.frequency}</dd>
-                <dt className="font-medium opacity-70">권장연령</dt>
-                <dd className="text-right font-semibold">{pkg.recommendedAge}</dd>
-                <dt className="font-medium opacity-70">기준</dt>
-                <dd className="text-right font-semibold">{pkg.priceUnitNote}</dd>
+              <dl className={`flex flex-col gap-3 text-label ${isNavy ? "text-white/80" : "text-ink"}`}>
+                {pkg.fit ? (
+                  <div>
+                    <dt className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>이런 원에 맞습니다</dt>
+                    <dd className="mt-0.5">{pkg.fit}</dd>
+                  </div>
+                ) : null}
+                <div>
+                  <dt className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>운영</dt>
+                  <dd className="mt-0.5">
+                    {pkg.durationWeeks}주 · {pkg.frequency} · {pkg.priceUnitNote}
+                  </dd>
+                </div>
               </dl>
 
-              <div
-                className={`border-t pt-5 ${
-                  isNavy ? "border-line-inverse" : "border-line"
-                }`}
-              >
-                <p
-                  className={`text-[2rem] font-bold tabular-nums leading-none sm:text-[2.25rem] ${
-                    isNavy ? "text-white" : "text-navy"
-                  }`}
-                >
-                  {pkg.monthlyPriceKrw.toLocaleString("ko-KR")}
-                  <span className="ml-1 text-base font-semibold opacity-60">
-                    원 / 월
-                  </span>
-                </p>
+              <div>
+                <p className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>포함 내용</p>
+                <ul className={`mt-2 flex flex-col gap-1.5 text-label ${isNavy ? "text-white/85" : "text-ink"}`}>
+                  {(pkg.features ?? pkg.contentItems.map((label) => ({ label, availability: "포함" as const }))).map((feature) => (
+                    <li key={feature.label} className="flex items-start justify-between gap-3">
+                      <span className="flex items-start gap-2">
+                        <CheckIcon className={isNavy ? "mt-0.5 text-accent-on-dark" : "mt-0.5 text-secondary"} />
+                        {feature.label}
+                      </span>
+                      {feature.availability !== "포함" ? (
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold ${
+                            isNavy ? "bg-white/10 text-white/80" : feature.availability === "준비 중" ? "bg-warning-soft text-warning-text" : "bg-info-soft text-info-text"
+                          }`}
+                        >
+                          {feature.availability}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {pkg.outcome ? (
+                <div className={`rounded-xl px-4 py-3 ${isNavy ? "bg-white/10" : "bg-secondary-soft"}`}>
+                  <p className={`text-caption font-semibold ${isNavy ? "text-white/60" : "text-secondary-strong"}`}>도입 후 남는 것</p>
+                  <p className={`mt-0.5 text-label font-semibold ${isNavy ? "text-white" : "text-navy"}`}>{pkg.outcome}</p>
+                </div>
+              ) : null}
+
+              {pkg.limits?.length ? (
+                <div>
+                  <p className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>지금 포함되지 않는 것</p>
+                  <ul className={`mt-1.5 flex flex-col gap-1 text-caption ${isNavy ? "text-white/70" : "text-ink-muted"}`}>
+                    {pkg.limits.map((limit) => (
+                      <li key={limit}>· {limit}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              <div className={`border-t pt-5 ${isNavy ? "border-line-inverse" : "border-line"}`}>
                 {/*
-                  총액은 pricingPackages.totalPriceKrw를 그대로 읽는다.
-                  월 금액 × 개월수를 여기서 계산하지 않는다 — 영업자료의
-                  확정 총액과 어긋날 여지를 만들지 않기 위해서다.
+                  총액은 pricingPackages.totalPriceKrw를 그대로 읽는다 — 월 금액 × 개월수를 계산하지 않는다.
                 */}
-                <p
-                  className={`mt-2 text-sm font-semibold tabular-nums ${
-                    isNavy ? "text-white/60" : "text-ink-muted"
-                  }`}
-                >
-                  {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원`}
+                <p className={`text-headline-lg font-bold tabular-nums leading-none ${isNavy ? "text-white" : "text-navy"}`}>
+                  {pkg.monthlyPriceKrw.toLocaleString("ko-KR")}
+                  <span className="ml-1 text-body-sm font-semibold opacity-60">원 / 월</span>
+                </p>
+                <p className={`mt-2 text-caption font-semibold tabular-nums ${isNavy ? "text-white/60" : "text-ink-muted"}`}>
+                  {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원 · VAT 별도`}
                 </p>
               </div>
 
-              <ul
-                className={`flex flex-col gap-2 text-sm ${
-                  isNavy ? "text-white/80" : "text-navy/70"
-                }`}
-              >
-                {pkg.contentItems.map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckIcon
-                      className={isNavy ? "text-accent-on-dark" : "text-trust-blue"}
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              {/*
-                기존에는 "담당자 상담을 통해 안내드립니다"라는 안내문만 있었다.
-                읽고 나서 할 수 있는 행동이 없어 카드가 거기서 끝났다.
-                같은 자리에 홈페이지의 Primary conversion을 둔다.
-              */}
               {/*
                 ★ 카드 전체가 상세 보기(onClick)를 연다. 이 버튼의 클릭이 카드까지
                   올라가면 상담 폼과 상세 오버레이가 동시에 열린다 — 여기서 멈춘다.
               */}
               <div className="mt-auto" onClick={(event) => event.stopPropagation()}>
                 <LeadCtaButton
-                  type="demo"
+                  type="consult"
                   variant={isNavy ? "inverse" : "primary"}
-                  dataCta={`demo-pricing-${pkg.id}`}
+                  dataCta={`consult-pricing-${pkg.id}`}
                   className="w-full font-bold"
                 >
-                  {ctaLabels.demo}
+                  {ctaLabels.consultApply}
                 </LeadCtaButton>
               </div>
 

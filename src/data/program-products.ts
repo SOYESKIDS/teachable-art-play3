@@ -28,7 +28,7 @@ import type { PricingPackage } from "@/types/content";
  *       값은 packages.ts 에 그대로 두었다 — 운영자 확인 필요.
  *  SC-2 대상 연령 (만 4~6세 / 4~7세) 근거 없음 (BC-4 · DB age_group NULL)
  *       → 추천 문구 · SEO 에서 삭제, 카드에는 "상담 시 안내".
- *  SC-3 8주 묶음 이름(마음 열기 · 자라나기 · 우리의 숲)은 원본에 없다.
+ *  SC-3 8주 묶음 이름(시작 · 경험 · 표현 / 함께 자람 / 하나의 숲)은 원본에 없다.
  *       묶는 기준(cross_week)은 원본 근거를 따른다 — starter-journey.ts 참고. 운영자 승인 필요.
  *  SC-4 STARTER 2026.1 콘텐츠 상태: APPROVED FOR STAGING EMPLOYEE UAT ·
  *       NOT APPROVED FOR PRODUCTION. 공개 배포 전 운영자 콘텐츠 승인이 필요하다.
@@ -301,7 +301,7 @@ export const GROWTH_FLOW = {
     "교사 관찰",
     "관찰 기록",
     "교사 검토",
-    "주간 성장 리포트",
+    "주간 성장 리포트 (출시 준비 중)",
   ],
   aiNote:
     "기록은 교사가 직접 남기고 검토합니다. AI 기록 정리 보조와 학부모 포털은 준비 중입니다.",
@@ -419,19 +419,19 @@ const STARTER_WEEK_COPY: ProgramCurriculumWeek[] = [
 const STARTER_GROUP_COPY: readonly ProgramJourneyGroup[] = [
   {
     key: "open",
-    label: "마음 열기",
+    label: "시작 · 경험 · 표현",
     weeks: [1, 2, 3],
-    summary: "새 공간과 친구를 알아가고, 다시 해 보고, 마음을 말로 꺼내 봅니다.",
+    summary: "유치원에서 시작하고, 끝까지 해 보고, 마음을 말로 표현해 봅니다.",
   },
   {
     key: "grow",
-    label: "자라나기",
+    label: "함께 자람",
     weeks: [4, 5, 6, 7],
     summary: "씨앗 · 꽃 · 비와 햇살 · 나비와 벌 — 매주 만든 작품이 8주의 숲으로 이어집니다.",
   },
   {
     key: "forest",
-    label: "우리의 숲",
+    label: "하나의 숲",
     weeks: [8],
     summary: "1~7주 동안 만든 것들이 하나의 숲 현수막으로 모입니다.",
   },
@@ -508,7 +508,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "STARTER 8주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play STARTER 스타터 밸런스 팩. 8주 · 주 1회 50분 수업(워크북 별도 10분) · 1개 반 15명 기준, 월 99,000원. 「씨앗에서 숲까지」 8주 여정 — 마음동화 EBOOK 8권, 뮤직비디오 8편, 주차별 활동 음원, 워크북 8권, 교사용 수업가이드, 주간 성장 리포트. 창의활동 키트 2회는 계약 범위에 따라 제공됩니다.",
+        "TeachAble Art Play STARTER 스타터 밸런스 팩. 8주 · 주 1회 50분 수업(워크북 별도 10분) · 1개 반 15명 기준, 월 99,000원. 「씨앗에서 숲까지」 8주 여정 — 마음동화 EBOOK 8권, 뮤직비디오 8편, 주차별 활동 음원, 워크북 8권, 교사용 수업가이드, 주간 성장 리포트(출시 준비 중). 창의활동 키트 2회는 계약 범위에 따라 제공됩니다.",
     },
   },
 
@@ -547,7 +547,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "STANDARD 16주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 50분 수업(워크북 별도 10분) · 1개 반 15명 기준, 월 150,000원. 교사 관찰 기록, 주간 성장 리포트, 원장 대시보드 포함. 9~16주 콘텐츠 · 월간 요약 · 학기 포트폴리오는 준비 중이며 주차별 구성은 상담 시 안내합니다.",
+        "TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 50분 수업(워크북 별도 10분) · 1개 반 15명 기준, 월 150,000원. 교사 관찰 기록, 원장 대시보드 포함, 주간 성장 리포트 출시 준비 중. 9~16주 콘텐츠 · 월간 요약 · 학기 포트폴리오는 준비 중이며 주차별 구성은 상담 시 안내합니다.",
     },
   },
 

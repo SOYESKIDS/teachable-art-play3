@@ -116,12 +116,12 @@ export function Header() {
           </ButtonLink>
 
           <LeadCtaButton
-            type="demo"
+            type="consult"
             variant="primary"
-            dataCta="demo-header"
+            dataCta="consult-header"
             className="min-h-11 whitespace-nowrap px-5 text-label max-sm:hidden"
           >
-            {ctaLabels.demo}
+            {ctaLabels.consultApply}
           </LeadCtaButton>
 
           <button
@@ -191,13 +191,13 @@ export function Header() {
                 {KINDERGARTEN_LOGIN_LABEL}
               </ButtonLink>
               <LeadCtaButton
-                type="demo"
+                type="consult"
                 variant="primary"
-                dataCta="demo-mobile-menu"
+                dataCta="consult-mobile-menu"
                 onBeforeOpen={closeMenu}
                 className="w-full font-bold"
               >
-                {ctaLabels.demo}
+                {ctaLabels.consultApply}
               </LeadCtaButton>
             </div>
           </Container>

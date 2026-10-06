@@ -1,5 +1,6 @@
 import { AvailabilityTag, HomeHeading, HomeSection } from "./HomeSection";
 import { growthNarrative as copy } from "@/data/home-narrative";
+import { GROWTH_STAGE_OPTIONS } from "@/types/staff-observation";
 
 /**
  * 07 GROWTH RECORD — 관찰과 성장기록.
@@ -26,12 +27,19 @@ export function GrowthRecordSection() {
           </ul>
 
           <h3 className="mt-8 text-title-sm font-bold text-navy">관찰 단계</h3>
-          <p className="mt-1 text-caption text-ink-muted">그 활동에서 어떤 도움이 필요했는지를 고릅니다.</p>
-          <dl className="mt-4 grid grid-cols-3 gap-2">
-            {copy.stages.map((stage) => (
-              <div key={stage.label} className="rounded-2xl border border-line p-3 text-center">
+          <p className="mt-1 text-caption text-ink-muted">
+            지표마다 이번 활동에서 본 모습 하나를 고릅니다. 네 칸은 높낮이가 아니라 도움의 종류입니다.
+          </p>
+          {/* 단계 이름 · 설명은 교사 화면과 같은 원본(GROWTH_STAGE_OPTIONS)을 쓴다 */}
+          <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="rounded-2xl border border-dashed border-border-strong p-3">
+              <dt className="text-body font-bold text-ink-muted">{copy.noRecord.label}</dt>
+              <dd className="mt-1 text-micro text-ink-muted">{copy.noRecord.help}</dd>
+            </div>
+            {GROWTH_STAGE_OPTIONS.map((stage) => (
+              <div key={stage.value} className="rounded-2xl border border-line p-3">
                 <dt className="text-body font-bold text-navy">{stage.label}</dt>
-                <dd className="mt-1 text-micro text-ink-muted">{stage.meaning}</dd>
+                <dd className="mt-1 text-micro text-ink-muted">{stage.help}</dd>
               </div>
             ))}
           </dl>

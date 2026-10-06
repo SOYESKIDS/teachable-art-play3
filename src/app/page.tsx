@@ -44,12 +44,12 @@ export default function Home() {
     <LeadFormProvider>
       <Header />
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
-        {/* PHASE UI-02 — 19개 섹션을 13개 내러티브로 (content-experience-v1.md §2) */}
+        {/* PHASE CONTENT-FINAL — 13개 내러티브 (final-content-system.md §3) */}
         <HeroSection />
         <ProblemSection />
         <WorkflowSection />
-        <SessionSection />
         <ContentStorySection />
+        <SessionSection />
         <JourneySection />
         <GrowthRecordSection />
         <RolesSection />

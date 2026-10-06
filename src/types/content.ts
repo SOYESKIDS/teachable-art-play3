@@ -188,6 +188,12 @@ export interface PricingPackage {
   operation?: string;
   /** 포함 내용 + 현재 제공 상태. contentItems 는 이 목록에서 만든 문자열이다. */
   features?: PackageFeature[];
+  /** 한 문장 정의 (WHAT) */
+  definition?: string;
+  /** 도입 후 남는 것 (OUTCOME) */
+  outcome?: string;
+  /** 지금 이 상품에 포함되지 않거나 아직 준비 중인 것 (LIMIT) */
+  limits?: string[];
 }
 
 /**

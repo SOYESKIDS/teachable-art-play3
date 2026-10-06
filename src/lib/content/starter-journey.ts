@@ -101,19 +101,19 @@ export const STARTER_WEEKS: StarterWeek[] = (manifest.weeks as ManifestWeek[]).m
 export const STARTER_JOURNEY_GROUPS = [
   {
     key: "open",
-    label: "마음 열기",
+    label: "시작 · 경험 · 표현",
     weeks: [1, 2, 3],
-    summary: "새 공간과 친구를 알아가고, 다시 해 보고, 마음을 말로 꺼내 봅니다.",
+    summary: "유치원에서 시작하고, 끝까지 해 보고, 마음을 말로 표현해 봅니다.",
   },
   {
     key: "grow",
-    label: "자라나기",
+    label: "함께 자람",
     weeks: [4, 5, 6, 7],
     summary: "씨앗 · 꽃 · 비와 햇살 · 나비와 벌 — 매주 만든 작품이 8주의 숲으로 이어집니다.",
   },
   {
     key: "forest",
-    label: "우리의 숲",
+    label: "하나의 숲",
     weeks: [8],
     summary: "1~7주 동안 만든 것들이 하나의 숲 현수막으로 모입니다.",
   },

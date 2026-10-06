@@ -17,7 +17,7 @@ export function AdoptionSection() {
     <HomeSection id="adoption" tone="white" labelledBy="adoption-title">
       <HomeHeading id="adoption-title" eyebrow={copy.eyebrow} headline={copy.headline} />
 
-      <ol className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <ol className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {copy.steps.map((step, index) => (
           <li key={step.no} className="relative rounded-2xl border border-line bg-ivory p-5">
             <p className="flex items-center justify-between">

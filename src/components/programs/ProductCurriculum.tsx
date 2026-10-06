@@ -8,7 +8,7 @@ import type {
 import { programPath } from "@/data/program-products";
 
 /**
- * 8주 여정 — 세 묶음(마음 열기 → 자라나기 → 우리의 숲) 안의 주차 카드.
+ * 8주 여정 — 세 묶음(시작 · 경험 · 표현 → 함께 자람 → 하나의 숲) 안의 주차 카드.
  *
  * ★ 목록에는 네 가지만 둔다: 주차 · 그림책 제목 · 성장키워드 · 한 줄 메시지.
  *   4~7주에는 "8주 숲으로 이어짐" 표시가 붙는다 (원본 cross_week 근거).
@@ -133,7 +133,7 @@ export function ProductCurriculum({
                   ))}
                 </ol>
 
-                {/* 자라나기 → 우리의 숲: 4~7주 결과물이 8주로 모인다는 연결 */}
+                {/* 함께 자람 → 하나의 숲: 4~7주 결과물이 8주로 모인다는 연결 */}
                 {group.weeks.some((n) =>
                   forestWeeks.some((w) => w.week === n),
                 ) ? (

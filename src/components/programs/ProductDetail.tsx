@@ -48,6 +48,32 @@ export function ProductDetail({
         <p className="measure mt-5 text-lead text-navy/65">{product.hero.subCopy}</p>
       </section>
 
+      {/*
+        ── 한눈에 보기 (PHASE CONTENT-FINAL) ─────────────────────────
+        ★ 첫 화면에서 30초 안에: 누구 · 몇 주 · 교사가 받는 것 · 아이가 경험하는 것 ·
+          남는 기록 · 원장이 확인하는 것 · 도입 방법. 아래 섹션은 이 일곱 줄의 자세한 설명이다.
+        ★ 값은 상품 데이터(packages.ts)와 승인된 수업 구조에서만 온다.
+      */}
+      <section aria-labelledby={`glance-${pkg.id}`} className="rounded-3xl border border-line bg-white p-5 sm:p-7">
+        <h2 id={`glance-${pkg.id}`} className="text-title-sm font-bold text-navy">
+          {pkg.name} 한눈에 보기
+        </h2>
+        <dl className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {glanceRows(pkg).map((row) => (
+            <div key={row.label} className="border-t border-line-soft pt-3">
+              <dt className="text-caption font-semibold text-ink-muted">{row.label}</dt>
+              <dd className="mt-1 text-label font-semibold text-navy">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+        {pkg.limits?.length ? (
+          <p className="mt-5 rounded-xl bg-warning-soft px-4 py-3 text-caption text-warning-text">
+            <span className="font-bold">지금 포함되지 않는 것 · </span>
+            {pkg.limits.join(" · ")}
+          </p>
+        ) : null}
+      </section>
+
       {/* ──────────────────────────────── 1. 어떤 원에 적합 */}
       <section className="border-t border-line pt-10 sm:pt-12">
         <p className={`eyebrow ${theme.accentText}`}>RECOMMENDED FOR</p>
@@ -285,6 +311,24 @@ export function ProductDetail({
 }
 
 /** 블록에서 더한다 — 블록 하나를 고쳤는데 합계만 옛 값으로 남지 않게. */
+function glanceRows(pkg: ProgramProduct["pkg"]): { label: string; value: string }[] {
+  return [
+    { label: "누구를 위한 상품인가요?", value: pkg.fit ?? pkg.label },
+    { label: "몇 주 프로그램인가요?", value: `${pkg.durationWeeks}주 · ${pkg.frequency}` },
+    { label: "교사는 무엇을 받나요?", value: "회차별 수업안 · 발문 예시 · 준비물 안내 · 관찰 포인트 · 기록 문장 예시" },
+    { label: "아이들은 무엇을 경험하나요?", value: "매 회차 이야기 열기 → 몸으로 느끼기 → 나답게 표현하기 → 친구와 나누기" },
+    { label: "어떤 기록이 남나요?", value: pkg.outcome ?? "교사의 관찰 기록" },
+    {
+      label: "원장은 무엇을 확인하나요?",
+      value:
+        pkg.id === "starter"
+          ? "반별 수업 운영 · 수업 이력 (원장 대시보드는 STANDARD 이상)"
+          : "반별 수업 운영 · 수업 이력 · 원장 대시보드(빠진 출결 · 관찰 기록)",
+    },
+    { label: "도입하려면 무엇을 하나요?", value: "도입 상담 → 운영 방식 확인 → 기관 · 반 설정 → 교사 온보딩 → 첫 수업" },
+  ];
+}
+
 function lessonMinutes(blocks: { minutes: number }[]): number {
   return blocks.reduce((sum, block) => sum + block.minutes, 0);
 }

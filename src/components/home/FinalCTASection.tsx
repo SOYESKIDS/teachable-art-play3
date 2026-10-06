@@ -28,7 +28,7 @@ export function FinalCTASection() {
     >
       <Container>
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <p className="eyebrow text-accent-on-dark">{contactSectionCopy.eyebrow}</p>
+          <p className="text-label font-semibold text-accent-on-dark">{finalNarrative.kicker}</p>
 
           <h2 className="mt-5 whitespace-pre-line text-h2 font-bold text-white">
             {finalNarrative.headline}
@@ -45,13 +45,13 @@ export function FinalCTASection() {
 
           <div className="mt-11 flex justify-center">
             <LeadCtaButton
-              type="demo"
+              type="consult"
               variant="inverse"
               size="lg"
-              dataCta="demo-final-cta"
+              dataCta="consult-final-cta"
               className="font-bold"
             >
-              {ctaLabels.demo}
+              {ctaLabels.consultApply}
             </LeadCtaButton>
           </div>
 
