@@ -61,7 +61,7 @@ export function DirectorDashboard({
     <>
       {/* ------------------------------------------------ 상태 */}
       <div className="flex flex-col gap-1 border-b border-line-soft pb-5">
-        <p className="eyebrow text-accent-strong">원장 대시보드</p>
+        <p className="eyebrow-ko text-accent-strong">원장 대시보드</p>
         <h1 className="text-headline font-bold text-navy sm:text-headline-lg">
           오늘의 우리 원
         </h1>

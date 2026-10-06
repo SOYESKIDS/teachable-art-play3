@@ -32,9 +32,10 @@ const cardVariant: Record<
   PricingPackage["accentColor"],
   "basic" | "highlighted" | "premium"
 > = {
+  // V4: 세 상품은 비교 대상이라 같은 재질이다 — 추천 · 상위 상품처럼 보이는 면 강조를 쓰지 않는다
   "light-blue": "basic",
-  "ivory-yellow": "highlighted",
-  "navy-yellow": "premium",
+  "ivory-yellow": "basic",
+  "navy-yellow": "basic",
 };
 
 const CheckIcon = ({ className = "" }: { className?: string }) => (
@@ -60,14 +61,13 @@ const CheckIcon = ({ className = "" }: { className?: string }) => (
  *
  * 세 장은 비교 대상이라 재질(흰 카드 · 같은 곡률 · 같은 테두리)은 같아야 하고,
  * 다른 것은 이 얇은 선 하나면 충분하다.
- *   STARTER  차분한 파랑  — 처음 도입하는 기관
- *   STANDARD 금색        — 한 학기 운영
- *   PREMIUM  금색(남색 면 위) — 가장 완성된 운영형
+ *   STARTER  green — 처음 시작 · STANDARD blue — 한 학기 · PREMIUM navy — 장기 운영
+ *   ★ 상담 버튼은 tertiary — 한 화면에 primary 가 세 개 생기지 않게 (Header 의 상담 버튼이 primary).
  */
 const TIER_RULE: Record<PricingPackage["accentColor"], string> = {
-  "light-blue": "bg-trust-blue/50",
-  "ivory-yellow": "bg-accent",
-  "navy-yellow": "bg-accent",
+  "light-blue": "bg-secondary",
+  "ivory-yellow": "bg-trust-blue",
+  "navy-yellow": "bg-navy",
 };
 
 export function PricingCardGrid() {
@@ -94,7 +94,6 @@ export function PricingCardGrid() {
     <>
       <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:items-start">
         {pricingPackages.map((pkg) => {
-          const isNavy = pkg.accentColor === "navy-yellow";
 
           return (
             <Card
@@ -131,34 +130,32 @@ export function PricingCardGrid() {
 
               <div>
                 <span
-                  className={`eyebrow-ko inline-flex rounded-full px-3 py-1.5 ${
-                    isNavy ? "bg-white/10 text-white/80" : "bg-navy/5 text-ink-muted"
-                  }`}
+                  className={`eyebrow-ko inline-flex rounded-full px-3 py-1.5 bg-navy/5 text-ink-muted`}
                 >
                   {pkg.label} · {pkg.durationWeeks}주
                 </span>
-                <h3 className={`mt-4 text-h3 font-bold ${isNavy ? "text-white" : "text-navy"}`}>
+                <h3 className={`mt-4 text-h3 font-bold text-navy`}>
                   {pkg.name}
-                  <span className={`ml-2 text-body-sm font-medium ${isNavy ? "text-white/60" : "text-ink-muted"}`}>
+                  <span className={`ml-2 text-body-sm font-medium text-ink-muted`}>
                     {pkg.subtitle}
                   </span>
                 </h3>
                 {pkg.definition ? (
-                  <p className={`mt-2 text-body-sm font-semibold ${isNavy ? "text-white/90" : "text-navy"}`}>
+                  <p className={`mt-2 text-body-sm font-semibold text-navy`}>
                     {pkg.definition}
                   </p>
                 ) : null}
               </div>
 
-              <dl className={`flex flex-col gap-3 text-label ${isNavy ? "text-white/80" : "text-ink"}`}>
+              <dl className={`flex flex-col gap-3 text-label text-ink`}>
                 {pkg.fit ? (
                   <div>
-                    <dt className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>이런 원에 맞습니다</dt>
+                    <dt className={`text-caption font-semibold text-ink-muted`}>이런 원에 맞습니다</dt>
                     <dd className="mt-0.5">{pkg.fit}</dd>
                   </div>
                 ) : null}
                 <div>
-                  <dt className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>운영</dt>
+                  <dt className={`text-caption font-semibold text-ink-muted`}>운영</dt>
                   <dd className="mt-0.5">
                     {pkg.durationWeeks}주 · {pkg.frequency} · {pkg.priceUnitNote}
                   </dd>
@@ -166,18 +163,18 @@ export function PricingCardGrid() {
               </dl>
 
               <div>
-                <p className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>포함 내용</p>
-                <ul className={`mt-2 flex flex-col gap-1.5 text-label ${isNavy ? "text-white/85" : "text-ink"}`}>
+                <p className={`text-caption font-semibold text-ink-muted`}>포함 내용</p>
+                <ul className={`mt-2 flex flex-col gap-1.5 text-label text-ink`}>
                   {(pkg.features ?? pkg.contentItems.map((label) => ({ label, availability: "포함" as const }))).map((feature) => (
                     <li key={feature.label} className="flex items-start justify-between gap-3">
                       <span className="flex items-start gap-2">
-                        <CheckIcon className={isNavy ? "mt-0.5 text-accent-on-dark" : "mt-0.5 text-secondary"} />
+                        <CheckIcon className={"mt-0.5 text-secondary"} />
                         {feature.label}
                       </span>
                       {feature.availability !== "포함" ? (
                         <span
                           className={`shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold ${
-                            isNavy ? "bg-white/10 text-white/80" : feature.availability === "준비 중" ? "bg-warning-soft text-warning-text" : "bg-info-soft text-info-text"
+                            feature.availability === "준비 중" ? "bg-warning-soft text-warning-text" : "bg-info-soft text-info-text"
                           }`}
                         >
                           {feature.availability}
@@ -189,16 +186,16 @@ export function PricingCardGrid() {
               </div>
 
               {pkg.outcome ? (
-                <div className={`rounded-xl px-4 py-3 ${isNavy ? "bg-white/10" : "bg-secondary-soft"}`}>
-                  <p className={`text-caption font-semibold ${isNavy ? "text-white/60" : "text-secondary-strong"}`}>도입 후 남는 것</p>
-                  <p className={`mt-0.5 text-label font-semibold ${isNavy ? "text-white" : "text-navy"}`}>{pkg.outcome}</p>
+                <div className={`rounded-xl px-4 py-3 bg-secondary-soft`}>
+                  <p className={`text-caption font-semibold text-secondary-strong`}>도입 후 남는 것</p>
+                  <p className={`mt-0.5 text-label font-semibold text-navy`}>{pkg.outcome}</p>
                 </div>
               ) : null}
 
               {pkg.limits?.length ? (
                 <div>
-                  <p className={`text-caption font-semibold ${isNavy ? "text-white/55" : "text-ink-muted"}`}>지금 포함되지 않는 것</p>
-                  <ul className={`mt-1.5 flex flex-col gap-1 text-caption ${isNavy ? "text-white/70" : "text-ink-muted"}`}>
+                  <p className={`text-caption font-semibold text-ink-muted`}>지금 포함되지 않는 것</p>
+                  <ul className={`mt-1.5 flex flex-col gap-1 text-caption text-ink-muted`}>
                     {pkg.limits.map((limit) => (
                       <li key={limit}>· {limit}</li>
                     ))}
@@ -206,15 +203,15 @@ export function PricingCardGrid() {
                 </div>
               ) : null}
 
-              <div className={`border-t pt-5 ${isNavy ? "border-line-inverse" : "border-line"}`}>
+              <div className={`border-t pt-5 border-line`}>
                 {/*
                   총액은 pricingPackages.totalPriceKrw를 그대로 읽는다 — 월 금액 × 개월수를 계산하지 않는다.
                 */}
-                <p className={`text-headline-lg font-bold tabular-nums leading-none ${isNavy ? "text-white" : "text-navy"}`}>
+                <p className={`text-title-lg font-bold tabular-nums leading-none text-navy`}>
                   {pkg.monthlyPriceKrw.toLocaleString("ko-KR")}
                   <span className="ml-1 text-body-sm font-semibold opacity-60">원 / 월</span>
                 </p>
-                <p className={`mt-2 text-caption font-semibold tabular-nums ${isNavy ? "text-white/60" : "text-ink-muted"}`}>
+                <p className={`mt-2 text-caption font-semibold tabular-nums text-ink-muted`}>
                   {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원 · VAT 별도`}
                 </p>
               </div>
@@ -226,7 +223,7 @@ export function PricingCardGrid() {
               <div className="mt-auto" onClick={(event) => event.stopPropagation()}>
                 <LeadCtaButton
                   type="consult"
-                  variant={isNavy ? "inverse" : "primary"}
+                  variant="secondary"
                   dataCta={`consult-pricing-${pkg.id}`}
                   className="w-full font-bold"
                 >
@@ -237,11 +234,7 @@ export function PricingCardGrid() {
               <button
                 type="button"
                 data-detail-trigger
-                className={`inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-bold transition-colors ${
-                  isNavy
-                    ? "border-white/25 text-white hover:border-white/45 hover:bg-white/[0.08]"
-                    : "border-line-strong text-navy hover:border-navy/40 hover:bg-navy/[0.04]"
-                }`}
+                className={`inline-flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-bold transition-colors border-line-strong text-navy hover:border-navy/40 hover:bg-navy/[0.04]`}
               >
                 {detailLinkLabel(pkg)}
                 <span aria-hidden="true">→</span>

@@ -115,7 +115,7 @@ function StatusBadge({ status }: { status: GrowthReportShareMetadata["status"] }
 
   const className =
     status === "active"
-      ? "border-soft-green/50 bg-soft-green/15 text-navy"
+      ? "border-success-border bg-success-soft text-success-text"
       : "border-line-strong bg-white text-ink-muted";
 
   return (

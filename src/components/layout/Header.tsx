@@ -81,7 +81,12 @@ export function Header() {
         본문 바로가기
       </a>
 
-      <Container className="flex h-[68px] items-center justify-between gap-4 lg:h-[76px]">
+      <Container
+        className={cx(
+          "flex items-center justify-between gap-4 transition-[height] duration-200",
+          isScrolled ? "h-[60px] lg:h-16" : "h-[68px] lg:h-[76px]",
+        )}
+      >
         <Link
           href="/"
           aria-label="TeachAble Art Play 홈"

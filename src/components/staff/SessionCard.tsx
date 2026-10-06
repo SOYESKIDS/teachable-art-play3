@@ -96,7 +96,7 @@ export function SessionCard({
   return (
     <li
       id={`session-${session.id}`}
-      className="scroll-mt-24 rounded-2xl border border-line bg-white p-5 transition-[border-color,box-shadow] duration-200 target:border-navy target:shadow-[var(--shadow-card)] hover:border-line-strong hover:shadow-[var(--shadow-card)] sm:p-6"
+      className="scroll-mt-24 rounded-2xl border border-line bg-white p-5 transition-[border-color,box-shadow] duration-200 target:border-navy target:ring-2 target:ring-navy/15 hover:border-line-strong sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

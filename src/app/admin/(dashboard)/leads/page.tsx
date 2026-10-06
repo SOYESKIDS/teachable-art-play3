@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/surface";
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
@@ -26,14 +27,7 @@ function PanelMessage({
   title: string;
   description?: string;
 }) {
-  return (
-    <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
-      <p className="text-body-sm font-semibold text-navy">{title}</p>
-      {description ? (
-        <p className="mt-1.5 text-caption text-ink-muted">{description}</p>
-      ) : null}
-    </div>
-  );
+  return <EmptyState text={title} hint={description} />;
 }
 
 export default async function AdminLeadsPage({

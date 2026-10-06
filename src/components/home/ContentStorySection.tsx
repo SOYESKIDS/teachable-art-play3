@@ -50,16 +50,15 @@ export function ContentStorySection() {
                   key={link.name}
                   className={
                     isRecord
-                      ? "grid grid-cols-[2.75rem_1fr] items-start gap-4 rounded-2xl bg-navy p-5 text-white"
+                      ? "grid grid-cols-[2.75rem_1fr] items-start gap-4 rounded-2xl border border-success-border bg-secondary-soft p-5"
                       : "grid grid-cols-[2.75rem_1fr] items-start gap-4 rounded-2xl border border-line bg-white p-5"
                   }
-                  data-surface={isRecord ? "dark" : undefined}
                 >
                   <span
                     aria-hidden="true"
                     className={
                       isRecord
-                        ? "flex h-11 w-11 items-center justify-center rounded-full bg-accent-on-dark text-label font-bold text-navy tabular-nums"
+                        ? "flex h-11 w-11 items-center justify-center rounded-full bg-secondary-strong text-label font-bold text-white tabular-nums"
                         : "flex h-11 w-11 items-center justify-center rounded-full bg-navy text-label font-bold text-white tabular-nums"
                     }
                   >
@@ -67,13 +66,13 @@ export function ContentStorySection() {
                   </span>
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-baseline gap-x-2">
-                      <span className={isRecord ? "text-body-lg font-bold text-white" : "text-body-lg font-bold text-navy"}>
+                      <span className="text-body-lg font-bold text-navy">
                         {link.name}
                       </span>
-                      <span className={isRecord ? "text-label text-white/70" : "text-label text-ink-muted"}>{link.role}</span>
+                      <span className="text-label text-ink-muted">{link.role}</span>
                     </p>
                     {week ? (
-                      <p className={isRecord ? "mt-1 text-label font-semibold text-accent-on-dark" : "mt-1 text-label font-semibold text-secondary-strong"}>
+                      <p className={isRecord ? "mt-1 text-label font-semibold text-secondary-strong" : "mt-1 text-label font-semibold text-ink"}>
                         {exampleOf(week, link.example)}
                       </p>
                     ) : null}

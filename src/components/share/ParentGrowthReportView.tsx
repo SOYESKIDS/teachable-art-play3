@@ -334,7 +334,7 @@ type Emphasis = "primary" | "neutral" | "soft";
 const EMPHASIS_SURFACE: Record<Emphasis, string> = {
   primary: "border-line-strong bg-white border-l-[3px] border-l-navy",
   neutral: "border-line bg-white border-l-[3px] border-l-navy/25",
-  soft: "border-line bg-surface-soft border-l-[3px] border-l-soft-green",
+  soft: "border-line bg-surface-soft border-l-[3px] border-l-success",
 };
 
 const EMPHASIS_BODY: Record<Emphasis, string> = {

@@ -62,7 +62,7 @@ export function GrowthReportList({
               <span
                 className={`shrink-0 rounded-md border px-2.5 py-1 text-micro font-bold ${
                   report.status === "complete"
-                    ? "border-soft-green/50 bg-soft-green/15 text-navy"
+                    ? "border-success-border bg-success-soft text-success-text"
                     : "border-line-strong bg-white text-ink-muted"
                 }`}
               >

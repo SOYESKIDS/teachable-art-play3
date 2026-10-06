@@ -53,9 +53,6 @@
   --color-ivory: #f8f5ee;
   /* 링크 · 정보 · focus. 흰 바탕 6.4:1 */
   --color-trust-blue: #245c99;
-  --color-light-blue: #b9d3ea; /* 교사 (장식 전용) */
-  --color-soft-coral: #f6b4a6; /* 학부모 (장식 전용) */
-  --color-soft-green: #9fd2b9; /* 아이 · 활동 (장식 전용) */
 
   /* ── Semantic: primary / secondary / accent ─────────────────── */
   --color-primary: #142b4a;
@@ -125,15 +122,15 @@
   --shadow-cta: 0 1px 2px rgba(20, 43, 74, 0.08), 0 8px 20px -6px rgba(20, 43, 74, 0.35);
 
   /* ── Radius ─────────────────────────────────────────────────── */
-  /* control 10 · card 16 · section panel 20 · sheet 24 · pill = chip · 마케팅 CTA */
+  /* V4: control 10 · 작은 면 12 · card 16 · 큰 면 20 · pill = chip · 마케팅 CTA */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 18px;
-  --radius-3xl: 24px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
   --radius-4xl: 32px;
-  --radius-card: 18px;
+  --radius-card: 16px;
 
   /* ── Container ──────────────────────────────────────────────── */
   --container-marketing: 1280px; /* 좌우 여백을 빼면 본문 1200px */
@@ -173,9 +170,6 @@
   --color-navy-deep: var(--color-navy-deep);
   --color-ivory: var(--color-ivory);
   --color-trust-blue: var(--color-trust-blue);
-  --color-light-blue: var(--color-light-blue);
-  --color-soft-coral: var(--color-soft-coral);
-  --color-soft-green: var(--color-soft-green);
 
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
@@ -246,26 +240,26 @@
 
   /*
    * ── Marketing type scale ─────────────────────────────────────
-   *   display 34 → 60px   Hero 한 곳
+   *   display 34 → 56px   Hero 한 곳
    *   h1      30 → 44px   페이지 제목 (상품 상세 · 법적 고지)
-   *   h2      28 → 42px   섹션 제목
-   *   h3      19 → 24px   카드 · 블록 제목
+   *   h2      26 → 36px   섹션 제목
+   *   h3      20 → 24px   카드 · 블록 제목
    *   lead    17 → 19px   제목 아래 안내문
    * 한글은 자간을 좁히고(-0.02 ~ -0.035em) 행간을 영문보다 넉넉히 둔다.
    */
-  --text-display: clamp(2.125rem, 1.36rem + 3.4vw, 3.75rem);
+  --text-display: clamp(2.125rem, 1.6rem + 2.3vw, 3.5rem);
   --text-display--line-height: 1.16;
   --text-display--letter-spacing: -0.035em;
 
-  --text-h1: clamp(1.875rem, 1.44rem + 1.94vw, 2.75rem);
+  --text-h1: clamp(1.875rem, 1.5rem + 1.6vw, 2.75rem);
   --text-h1--line-height: 1.22;
   --text-h1--letter-spacing: -0.03em;
 
-  --text-h2: clamp(1.75rem, 1.31rem + 1.94vw, 2.625rem);
-  --text-h2--line-height: 1.26;
+  --text-h2: clamp(1.625rem, 1.4rem + 1vw, 2.25rem);
+  --text-h2--line-height: 1.3;
   --text-h2--letter-spacing: -0.03em;
 
-  --text-h3: clamp(1.1875rem, 1.08rem + 0.47vw, 1.5rem);
+  --text-h3: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
   --text-h3--line-height: 1.38;
   --text-h3--letter-spacing: -0.02em;
 

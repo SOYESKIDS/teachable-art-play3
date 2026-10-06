@@ -99,7 +99,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
         */}
         <ol className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
           <li>
-            <div className="flex min-h-12 w-full items-center gap-2 rounded-lg border border-soft-green/50 bg-soft-green/15 px-2.5 text-caption font-semibold text-navy">
+            <div className="flex min-h-12 w-full items-center gap-2 rounded-lg border border-success-border bg-success-soft px-2.5 text-caption font-semibold text-navy">
               <span aria-hidden className="text-caption leading-none">
                 ✓
               </span>
@@ -122,7 +122,7 @@ export function OnboardingFlow({ state }: { state: OnboardingState }) {
                     isCurrent
                       ? "border-navy bg-navy text-white"
                       : isDone
-                        ? "border-soft-green/50 bg-soft-green/15 text-navy hover:bg-soft-green/25"
+                        ? "border-success-border bg-success-soft text-success-text hover:bg-success-soft"
                         : "border-line-strong bg-white text-ink-muted hover:border-navy/30 hover:text-navy"
                   }`}
                 >
@@ -199,7 +199,7 @@ function Result({
       role="status"
       className={`mt-3 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
         phase === "success"
-          ? "border-soft-green/50 bg-soft-green/10 text-navy"
+          ? "border-success-border bg-success-soft text-navy"
           : "border-line-strong bg-surface-soft text-navy/75"
       }`}
     >

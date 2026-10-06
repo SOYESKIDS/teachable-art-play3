@@ -19,28 +19,20 @@ export function ProblemSection() {
         <div>
           <ol className="divide-y divide-line border-y border-line">
             {copy.items.map((item) => (
-              <li key={item.code} className="grid grid-cols-[3rem_1fr] gap-x-4 py-6 sm:grid-cols-[4.5rem_1fr] sm:py-7">
-                <span
-                  aria-hidden="true"
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft text-label font-bold text-accent-strong sm:h-12 sm:w-12"
-                >
+              <li key={item.code} className="grid grid-cols-[2.5rem_1fr] gap-x-4 py-6 sm:grid-cols-[3.5rem_1fr] sm:py-7">
+                <span aria-hidden="true" className="pt-0.5 text-label font-bold text-accent-strong tabular-nums">
                   {item.code}
                 </span>
                 <div>
                   <p className="eyebrow-ko text-ink-muted">{item.moment}</p>
-                  <h3 className="mt-1.5 text-title font-bold text-navy">{item.title}</h3>
+                  <h3 className="mt-1 text-title-sm font-bold text-navy sm:text-title">{item.title}</h3>
                   <p className="mt-1.5 text-body-sm text-ink-muted">{item.body}</p>
                 </div>
               </li>
             ))}
           </ol>
 
-          <p className="mt-8 flex items-start gap-3 rounded-2xl bg-navy px-6 py-5 text-body font-semibold text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0 text-accent-on-dark">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-            {copy.answer}
-          </p>
+          <p className="mt-8 border-l-2 border-accent pl-4 text-body-lg font-bold text-navy">{copy.answer}</p>
         </div>
       </div>
     </HomeSection>

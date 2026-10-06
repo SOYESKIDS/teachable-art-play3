@@ -69,7 +69,7 @@ export function SetPasswordForm({ mode }: SetPasswordFormProps) {
         <p
           role="alert"
           aria-live="polite"
-          className="rounded-[var(--radius-lg)] border border-soft-coral/50 bg-soft-coral/10 px-4 py-3 text-label font-medium text-navy"
+          className="rounded-[var(--radius-lg)] border border-danger-border bg-danger-soft px-4 py-3 text-label font-medium text-navy"
         >
           {state.error}
         </p>

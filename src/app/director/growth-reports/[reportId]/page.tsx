@@ -95,7 +95,7 @@ export default async function DirectorGrowthReportDetailPage({
               ← 리포트 목록
             </Link>
 
-            <span className="rounded-md border border-soft-green/50 bg-soft-green/15 px-2.5 py-1 text-micro font-bold text-navy">
+            <span className="rounded-md border border-success-border bg-success-soft px-2.5 py-1 text-micro font-bold text-navy">
               교사 작성 완료
             </span>
           </div>

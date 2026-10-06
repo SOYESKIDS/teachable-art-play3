@@ -37,7 +37,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="바닥글 바로가기">
-            <p className="eyebrow text-white/60">바로가기</p>
+            <p className="eyebrow-ko text-white/70">바로가기</p>
             <ul className="mt-3 grid max-w-[320px] grid-cols-2 gap-x-6 text-label">
               {navigation.map((item) => (
                 <li key={item.href}>
@@ -62,7 +62,7 @@ export function Footer() {
           </nav>
 
           <div>
-            <p className="eyebrow text-white/60">문의</p>
+            <p className="eyebrow-ko text-white/70">문의</p>
             <ul className="mt-3 flex flex-col text-label">
               <li>
                 <a

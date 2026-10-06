@@ -98,7 +98,7 @@ export function GrowthReportEvidenceTimeline({
                   <p className="text-micro font-bold text-ink-muted">
                     교사 검토 완료 기록
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-soft-green/40 bg-soft-green/10 px-3 py-2.5 text-caption leading-relaxed text-navy">
+                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-success-border bg-success-soft px-3 py-2.5 text-caption leading-relaxed text-navy">
                     {source.reviewedText}
                   </p>
                 </div>

@@ -99,7 +99,7 @@ export function CreateOrganizationDialog({
           {state.phase === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg border border-soft-coral/50 bg-soft-coral/10 px-3 py-2 text-caption text-navy"
+              className="rounded-lg border border-danger-border bg-danger-soft px-3 py-2 text-caption text-navy"
             >
               {state.message}
             </p>

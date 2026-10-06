@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/surface";
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
@@ -92,17 +93,11 @@ export default async function AdminOrganizationsPage({
           <OrganizationFilterBar filters={filters} />
 
           {kpiResult.kpis.total === 0 ? (
-            <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
-              <p className="text-body-sm font-semibold text-navy">
-                아직 등록된 기관이 없습니다.
-              </p>
-              <p className="mt-1.5 text-caption text-ink-muted">
-                첫 기관을 등록해 서비스 운영을 시작하세요.
-              </p>
-              <div className="mt-5 flex justify-center">
-                <CreateOrganizationDialog variant="outline" />
-              </div>
-            </div>
+            <EmptyState
+              text="아직 등록된 기관이 없습니다."
+              hint="첫 기관을 등록해 서비스 운영을 시작하세요."
+              action={<CreateOrganizationDialog variant="outline" />}
+            />
           ) : listResult.total === 0 ? (
             <div className="rounded-xl border border-line bg-white px-6 py-16 text-center">
               <p className="text-body-sm font-semibold text-navy">

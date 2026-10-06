@@ -10,7 +10,7 @@ import { trustNarrative as copy } from "@/data/home-narrative";
  */
 export function SafeOperationSection() {
   return (
-    <HomeSection id="safe-operation" tone="ivory" labelledBy="trust-title" compact>
+    <HomeSection id="safe-operation" tone="white" labelledBy="trust-title" compact>
       <HomeHeading id="trust-title" eyebrow={copy.eyebrow} headline={copy.headline} />
 
       <ul className="mt-10 grid gap-x-10 gap-y-0 border-t border-line sm:grid-cols-2 lg:grid-cols-3">

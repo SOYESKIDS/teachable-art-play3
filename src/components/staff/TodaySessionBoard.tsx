@@ -79,6 +79,13 @@ function buildObservationHref(
   )}`;
 }
 
+const SECTION_ACCENT = {
+  default: "bg-navy",
+  info: "bg-info",
+  warning: "bg-warning",
+  neutral: "bg-border-strong",
+} as const;
+
 function Section({
   title,
   description,
@@ -90,8 +97,11 @@ function Section({
   observationBasePath,
   actorRole,
   classModeBasePath,
+  accent = "default",
 }: {
   title: string;
+  /** V4: 오늘 = navy · 진행 중(다른 날) = info · 지난 예정 = warning · 일정 미정 = neutral (선 색만, 문구 없음) */
+  accent?: "default" | "info" | "warning" | "neutral";
   description?: string;
   sessions: StaffSessionItem[];
   showClassName: boolean;
@@ -105,9 +115,12 @@ function Section({
   if (sessions.length === 0 && !emptyText) return null;
 
   return (
-    <section className="mt-9">
+    <section className="mt-10">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <h2 className="text-title-sm font-bold text-navy">{title}</h2>
+        <h2 className="flex items-center gap-2.5 text-title-sm font-bold text-navy">
+          <span aria-hidden="true" className={`h-4 w-1 rounded-full ${SECTION_ACCENT[accent]}`} />
+          {title}
+        </h2>
         <span className="rounded-full bg-white px-2 py-0.5 text-caption font-semibold tabular-nums text-ink-muted ring-1 ring-line">
           {sessions.length.toLocaleString("ko-KR")}건
         </span>
@@ -201,6 +214,7 @@ export function TodaySessionBoardView({
 
       <Section
         title="진행 중인 다른 날 수업"
+        accent="info"
         description="아직 마치지 않은 수업입니다. 담당 교사는 [수업 이어서]에서 마칠 수 있습니다."
         sessions={board.ongoingFromOtherDays}
         showClassName={showClassName}
@@ -212,6 +226,7 @@ export function TodaySessionBoardView({
 
       <Section
         title="지난 예정 수업"
+        accent="warning"
         description="예정일이 지났지만 아직 시작하지 않은 수업입니다. 진행할 수업은 [수업 준비]에서 시작하고, 진행하지 않은 수업은 취소로 정리해 주세요."
         sessions={board.overdueSessions}
         showClassName={showClassName}
@@ -223,6 +238,7 @@ export function TodaySessionBoardView({
 
       <Section
         title="일정 미정 수업"
+        accent="neutral"
         description="예정일이 아직 정해지지 않은 수업입니다."
         sessions={board.undatedSessions}
         showClassName={showClassName}

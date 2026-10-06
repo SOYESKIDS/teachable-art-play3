@@ -116,18 +116,6 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="absolute -right-6 -top-8 hidden w-44 overflow-hidden rounded-xl border border-line bg-white shadow-[var(--shadow-card)] xl:block">
-            <div className="relative aspect-[3/2] w-full bg-navy">
-              <Image
-                src="/images/site/classroom/class-teacher-lead.webp"
-                alt="교사가 앞에서 동작을 이끌고 아이들이 따라 하는 수업 장면"
-                fill
-                sizes="176px"
-                className="object-cover"
-              />
-            </div>
-          </div>
-
           {week1 ? (
             <div className="absolute -bottom-12 left-5 right-5 rounded-2xl border border-line bg-white/95 p-5 shadow-[var(--shadow-elevated)] backdrop-blur-sm sm:left-6 sm:right-auto sm:w-[22rem]">
               <div className="flex items-center justify-between gap-2">

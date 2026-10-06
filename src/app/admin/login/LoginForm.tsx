@@ -75,7 +75,7 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
 
       <Button
         type="submit"
-        variant="secondary"
+        variant="primary"
         disabled={isPending}
         className="mt-1 w-full px-6 text-body-sm font-semibold"
       >

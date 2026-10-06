@@ -20,7 +20,7 @@ export function PricingSection() {
     <section
       id="pricing"
       aria-labelledby="pricing-title"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-20 sm:py-24 lg:py-28"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-white py-16 sm:py-20 lg:py-24"
     >
       <Container>
         <HomeHeading

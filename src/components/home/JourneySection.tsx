@@ -35,6 +35,16 @@ export function JourneySection() {
                 isForest ? "bg-navy text-white" : "border border-line bg-ivory",
               )}
             >
+              {/* 단계가 이어진다는 표시 — lg 이상 가로(→), 그보다 좁으면 세로(↓) */}
+              {groupIndex < STARTER_JOURNEY_GROUPS.length - 1 ? (
+                <span
+                  aria-hidden="true"
+                  className="absolute -bottom-[18px] left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-white text-caption font-bold text-accent-strong lg:top-8 lg:-right-[18px] lg:bottom-auto lg:left-auto lg:translate-x-0"
+                >
+                  <span className="lg:hidden">↓</span>
+                  <span className="hidden lg:inline">→</span>
+                </span>
+              ) : null}
               <p className={cx("eyebrow-ko", isForest ? "text-accent-on-dark" : "text-accent-strong")}>
                 {String(groupIndex + 1).padStart(2, "0")} · {group.label}
               </p>

@@ -393,8 +393,8 @@ export function ObservationMediaSection({
           aria-live="polite"
           className={`mt-2 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
             isError
-              ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-              : "border-soft-green/50 bg-soft-green/15 text-navy"
+              ? "border-danger-border bg-danger-soft text-danger"
+              : "border-success-border bg-success-soft text-success-text"
           }`}
         >
           {message}

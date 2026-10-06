@@ -37,7 +37,7 @@ export function HomeSection({
       data-surface={tone === "navy" ? "dark" : undefined}
       className={cx(
         "scroll-mt-[calc(var(--header-height)_+_16px)]",
-        compact ? "py-16 sm:py-20 lg:py-24" : "py-20 sm:py-24 lg:py-28",
+        compact ? "py-12 sm:py-16 lg:py-20" : "py-16 sm:py-20 lg:py-24",
         TONES[tone],
         className,
       )}

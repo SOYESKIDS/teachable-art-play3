@@ -50,19 +50,18 @@ export function SessionSection() {
             return (
               <li
                 key={step.title}
-                className={cx("flex flex-col rounded-2xl p-4", isRecord ? "bg-navy text-white" : "bg-white ring-1 ring-line")}
-                data-surface={isRecord ? "dark" : undefined}
+                className={cx("flex flex-col rounded-2xl p-4", isRecord ? "bg-secondary-soft ring-1 ring-success-border" : "bg-white ring-1 ring-line")}
               >
                 <p className="flex items-baseline justify-between gap-2">
-                  <span className={cx("text-caption font-bold tabular-nums", isRecord ? "text-accent-on-dark" : "text-ink-muted")}>
+                  <span className={cx("text-caption font-bold tabular-nums", isRecord ? "text-secondary-strong" : "text-ink-muted")}>
                     0{index + 1}
                   </span>
-                  <span className={cx("text-caption font-bold tabular-nums", isRecord ? "text-white/80" : "text-navy")}>
+                  <span className={cx("text-caption font-bold tabular-nums", isRecord ? "text-secondary-strong" : "text-navy")}>
                     {step.time}
                   </span>
                 </p>
-                <p className={cx("mt-2 text-body-lg font-bold", isRecord ? "text-white" : "text-navy")}>{step.title}</p>
-                <p className={cx("mt-1 text-caption", isRecord ? "text-white/80" : "text-ink-muted")}>{step.detail}</p>
+                <p className={cx("mt-2 text-body-lg font-bold", "text-navy")}>{step.title}</p>
+                <p className={cx("mt-1 text-caption", "text-ink-muted")}>{step.detail}</p>
               </li>
             );
           })}
@@ -70,9 +69,9 @@ export function SessionSection() {
         <p className="mt-4 text-caption text-ink-muted">{copy.timeNote}</p>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
+      <div className="mt-10 grid divide-y divide-line rounded-2xl border border-line md:grid-cols-3 md:divide-x md:divide-y-0">
         {copy.support.map((group) => (
-          <div key={group.phase} className="rounded-2xl border border-line p-6">
+          <div key={group.phase} className="p-6">
             <h3 className="text-title-sm font-bold text-navy">교사 지원 · {group.phase}</h3>
             <ul className="mt-3 flex flex-col gap-2">
               {group.items.map((item) => (

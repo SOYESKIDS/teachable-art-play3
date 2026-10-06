@@ -178,7 +178,7 @@ export function LeadDetailPanel({ lead, onClose }: LeadDetailPanelProps) {
           {state.phase === "error" && state.message ? (
             <p
               role="alert"
-              className="mt-3 rounded-lg border border-soft-coral/50 bg-soft-coral/10 px-3 py-2 text-caption text-navy"
+              className="mt-3 rounded-lg border border-danger-border bg-danger-soft px-3 py-2 text-caption text-navy"
             >
               {state.message}
             </p>

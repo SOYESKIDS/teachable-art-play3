@@ -92,7 +92,7 @@ export default async function TeacherGrowthReportDetailPage({
             <span
               className={`rounded-md border px-2.5 py-1 text-micro font-bold ${
                 result.report.status === "complete"
-                  ? "border-soft-green/50 bg-soft-green/15 text-navy"
+                  ? "border-success-border bg-success-soft text-success-text"
                   : "border-line-strong bg-white text-ink-muted"
               }`}
             >

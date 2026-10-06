@@ -98,7 +98,7 @@ export function TodayFocusPanel({
   return (
     <section
       aria-labelledby="today-focus-title"
-      className="rounded-2xl border border-line-strong bg-white p-5 shadow-[var(--shadow-card)] sm:p-6"
+      className="rounded-2xl border border-line-strong border-l-4 border-l-navy bg-white p-5 sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">

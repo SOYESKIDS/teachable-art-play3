@@ -32,8 +32,9 @@ export function GrowthRecordSection() {
           </p>
           {/* 단계 이름 · 설명은 교사 화면과 같은 원본(GROWTH_STAGE_OPTIONS)을 쓴다 */}
           <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-2xl border border-dashed border-border-strong p-3">
-              <dt className="text-body font-bold text-ink-muted">{copy.noRecord.label}</dt>
+            {/* 기록 없음 = 실패 · 비활성이 아니다 — 다른 단계와 같은 재질 · 같은 글자색 */}
+            <div className="rounded-2xl border border-line bg-ivory p-3">
+              <dt className="text-body font-bold text-navy">{copy.noRecord.label}</dt>
               <dd className="mt-1 text-micro text-ink-muted">{copy.noRecord.help}</dd>
             </div>
             {GROWTH_STAGE_OPTIONS.map((stage) => (
@@ -75,12 +76,12 @@ export function GrowthRecordSection() {
             </figcaption>
           </figure>
 
-          <div className="rounded-3xl bg-navy p-6 text-white sm:p-8" data-surface="dark">
+          <div className="rounded-3xl border border-info-border bg-info-soft p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-title-sm font-bold">{copy.ai.title}</h3>
+              <h3 className="text-title-sm font-bold text-navy">{copy.ai.title}</h3>
               <AvailabilityTag value={copy.ai.availability} />
             </div>
-            <p className="mt-3 text-label text-white/80">{copy.ai.body}</p>
+            <p className="mt-3 text-label text-ink">{copy.ai.body}</p>
           </div>
         </div>
       </div>

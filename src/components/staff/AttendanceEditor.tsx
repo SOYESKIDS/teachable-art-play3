@@ -666,8 +666,8 @@ export function AttendanceEditor({
               aria-live={state.phase === "error" ? "assertive" : "polite"}
               className={`mb-3 rounded-lg border px-3 py-2 text-caption leading-relaxed ${
                 state.phase === "error"
-                  ? "border-soft-coral/50 bg-soft-coral/10 text-navy"
-                  : "border-soft-green/50 bg-soft-green/15 text-navy"
+                  ? "border-danger-border bg-danger-soft text-danger"
+                  : "border-success-border bg-success-soft text-success-text"
               }`}
             >
               {state.message}
