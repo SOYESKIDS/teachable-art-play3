@@ -1066,7 +1066,8 @@ export function formatAdminDate(isoDate: string): string {
     return isoDate;
   }
 
-  return `${year}년 ${month}월 ${day}일`;
+  // 화면 날짜 표기 통일: YYYY.MM.DD (UAT-STABILIZATION)
+  return `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")}`;
 }
 
 /** "2026.09.03" — 표·목록의 짧은 날짜 */

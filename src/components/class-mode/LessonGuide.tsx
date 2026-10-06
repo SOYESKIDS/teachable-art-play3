@@ -1,4 +1,27 @@
 import { LESSON_SECTION_LABELS, type LessonSectionCode } from "@/lib/curriculum/lesson-sections";
+import { GoalStatement } from "@/components/staff/GoalStatement";
+import { parseGoalNotation } from "@/lib/content/goal-notation";
+
+/** 본문을 "목표 줄"과 "나머지 글"로 나눈다. 원문 순서 · 내용은 그대로. */
+function splitGoalBlocks(body: string): { text: string; goal: boolean }[] {
+  const blocks: { text: string; goal: boolean }[] = [];
+  let buffer: string[] = [];
+  const flush = () => {
+    const text = buffer.join("\n").trim();
+    if (text) blocks.push({ text, goal: false });
+    buffer = [];
+  };
+  for (const line of body.split("\n")) {
+    if (parseGoalNotation(line)) {
+      flush();
+      blocks.push({ text: line.trim(), goal: true });
+    } else {
+      buffer.push(line);
+    }
+  }
+  flush();
+  return blocks;
+}
 
 /**
  * BEFORE — 수업 안내 (차시 원본 섹션 · 읽기 전용).
@@ -63,9 +86,20 @@ export function LessonGuide({ sections }: { sections: Record<string, string> }) 
               </svg>
             </summary>
             <div className="border-t border-hairline px-5 pb-5 pt-4">
-              <p className="max-w-[72ch] whitespace-pre-line break-keep text-body-lg leading-relaxed text-ink">
-                {sections[code]}
-              </p>
+              <div className="flex max-w-[72ch] flex-col gap-3 break-keep text-body-lg leading-relaxed text-ink">
+                {/* "A X · B O" 목표 줄은 이렇게 해요 / 하지 않아요로 · 나머지는 원문 그대로 (UAT-STABILIZATION) */}
+                {splitGoalBlocks(sections[code] ?? "").map((block, index) =>
+                  block.goal ? (
+                    <div key={index} className="rounded-xl bg-secondary-soft px-4 py-3">
+                      <GoalStatement text={block.text} />
+                    </div>
+                  ) : (
+                    <p key={index} className="whitespace-pre-line">
+                      {block.text}
+                    </p>
+                  ),
+                )}
+              </div>
             </div>
           </details>
         ))}

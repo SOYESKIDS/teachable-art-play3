@@ -1,3 +1,4 @@
+import { formatDotDate } from "@/lib/entitlement/labels";
 import type {
   InstitutionType,
   OrganizationStatus,
@@ -34,22 +35,16 @@ export function formatInstitutionType(type: InstitutionType | null): string {
 
 /** 서버/클라이언트 모두 Asia/Seoul로 고정해 Hydration 불일치를 막는다 */
 export function formatOrganizationDate(iso: string): string {
-  return new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(iso));
+  // 화면 날짜 표기 통일: YYYY.MM.DD (한국 시간 · UAT-STABILIZATION)
+  return formatDotDate(iso);
 }
 
 export function formatOrganizationDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("ko-KR", {
+  const time = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   }).format(new Date(iso));
+  return `${formatDotDate(iso)} ${time}`;
 }

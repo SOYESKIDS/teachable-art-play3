@@ -1,4 +1,5 @@
 import type { StaffSessionItem } from "@/types/staff-session";
+import { GoalStatement } from "@/components/staff/GoalStatement";
 import { appButtonPrimary } from "@/components/ui/app-button";
 import { SessionStatusBadge } from "./SessionCard";
 
@@ -142,7 +143,7 @@ export function TodayFocusPanel({
                   </dt>
                   <dd className="mt-1 text-body-sm leading-relaxed text-ink">
                     {preview.goals.map((goal, index) => (
-                      <p key={`${index}-${goal}`}>{goal}</p>
+                      <GoalStatement key={`${index}-${goal}`} text={goal} compact />
                     ))}
                   </dd>
                 </div>

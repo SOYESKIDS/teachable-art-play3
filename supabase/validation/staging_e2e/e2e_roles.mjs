@@ -243,7 +243,10 @@ async function main() {
             await go(w1Href);
             const okTitle = await bodyHas(w1.title);
             const okS1 = await bodyHas(s1First);
-            const okObjective = await bodyHas(w1.objective);
+            // UAT-STABILIZATION: 화면은 원본 "A X · B O" 를 "이렇게 해요(B) / 이렇게 하지 않아요(A)"로 나눠 보여 준다
+            //   — 목표(B)가 보이면 통과. 형식이 아니면 원문 그대로 찾는다.
+            const objectiveGoal = (w1.objective.match(/X\s*·\s*(.+?)\s+O\s*$/) ?? [])[1] ?? w1.objective;
+            const okObjective = await bodyHas(objectiveGoal.trim());
             // 반 이름은 합성 표시("…(가상)")가 정상이다 — 합성 *차시* 표시("…놀이(가상)")가 없어야 한다
             const noSynthetic = !(await bodyHas("놀이(가상)"));
             return (okTitle && okS1 && okObjective && noSynthetic) || `title=${okTitle} s1=${okS1} objective=${okObjective} noSynthetic=${noSynthetic}`;
@@ -353,7 +356,7 @@ async function main() {
         return true;
       });
       await step("director", "no bulk print UI", async () => !(await bodyHas("일괄 인쇄")));
-      await step("director", "session history h1", async () => { await go("/director/sessions/history"); return (await h1()) === "수업 이력" || `h1=${await h1()}`; });
+      await step("director", "session history h1", async () => { await go("/director/sessions/history"); return (await h1()) === "수업 일정·이력" || `h1=${await h1()}`; });
       if (ctx.sessionId) {
         await step("director", "attendance page loads", async () => { await go(`/director/sessions/${ctx.sessionId}/attendance`); return (await path()).endsWith("/attendance"); });
         await step("director", "observation read-only", async () => { await go(`/director/sessions/${ctx.sessionId}/observations`); return bodyHas("원장은 조회만 할 수 있습니다"); });

@@ -1,5 +1,6 @@
 "use server";
 
+import { PARENT_SHARING_LOCK_MESSAGE, PARENT_SHARING_RELEASED } from "@/lib/staff/release-locks";
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
 import { randomBytes, createHash } from "node:crypto";
@@ -229,6 +230,9 @@ export interface IssuePortalResult {
 }
 
 export async function issueChildPortalAction(input: { childId: string }): Promise<IssuePortalResult> {
+  // 출시 잠금 — 화면 버튼이 비활성이어도 서버에서 다시 막는다 (UAT-STABILIZATION · CO-12)
+  if (!PARENT_SHARING_RELEASED) return { ok: false, message: PARENT_SHARING_LOCK_MESSAGE, sharePath: null };
+
   if (!UUID_PATTERN.test(input.childId)) return { ok: false, message: "요청 값을 확인할 수 없습니다.", sharePath: null };
 
   const token = randomBytes(32).toString("base64url");

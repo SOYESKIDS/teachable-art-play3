@@ -36,7 +36,16 @@ const CONSENT_LABELS: Record<PortalChildRow["consentStatus"], string> = {
  * · 사진 공유 기록은 운영 기록이며 법적 동의 완료를 뜻하지 않는다 (CO-10)
  * · 만료 기간은 정해지지 않았다 (CO-12) — 기간을 안내하지 않는다
  */
-export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[]; portalAvailable: boolean }) {
+export function PortalManager({
+  rows,
+  portalAvailable,
+  issueLocked = false,
+}: {
+  rows: PortalChildRow[];
+  portalAvailable: boolean;
+  /** 출시 잠금 — 새 링크 발급 버튼 비활성 (서버도 같은 상수로 거절한다) */
+  issueLocked?: boolean;
+}) {
   const [issuedLink, setIssuedLink] = useState<{ childName: string; url: string } | null>(null);
   const [revokeTarget, setRevokeTarget] = useState<PortalChildRow | null>(null);
   const [busyChild, setBusyChild] = useState<string | null>(null);
@@ -181,7 +190,13 @@ export function PortalManager({ rows, portalAvailable }: { rows: PortalChildRow[
                   >
                     <div className="flex flex-wrap gap-2 md:justify-end">
                       {portalAvailable ? (
-                        <button type="button" disabled={busy} onClick={() => issue(row)} className={row.portalId ? appButtonSecondary : appButtonPrimary}>
+                        <button
+                          type="button"
+                          disabled={busy || issueLocked}
+                          aria-describedby={issueLocked ? "parent-sharing-lock" : undefined}
+                          onClick={() => issue(row)}
+                          className={row.portalId ? appButtonSecondary : appButtonPrimary}
+                        >
                           {busy ? "처리 중…" : row.portalId ? "새 링크 발급" : "링크 만들기"}
                         </button>
                       ) : null}

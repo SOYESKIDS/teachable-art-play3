@@ -1,3 +1,4 @@
+import { formatDotDate } from "@/lib/entitlement/labels";
 import type { PackageCode, SubmissionType } from "@/types/leadForm";
 import type { LeadStatus } from "@/types/lead";
 
@@ -51,24 +52,18 @@ export function formatCount(value: number | null, unit: string): string {
  * 서버/클라이언트 모두 Asia/Seoul로 고정해 Hydration 불일치를 막는다.
  */
 export function formatLeadDate(iso: string): string {
-  return new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(iso));
+  // 화면 날짜 표기 통일: YYYY.MM.DD (한국 시간 · UAT-STABILIZATION)
+  return formatDotDate(iso);
 }
 
 export function formatLeadDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("ko-KR", {
+  const time = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   }).format(new Date(iso));
+  return `${formatDotDate(iso)} ${time}`;
 }
 
 /** tel: 링크용 — 숫자와 +만 남긴다 */

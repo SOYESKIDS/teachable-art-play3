@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CLASS_SESSION_STATUS_LABELS } from "@/lib/admin/class-session";
-import type { ClassSessionStatus } from "@/types/class-session";
+import { seoulToday } from "@/lib/staff/session-dates";
 import type {
   ClassFilterOption,
   SessionHistorySummary,
@@ -31,13 +30,32 @@ interface SessionHistoryBoardProps {
 
 const controlClasses = fieldControl;
 
-const STATUS_FILTERS: readonly (ClassSessionStatus | "all")[] = [
-  "all",
-  "scheduled",
-  "in_progress",
-  "completed",
-  "cancelled",
-];
+/**
+ * 일정 · 이력 구분 (UAT-STABILIZATION) — 기존 데이터만으로 나눈다 (쿼리 · DB 변경 없음).
+ *   upcoming  예정        : scheduled · 예정일이 오늘 이후 또는 미정
+ *   overdue   지난 미진행 : scheduled · 예정일이 지남 · 배정이 운영 중
+ *   ended     종료된 배정 : scheduled · 배정이 종료됨 (진행할 수 없는 과거 기록 — 삭제하지 않는다)
+ *   in_progress · completed · cancelled 는 상태 그대로
+ */
+type HistoryCategory = "upcoming" | "overdue" | "ended" | "in_progress" | "completed" | "cancelled";
+
+const CATEGORY_LABELS: Record<HistoryCategory, string> = {
+  upcoming: "예정",
+  overdue: "지난 미진행",
+  ended: "종료된 배정",
+  in_progress: "진행 중",
+  completed: "완료",
+  cancelled: "취소",
+};
+
+const CATEGORY_ORDER: readonly HistoryCategory[] = ["upcoming", "overdue", "in_progress", "completed", "cancelled", "ended"];
+
+function categoryOf(session: StaffSessionItem, today: string): HistoryCategory {
+  if (session.status !== "scheduled") return session.status as HistoryCategory;
+  if (session.assignmentStatus && session.assignmentStatus !== "active") return "ended";
+  if (session.scheduled_date && session.scheduled_date < today) return "overdue";
+  return "upcoming";
+}
 
 /** 출결 상세 링크. basePath가 없으면 출결 버튼을 노출하지 않는다. */
 function buildAttendanceHref(
@@ -82,25 +100,29 @@ export function SessionHistoryBoard({
   attendanceBasePath,
   observationBasePath,
 }: SessionHistoryBoardProps) {
-  const [statusFilter, setStatusFilter] = useState<ClassSessionStatus | "all">(
-    "all",
-  );
+  const [statusFilter, setStatusFilter] = useState<HistoryCategory | "all">("all");
+  const today = seoulToday();
+  const counts = useMemo(() => {
+    const result = { upcoming: 0, overdue: 0, ended: 0, in_progress: 0, completed: 0, cancelled: 0 } as Record<HistoryCategory, number>;
+    for (const session of sessions) result[categoryOf(session, today)] += 1;
+    return result;
+  }, [sessions, today]);
   const [classFilter, setClassFilter] = useState<string>("all");
 
   const visible = useMemo(
     () =>
       sessions.filter(
         (session) =>
-          (statusFilter === "all" || session.status === statusFilter) &&
+          (statusFilter === "all" || categoryOf(session, today) === statusFilter) &&
           (classFilter === "all" || session.class_id === classFilter),
       ),
-    [sessions, statusFilter, classFilter],
+    [sessions, statusFilter, classFilter, today],
   );
 
   if (hasError) {
     return (
       <p className="rounded-xl border border-line bg-white px-4 py-12 text-center text-label text-ink-muted">
-        수업 이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+        수업 일정·이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
       </p>
     );
   }
@@ -108,21 +130,20 @@ export function SessionHistoryBoard({
   if (sessions.length === 0) {
     return (
       <p className="rounded-xl border border-line bg-white px-4 py-12 text-center text-label text-ink-muted">
-        아직 진행한 수업이 없습니다.
+        아직 등록된 수업이 없습니다.
       </p>
     );
   }
 
   return (
     <>
-      <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-5">
+      <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
         {(
           [
             ["전체", summary.total],
-            ["예정", summary.scheduled],
-            ["진행 중", summary.inProgress],
-            ["완료", summary.completed],
-            ["취소", summary.cancelled],
+            ...CATEGORY_ORDER.filter((key) => key !== "ended" || counts.ended > 0).map(
+              (key) => [CATEGORY_LABELS[key], counts[key]] as const,
+            ),
           ] as const
         ).map(([label, value]) => (
           <div
@@ -145,15 +166,14 @@ export function SessionHistoryBoard({
           id="history-status-filter"
           value={statusFilter}
           onChange={(event) =>
-            setStatusFilter(event.target.value as ClassSessionStatus | "all")
+            setStatusFilter(event.target.value as HistoryCategory | "all")
           }
           className={`${controlClasses} w-full sm:w-[160px]`}
         >
-          {STATUS_FILTERS.map((status) => (
-            <option key={status} value={status}>
-              {status === "all"
-                ? "상태 전체"
-                : CLASS_SESSION_STATUS_LABELS[status]}
+          <option value="all">상태 전체</option>
+          {CATEGORY_ORDER.map((key) => (
+            <option key={key} value={key}>
+              {CATEGORY_LABELS[key]}
             </option>
           ))}
         </select>

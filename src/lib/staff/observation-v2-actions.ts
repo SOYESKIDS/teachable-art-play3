@@ -1,6 +1,7 @@
 "use server";
 
 import { requireTeacher } from "@/lib/auth/organization";
+import { guardSessionWrite } from "@/lib/staff/session-write-guard";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
 import type { GrowthSelection, GrowthStage } from "@/types/staff-observation";
 
@@ -62,6 +63,9 @@ export async function saveClassObservationAction(input: SaveObservationInput): P
   }
 
   const { supabase } = await requireTeacher();
+
+  const guard = await guardSessionWrite(supabase, input.sessionId);
+  if (!guard.ok) return fail(guard.message);
 
   const { data, error } = await supabase.rpc("save_class_observation", {
     p_session_id: input.sessionId,

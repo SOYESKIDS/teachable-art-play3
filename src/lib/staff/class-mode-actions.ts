@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth/organization";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
+import { guardSessionWrite } from "@/lib/staff/session-write-guard";
 
 /**
  * Class Mode 서버 행동 (DEC-036 · DEC-046 · DEC-085 · DEC-098 · DEC-099).
@@ -43,6 +44,10 @@ export async function startClassSessionFromBeforeAction(
 
   const { supabase } = await requireTeacher();
 
+  // 미래 수업 · 종료된 배정의 수업은 시작하지 않는다 (서버 가드 · UI 비활성과 같은 규칙)
+  const guard = await guardSessionWrite(supabase, sessionId, { requireActiveAssignment: true });
+  if (!guard.ok) return { phase: "error", message: guard.message };
+
   const confirm = await supabase.rpc("confirm_session_before", {
     p_session_id: sessionId,
     p_safety_confirmed: true,
@@ -76,6 +81,9 @@ export async function finishClassSessionAction(
   }
 
   const { supabase } = await requireTeacher();
+  const guard = await guardSessionWrite(supabase, sessionId);
+  if (!guard.ok) return { phase: "error", message: guard.message };
+
   const { error } = await supabase.rpc("finish_class_session", { p_session_id: sessionId });
 
   if (error) {
@@ -104,6 +112,9 @@ export async function saveQuickMemoAction(input: {
   }
 
   const { supabase } = await requireTeacher();
+  const guard = await guardSessionWrite(supabase, input.sessionId);
+  if (!guard.ok) return { ok: false, updatedAt: null, message: guard.message, conflict: false };
+
   const { data, error } = await supabase.rpc("save_quick_memo", {
     p_session_id: input.sessionId,
     p_body: input.body,

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { FutureSessionNotice } from "@/components/staff/FutureSessionNotice";
+import { isFutureSessionDate } from "@/lib/staff/session-dates";
 import { requireDirector } from "@/lib/auth/organization";
 import { fetchStaffAttendance } from "@/lib/staff/attendance-queries";
 import { resolveMembership } from "@/lib/staff/membership";
@@ -86,6 +88,9 @@ export default async function DirectorAttendancePage({
               : "수업을 찾을 수 없거나 접근 권한이 없습니다."}
           </p>
         </div>
+      ) : isFutureSessionDate(result.data.session.scheduledDate) ? (
+        // 미래 수업: 출결은 수업일에 연다 (서버도 guardSessionWrite 로 거절)
+        <FutureSessionNotice scheduledDate={result.data.session.scheduledDate} actionLabel="출결 저장" />
       ) : (
         <AttendanceEditor
           data={result.data}

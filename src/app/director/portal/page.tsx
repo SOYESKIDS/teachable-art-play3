@@ -6,7 +6,8 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { PortalManager } from "@/components/staff/PortalManager";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { noticeInfo } from "@/components/ui/app-button";
+import { noticeInfo, noticeWarning } from "@/components/ui/app-button";
+import { PARENT_SHARING_LOCK_MESSAGE, PARENT_SHARING_RELEASED } from "@/lib/staff/release-locks";
 import { directorNavFor } from "../nav";
 
 export const metadata: Metadata = {
@@ -44,10 +45,17 @@ export default async function DirectorPortalPage({ searchParams }: DirectorPorta
       currentHref="/director/portal"
     >
       <h1 className="text-headline font-bold text-navy">학부모 공유</h1>
-      <p className={`mt-3 ${noticeInfo}`}>
-        이제 아동별 공유 링크 하나에서 공개된 기록을 함께 확인할 수 있습니다. 기존 리포트별 공유 링크는 사용이 끝날 때까지
-        별도로 유지됩니다.
-      </p>
+      {PARENT_SHARING_RELEASED ? (
+        <p className={`mt-3 ${noticeInfo}`}>
+          이제 아동별 공유 링크 하나에서 공개된 기록을 함께 확인할 수 있습니다. 기존 리포트별 공유 링크는 사용이 끝날 때까지
+          별도로 유지됩니다.
+        </p>
+      ) : (
+        // 출시 잠금 (UAT-STABILIZATION · CO-12) — 새 링크 발급은 화면 · 서버 모두에서 막는다
+        <p id="parent-sharing-lock" role="note" className={`mt-3 ${noticeWarning}`}>
+          {PARENT_SHARING_LOCK_MESSAGE}
+        </p>
+      )}
       <p className="mt-2 text-label text-ink-muted">
         사진 공유 기록은 기관 운영 기록입니다. 학부모 화면의 사진 표시는 관련 운영 기준이 확정된 뒤 제공됩니다.
       </p>
@@ -69,7 +77,7 @@ export default async function DirectorPortalPage({ searchParams }: DirectorPorta
                 있습니다.
               </p>
             ) : null}
-            <PortalManager rows={rows.rows} portalAvailable={portalAvailable} />
+            <PortalManager rows={rows.rows} portalAvailable={portalAvailable} issueLocked={!PARENT_SHARING_RELEASED} />
           </>
         )}
       </div>

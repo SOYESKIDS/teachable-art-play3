@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { FutureSessionNotice } from "@/components/staff/FutureSessionNotice";
+import { isFutureSessionDate } from "@/lib/staff/session-dates";
 import Link from "next/link";
 import { requireTeacher } from "@/lib/auth/organization";
 import { fetchStaffAttendance } from "@/lib/staff/attendance-queries";
@@ -86,6 +88,14 @@ export default async function TeacherAttendancePage({
               ? "출결 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
               : "수업을 찾을 수 없거나 접근 권한이 없습니다."}
           </p>
+        </div>
+      ) : isFutureSessionDate(result.data.session.scheduledDate) ? (
+        // 미래 수업: 출결은 수업일에 연다 (서버도 guardSessionWrite 로 거절)
+        <div>
+          <h1 className="text-headline font-bold text-navy">출결 체크</h1>
+          <div className="mt-4">
+            <FutureSessionNotice scheduledDate={result.data.session.scheduledDate} actionLabel="출결 저장" />
+          </div>
         </div>
       ) : (
         <>

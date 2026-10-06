@@ -2768,6 +2768,27 @@ G-1 이후 배정 gate 는 유효 계약을 요구하고, 활성화 Readiness �
 
 ---
 
+### DEC-116 · Warm Atelier 디자인 시스템 · 브랜드 위계 공식 기준
+
+| | |
+|---|---|
+| 결정일 | 2026-10-06 |
+| 상태 | `ACTIVE` |
+| 출처 | 사용자 확정 (PHASE UAT-STABILIZATION §12) |
+| Resolves | DEC-109 의 "derived tokens PROPOSED" — 구현된 V4 토큰을 공식 기준으로 채택 |
+
+**결정 내용**
+- 공식 visual direction 은 **Warm Atelier** — Navy #142B4A(구조 · primary) · Green #2F8F6B(성장 · 완료 · 기록) · Coral #F1644B(강조 · 오류 색 아님) · Ivory #F8F5EE(바탕) · Mint · Soft Blue(보조 면) · Text #263238 · Border #E7E9EC. Green 중심 재디자인을 하지 않는다.
+- 시각 기준 원본은 `docs/06-ux-design/design-system-v4.md`(토큰 · 컴포넌트 · 반응형 · 접근성 · 모션), copy 기준 원본은 `docs/06-ux-design/final-content-system.md`.
+- 브랜드 위계: **SOYE KIDS = 회사 · master brand**, **TeachAble Art Play = 제품 · 유치원 교육 운영 시스템**. 표기 관계는 "TeachAble Art Play by SOYE KIDS". 화면 로고는 SOYEKIDS 워드마크 + 서비스명 조합(BrandMark)을 유지한다.
+
+**결정 이유**
+DEC-109 는 방향과 Target palette 를 정했지만 파생 토큰은 PROPOSED 였다. UI-01 ~ DESIGN-FINAL 에서 구현 · 검증(대비 · 반응형 · 접근성)된 토큰을 기준으로 고정해 이후 화면이 같은 재료를 쓰게 한다.
+
+**관련**: DEC-109 · DEC-110 · DEC-097
+
+---
+
 ## 15. 결정 요약표
 
 | ID | 영역 | 결정 | 상태 | 출처 |
@@ -2888,8 +2909,9 @@ G-1 이후 배정 gate 는 유효 계약을 요구하고, 활성화 Readiness �
 | DEC-113 | 보안 | 기관 구성원 변경 = HQ Admin 전용 audited 경로 · 사유 필수 · self-grant 금지 · 마지막 원장 보호 | ACTIVE | 사용자 (PHASE 08 고정 결정 1) |
 | DEC-114 | AI | AI provider 호출 = 담당 교사 ∧ ai_assist ∧ release registry(AR-8) ∧ 근거 · env 만으로 호출 금지 (legacy 포함) | ACTIVE | 사용자 (PHASE 08 고정 결정 2) |
 | DEC-115 | 계약 | 활성화 전 onboarding: 초안 · 시작 전 계약의 반 범위에 프로그램 배정 허용 · 서비스 쓰기는 활성화 후 | ACTIVE | 사용자 (PHASE 08 WS4 불변 조건) |
+| DEC-116 | 디자인 | Warm Atelier 디자인 시스템(V4) · SOYE KIDS(master) / TeachAble Art Play(product) 브랜드 위계 공식 기준 | ACTIVE | 사용자 (UAT-STABILIZATION §12) |
 
-**총 112건 · ACTIVE 112 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-042 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-060 · DEC-063 · DEC-067 · DEC-069 · DEC-071 · DEC-072 · DEC-075) · SUPERSEDED 0 · WITHDRAWN 0**
+**총 113건 · ACTIVE 113 (clarified: DEC-007 · DEC-009 · DEC-010 · DEC-035 · DEC-038 · DEC-039 · DEC-042 · DEC-043 · DEC-046 · DEC-047 · DEC-051 · DEC-054 · DEC-055 · DEC-059 · DEC-060 · DEC-063 · DEC-067 · DEC-069 · DEC-071 · DEC-072 · DEC-075) · SUPERSEDED 0 · WITHDRAWN 0**
 
 ---
 

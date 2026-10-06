@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { appButtonSecondary } from "@/components/ui/app-button";
+import { isFutureSessionDate } from "@/lib/staff/session-dates";
 import {
   CLASS_SESSION_STATUS_BADGE_CLASSES,
   CLASS_SESSION_STATUS_LABELS,
@@ -92,6 +93,8 @@ export function SessionCard({
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
   const hasDetailLinks = Boolean(attendanceHref || observationHref);
+  // 미래 수업: 출결 · 관찰은 수업일에 연다 (서버도 guardSessionWrite 로 거절 · UAT-STABILIZATION)
+  const isFuture = isFutureSessionDate(session.scheduled_date);
 
   return (
     <li
@@ -130,7 +133,15 @@ export function SessionCard({
           </p>
         </div>
 
-        <SessionStatusBadge status={session.status} />
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          <SessionStatusBadge status={session.status} />
+          {/* 종료된 배정의 예정 수업 — 진행할 수 없는 과거 기록 (삭제하지 않는다 · 특정 데이터 지목 없음) */}
+          {session.status === "scheduled" && session.assignmentStatus && session.assignmentStatus !== "active" ? (
+            <span className="rounded-full border border-border-strong bg-muted px-2 py-0.5 text-micro font-semibold text-ink-muted">
+              종료된 배정
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {/*
@@ -138,7 +149,14 @@ export function SessionCard({
         나란히 늘려 반씩 나누지 않는 이유: 문구 길이가 달라
         좁은 화면에서 "출결 확인·정정"이 두 줄로 깨지기 때문이다.
       */}
-      {hasDetailLinks ? (
+      {hasDetailLinks && isFuture ? (
+        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line-soft pt-4">
+          <button type="button" disabled className={appButtonSecondary}>
+            {attendanceHref ? attendanceButtonLabel(session.status) : "관찰기록"}
+          </button>
+          <span className="text-caption font-semibold text-info-text">수업일에 열립니다.</span>
+        </div>
+      ) : hasDetailLinks ? (
         <div className="mt-5 flex flex-wrap gap-2 border-t border-line-soft pt-4">
           {attendanceHref ? (
             <Link

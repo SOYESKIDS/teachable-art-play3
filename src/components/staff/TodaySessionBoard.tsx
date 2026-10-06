@@ -193,12 +193,40 @@ export function TodaySessionBoardView({
 
   return (
     <>
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiItem label="오늘 예정" value={summary.scheduledToday} tone="scheduled" />
-        <KpiItem label="진행 중" value={summary.inProgress} tone="active" />
-        <KpiItem label="오늘 완료" value={summary.completedToday} tone="done" />
-        <KpiItem label="오늘 취소" value={summary.cancelledToday} tone="cancelled" />
-      </dl>
+      {/*
+        ★ TODAY 와 OVERDUE 를 같은 줄의 같은 숫자처럼 보이지 않게 나눈다 (UAT-STABILIZATION).
+          "오늘" 칸은 오늘 날짜 수업 기준(진행 중은 날짜와 무관), "지난 미완료"는 예정일이 지났는데
+          아직 시작하지 않은 수업이다. 종료된 배정의 예정 수업은 보드에서 이미 빠진다(buildTodayBoard).
+      */}
+      <div className="grid gap-3 lg:grid-cols-[4fr_1fr]">
+        <section aria-label="오늘 현황">
+          <p className="mb-2 text-caption font-semibold text-ink-muted">오늘</p>
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <KpiItem label="오늘 예정" value={summary.scheduledToday} tone="scheduled" />
+            <KpiItem label="진행 중" value={summary.inProgress} tone="active" />
+            <KpiItem label="오늘 완료" value={summary.completedToday} tone="done" />
+            <KpiItem label="오늘 취소" value={summary.cancelledToday} tone="cancelled" />
+          </dl>
+        </section>
+        <section aria-label="지난 미완료">
+          <p className="mb-2 text-caption font-semibold text-ink-muted">이전 날짜</p>
+          <dl
+            className={`rounded-2xl border px-4 py-3.5 sm:px-5 sm:py-4 ${
+              board.overdueSessions.length > 0
+                ? "border-warning-border bg-warning-soft"
+                : "border-line bg-white"
+            }`}
+          >
+            <dt className="flex items-center gap-1.5 text-caption font-semibold text-ink-muted">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-warning" />
+              지난 미완료
+            </dt>
+            <dd className="mt-1.5 text-headline-lg font-bold tabular-nums leading-none text-navy">
+              {board.overdueSessions.length.toLocaleString("ko-KR")}
+            </dd>
+          </dl>
+        </section>
+      </div>
 
       <Section
         title="오늘의 수업"

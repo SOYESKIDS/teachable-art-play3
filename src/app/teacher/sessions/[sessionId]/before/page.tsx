@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { GoalStatement } from "@/components/staff/GoalStatement";
 import { notFound, redirect } from "next/navigation";
+import { FutureSessionNotice } from "@/components/staff/FutureSessionNotice";
+import { isFutureSessionDate } from "@/lib/staff/session-dates";
 import { requireTeacher } from "@/lib/auth/organization";
 import { resolveMembership } from "@/lib/staff/membership";
 import { fetchClassModeData } from "@/lib/staff/class-mode-queries";
@@ -115,10 +118,11 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
           오늘 수업
         </h1>
         {data.lesson.objective ? (
-          <p className="mt-3 rounded-xl border-l-4 border-secondary bg-secondary-soft px-4 py-3 text-body-lg font-semibold leading-relaxed text-ink">
-            <span className="mb-0.5 block text-label font-bold text-secondary-strong">수업 목표</span>
-            {data.lesson.objective}
-          </p>
+          <div className="mt-3 rounded-xl border-l-4 border-secondary bg-secondary-soft px-4 py-3 text-body-lg leading-relaxed text-ink">
+            <p className="mb-1 text-label font-bold text-secondary-strong">수업 목표</p>
+            {/* 원본 "A X · B O" 표기를 화면에서만 "이렇게 해요 / 이렇게 하지 않아요"로 (UAT-STABILIZATION) */}
+            <GoalStatement text={data.lesson.objective} />
+          </div>
         ) : null}
         {data.sections.s1 ? (
           <p className="mt-4 max-w-[72ch] whitespace-pre-line break-keep text-body-lg leading-relaxed">{data.sections.s1}</p>
@@ -138,6 +142,10 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
 
       <LessonGuide sections={data.sections} />
 
+      {isFutureSessionDate(data.session.scheduledDate) ? (
+        // 미래 수업: 안내는 미리 보되 시작은 수업일에 (서버도 guardSessionWrite 로 거절)
+        <FutureSessionNotice scheduledDate={data.session.scheduledDate} actionLabel="수업 시작" />
+      ) : (
       <BeforeChecklist
         sessionId={data.session.id}
         organizationId={data.session.organizationId}
@@ -147,6 +155,7 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
         canStart={data.entitlements.classModeWrite}
         blockedReason={blockedReason}
       />
+      )}
     </ClassModeShell>
   );
 }

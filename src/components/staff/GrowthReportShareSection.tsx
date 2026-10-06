@@ -1,5 +1,7 @@
 "use client";
 
+import { formatDotDate } from "@/lib/entitlement/labels";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { revokeGrowthReportShareAction } from "@/lib/staff/growth-report-share-actions";
@@ -136,7 +138,8 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** timestamptz 문자열 앞 10자리만 쓴다. 시간대 변환을 하지 않는다. */
+/** 공유 기록 날짜 표기 (YYYY.MM.DD · 한국 시간) */
 function formatDateTime(value: string): string {
-  return value.slice(0, 10).replaceAll("-", ".");
+  // timestamptz → 한국 시간 기준 YYYY.MM.DD (앞 10자리는 UTC 날짜라 하루가 밀릴 수 있다)
+  return formatDotDate(value);
 }

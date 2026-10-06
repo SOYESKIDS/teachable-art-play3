@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { requireTeacher } from "@/lib/auth/organization";
+import { isFutureSessionDate } from "@/lib/staff/session-dates";
 import { fetchStaffObservations } from "@/lib/staff/observation-queries";
 import { fetchClassEntitlements } from "@/lib/entitlement/queries";
 import { resolveMembership } from "@/lib/staff/membership";
@@ -72,7 +73,9 @@ export default async function TeacherObservationPage({ params, searchParams }: T
     canWrite = entitlements.classModeWrite && sessionOpen;
     blockedReason = !sessionOpen
       ? result.data.session.status === "scheduled"
-        ? "수업을 시작한 뒤에 관찰을 기록할 수 있습니다."
+        ? isFutureSessionDate(result.data.session.scheduledDate)
+          ? "수업일에 열립니다."
+          : "수업을 시작한 뒤에 관찰을 기록할 수 있습니다."
         : "취소된 수업입니다. 이미 남아 있는 기록은 확인만 할 수 있습니다."
       : !entitlements.classModeWrite
         ? "현재 읽기 전용 상태이거나 이용 상품에 포함되지 않아 새 기록을 작성할 수 없습니다. 원장님께 문의해 주세요."

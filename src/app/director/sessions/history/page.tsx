@@ -12,7 +12,7 @@ import { SessionHistoryBoard } from "@/components/staff/SessionHistoryBoard";
 import { directorNavFor } from "../../nav";
 
 export const metadata: Metadata = {
-  title: "수업 이력 | TeachAble Art Play",
+  title: "수업 일정·이력 | TeachAble Art Play",
   robots: { index: false, follow: false },
 };
 
@@ -60,7 +60,7 @@ export default async function DirectorHistoryPage({
       navItems={await directorNavFor(supabase, membership.organizationId)}
       currentHref="/director/sessions/history"
     >
-      <h1 className="text-headline font-bold text-navy">수업 이력</h1>
+      <h1 className="text-headline font-bold text-navy">수업 일정·이력</h1>
       <p className="mt-1 text-label text-ink-muted">
         기관 전체 수업 기록입니다.
       </p>

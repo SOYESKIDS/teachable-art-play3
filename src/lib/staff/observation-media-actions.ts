@@ -1,5 +1,6 @@
 "use server";
 
+import { guardSessionWrite } from "@/lib/staff/session-write-guard";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireTeacher } from "@/lib/auth/organization";
@@ -293,6 +294,12 @@ export async function prepareObservationMediaUpload(input: {
 
   if (!context.ok) {
     return prepareError(context.message);
+  }
+
+  // 미래 수업에는 사진을 올리지 않는다 (서버 가드 · UAT-STABILIZATION)
+  const guard = await guardSessionWrite(context.supabase, sessionId);
+  if (!guard.ok) {
+    return prepareError(guard.message);
   }
 
   /**

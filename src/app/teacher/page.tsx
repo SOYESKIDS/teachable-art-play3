@@ -176,7 +176,7 @@ export default async function TeacherTodayPage({
                 href={`/teacher/history${orgQuery}`}
                 className={appButtonSecondary}
               >
-                수업 이력 보기
+                수업 일정·이력 보기
               </Link>
             }
           />

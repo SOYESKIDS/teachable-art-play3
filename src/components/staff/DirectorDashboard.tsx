@@ -146,7 +146,7 @@ export function DirectorDashboard({
         {data.sessionsTruncated ? (
           <p className="mt-3 rounded-xl border border-line bg-white px-4 py-3 text-micro leading-relaxed text-ink-muted">
             최근 {data.windowDays}일 수업이 집계 범위를 넘었습니다. 카드의 기록
-            현황은 일부만 반영했을 수 있습니다. 정확한 내용은 수업 이력에서
+            현황은 일부만 반영했을 수 있습니다. 정확한 내용은 수업 일정·이력에서
             확인해주세요.
           </p>
         ) : null}
@@ -210,7 +210,7 @@ export function DirectorDashboard({
         {!data.sessionsOk ? (
           <EmptyBox text="수업 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요." />
         ) : classGroups.length === 0 ? (
-          <EmptyBox text="오늘 예정된 수업이 없습니다. 지난 수업은 수업 이력에서 볼 수 있습니다." />
+          <EmptyBox text="오늘 예정된 수업이 없습니다. 지난 수업은 수업 일정·이력에서 볼 수 있습니다." />
         ) : (
           <div className="mt-3 flex flex-col gap-6">
             {classGroups.map((group) => (

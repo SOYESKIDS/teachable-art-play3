@@ -1,5 +1,6 @@
 "use server";
 
+import { guardSessionWrite } from "@/lib/staff/session-write-guard";
 import { refresh } from "next/cache";
 import { requireStaff } from "@/lib/auth/organization";
 import type { ClassStatus } from "@/types/class-child";
@@ -277,6 +278,12 @@ export async function saveAttendanceAction(
   // cancelled는 07A DB 정책과 동일하게 read-only.
   if (session.status === "cancelled") {
     return error(MESSAGES.cancelled);
+  }
+
+  // 미래 수업의 출결은 수업일에 연다 (서버 가드 · UAT-STABILIZATION)
+  const guard = await guardSessionWrite(supabase, sessionId);
+  if (!guard.ok) {
+    return error(guard.message);
   }
 
   const childIds = entries.map((entry) => entry.childId);
