@@ -1,0 +1,700 @@
+{
+  "package": "SOYE KIDS STARTER 2026.1 — W1~W8 canonical lesson content",
+  "phase": "PHASE 10E",
+  "approval": "HUMAN CONTENT APPROVAL REQUIRED — 기술 적재본 · 교육 내용 승인 아님",
+  "program": {
+    "code": "SOYE-STARTER-2026.1",
+    "title": "SOYE KIDS 8주 프로그램 (STARTER 2026.1)",
+    "summary": "SOYE KIDS 8주 프로그램 교사용 수업가이드 1~8주차 원본 적재본 (PHASE 10E · 사람 승인 전)",
+    "duration_weeks": 8,
+    "age_group": null,
+    "product": {
+      "code": "starter",
+      "version_label": "2026.1",
+      "week_from": 1,
+      "week_to": 8
+    }
+  },
+  "unknown": [
+    "duration_minutes (원본은 범위만 기재)",
+    "age_group (원본 미기재)",
+    "음원·영상·워크북·E-BOOK 파일 URL · 에셋 (원본은 이름만)",
+    "7주차 음원 곡명",
+    "라이선스 · 저작권 표기 (원본 미기재)",
+    "lesson_activities 행 (Readiness 필수 아님 · 이번 적재 제외)"
+  ],
+  "cross_reference": {
+    "requested": "TeachAble_ArtPlay_24주_강의교안_데이터구조",
+    "found_locally": false,
+    "used_instead": {
+      "file": "SOYE_KIDS_24주_개발자료_통합본.pdf",
+      "location": "OneDrive/문서/수업프로그램/자료/수업 프로그램 정리_0909/",
+      "sha256": "eae6f5e97dfabfb3af255c16a6a9a911193f2681e35039a3e8a69dcbaaca415d",
+      "note": "교차 확인용 (교육 내용 출처 아님). 1~6주 교사용 가이드를 원자료(Source of Truth)로 명시 · 7~8주는 공개 주제 [확정] · 상세 가이드 [개발대기] (2026-09-09 기준)"
+    }
+  },
+  "source_versions": {
+    "A": {
+      "folder": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+      "dated": "2026-09-11",
+      "note": "`자료` · `카카오톡 받은 파일` 사본과 바이트 동일 (W1 · W7 · W8 은 `자료` 폴더 사본 없음)"
+    },
+    "B": {
+      "folder": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+      "dated": "2026-09-10",
+      "note": "다른 PDF 포장 · 추출 텍스트는 A 와 동일 (8주 모두)"
+    },
+    "adopted": "A"
+  },
+  "section_codes": [
+    "s1",
+    "s2",
+    "s3",
+    "s4a",
+    "s4b",
+    "s4c",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11",
+    "s12",
+    "s13",
+    "s14",
+    "s15"
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "title": "유치원 가는 날",
+      "storybook": "《유치원 가는 날》",
+      "theme": "유치원 가는 날",
+      "growth_keyword": "시작",
+      "core_message": "새로운 공간을 친구들과 탐색하며 편안함과 소속감을 만들어가요.",
+      "cover_core_message": "처음 만나는 유치원과 친구들을 천천히 탐색하며 ‘여기는 내가 지내도 괜찮은 곳’이라는 편안함과 새로운 시작의 즐거움을 느껴요.",
+      "recommended_duration": "약 50~60분 (첫 등원 상황에 따라 짧게 나누어 운영 가능)",
+      "objective": "‘빨리 적응시키기’ X · 새로운 공간을 자기 속도로 알아가며 안전감과 소속감을 만드는 첫 시작 O",
+      "physical_activity": "친구들과 교실/어린이집 탐험하기 (유치원 탐험 미션 카드)",
+      "art_activity": "나만의 이름표 만들기",
+      "workbook": "같은 그림 찾기 · 길 찾기 · 내 물건에는 무엇이 있을까요? · 내 마음 색칠하기 (3~4장)",
+      "materials": "그림책/E-BOOK · 탐험 미션 카드 · 이름표 도안 · 워크북 · 공간 사진 자료 · 입학 기념 액자 재료",
+      "nuri_areas": [
+        "사회관계",
+        "의사소통",
+        "자연탐구",
+        "신체운동·건강",
+        "예술경험"
+      ],
+      "observation_focus": [
+        "환경 적응",
+        "사회관계",
+        "의사소통",
+        "생활자립",
+        "안전·신체"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "입학 기념 액자 만들기",
+      "media": [
+        "E-BOOK",
+        "음원 4곡: 유치원 가는 길 / 안녕! 친구야 / 우리 반을 소개해요 / 함께라서 좋아",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "유치원 탐험 미션 카드 · 입학 기념 액자 KIT",
+      "cross_week": [],
+      "conflicts": [
+        "표지 핵심 메시지와 §2 핵심 메시지 문장이 다름 — 둘 다 보존 (s2)",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-01.txt",
+      "source": {
+        "filename": "SOYE_KIDS_1주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "66e2182a4c75b8597152abc4bc93caad81d2bbd0ed6fb1291157110ff1004bdd",
+        "bytes": 54103,
+        "pages": 9,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "9829e7e694be756eef6c877dd1fbafedca7eb565c7cfc556ae476bc90c02c0d3",
+          "bytes": 38503,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js · pdftotext 로 복원되지 않는 글꼴 → 문서 판독 텍스트를 옮겨 적음 · 기계 대조 불가 → 사람 대조 필요",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION HUMAN VERIFICATION REQUIRED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 2,
+      "title": "끝까지 해보자",
+      "storybook": "《끝까지 해보자》",
+      "theme": "끝까지 해보자",
+      "growth_keyword": "끈기",
+      "core_message": "포기하지 않으면 할 수 있어!",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (기관 일정에 따라 분리 운영 가능)",
+      "objective": "잘하게 만드는 것 X · 다시 해보게 만드는 것 O",
+      "physical_activity": "마루의 도전 미션 (젓가락 → 집게 → 협동 릴레이)",
+      "art_activity": "끝까지 해본 용기 메달",
+      "workbook": "미로 찾기 · 선 따라 그리기 · 다른 그림 찾기 · 마루 꾸미기 (12P)",
+      "materials": "그림책/E-BOOK · 메추리알 모형 6개 · 젓가락 · 집게 2종 · 도전 미션 카드 · 메달 도안 · 12P 워크북 · 도전 보드",
+      "nuri_areas": [
+        "신체운동·건강",
+        "사회관계",
+        "의사소통",
+        "정서·자기조절"
+      ],
+      "observation_focus": [
+        "도전 태도",
+        "소근육",
+        "의사소통",
+        "사회관계",
+        "정서조절"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "우리 가족 ‘도전 OO’ 미션",
+      "media": [
+        "E-BOOK",
+        "음원: 끝까지 해보자 송 / 할 수 있어! / 도전! 마루 / 우리 함께",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "도전 미션 교구 · 용기 메달 도안 · 도전 보드",
+      "cross_week": [],
+      "conflicts": [
+        "§2 연계 콘텐츠에 음원 곡 수 미기재 (§4-A 는 4곡 목록)",
+        "§3 누리 연계 4개 영역 (다른 주차는 4~5개)",
+        "원본 절 순서가 앱 라벨과 같음 (§8 미술 · §9 워크북) — 교차 대응 없음"
+      ],
+      "file": "week-02.txt",
+      "source": {
+        "filename": "SOYE_KIDS_2주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "9a3eb15a72d3a4a92d35fb3686aaa8d26557939b037cb5bfdc2fddbe2fc83ac6",
+        "bytes": 408741,
+        "pages": 8,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "27873024fc5abcbad657d78ff40d164f18acb826745e6f971f2a70509320b949",
+          "bytes": 242151,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js 텍스트 레이어 (기계 추출) + 양방향 토큰 대조 PASS",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION MACHINE-VERIFIED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§8",
+        "s9": "§9",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 3,
+      "title": "마음을 말해줘",
+      "storybook": "《마음을 말해줘》",
+      "theme": "마음을 말해줘",
+      "growth_keyword": "표현",
+      "core_message": "내 마음을 표현하면 친구와 서로를 더 잘 이해할 수 있어!",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (기관 일정에 따라 미술·워크북을 분리 운영 가능)",
+      "objective": "감정을 통제하게 하기 X · 마음을 알아차리고 말로 표현하게 하기 O",
+      "physical_activity": "마음배달 (마음다리 건너 친구에게 전달)",
+      "art_activity": "마음을 전하는 팔찌 만들기",
+      "workbook": "친구의 마음을 찾아주세요: 표정 보고 기분 맞추기 · 표정과 상황 연결하기 · 나는 어떻게 해결할까? · 이미지 스티커",
+      "materials": "그림책/E-BOOK · 마음다리(링·훌라후프) · 하트카드 · 우체통 · 표정·상황·해결방법 카드 · 팔찌 재료 · 워크북",
+      "nuri_areas": [
+        "의사소통",
+        "사회관계",
+        "예술경험",
+        "신체운동·건강"
+      ],
+      "observation_focus": [
+        "자기표현",
+        "감정이해",
+        "공감·사회관계",
+        "문제해결",
+        "신체·참여"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "우리 가족 ‘마음배달 우체통’",
+      "media": [
+        "E-BOOK",
+        "음원 4곡: 마음을 말해요 송 / 마음 친구 송 / 고마운 마음 송 / 우리 함께 송",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "마음을 말해요 카드 · 마음배달 우체통 KIT",
+      "cross_week": [],
+      "conflicts": [
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-03.txt",
+      "source": {
+        "filename": "SOYE_KIDS_3주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "adf553ba41f3adbd86e79e2f14d031ead6e7e1219e283e7f27c6df25e87fd29a",
+        "bytes": 54657,
+        "pages": 10,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "5c9e8aa4d7d155c18960f33e632378d1add34974104f044efe977ba49d54ceac",
+          "bytes": 38987,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js · pdftotext 로 복원되지 않는 글꼴 → 문서 판독 텍스트를 옮겨 적음 · 기계 대조 불가 → 사람 대조 필요",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION HUMAN VERIFICATION REQUIRED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 4,
+      "title": "소예의 씨앗",
+      "storybook": "《소예의 씨앗》",
+      "theme": "씨앗과 새싹",
+      "growth_keyword": "시작",
+      "core_message": "작은 씨앗도 정성과 기다림으로 자라나요!",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (기관 일정에 따라 미술·워크북을 분리 운영 가능)",
+      "objective": "씨앗 지식 암기 X · 직접 탐색하고 성장 과정을 발견하기 O",
+      "physical_activity": "씨앗 탐험 & 씨앗 마라카스 연주회",
+      "art_activity": "씨앗 소리 마라카스 만들기",
+      "workbook": "씨앗 관찰하기 · 성장 순서 맞추기 · 새싹 그리기 · 무엇이 필요할까요? (3~4장)",
+      "materials": "그림책/E-BOOK · 씨앗 6종 · 관찰 용기 · 투명 마라카스 통 · 씨앗 화분 세트/새싹 장식 · 워크북 · 씨앗·새싹 성장 도안 KIT",
+      "nuri_areas": [
+        "자연탐구",
+        "예술경험",
+        "신체운동·건강",
+        "의사소통"
+      ],
+      "observation_focus": [
+        "자연탐구",
+        "성장 이해",
+        "예술·신체",
+        "의사소통",
+        "참여·태도"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "우리 가족 ‘씨앗 성장 이야기’",
+      "media": [
+        "E-BOOK",
+        "음원 4곡: 씨앗이 톡! / 물을 주세요 / 햇살이 좋아요 / 우리는 친구 새싹",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "씨앗 탐험 KIT · 씨앗·새싹 성장 도안 KIT",
+      "cross_week": [
+        "W8 현수막의 씨앗·새싹 요소 (§4-A 씨앗 화분 세트/새싹 장식 · §13 씨앗·새싹 성장 도안)"
+      ],
+      "conflicts": [
+        "성장키워드: 원본 표지 · §2 = ‘시작’ (1주차와 중복). product-definition · 마케팅 문구는 4주 = ‘발견’. 24주 통합본(2026-09-09)은 ‘PDF 에서 1주와 4주가 모두 시작 [수정 필요]’ · 로드맵축 ‘발견·기다림’ 병기 [제안]. PHASE 10E 는 원본 표기 ‘시작’ 을 유지 — 사람 결정 필요",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-04.txt",
+      "source": {
+        "filename": "SOYE_KIDS_4주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "04a4372eb72f8d7f0b413e3c5615e03a90f62c53412ee3131226ca542f6097b5",
+        "bytes": 53610,
+        "pages": 9,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "62db488de0b5313763098b7b60a174145ab7bf43c09f7bd78e997510e482d27c",
+          "bytes": 38101,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js · pdftotext 로 복원되지 않는 글꼴 → 문서 판독 텍스트를 옮겨 적음 · 기계 대조 불가 → 사람 대조 필요",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION HUMAN VERIFICATION REQUIRED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 5,
+      "title": "우린 모두 특별해",
+      "storybook": "《우린 모두 특별해》",
+      "theme": "우리 모두 특별해",
+      "growth_keyword": "자존감",
+      "core_message": "꽃마다 모양이 다르듯 우리도 모두 특별해요. 나는 소중하고, 친구도 소중한 존재예요.",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (기관 일정에 따라 미술·워크북을 분리 운영 가능)",
+      "objective": "누가 더 잘하는지 비교하기 X · 나와 친구의 서로 다른 특별함 발견하기 O",
+      "physical_activity": "동글게 동글게 꽃놀이 (색 신호 이동)",
+      "art_activity": "나만의 꽃 만들기",
+      "workbook": "같은 꽃 찾기 · 다른 꽃 찾기 · 꽃잎 색칠하기 · 나를 닮은 꽃 꾸미기",
+      "materials": "그림책/E-BOOK · 대형 꽃판 · 꽃·꽃잎·줄기 도안 · 사진 원판 · 워크북 · 꽃 도안 KIT",
+      "nuri_areas": [
+        "사회관계",
+        "자연탐구",
+        "예술경험",
+        "의사소통",
+        "신체운동·건강"
+      ],
+      "observation_focus": [
+        "자기인식·자존감",
+        "사회관계",
+        "자연탐구",
+        "예술표현",
+        "신체·참여"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "우리 가족 꽃 이야기",
+      "media": [
+        "E-BOOK",
+        "음원 4곡: 씨앗이 톡! / 물을 주세요 / 햇살이 좋아요 / 우리는 친구 새싹 (4주차와 동일)",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "꽃 만들기 KIT · 꽃 도안 KIT",
+      "cross_week": [
+        "W4 음원 4곡 재사용 (§10 ‘전주차 회상’)",
+        "W8 현수막의 꽃 요소 (§9 나만의 꽃)"
+      ],
+      "conflicts": [
+        "음원 4곡이 4주차와 동일 — 원본 §4-A · §10 및 24주 통합본 ‘4주와 동일 4곡’ 과 일치 (원문 유지)",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-05.txt",
+      "source": {
+        "filename": "SOYE_KIDS_5주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "984c16dbb717f51b1eae4841d663291aab5395a2d1cc923c4f937e46d667aa39",
+        "bytes": 52613,
+        "pages": 8,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "8e88be4dbb075b07d740dcb917d2bfe4189bc99aefb9b18dd27d60e45ce620c2",
+          "bytes": 37250,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js · pdftotext 로 복원되지 않는 글꼴 → 문서 판독 텍스트를 옮겨 적음 · 기계 대조 불가 → 사람 대조 필요",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION HUMAN VERIFICATION REQUIRED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 6,
+      "title": "우리들의 비밀기지",
+      "storybook": "《우리들의 비밀기지》",
+      "theme": "우리들의 비밀기지",
+      "growth_keyword": "협력",
+      "core_message": "혼자 하기 어려운 일도 친구와 힘을 합치면 함께 해낼 수 있어요.",
+      "cover_core_message": "혼자 하기 어려운 일도 친구와 힘을 합치고 도움을 주고받으면 함께 해낼 수 있어요.",
+      "recommended_duration": "약 60~70분 (대형 비밀기지 만들기는 기관 일정에 따라 분리 운영 가능)",
+      "objective": "‘같이 있어요’에서 끝나는 협력 X · 역할을 나누고 도움을 주고받아 하나를 함께 완성하는 협력 O",
+      "physical_activity": "톡톡 비가 와요! 따뜻한 햇살이 와요! (친구에게 전달)",
+      "art_activity": "우리들의 비밀기지 만들기 (대형 공동 제작)",
+      "workbook": "같은 것 찾기 · 무엇이 필요할까요? · 비·바람·햇살 표현하기 · 함께 완성한 비밀기지",
+      "materials": "그림책/E-BOOK · 대형 입체 종이집 · 장식 재료 · 우리 반 깃발 · 워크북 · 햇살·구름·바람·빗방울 도안",
+      "nuri_areas": [
+        "사회관계",
+        "자연탐구",
+        "예술경험",
+        "의사소통",
+        "신체운동·건강"
+      ],
+      "observation_focus": [
+        "협력·사회관계",
+        "의사소통",
+        "자연탐구",
+        "예술표현",
+        "공동성취"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "나와 함께 자라는 우리 가족 (햇살·구름·바람·빗방울 도안 + 가족사진)",
+      "media": [
+        "E-BOOK",
+        "음원 4곡: 톡톡! 비가 와요 / 따뜻한 햇살 / 함께라면 할 수 있어 / 우리들의 비밀기지",
+        "캐릭터 뮤직비디오"
+      ],
+      "kit": "우리들의 비밀기지 KIT (대형 입체 종이집)",
+      "cross_week": [
+        "W8 ‘우리 반 성장 숲’ 대형 현수막에 가정연계 작품을 붙임 (§13 원문 명시)"
+      ],
+      "conflicts": [
+        "표지 핵심 메시지(‘…힘을 합치고 도움을 주고받으면…’)와 §2(‘…힘을 합치면…’) 문장이 다름 — 둘 다 보존 (s2)",
+        "§13 은 8주차 현수막을 ‘우리 반 성장 숲’, 8주차 원본은 ‘대형 숲 현수막’ 으로 표기 — 같은 대상으로 판단 · 원문 유지",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-06.txt",
+      "source": {
+        "filename": "SOYE_KIDS_6주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "1d6f4aa607bccbd2d5c88fd58012f426ae21608368b4f41050921390de37acce",
+        "bytes": 55918,
+        "pages": 10,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "63f6e9e32788c95b8302778d22cd3a153094eecfe2b9e6de4c02876ddc4f464a",
+          "bytes": 40007,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js · pdftotext 로 복원되지 않는 글꼴 → 문서 판독 텍스트를 옮겨 적음 · 기계 대조 불가 → 사람 대조 필요",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION HUMAN VERIFICATION REQUIRED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 7,
+      "title": "나비야 놀자!",
+      "storybook": "《나비야 놀자!》",
+      "theme": "나비·벌",
+      "growth_keyword": "기다림",
+      "core_message": "기다리면 좋은 순간을 만날 수 있어요.",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (나비놀이와 벌놀이는 교사 선택 또는 병행 가능)",
+      "objective": "오래 참고 가만히 있기 X · 보고, 기다리고, 적절한 순간을 만나 다시 움직이는 기다림 O",
+      "physical_activity": "나비놀이 (팔랑팔랑 꽃가루를 날려요!) / 벌놀이 (윙윙! 물을 모아요!)",
+      "art_activity": "데칼코마니 나비",
+      "workbook": "나비와 벌 알아보기 · 다른 그림 찾기 · 선 따라 그리기 · 색칠하고 꾸미기 (12장 24P)",
+      "materials": "그림책/E-BOOK · 포스트잇 꽃가루 · 작은 컵/용기 · 데칼코마니 나비 도안 · 물감 · 나비·벌 교사용 도안 · 12장 워크북",
+      "nuri_areas": [
+        "자연탐구",
+        "신체운동·건강",
+        "사회관계",
+        "의사소통",
+        "예술경험"
+      ],
+      "observation_focus": [
+        "기다림·자기조절",
+        "사회관계",
+        "자연탐구",
+        "의사소통",
+        "예술표현"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "나비·벌로 선생님 이야기 (가족연계)",
+      "media": [
+        "E-BOOK",
+        "음원: 7주차 타이틀송 및 활동 연계 음원 (곡명 원본 미기재 = UNKNOWN)",
+        "타이틀송 뮤직비디오"
+      ],
+      "kit": "나비·벌 교사용 도안",
+      "cross_week": [
+        "W8 현수막의 나비·벌 요소 (§9 데칼코마니 나비 · §4-A 나비·벌 도안)"
+      ],
+      "conflicts": [
+        "24주 통합본(2026-09-09)은 7주를 ‘[개발대기] 상세 교사용 가이드 없음 · 제목 미정(이미지 로드맵 「서두르지 않아도 돼」)’ 으로 기록 — 7주차 가이드 파일은 2026-09-10 · 09-11 판본. 사용자 화면 제목 = 원본 가이드 《나비야 놀자!》",
+        "§13 제목이 ‘가족연계’ (다른 주차는 ‘가정연계’) — 원문 유지",
+        "음원 곡명 원본 미기재",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-07.txt",
+      "source": {
+        "filename": "SOYE_KIDS_7주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "7e9a557ccc6eb46f52668260972c0a2a080a4970697c14878995d4352791bf88",
+        "bytes": 228788,
+        "pages": 8,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "b24b9d49a1928f9e1d165c8e640c6155ec2c8c688a80e0c3078e9581a2ce121f",
+          "bytes": 227872,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js 텍스트 레이어 (기계 추출) + 양방향 토큰 대조 PASS",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION MACHINE-VERIFIED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    },
+    {
+      "week": 8,
+      "title": "모이면 숲이 되는 우리",
+      "storybook": "《모이면 숲이 되는 우리》",
+      "theme": "숲",
+      "growth_keyword": "공동체",
+      "core_message": "하나씩 모이면 우리 모두의 멋진 숲이 돼요.",
+      "cover_core_message": null,
+      "recommended_duration": "약 55~65분 (현수막 붙이기 인원과 기관 상황에 따라 조절)",
+      "objective": "같은 것을 똑같이 만들기 X · 서로 다른 조각과 경험을 하나로 연결해 ‘우리’를 완성하기 O",
+      "physical_activity": "하나씩 모이면 숲이 돼요! (대형 숲 현수막에 이동해 붙이기)",
+      "art_activity": "모이면 숲이 되는 우리 (대형 숲 현수막 공동작품)",
+      "workbook": "기억해요! · 순서를 맞춰요! · 우리가 만든 숲! · 우리 반 숲 이야기 (12장 24P)",
+      "materials": "그림책/E-BOOK · SOYE KIDS 대형 숲 현수막 1개 · 지난 활동 완성품/도안 · 양면테이프 · 12장 워크북 · 촬영 기기",
+      "nuri_areas": [
+        "자연탐구",
+        "신체운동·건강",
+        "사회관계",
+        "의사소통",
+        "예술경험"
+      ],
+      "observation_focus": [
+        "공동체·사회관계",
+        "기억·자연탐구",
+        "신체운동",
+        "의사소통",
+        "공동성취"
+      ],
+      "kidsnote_example": true,
+      "family_connection": "우리 반 숲을 이야기해요! (완성 과정 영상)",
+      "media": [
+        "E-BOOK",
+        "음원: 모이면 숲이 되는 우리 / 함께라면 할 수 있어 / 숲으로 가요 / 우리의 숲",
+        "타이틀송 뮤직비디오"
+      ],
+      "kit": "SOYE KIDS 대형 숲 현수막 1개",
+      "cross_week": [
+        "1~7주 회상 (§1 · §5 · §6)",
+        "4~7주 완성품 또는 제공 도안을 현수막에 붙임 (§9): 씨앗·새싹(W4) → 꽃(W5) → 비·바람·햇살(W6) → 나비·벌(W7)"
+      ],
+      "conflicts": [
+        "24주 통합본(2026-09-09)은 8주를 ‘[개발대기] 제목 미정’ 으로 기록 — 8주차 가이드 파일은 2026-09-10 · 09-11 판본. 사용자 화면 제목 = 원본 가이드 《모이면 숲이 되는 우리》",
+        "§4-A 음원은 ‘8주차 타이틀송 및 활동 연계 음원’, §10 은 곡명 4개 — 원문 유지",
+        "§12 예시 제목이 ‘키즈노트 성장기록 예시’ (다른 주차는 ‘키즈노트 기록 예시’) — 원문 유지",
+        "원본 §8 워크북 · §9 미술 → s9 · s8 교차 대응 (앱 라벨 s8 = 미술 · s9 = 워크북)"
+      ],
+      "file": "week-08.txt",
+      "source": {
+        "filename": "SOYE_KIDS_8주차_교사용_수업가이드.pdf",
+        "location": "OneDrive/문서/수업프로그램/수업 프로그램 상세 내용 정리/교사용 수업 가이드-20260911T004221Z-1-001/교사용 수업 가이드/",
+        "sha256": "317975742c3de601cae0e5003f3761ded3be1fb449b386100fdcccf32a0dae5f",
+        "bytes": 238031,
+        "pages": 8,
+        "alt_version": {
+          "location": "OneDrive/문서/수업프로그램/자료/스타터 강의계획안/",
+          "sha256": "84409907cf384fa87a71d81eb2b53149278ebb272aebdd17b3a6817d7f17fed9",
+          "bytes": 222586,
+          "text_identical": true
+        }
+      },
+      "extraction": "pdf.js 텍스트 레이어 (기계 추출) + 양방향 토큰 대조 PASS",
+      "source_certainty": "SOURCE EXISTS · TRANSCRIPTION MACHINE-VERIFIED",
+      "section_source_map": {
+        "s1": "§1",
+        "s2": "§2",
+        "s3": "§3",
+        "s4a": "§4-A",
+        "s4b": "§4-B",
+        "s4c": "§4-C",
+        "s5": "§5",
+        "s6": "§6",
+        "s7": "§7",
+        "s8": "§9",
+        "s9": "§8",
+        "s10": "§10",
+        "s11": "§11",
+        "s12": "§12",
+        "s13": "§13",
+        "s14": "§14",
+        "s15": "§15"
+      }
+    }
+  ]
+}

@@ -1,16 +1,20 @@
 "use client";
 
-import { Button, ButtonLink } from "@/components/ui/Button";
+import {
+  Button,
+  ButtonLink,
+  type ButtonSize,
+  type ButtonVariant,
+} from "@/components/ui/PublicButton";
 import { useOptionalLeadForm } from "@/components/forms/LeadFormContext";
 import type { PackageCode, SubmissionType } from "@/types/leadForm";
-
-type Variant = "primary" | "secondary" | "tertiary";
 
 interface LeadCtaButtonProps {
   /** 어떤 문의로 접수되는가 — lead_submissions.submission_type과 그대로 이어진다 */
   type: SubmissionType;
   children: string;
-  variant?: Variant;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   className?: string;
   /** 분석용 식별자 (기존 data-cta 규칙 유지) */
   dataCta?: string;
@@ -38,6 +42,7 @@ export function LeadCtaButton({
   type,
   children,
   variant = "primary",
+  size = "md",
   className = "",
   dataCta,
   packageCode,
@@ -48,8 +53,9 @@ export function LeadCtaButton({
   if (!leadForm) {
     return (
       <ButtonLink
-        href="#contact"
+        href="/#contact"
         variant={variant}
+      size={size}
         data-cta={dataCta}
         className={className}
         onClick={onBeforeOpen}
@@ -63,6 +69,7 @@ export function LeadCtaButton({
     <Button
       type="button"
       variant={variant}
+      size={size}
       data-cta={dataCta}
       className={className}
       onClick={() => {

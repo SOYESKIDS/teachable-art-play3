@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
 import { contactSectionCopy, ctaLabels } from "@/data/site-copy";
+import { finalNarrative } from "@/data/home-narrative";
 
 /**
  * 공개 홈페이지 마지막 결정 지점.
@@ -17,60 +18,51 @@ export function FinalCTASection() {
   return (
     <section
       id="contact"
+      aria-labelledby="contact-title"
       /*
-        ★ Footer 와 같은 남색이라 둘이 한 덩어리로 붙어 보였다.
-          이 구간이 페이지의 마지막 결정 지점이므로 여기를 가장 어둡게 두고
-          (navy-deep) Footer 를 한 단계 밝게 남긴다. 선을 하나 더 긋는 것보다
-          면의 밝기 차이가 자연스럽다.
+        ★ V4: Footer(navy-deep)와 한 덩어리로 붙지 않게, 섹션 바탕은 ivory 로 두고
+          결정 지점만 navy 패널로 띄운다. 패널 아래 ivory 띠가 Footer 와의 경계가 된다.
       */
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-navy-deep py-20 sm:py-24 lg:py-32"
+      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-12 sm:py-16 lg:py-20"
     >
       <Container>
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <p className="eyebrow text-yellow">{contactSectionCopy.eyebrow}</p>
-
-          <h2 className="mt-5 text-h2 font-bold text-white">
-            {contactSectionCopy.headline}
-          </h2>
-
-          <span
-            aria-hidden="true"
-            className="mt-7 block h-px w-16 bg-yellow/60"
-          />
-
-          <p className="measure mt-7 whitespace-pre-line text-lead text-white/70">
-            {contactSectionCopy.description}
-          </p>
-
-          <div className="mt-11 flex justify-center">
-            <LeadCtaButton
-              type="demo"
-              variant="primary"
-              dataCta="demo-final-cta"
-              className="px-8 py-4 text-base font-bold sm:text-lg"
-            >
-              {ctaLabels.demo}
-            </LeadCtaButton>
+        <div
+          data-surface="dark"
+          className="grid gap-10 rounded-3xl bg-navy px-6 py-12 sm:px-10 sm:py-14 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-14 lg:px-14 lg:py-16"
+        >
+          <div>
+            <p className="text-label font-semibold text-accent-on-dark">{finalNarrative.kicker}</p>
+            <h2 id="contact-title" className="mt-4 whitespace-pre-line text-h2 font-bold text-white">
+              {finalNarrative.headline}
+            </h2>
+            <p className="measure mt-4 text-lead text-white/75">{finalNarrative.subCopy}</p>
+            <div className="mt-8">
+              <LeadCtaButton
+                type="consult"
+                variant="inverse"
+                size="lg"
+                dataCta="consult-final-cta"
+                className="font-bold"
+              >
+                {ctaLabels.consultApply}
+              </LeadCtaButton>
+            </div>
           </div>
 
-          {/* 전화·이메일은 데모 신청 아래 secondary channel로 둔다 */}
-          <dl className="mt-12 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
-            {contactSectionCopy.channels.map((channel) => (
-              <div
-                key={channel.label}
-                className="rounded-2xl border border-line-inverse bg-white/[0.04] px-6 py-8 text-left transition-colors hover:border-white/25"
-              >
-                <dt className="eyebrow text-white/45">{channel.label}</dt>
-                <dd className="mt-3 select-all break-all text-[22px] font-bold tabular-nums text-white sm:text-[26px]">
-                  {channel.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          <p className="mt-10 whitespace-pre-line text-sm leading-relaxed text-white/45 sm:text-[15px]">
-            {contactSectionCopy.note}
-          </p>
+          {/* 전화 · 이메일은 상담 신청 옆 보조 경로 — mailto 없이 복사만 쉽게 */}
+          <div>
+            <dl className="grid gap-3">
+              {contactSectionCopy.channels.map((channel) => (
+                <div key={channel.label} className="rounded-2xl border border-line-inverse px-5 py-5">
+                  <dt className="eyebrow text-white/65">{channel.label}</dt>
+                  <dd className="mt-2 select-all break-all text-title-lg font-bold tabular-nums text-white">
+                    {channel.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-4 text-caption text-white/70">{contactSectionCopy.note}</p>
+          </div>
         </div>
       </Container>
     </section>

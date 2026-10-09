@@ -1,32 +1,12 @@
 @import "tailwindcss";
 
 /*
- * TeachAble Art Play — Design System V2
- * Warm Premium EdTech · Editorial · Calm
- *
- * ─────────────────────────────────────────────────────────────────
- * V2 에서 무엇을 바꿨고, 무엇을 일부러 두었는가
- *
- * 감사 결과 실제로 흔들리던 것은 색이 아니라 **타이포와 선**이었다.
- *   · 제목 크기가 21가지 (text-[15px] ~ text-[4.25rem], Tailwind 스케일과 혼용)
- *   · 테두리 투명도가 10가지 (navy/8 · /10 · /12 · /15 · /20 · /25 · /30 · /35 · /40 · /45)
- *   · eyebrow 자간이 10가지 (tracking-wide · [0.06em] ~ [0.28em])
- *   · 본문이 12~13px 에 몰려 있어(594곳) 마케팅 화면까지 "관리자 화면"처럼 보였다
- *
- * 그래서 V2 의 중심은 **타입 스케일과 선 체계**다.
- * 색 토큰(--color-navy · --color-yellow …)은 이미 잘 잡혀 있어 그대로 둔다 —
- * 이름을 바꾸면 500곳이 한꺼번에 흔들리고, 얻는 것은 이름뿐이다.
- *
- * ★ clamp 의 양 끝을 기존 값에 맞췄다.
- *   display 는 모바일 36px · 데스크톱 68px 로, 지금 Hero 가 쓰던
- *   2.25rem ~ 4.25rem 와 같다. 중간 구간만 매끄러워지고 양 끝은 그대로다 —
- *   그래서 이 스케일을 넣는 것만으로는 어느 화면도 갑자기 달라지지 않는다.
- *
- * ★ 앱 화면(admin · director · teacher)의 조밀한 12~13px 은 낮추지 않았다.
- *   운영 콘솔은 한 화면에 많이 보여야 하고, 그 밀도는 의도된 것이다.
- *   타입 스케일은 마케팅·상품·포털 화면에 적용한다.
- * ─────────────────────────────────────────────────────────────────
+ * release/public-site-20261010 — 병합 globals.css
+ * 전역(:root · base · eyebrow) = main(현재 운영) 값 그대로 → 로그인 · 교사 · 원장 · 본사 화면 불변.
+ * 공개 사이트 V4 값 = .public-v4 범위 안에서만 (아래 scope 블록).
+ * 생성: design-final-polish fe6e108 globals.css + origin/main faa8f9a globals.css
  */
+
 :root {
   --background: #fbf8f1;
   --foreground: #152e4f;
@@ -100,6 +80,70 @@
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   --header-height: 72px;
+
+  /* ── V4 에서 새로 생긴 변수 (업무 화면은 쓰지 않는다) ── */
+  --color-brand-navy: #142b4a;
+  --color-brand-green: #2f8f6b;
+  --color-brand-coral: #f1644b;
+  --color-brand-ivory: #f8f5ee;
+  --color-brand-mint: #edf7f2;
+  --color-brand-sky: #edf5fa;
+  --color-ink: #263238;
+  --color-hairline: #e7e9ec;
+  --color-primary: #142b4a;
+  --color-primary-hover: #1d3a60;
+  --color-primary-active: #0e2039;
+  --color-primary-soft: #e9eef5;
+  --color-on-primary: #ffffff;
+  --color-secondary: #2f8f6b;
+  --color-secondary-strong: #257a5a;
+  --color-secondary-soft: #edf7f2;
+  --color-accent: #f1644b;
+  --color-accent-strong: #c2412b;
+  --color-accent-soft: #fdefea;
+  --color-accent-on-dark: #ffab98;
+  --color-bg: #f8f5ee;
+  --color-muted: #f3f4f6;
+  --color-ink-muted: #5b6770;
+  --color-ink-subtle: #77818a;
+  --color-border: #e7e9ec;
+  --color-border-strong: #d3d8de;
+  --color-control-border: #8a949e;
+  --color-success: #2f8f6b;
+  --color-success-text: #257a5a;
+  --color-success-soft: #edf7f2;
+  --color-success-border: #b8dfcb;
+  --color-warning: #b26b00;
+  --color-warning-text: #8a5300;
+  --color-warning-soft: #fff6e5;
+  --color-warning-border: #f0d4a2;
+  --color-danger: #b42318;
+  --color-danger-hover: #8f1c13;
+  --color-danger-soft: #fdecea;
+  --color-danger-border: #f4c4bf;
+  --color-info: #245c99;
+  --color-info-text: #1d5487;
+  --color-info-soft: #edf5fa;
+  --color-info-border: #c3d9ec;
+  --color-accent-text: #c2412b;
+  --motion-slow: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /* main 값 (theme 토큰 분리분) */
+  --rel--text-display: clamp(2.25rem, 1.06rem + 5.29vw, 4.25rem);
+  --rel--text-display--line-height: 1.12;
+  --rel--text-h1: clamp(2rem, 1.4rem + 2.67vw, 3.25rem);
+  --rel--text-h1--line-height: 1.18;
+  --rel--text-h2: clamp(2rem, 1.29rem + 3.17vw, 3.5rem);
+  --rel--text-h2--line-height: 1.2;
+  --rel--text-h3: clamp(1.25rem, 1.14rem + 0.5vw, 1.625rem);
+  --rel--text-h3--line-height: 1.3;
+  --rel--text-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.25rem);
+  --rel--text-lead--line-height: 1.65;
+  --rel--text-body--line-height: 1.75;
+  --rel--text-meta--line-height: 1.6;
 }
 
 @media (min-width: 1024px) {
@@ -108,34 +152,220 @@
   }
 }
 
+/*
+ * ── 공개 사이트 V4 범위 ──
+ * PublicShell(홈 · /programs · /privacy · /terms) 과 not-found 가 .public-v4 로 감싼다.
+ * 이 안에서만 Warm Atelier V4 값이 적용되고, 로그인 · 교사 · 원장 · 본사 화면은 main 값 그대로다.
+ */
+.public-v4 {
+  --background: #f8f5ee;
+  --foreground: #142b4a;
+
+  /* ── Brand core (DEC-109 Target) ────────────────────────────── */
+  --color-brand-navy: #142b4a;
+  --color-brand-green: #2f8f6b;
+  --color-brand-coral: #f1644b;
+  --color-brand-ivory: #f8f5ee;
+  --color-brand-mint: #edf7f2;
+  --color-brand-sky: #edf5fa;
+  --color-ink: #263238;
+  --color-hairline: #e7e9ec;
+
+  /* ── Legacy names → DEC-109 values (이름 유지 · 값 통일) ──────── */
+  --color-navy: #142b4a;
+  --color-navy-deep: #0e2039;
+  --color-ivory: #f8f5ee;
+  /* 링크 · 정보 · focus. 흰 바탕 6.4:1 */
+  --color-trust-blue: #245c99;
+
+  /* ── Semantic: primary / secondary / accent ─────────────────── */
+  --color-primary: #142b4a;
+  --color-primary-hover: #1d3a60;
+  --color-primary-active: #0e2039;
+  --color-primary-soft: #e9eef5;
+  --color-on-primary: #ffffff;
+
+  --color-secondary: #2f8f6b;
+  --color-secondary-strong: #257a5a;
+  --color-secondary-soft: #edf7f2;
+
+  --color-accent: #f1644b;
+  --color-accent-strong: #c2412b;
+  --color-accent-soft: #fdefea;
+  --color-accent-on-dark: #ffab98;
+
+  /* ── Neutral / surfaces ─────────────────────────────────────── */
+  --color-bg: #f8f5ee;
+  --color-surface: #ffffff;
+  /* 섹션 리듬용 두 번째 바탕 — ivory 와 눈으로 구분된다 */
+  --color-surface-soft: #f2eee5;
+  --color-surface-warm: #fbf9f4;
+  --color-muted: #f3f4f6;
+  --color-ink-muted: #5b6770;
+  --color-ink-subtle: #77818a; /* 4.0:1 — 18px 이상 · 비활성 표시에만 */
+  --color-border: #e7e9ec;
+  --color-border-strong: #d3d8de;
+  --color-control-border: #8a949e;
+
+  /*
+   * navy 를 옅게 쓴 선. 따뜻한 바탕 위에서 회색보다 덜 차갑다.
+   *   soft   : 같은 면 안의 구분선 · default : 카드 바깥 · strong : 눌리는 것의 외곽선
+   */
+  --color-line-soft: rgba(20, 43, 74, 0.07);
+  --color-line: rgba(20, 43, 74, 0.12);
+  --color-line-strong: rgba(20, 43, 74, 0.22);
+  --color-line-inverse: rgba(255, 255, 255, 0.16);
+
+  /* ── Status ─────────────────────────────────────────────────── */
+  --color-success: #2f8f6b;
+  --color-success-text: #257a5a;
+  --color-success-soft: #edf7f2;
+  --color-success-border: #b8dfcb;
+
+  --color-warning: #b26b00;
+  --color-warning-text: #8a5300;
+  --color-warning-soft: #fff6e5;
+  --color-warning-border: #f0d4a2;
+
+  --color-danger: #b42318;
+  --color-danger-hover: #8f1c13;
+  --color-danger-soft: #fdecea;
+  --color-danger-border: #f4c4bf;
+
+  --color-info: #245c99;
+  --color-info-text: #1d5487;
+  --color-info-soft: #edf5fa;
+  --color-info-border: #c3d9ec;
+
+  --color-accent-text: #c2412b;
+
+  /* ── Shadow — 떠 있는 것에만 ────────────────────────────────── */
+  --shadow-soft: 0 1px 2px rgba(20, 43, 74, 0.05);
+  --shadow-card: 0 1px 2px rgba(20, 43, 74, 0.04), 0 8px 24px -8px rgba(20, 43, 74, 0.1);
+  --shadow-elevated: 0 2px 6px rgba(20, 43, 74, 0.06), 0 24px 48px -12px rgba(20, 43, 74, 0.18);
+  --shadow-cta: 0 1px 2px rgba(20, 43, 74, 0.08), 0 8px 20px -6px rgba(20, 43, 74, 0.35);
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  /* V4: control 10 · 작은 면 12 · card 16 · 큰 면 20 · pill = chip · 마케팅 CTA */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 32px;
+  --radius-card: 16px;
+
+  /* ── Container ──────────────────────────────────────────────── */
+  --container-marketing: 1280px; /* 좌우 여백을 빼면 본문 1200px */
+  --container-app: 1200px;
+  --container-reading: 68ch;
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --header-height: 68px;
+
+  /* type scale · radius 등 main 과 값이 다른 theme 토큰 */
+  --rel--text-display: clamp(2.125rem, 1.6rem + 2.3vw, 3.5rem);
+  --rel--text-display--line-height: 1.16;
+  --rel--text-h1: clamp(1.875rem, 1.5rem + 1.6vw, 2.75rem);
+  --rel--text-h1--line-height: 1.22;
+  --rel--text-h2: clamp(1.625rem, 1.4rem + 1vw, 2.25rem);
+  --rel--text-h2--line-height: 1.3;
+  --rel--text-h3: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --rel--text-h3--line-height: 1.38;
+  --rel--text-lead: clamp(1.0625rem, 1.03rem + 0.14vw, 1.1875rem);
+  --rel--text-lead--line-height: 1.72;
+  --rel--text-body--line-height: 1.72;
+  --rel--text-meta--line-height: 1.55;
+
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  letter-spacing: -0.011em;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+@media (min-width: 1024px) {
+  .public-v4 {
+    --header-height: 76px;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
+  --color-brand-navy: var(--color-brand-navy);
+  --color-brand-green: var(--color-brand-green);
+  --color-brand-coral: var(--color-brand-coral);
+  --color-brand-ivory: var(--color-brand-ivory);
+  --color-brand-mint: var(--color-brand-mint);
+  --color-brand-sky: var(--color-brand-sky);
+  --color-ink: var(--color-ink);
+  --color-hairline: var(--color-hairline);
+
   --color-navy: var(--color-navy);
   --color-navy-deep: var(--color-navy-deep);
-  --color-yellow: var(--color-yellow);
-  --color-yellow-soft: var(--color-yellow-soft);
-  --color-trust-blue: var(--color-trust-blue);
   --color-ivory: var(--color-ivory);
-  --color-light-blue: var(--color-light-blue);
-  --color-soft-coral: var(--color-soft-coral);
-  --color-soft-green: var(--color-soft-green);
-  --color-pale-yellow: var(--color-pale-yellow);
+  --color-trust-blue: var(--color-trust-blue);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-on-primary: var(--color-on-primary);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-strong: var(--color-secondary-strong);
+  --color-secondary-soft: var(--color-secondary-soft);
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-accent-on-dark: var(--color-accent-on-dark);
+
+  --color-bg: var(--color-bg);
   --color-surface: var(--color-surface);
   --color-surface-soft: var(--color-surface-soft);
   --color-surface-warm: var(--color-surface-warm);
+  --color-muted: var(--color-muted);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-subtle: var(--color-ink-subtle);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-control-border: var(--color-control-border);
 
-  /* border-line / border-line-soft / border-line-strong 로 쓴다 */
   --color-line: var(--color-line);
   --color-line-soft: var(--color-line-soft);
   --color-line-strong: var(--color-line-strong);
   --color-line-inverse: var(--color-line-inverse);
 
-  --font-sans: var(--font-pretendard);
-  --radius-card: var(--radius-card);
+  --color-success: var(--color-success);
+  --color-success-text: var(--color-success-text);
+  --color-success-soft: var(--color-success-soft);
+  --color-success-border: var(--color-success-border);
+  --color-warning: var(--color-warning);
+  --color-warning-text: var(--color-warning-text);
+  --color-warning-soft: var(--color-warning-soft);
+  --color-warning-border: var(--color-warning-border);
+  --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-danger-border: var(--color-danger-border);
+  --color-info: var(--color-info);
+  --color-info-text: var(--color-info-text);
+  --color-info-soft: var(--color-info-soft);
+  --color-info-border: var(--color-info-border);
+  --color-accent-text: var(--color-accent-text);
 
-  /* Tailwind 기본 radius scale을 재정의 — rounded-md/lg/xl/2xl/3xl/4xl 에 즉시 반영된다 */
+  --font-sans: var(--font-pretendard);
+
+  --radius-card: var(--radius-card);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
@@ -144,41 +374,132 @@
   --radius-3xl: var(--radius-3xl);
   --radius-4xl: var(--radius-4xl);
 
+  /* shadow-soft · shadow-card · shadow-elevated · shadow-cta */
+  --shadow-soft: var(--shadow-soft);
+  --shadow-card: var(--shadow-card);
+  --shadow-elevated: var(--shadow-elevated);
+  --shadow-cta: var(--shadow-cta);
+
+  --ease-standard: var(--ease-standard);
+  --ease-out-soft: var(--ease-out);
+
   /*
-   * ── Type scale ───────────────────────────────────────────────
-   * clamp 의 양 끝이 지금 쓰이는 값과 같다. 중간만 매끄러워진다.
-   *   display 36 → 68px   (Hero)
-   *   h1      32 → 52px
-   *   h2      32 → 56px   (섹션 제목 — 기존 2rem ~ 3.5rem 과 동일)
-   *   h3      20 → 26px
-   *   lead    17 → 20px   (제목 아래 안내문)
-   * 본문 이하는 흔들릴 이유가 없어 고정값이다.
+   * ── Marketing type scale ─────────────────────────────────────
+   *   display 34 → 56px   Hero 한 곳
+   *   h1      30 → 44px   페이지 제목 (상품 상세 · 법적 고지)
+   *   h2      26 → 36px   섹션 제목
+   *   h3      20 → 24px   카드 · 블록 제목
+   *   lead    17 → 19px   제목 아래 안내문
+   * 한글은 자간을 좁히고(-0.02 ~ -0.035em) 행간을 영문보다 넉넉히 둔다.
    */
-  --text-display: clamp(2.25rem, 1.06rem + 5.29vw, 4.25rem);
-  --text-display--line-height: 1.12;
+  --text-display: var(--rel--text-display);
+  --text-display--line-height: var(--rel--text-display--line-height);
   --text-display--letter-spacing: -0.035em;
 
-  --text-h1: clamp(2rem, 1.4rem + 2.67vw, 3.25rem);
-  --text-h1--line-height: 1.18;
+  --text-h1: var(--rel--text-h1);
+  --text-h1--line-height: var(--rel--text-h1--line-height);
   --text-h1--letter-spacing: -0.03em;
 
-  --text-h2: clamp(2rem, 1.29rem + 3.17vw, 3.5rem);
-  --text-h2--line-height: 1.2;
+  --text-h2: var(--rel--text-h2);
+  --text-h2--line-height: var(--rel--text-h2--line-height);
   --text-h2--letter-spacing: -0.03em;
 
-  --text-h3: clamp(1.25rem, 1.14rem + 0.5vw, 1.625rem);
-  --text-h3--line-height: 1.3;
+  --text-h3: var(--rel--text-h3);
+  --text-h3--line-height: var(--rel--text-h3--line-height);
   --text-h3--letter-spacing: -0.02em;
 
-  --text-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.25rem);
-  --text-lead--line-height: 1.65;
+  --text-lead: var(--rel--text-lead);
+  --text-lead--line-height: var(--rel--text-lead--line-height);
 
+  /*
+   * ── App type scale (고정 · 운영 화면 · 폼 · 표) ───────────────
+   *   headline-lg 28 · headline 24 (앱 페이지 h1) · title-lg 22 ·
+   *   title 20 · title-sm 18 (섹션 h2) · body-lg 17 · body 16 ·
+   *   body-sm 15 (앱 본문 · input) · label 14 (라벨 · 버튼 · 표) ·
+   *   caption 13 (보조 설명) · micro 12 (배지 · 표 머리 — 최소 크기)
+   */
+  --text-headline-lg: 1.75rem;
+  --text-headline-lg--line-height: 1.3;
+  --text-headline-lg--letter-spacing: -0.025em;
+  --text-headline: 1.5rem;
+  --text-headline--line-height: 1.34;
+  --text-headline--letter-spacing: -0.025em;
+  --text-title-lg: 1.375rem;
+  --text-title-lg--line-height: 1.4;
+  --text-title-lg--letter-spacing: -0.02em;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.42;
+  --text-title--letter-spacing: -0.02em;
+  --text-title-sm: 1.125rem;
+  --text-title-sm--line-height: 1.48;
+  --text-title-sm--letter-spacing: -0.015em;
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.72;
   --text-body: 1rem;
-  --text-body--line-height: 1.75;
-
+  --text-body--line-height: var(--rel--text-body--line-height);
+  --text-body-sm: 0.9375rem;
+  --text-body-sm--line-height: 1.66;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.55;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.5;
   --text-meta: 0.8125rem;
-  --text-meta--line-height: 1.6;
+  --text-meta--line-height: var(--rel--text-meta--line-height);
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --animate-fade-in: fade-in var(--motion-base) var(--ease-out) both;
+  --animate-rise-in: rise-in var(--motion-slow) var(--ease-out) both;
+  --animate-sheet-in: sheet-in var(--motion-slow) var(--ease-out) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ── main(업무 화면)에만 있는 토큰 — 기존 화면 보존 ── */
+  --color-yellow: var(--color-yellow);
+  --color-yellow-soft: var(--color-yellow-soft);
+  --color-light-blue: var(--color-light-blue);
+  --color-soft-coral: var(--color-soft-coral);
+  --color-soft-green: var(--color-soft-green);
+  --color-pale-yellow: var(--color-pale-yellow);
 }
+
 
 /*
  * ── Eyebrow ───────────────────────────────────────────────────
@@ -270,5 +591,78 @@ h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@utility eyebrow-ko {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility skeleton {
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@utility skip-link {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 200;
+  transform: translateY(-160%);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-elevated);
+  transition: transform var(--motion-base) var(--ease-standard);
+
+  &:focus,
+  &:focus-visible {
+    transform: none;
+  }
+}
+
+/* V4 base — 공개 범위 안에서만 */
+.public-v4 :is(h1, h2, h3, h4) {
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.public-v4 p {
+  text-wrap: pretty;
+}
+
+.public-v4 ::selection {
+  background: rgba(241, 100, 75, 0.22);
+  color: var(--color-ink);
+}
+
+.public-v4 :is(.bg-navy, .bg-navy-deep, .bg-primary, [data-surface="dark"]) :focus-visible {
+  outline-color: #ffffff;
+}
+
+/* eyebrow 는 main 정의(11px)를 전역에 두고, 공개 범위에서만 V4(12px · uppercase) */
+@layer utilities {
+  .public-v4 .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 }

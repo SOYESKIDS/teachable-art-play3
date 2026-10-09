@@ -1,198 +1,85 @@
-import type { ReactNode } from "react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DemoBadge } from "@/components/ui/DemoBadge";
-import {
-  dashboardCallouts,
-  dashboardCopy,
-  dashboardKpis,
-  dashboardRecentReports,
-  dashboardRecentReportsLabel,
-  dashboardSidebarItems,
-  dashboardTeacherValue,
-  dashboardWeeklyUsage,
-  dashboardWeeklyUsageLabel,
-} from "@/data/site-copy";
+import { STATUS_TONE_CLASSES, type StatusTone } from "@/components/home/status-tone";
+import { cx } from "@/components/ui/cx";
+import { AvailabilityTag, HomeHeading, HomeSection } from "./HomeSection";
+import { dashboardNarrative as copy } from "@/data/home-narrative";
 
-const kpiIconProps = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.6,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-  className: "h-5 w-5",
-  "aria-hidden": true,
-};
+const STATUS_TONE: Record<string, StatusTone> = { 완료: "done", "진행 중": "active", 예정: "scheduled" };
 
-const kpiIcons: Record<string, ReactNode> = {
-  "반별 수업 진행": (
-    <svg {...kpiIconProps}>
-      <rect x="3.5" y="4.5" width="17" height="16" rx="2" />
-      <path d="M3.5 9.5h17M8 3v3M16 3v3" />
-    </svg>
-  ),
-  "작품·기록 업로드": (
-    <svg {...kpiIconProps}>
-      <rect x="3.5" y="4" width="17" height="16" rx="2" />
-      <circle cx="9" cy="10" r="1.6" />
-      <path d="M20 15l-4.7-4.7a1.4 1.4 0 0 0-2 0L4.5 19" />
-    </svg>
-  ),
-  "리포트 발송": (
-    <svg {...kpiIconProps}>
-      <path d="M4 5.5 20 12 4 18.5 6.5 12 4 5.5Z" />
-    </svg>
-  ),
-  "검토 대기": (
-    <svg {...kpiIconProps}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7.5V12l3 2" />
-    </svg>
-  ),
-};
-
+/**
+ * 09 DIRECTOR DASHBOARD — 예시 화면.
+ *
+ * ★ 실제 원장 대시보드(DirectorDashboard.tsx)에 있는 항목만 그린다:
+ *   오늘 수업 요약 · 반별 오늘 수업 · 확인이 필요한 기록(출결 · 관찰).
+ *   예전 예시의 "콘텐츠 이용률 %" · 주간 막대 그래프 · 업로드 현황은 실제 화면에 없어 걷었다.
+ * ★ 값은 예시다 — DEMO 배지와 설명으로 분명히 한다.
+ */
 export function DirectorDashboardSection() {
   return (
-    <section
-      id="dashboard"
-      className="scroll-mt-[calc(var(--header-height)_+_16px)] bg-ivory py-20 sm:py-24 lg:py-32"
-    >
-      <Container>
-        <SectionHeader headline={dashboardCopy.headline} subCopy={dashboardCopy.subCopy} />
+    <HomeSection id="dashboard" tone="sand" labelledBy="dashboard-title">
+      <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
+        <div>
+          <HomeHeading id="dashboard-title" eyebrow={copy.eyebrow} headline={copy.headline} subCopy={copy.subCopy} />
+          <p className="mt-6 flex flex-wrap items-center gap-2 text-caption text-ink-muted">
+            <AvailabilityTag value={copy.availability} />
+            {copy.note}
+          </p>
+        </div>
 
-        {/* Desktop Browser App Mockup */}
-        <div className="mt-14 overflow-hidden rounded-3xl border border-navy/10 bg-white shadow-[var(--shadow-elevated)]">
-          <div className="flex flex-wrap items-center gap-3 border-b border-navy/10 bg-navy px-5 py-4 text-white sm:px-7">
-            <div className="flex items-baseline gap-2">
-              <span className="font-serif text-base italic text-white/70">
-                TeachAble Art Play
-              </span>
-              <span className="text-base font-bold sm:text-lg">원장 대시보드</span>
-              <span className="text-xs text-white/40">2026 · DEMO</span>
-            </div>
-            <DemoBadge
-              label="DEMO SCREEN · 예시 데이터"
-              className="ml-auto bg-white/10 text-white"
-            />
+        <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-[var(--shadow-elevated)]">
+          <div className="flex items-center justify-between gap-3 border-b border-line-soft bg-surface-warm px-5 py-3.5">
+            <p className="text-label font-bold text-navy">오늘의 우리 원</p>
+            <DemoBadge />
           </div>
 
-          <div className="flex flex-col lg:flex-row">
-            {/* Sidebar (Demo — 실제 동작하지 않음) */}
-            <aside className="hidden shrink-0 flex-col gap-1 border-r border-navy/10 bg-ivory p-4 lg:flex lg:w-56">
-              {dashboardSidebarItems.map((item, index) => (
-                <span
-                  key={item}
-                  className={`rounded-lg px-3.5 py-2.5 text-sm font-medium ${
-                    index === 0
-                      ? "bg-navy text-white"
-                      : "text-navy/55"
-                  }`}
-                >
-                  {item}
-                </span>
+          <div className="flex flex-col gap-6 p-5 sm:p-6">
+            <dl className="grid grid-cols-3 gap-2.5">
+              {copy.sample.today.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-line px-4 py-3">
+                  <dt className="text-caption font-semibold text-ink-muted">{item.label}</dt>
+                  <dd className="mt-1 text-headline font-bold text-navy tabular-nums">{item.value}</dd>
+                </div>
               ))}
-            </aside>
+            </dl>
 
-            {/* Main */}
-            <div className="flex-1 p-6 sm:p-8">
-              {/* KPI */}
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                {dashboardKpis.map((kpi) => (
-                  <div
-                    key={kpi.label}
-                    className="rounded-xl border border-navy/10 bg-ivory p-5"
-                  >
-                    <span className="text-navy/35">{kpiIcons[kpi.label]}</span>
-                    <p className="mt-3 text-2xl font-extrabold text-navy sm:text-3xl">
-                      {kpi.value}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-navy/50 sm:text-sm">
-                      {kpi.label}
-                    </p>
-                  </div>
+            <div>
+              <p className="text-label font-bold text-navy">반별 오늘 수업</p>
+              <ul className="mt-2.5 divide-y divide-line-soft rounded-2xl border border-line">
+                {copy.sample.classes.map((row) => (
+                  <li key={row.name} className="flex items-center justify-between gap-3 px-4 py-3">
+                    <div className="min-w-0">
+                      <p className="text-label font-bold text-navy">{row.name}</p>
+                      <p className="truncate text-caption text-ink-muted">
+                        {row.week} · {row.title}
+                      </p>
+                    </div>
+                    <span
+                      className={cx(
+                        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-micro font-semibold",
+                        STATUS_TONE_CLASSES[STATUS_TONE[row.status] ?? "neutral"],
+                      )}
+                    >
+                      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
+                      {row.status}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
+            </div>
 
-              {/* 이용현황 + 최근 리포트 */}
-              <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border border-navy/10 bg-ivory p-5 sm:p-6">
-                  <p className="text-sm font-bold text-navy/70">
-                    {dashboardWeeklyUsageLabel}
-                  </p>
-                  <div className="mt-5 flex h-28 items-end gap-2">
-                    {dashboardWeeklyUsage.map((value, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-1 flex-col items-center gap-1.5"
-                      >
-                        <div
-                          style={{ height: `${value}%` }}
-                          className="w-full rounded-t-md bg-trust-blue/70"
-                        />
-                        <span className="text-[10px] font-medium text-navy/35">
-                          {`W${index + 1}`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-navy/10 bg-ivory p-5 sm:p-6">
-                  <p className="text-sm font-bold text-navy/70">
-                    {dashboardRecentReportsLabel}
-                  </p>
-                  <ul className="mt-4 flex flex-col gap-2.5">
-                    {dashboardRecentReports.map((report) => (
-                      <li
-                        key={report.label}
-                        className="flex items-center justify-between rounded-lg bg-white px-4 py-3"
-                      >
-                        <span className="text-sm font-semibold text-navy/80">
-                          {report.label}
-                        </span>
-                        <span
-                          className={`flex items-center gap-1.5 text-xs font-bold ${
-                            report.status === "완료" ? "text-navy/50" : "text-yellow"
-                          }`}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              report.status === "완료" ? "bg-navy/30" : "bg-yellow"
-                            }`}
-                          />
-                          {report.status}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+            <div className="rounded-2xl border border-warning-border bg-warning-soft px-4 py-3.5">
+              <p className="text-label font-bold text-warning-text">확인이 필요한 기록</p>
+              <ul className="mt-1.5 flex flex-col gap-1">
+                {copy.sample.followUps.map((item) => (
+                  <li key={item.label} className="text-caption text-ink">
+                    <span className="font-semibold">{item.label}</span> · {item.detail}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-
-        {/* Callout — Dashboard보다 작게, 최대 3개 */}
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {dashboardCallouts.map((callout) => (
-            <div
-              key={callout.order}
-              className="flex items-start gap-3 rounded-xl border border-navy/10 bg-white px-4 py-3.5"
-            >
-              <span className="text-sm font-bold text-navy/25">{`0${callout.order}`}</span>
-              <p className="text-sm text-navy/65">{callout.text}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Teacher Value 보조 */}
-        <p className="mt-8 text-center text-sm text-navy/50">
-          원장 · {dashboardTeacherValue.director}{" "}
-          <span className="mx-2 text-navy/20">|</span> 교사 ·{" "}
-          {dashboardTeacherValue.teacher}
-        </p>
-      </Container>
-    </section>
+      </div>
+    </HomeSection>
   );
 }
