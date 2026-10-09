@@ -8,13 +8,11 @@ import { sessionNarrative as copy } from "@/data/home-narrative";
  *
  *   이야기 열기 → 몸으로 느끼기 → 나답게 표현하기 → 친구와 나누기 → 교사 관찰 기록
  *
- * ★ 시간은 승인된 표준 골격(DEC-023 · 50분 6단계 · 워크북 별도 10분)을 경험 단위로 묶은 값이다.
- *   막대 길이는 실제 분(分) 비율 — 장식 차트가 아니다.
- * ★ 다섯 번째 단계(교사 관찰 기록)는 시간 막대에 넣지 않는다 — 수업 중 · 후에 걸쳐 짧게 남기는 일이다.
+ * ★ 수업 시간 표준(2026-10-09): CORE 50분(워크북 포함) + 선택 연계활동 10~15분.
+ *   단계별 분 배분은 회차마다 달라 막대 · 분 숫자를 그리지 않는다 (예전 DEC-023 배분은 워크북 제외 값이었다).
+ * ★ 다섯 번째 단계(교사 관찰 기록)는 수업 중 · 후에 걸쳐 짧게 남기는 일이다.
  */
 export function SessionSection() {
-  const timed = copy.steps.filter((step) => step.minutes > 0);
-
   return (
     <HomeSection id="program" tone="white" labelledBy="program-title">
       <div className="grid items-end gap-10 lg:grid-cols-2 lg:gap-16">
@@ -34,19 +32,9 @@ export function SessionSection() {
       </div>
 
       <div className="mt-14 rounded-3xl border border-line bg-ivory p-5 sm:p-8">
-        <div aria-hidden="true" className="hidden h-2.5 overflow-hidden rounded-full sm:flex">
-          {timed.map((step, index) => (
-            <span
-              key={step.title}
-              style={{ flexGrow: step.minutes }}
-              className={cx(index === 1 ? "bg-navy" : index === 2 ? "bg-accent" : index === 0 ? "bg-navy/30" : "bg-navy/15")}
-            />
-          ))}
-        </div>
-
-        <ol className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {copy.steps.map((step, index) => {
-            const isRecord = step.minutes === 0;
+            const isRecord = !step.inClass;
             return (
               <li
                 key={step.title}

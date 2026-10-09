@@ -303,7 +303,6 @@ function WeekDetail({
     { label: "워크북", value: detail.workbook },
     { label: "준비물", value: detail.materials },
     { label: "가정연계", value: detail.familyConnection },
-    { label: "가이드 권장 시간", value: detail.duration },
   ];
 
   return (

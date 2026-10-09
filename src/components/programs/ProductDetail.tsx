@@ -123,11 +123,11 @@ export function ProductDetail({
           <Fact label="기준" value={pkg.priceUnitNote} />
         </dl>
 
-        {/* DEC-023 · 50분 6단계 골격 */}
+        {/* 한 회차 흐름 — 순서만 (분 배분은 회차마다 다름 · 시간 표준은 pkg.frequency) */}
         {product.featuredLesson ? (
           <div className="mt-8">
             <h3 className="text-title-sm font-bold text-navy">
-              {`수업 한 회차 · ${lessonMinutes(product.featuredLesson.blocks)}분 6단계`}
+              수업 한 회차의 흐름
             </h3>
             <ol className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
               {product.featuredLesson.blocks.map((block, index) => (
@@ -139,20 +139,9 @@ export function ProductDetail({
                     {String(index + 1).padStart(2, "0")}
                   </p>
                   <p className="mt-1 break-keep text-label font-bold text-navy">{block.label}</p>
-                  <p className="mt-0.5 text-body-sm font-bold tabular-nums text-navy/70">
-                    {block.minutes}
-                    <span className="ml-0.5 text-micro font-semibold text-ink-muted">분</span>
-                  </p>
                 </li>
               ))}
             </ol>
-            {product.featuredLesson.workbookMinutes ? (
-              <p className="mt-2 rounded-xl border border-dashed border-line-strong bg-white px-4 py-3 text-caption text-navy/75">
-                <span className="font-bold text-navy">워크북</span>
-                <span className="mx-1.5 text-navy/20">|</span>
-                {`50분 밖 별도 ${product.featuredLesson.workbookMinutes}분`}
-              </p>
-            ) : null}
             {product.featuredLesson.notes?.length ? (
               <ul className="mt-3 flex flex-col gap-1">
                 {product.featuredLesson.notes.map((note) => (
@@ -332,9 +321,6 @@ function glanceRows(pkg: ProgramProduct["pkg"]): { label: string; value: string 
   ];
 }
 
-function lessonMinutes(blocks: { minutes: number }[]): number {
-  return blocks.reduce((sum, block) => sum + block.minutes, 0);
-}
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (

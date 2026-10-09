@@ -126,7 +126,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
           신청이 접수되었습니다.
         </h2>
         <p className="text-sm leading-relaxed text-ink-muted sm:text-base">
-          담당자가 확인 후 연락드리겠습니다.
+          접수 후 1주일 이내에 연락드립니다.
         </p>
         <button
           type="button"

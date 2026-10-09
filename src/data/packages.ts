@@ -33,8 +33,8 @@ import type {
  *  SC-5 "8주 요약"(STARTER)의 근거 서식이 없다 — 월간 요약(P1) 미구현과 같이 "준비 중".
  *  SC-6 PREMIUM 원 브랜딩 범위 미정 (CO-8) → "범위 상담".
  *  SC-7 Pilot 가격 미정 (CO-3) — 가격을 적지 않는다.
- *  해소한 drift: STANDARD 리포트에 주간 포함 (DEC-057) · 운영 시간 50분 6단계 +
- *  워크북 별도 10분 (DEC-023) · PREMIUM 은 24주 (연간 아님) · 음원 곡 수(24/48/72) 삭제.
+ *  해소한 drift: STANDARD 리포트에 주간 포함 (DEC-057) · PREMIUM 은 24주 (연간 아님) · 음원 곡 수(24/48/72) 삭제.
+ *  수업 시간: 운영자 확정(2026-10-09) "CORE 50분(워크북 포함) + 선택 연계활동 10~15분" — DEC-023 "워크북 별도 10분" 대체.
  */
 
 /** features → 홈페이지 카드용 한 줄 문자열 */
@@ -44,8 +44,9 @@ function itemsOf(features: PackageFeature[]): string[] {
   );
 }
 
-/** DEC-023: 50분 6단계 골격 + 워크북은 50분 밖 별도 10분 */
-const CLASS_FREQUENCY = "주 1회 · 50분 (워크북 별도 10분)";
+/** 수업 시간 표준 — 운영자 확정 2026-10-09 (교사용 가이드 CORE 50 MIN · WORKBOOK 포함 · OPTION 10~15분) */
+export const CLASS_TIME_STANDARD = "CORE 50분(워크북 포함) + 선택 연계활동 10~15분";
+const CLASS_FREQUENCY = `주 1회 · ${CLASS_TIME_STANDARD}`;
 
 /** SC-2: 근거 원본이 없어 연령을 단정하지 않는다. */
 const AGE_UNCONFIRMED = "상담 시 안내";
@@ -213,9 +214,9 @@ export const comparisonRows: ComparisonRow[] = [
   {
     label: "수업",
     values: [
-      "주 1회 50분 + 워크북 10분",
-      "주 1회 50분 + 워크북 10분",
-      "주 1회 50분 + 워크북 10분",
+      CLASS_FREQUENCY,
+      CLASS_FREQUENCY,
+      CLASS_FREQUENCY,
     ],
   },
   {
