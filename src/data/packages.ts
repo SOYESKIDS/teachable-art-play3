@@ -45,7 +45,12 @@ function itemsOf(features: PackageFeature[]): string[] {
 }
 
 /** 수업 시간 표준 — 운영자 확정 2026-10-09 (교사용 가이드 CORE 50 MIN · WORKBOOK 포함 · OPTION 10~15분) */
-export const CLASS_TIME_STANDARD = "CORE 50분(워크북 포함) + 선택 연계활동 10~15분";
+export const CLASS_CORE_MINUTES = 50;
+/** 짧은 표기 — 단계 표 · 칩처럼 한 칸에 쓰는 곳 */
+export const CLASS_CORE_LABEL = `CORE ${CLASS_CORE_MINUTES}분`;
+/** 워크북 포함까지 밝힌 표기 */
+export const CLASS_CORE_WITH_WORKBOOK = `${CLASS_CORE_LABEL}(워크북 포함)`;
+export const CLASS_TIME_STANDARD = `${CLASS_CORE_WITH_WORKBOOK} + 선택 연계활동 10~15분`;
 const CLASS_FREQUENCY = `주 1회 · ${CLASS_TIME_STANDARD}`;
 
 /** SC-2: 근거 원본이 없어 연령을 단정하지 않는다. */
@@ -141,7 +146,7 @@ export const pricingPackages: PricingPackage[] = [
     isBest: false,
     operation: "16주 수업 · 교사 관찰 기록 · 원장 대시보드",
     outcome: "한 학기 관찰 기록과 원장 대시보드로 확인하는 반별 운영 현황",
-    limits: ["주차별 콘텐츠 구성은 상담 시 안내 (일부 준비 중)", "월간 요약 · 학기 포트폴리오 준비 중", "AI 기록 보조 · 학부모 공유 준비 중"],
+    limits: ["주차별 콘텐츠 구성은 상담 시 안내 (일부 준비 중)", "월간 요약 · 학기 성장 포트폴리오 준비 중", "AI 기록 보조 · 학부모 공유 준비 중"],
     durationWeeks: 16,
     frequency: CLASS_FREQUENCY,
     recommendedAge: AGE_UNCONFIRMED,
@@ -230,19 +235,19 @@ export const comparisonRows: ComparisonRow[] = [
   {
     label: "성장리포트",
     values: [
-      // 카드(features)와 같은 상태로 적는다 — 주간 리포트도 세 상품 모두 출시 준비 중
-      "주간 (출시 준비 중)",
-      "주간 (출시 준비 중) · 월간 요약 (준비 중) · 학기 포트폴리오 (준비 중)",
-      "주간 (출시 준비 중) · 월간 요약 (준비 중) · 학기 포트폴리오 (준비 중)",
+      // 카드(features)와 같은 이름 · 같은 상태로 적는다 — 주간 리포트는 세 상품 모두 출시 준비 중
+      "주간 (출시 준비 중) · 8주 요약 (준비 중)",
+      "주간 (출시 준비 중) · 월간 요약 (준비 중) · 학기 성장 포트폴리오 (준비 중)",
+      "주간 (출시 준비 중) · 월간 요약 (준비 중) · 학기 성장 포트폴리오 (준비 중)",
     ],
   },
   { label: "원장 대시보드", values: ["－", "포함", "포함"] },
   {
     label: "계약 납품물",
     values: [
-      "창의키트 2회",
-      "창의키트 4회",
-      "창의키트 6회 · 현판 · 상담자료 팩 · 원 브랜딩(범위 상담)",
+      "창의활동 키트 2회",
+      "창의활동 키트 4회",
+      "창의활동 키트 6회 · 현판 · 상담자료 팩 · 원 브랜딩(범위 상담)",
     ],
   },
   { label: "월 이용료", values: ["99,000원", "150,000원", "250,000원"] },

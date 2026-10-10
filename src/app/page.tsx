@@ -13,13 +13,14 @@ import { PricingSection } from "@/components/home/PricingSection";
 import { AdoptionSection } from "@/components/home/AdoptionSection";
 import { SafeOperationSection } from "@/components/home/SafeOperationSection";
 import { FinalCTASection } from "@/components/home/FinalCTASection";
+import { organizationJsonLd, toJsonLdScript } from "@/lib/seo/structured-data";
 
 /**
  * FINAL V4 SALES SYNC (공개 영업 사이트)
  *
- * ★ 이 페이지의 Primary conversion은 하나뿐이다 — "20분 데모 신청".
- *   Hero · Header · Mobile Sticky · 도입 안내 · Final CTA가 전부 같은 문구,
- *   같은 폼(submission_type = "demo")으로 모인다.
+ * ★ 이 페이지의 Primary conversion은 하나뿐이다 — "도입 상담 신청"(ctaLabels.primary).
+ *   Hero · Header · Mobile Sticky · Final CTA가 전부 같은 문구,
+ *   같은 폼(submission_type = "consult")으로 모인다.
  *   "도입 상담"(consult)과 "4주 파일럿 문의"(pilot)는 그 아래 단계다.
  *
  * ★ 온라인 구매·결제는 여전히 공개하지 않는다.
@@ -37,6 +38,10 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <PublicShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLdScript(organizationJsonLd()) }}
+      />
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         {/* PHASE CONTENT-FINAL — 13개 내러티브 (final-content-system.md §3) */}
         <HeroSection />

@@ -1,4 +1,4 @@
-import { pricingPackages } from "./packages";
+import { CLASS_CORE_LABEL, CLASS_TIME_STANDARD, pricingPackages } from "./packages";
 import type { PricingPackage } from "@/types/content";
 
 /**
@@ -474,7 +474,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
       blocks: CLASS_BLOCKS,
       coreExperiences: [],
       notes: [
-        "수업 시간은 CORE 50분(워크북 포함) + 선택 연계활동 10~15분입니다.",
+        `수업 시간은 ${CLASS_TIME_STANDARD}입니다.`,
         "단계별 시간 배분은 회차마다 다르며 교사용 수업가이드에 회차별로 안내합니다.",
         "기관 일정에 따라 두 번으로 나누어 운영할 수 있습니다.",
       ],
@@ -491,7 +491,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     contentAreas: [
       { code: "E-BOOK", label: "마음동화 · EBOOK", detail: "주차별 1권 · 수업 자료로 제공" },
       { code: "MUSIC & MOVEMENT", label: "활동 음원 · 뮤직비디오", detail: "주차별 제공 · 수업 자료" },
-      { code: "WORKBOOK", label: "워크북", detail: "주차별 · CORE 50분 수업 안에서" },
+      { code: "WORKBOOK", label: "워크북", detail: `주차별 · ${CLASS_CORE_LABEL} 수업 안에서` },
       { code: "ART", label: "미술·창작", detail: "매 회차 수업 안에서" },
       { code: "PLAY KIT", label: "창의활동 키트", detail: "2회 · 계약 범위에 따라 제공" },
       { code: "HOME CONNECTION", label: "가정연계", detail: "주차마다 가정에서 이어 하는 활동 1가지" },
@@ -508,7 +508,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "STARTER 8주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play STARTER 스타터 밸런스 팩. 8주 · 주 1회 CORE 50분(워크북 포함) + 선택 연계활동 10~15분 · 1개 반 15명 기준, 월 99,000원. 「씨앗에서 숲까지」 8주 여정 — 마음동화 EBOOK 8권, 뮤직비디오 8편, 주차별 활동 음원, 워크북 8권, 교사용 수업가이드, 주간 성장 리포트(출시 준비 중). 창의활동 키트 2회는 계약 범위에 따라 제공됩니다.",
+        `TeachAble Art Play STARTER 스타터 밸런스 팩. 8주 · 주 1회 ${CLASS_TIME_STANDARD} · 1개 반 15명 기준, 월 99,000원. 「씨앗에서 숲까지」 8주 여정 — 마음동화 EBOOK 8권, 뮤직비디오 8편, 주차별 활동 음원, 워크북 8권, 교사용 수업가이드, 주간 성장 리포트(출시 준비 중). 창의활동 키트 2회는 계약 범위에 따라 제공됩니다.`,
     },
   },
 
@@ -522,7 +522,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
       eyebrow: "STANDARD · 16주 프로그램",
       headline: "한 학기를 하나의\n성장 기록으로 남깁니다.",
       subCopy:
-        "한 학기 단위로 운영하는 16주 구성입니다. 교사 관찰 기록과 원장 대시보드를 함께 씁니다. 주간 리포트는 출시 준비 중이고, 월간 요약과 학기 포트폴리오도 준비 중입니다.",
+        "한 학기 단위로 운영하는 16주 구성입니다. 교사 관찰 기록과 원장 대시보드를 함께 씁니다. 주간 리포트는 출시 준비 중이고, 월간 요약과 학기 성장 포트폴리오도 준비 중입니다.",
     },
 
     // 9~16주 콘텐츠 미승인 (BC-1). 주차 목록을 만들어 넣지 않는다.
@@ -547,7 +547,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "STANDARD 16주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 CORE 50분(워크북 포함) + 선택 연계활동 10~15분 · 1개 반 15명 기준, 월 150,000원. 교사 관찰 기록, 원장 대시보드 포함, 주간 성장 리포트 출시 준비 중. 9~16주 콘텐츠 · 월간 요약 · 학기 포트폴리오는 준비 중이며 주차별 구성은 상담 시 안내합니다.",
+        `TeachAble Art Play STANDARD 플레이 팩. 16주 · 주 1회 ${CLASS_TIME_STANDARD} · 1개 반 15명 기준, 월 150,000원. 교사 관찰 기록, 원장 대시보드 포함, 주간 성장 리포트 출시 준비 중. 9~16주 콘텐츠 · 월간 요약 · 학기 성장 포트폴리오는 준비 중이며 주차별 구성은 상담 시 안내합니다.`,
     },
   },
 
@@ -587,7 +587,7 @@ export const PROGRAM_PRODUCTS: Record<ProgramSlug, ProgramProduct> = {
     seo: {
       title: "PREMIUM 24주 프로그램 | TeachAble Art Play",
       description:
-        "TeachAble Art Play PREMIUM 스마트 아트 & 플레이. 24주 · 주 1회 CORE 50분(워크북 포함) + 선택 연계활동 10~15분 · 1개 반 15명 기준, 월 250,000원. STANDARD 기록 · 대시보드 구성, 창의활동 키트 6회 · 도입원 현판 · 상담자료 팩(계약 범위). 9~24주 콘텐츠는 준비 중이며 주차별 구성은 상담 시 안내합니다.",
+        `TeachAble Art Play PREMIUM 스마트 아트 & 플레이. 24주 · 주 1회 ${CLASS_TIME_STANDARD} · 1개 반 15명 기준, 월 250,000원. STANDARD 기록 · 대시보드 구성, 창의활동 키트 6회 · 도입원 현판 · 상담자료 팩(계약 범위). 9~24주 콘텐츠는 준비 중이며 주차별 구성은 상담 시 안내합니다.`,
     },
   },
 };

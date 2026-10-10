@@ -8,6 +8,7 @@ import {
   PROGRAM_PRODUCTS,
   type ProgramSlug,
 } from "@/data/program-products";
+import { useOptionalLeadForm } from "@/components/forms/LeadFormContext";
 import { ProductDetail } from "./ProductDetail";
 
 /**
@@ -114,20 +115,49 @@ export function ProgramDetailOverlay({
 
   /* ── 상담으로 가기 ──────────────────────────────────────────── */
   /*
-    오버레이를 띄운 채로 상담 단락까지 스크롤하면 그 단락이 오버레이에
-    가려 보이지 않는다. 그래서 먼저 닫고, 주소가 되돌아온 뒤에 옮긴다.
-    requestClose() 의 history.back() 은 비동기라 그 왕복이 끝날 시간을 준다.
-    이 콜백은 DOM 만 만지므로 컴포넌트가 사라진 뒤에 실행돼도 안전하다.
+    오버레이 위에 상담 폼을 겹쳐 열면 닫기 · 포커스 · 방문기록이 엉킨다.
+    그래서 순서를 고정한다 —
+      1) requestClose(): 오버레이가 먼저 사라진다 (스크롤 잠금 해제 · 카드로 포커스 복귀)
+      2) history.back() 의 popstate 가 도착해 주소가 홈으로 돌아온 뒤
+      3) 상담 폼(consult)을 연다 — 폼은 카드 버튼을 "직전 포커스"로 기억해 닫으면 그리로 돌아간다.
+    고정 지연만 쓰면 popstate 가 늦게 올 때 폼이 열린 뒤에 라우터가 주소를 바꾼다.
+    popstate 가 오지 않는 환경(pushState 실패 등)을 위해 안전 시간 뒤에는 그대로 연다.
+    Provider 가 없는 화면이면 예전처럼 상담 단락(#contact)으로 옮긴다.
+    이 콜백은 Provider 상태와 DOM 만 만지므로 오버레이가 사라진 뒤에 실행돼도 안전하다.
   */
+  const leadForm = useOptionalLeadForm();
   const goToConsult = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
+    const waitForHistory = pushedRef.current;
     requestClose();
 
-    window.setTimeout(() => {
+    const openConsult = () => {
+      if (leadForm) {
+        leadForm.openLeadForm("consult");
+        return;
+      }
       document
         .getElementById("contact")
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 120);
+    };
+
+    if (!waitForHistory) {
+      window.setTimeout(openConsult, 0);
+      return;
+    }
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      window.removeEventListener("popstate", handleReturn);
+      window.clearTimeout(fallback);
+      openConsult();
+    };
+    // 라우터의 popstate 처리가 먼저 끝나도록 한 틱 뒤에 연다
+    const handleReturn = () => window.setTimeout(finish, 0);
+    window.addEventListener("popstate", handleReturn);
+    const fallback = window.setTimeout(finish, 600);
   };
 
   /* ── ESC 로 닫고, Tab 은 오버레이 안에서만 돈다 ──────────────── */
@@ -257,9 +287,8 @@ export function ProgramDetailOverlay({
             </p>
 
             {/*
-              상담으로만 이어진다. 결제도 mailto 도 없다 —
-              공개 홈페이지의 기존 상담 단락(#contact)을 그대로 쓴다.
-              href 를 그대로 두어 새 탭으로 열거나 주소를 복사하는 것도 된다.
+              상담으로만 이어진다. 결제도 mailto 도 없다 — 상담 폼(consult)을 연다.
+              href(/#contact)는 새 탭으로 열거나 주소를 복사할 때의 대체 경로다.
             */}
             <Link
               href="/#contact"

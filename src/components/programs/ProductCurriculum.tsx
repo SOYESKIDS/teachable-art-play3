@@ -137,7 +137,7 @@ export function ProductCurriculum({
                 {group.weeks.some((n) =>
                   forestWeeks.some((w) => w.week === n),
                 ) ? (
-                  <p className="mt-3 flex items-center gap-2 break-keep text-micro font-semibold text-navy/60">
+                  <p className="mt-3 flex items-center gap-2 break-keep text-caption font-semibold text-navy/70">
                     <ForestArrow />
                     {`${group.weeks.filter((n) => forestWeeks.some((w) => w.week === n)).join(" · ")}주 작품이 8주 숲 현수막에 붙습니다`}
                   </p>
@@ -324,7 +324,7 @@ function WeekDetail({
         {objective.avoid ? (
           <p className="mt-2 break-keep text-caption leading-relaxed text-ink-muted">
             <span className="font-bold">하지 않는 것</span>
-            <span className="mx-1.5 text-navy/20">|</span>
+            <span aria-hidden="true" className="mx-1.5 text-navy/20">|</span>
             {objective.avoid}
           </p>
         ) : null}

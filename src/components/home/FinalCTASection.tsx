@@ -6,7 +6,7 @@ import { finalNarrative } from "@/data/home-narrative";
 /**
  * 공개 홈페이지 마지막 결정 지점.
  *
- * ★ Primary conversion이 여기에도 있다 — 20분 데모 신청.
+ * ★ Primary conversion이 여기에도 있다 — 도입 상담 신청(consult).
  *   여기까지 읽고 내려온 사람에게 다시 "전화하세요"라고만 하면
  *   행동이 오늘 밤으로 미뤄진다. 지금 누를 수 있는 버튼을 먼저 둔다.
  *

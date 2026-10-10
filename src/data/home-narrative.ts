@@ -1,3 +1,4 @@
+import { CLASS_CORE_LABEL, CLASS_CORE_WITH_WORKBOOK, CLASS_TIME_STANDARD } from "./packages";
 /**
  * 공개 홈페이지 내러티브 — PHASE CONTENT-FINAL.
  *
@@ -7,7 +8,7 @@
  * ★ 근거 없는 말을 하지 않는다.
  *   · 출시 전 기능은 "준비 중", 상품마다 다른 기능은 "STANDARD 이상" · "계약 범위" 배지를 단다.
  *     근거: release-blocker-matrix · product-catalog · entitlement-policy · DEC-009/056/062/065/070/074
- *   · 수치는 원본에 있는 것만 — 8주 · 수업 시간 "CORE 50분(워크북 포함) + 선택 연계활동 10~15분"(운영자 확정 2026-10-09) · 성장 지표 5가지(growth_metrics seed).
+ *   · 수치는 원본에 있는 것만 — 8주 · 수업 시간 "CORE 50분(워크북 포함) + 선택 연계활동 10~15분"(운영자 확정 2026-10-09) · 관찰 영역 5가지(observation_domains seed) · 성장 지표 5가지는 출시 준비 중(공개 후보 앱에 없음).
  *   · 수업 예시는 content/starter/2026.1 (canonical · Staging 승인 · Production 미승인 — SC-1).
  */
 
@@ -25,7 +26,7 @@ export const heroNarrative = {
   description:
     "그림책 이야기로 시작해 몸과 손으로 표현하는 통합예술 수업을 담임교사가 직접 운영하고,\n수업 속 아이의 말과 행동을 관찰 · 기록해 성장 이야기로 이어 갑니다.",
   /** 근거: 8주(DEC-055) · 담임교사 1인(DEC-004) · 수업 시간 표준(2026-10-09) · 회차별 §15 교사용 퀵 가이드 */
-  proof: ["8주 STARTER 프로그램", "담임교사가 직접 운영", "주 1회 · CORE 50분(워크북 포함)", "회차별 교사용 수업 가이드"],
+  proof: ["8주 STARTER 프로그램", "담임교사가 직접 운영", `주 1회 · ${CLASS_CORE_WITH_WORKBOOK}`, "회차별 교사용 수업 가이드"],
   ctaSecondary: { label: "8주 프로그램 보기", href: "/programs/starter" },
   /** 3순위 — 작은 글자 링크. 데모 · 파일럿은 도입 안내 섹션에서 자세히 */
   ctaTertiary: { label: "20분 데모 · 4주 파일럿 알아보기", href: "#adoption" },
@@ -88,7 +89,7 @@ export const workflowNarrative = {
       no: "03",
       title: "기록",
       lead: "짧게 남깁니다",
-      body: "아이의 말 · 선택 · 행동을 짧게 적고, 성장 지표 중 해당하는 것만 고릅니다.",
+      body: "아이의 말과 본 장면을 짧게 적고, 관찰 영역 중 해당하는 것만 고릅니다.",
       icon: "pencil",
     },
     {
@@ -135,19 +136,19 @@ export const contentNarrative = {
 export const sessionNarrative = {
   eyebrow: "ONE SESSION",
   headline: "한 번의 수업은 이렇게 흘러갑니다.",
-  subCopy: "담임교사 한 명이 수업안을 따라 CORE 50분(워크북 포함) 동안 진행합니다. 다섯 번째 단계, 교사의 관찰 기록이 수업을 기록으로 이어 줍니다.",
+  subCopy: `담임교사 한 명이 수업안을 따라 ${CLASS_CORE_WITH_WORKBOOK} 동안 진행합니다. 다섯 번째 단계, 교사의 관찰 기록이 수업을 기록으로 이어 줍니다.`,
   /**
    * 경험 단위 순서. 단계별 분 배분은 회차마다 달라 쓰지 않는다 (2026-10-09 · 예전 DEC-023 배분은 워크북 제외 값).
    *   inClass = CORE 50분 안의 단계 · 마지막(교사 관찰 기록)은 수업 중 · 후
    */
   steps: [
-    { title: "이야기 열기", time: "CORE 50분 안", inClass: true, detail: "마음동화 · EBOOK로 오늘의 주제를 만납니다." },
-    { title: "몸으로 느끼기", time: "CORE 50분 안", inClass: true, detail: "활동 음원 · 영상에 맞춰 움직이며 주제를 몸으로 경험합니다." },
-    { title: "나답게 표현하기", time: "CORE 50분 안", inClass: true, detail: "미술 · 창의활동과 워크북으로 자기 방식대로 표현합니다." },
-    { title: "친구와 나누기", time: "CORE 50분 안", inClass: true, detail: "서로의 작품과 이야기를 함께 보며 오늘을 돌아봅니다." },
+    { title: "이야기 열기", time: `${CLASS_CORE_LABEL} 안`, inClass: true, detail: "마음동화 · EBOOK로 오늘의 주제를 만납니다." },
+    { title: "몸으로 느끼기", time: `${CLASS_CORE_LABEL} 안`, inClass: true, detail: "활동 음원 · 영상에 맞춰 움직이며 주제를 몸으로 경험합니다." },
+    { title: "나답게 표현하기", time: `${CLASS_CORE_LABEL} 안`, inClass: true, detail: "미술 · 창의활동과 워크북으로 자기 방식대로 표현합니다." },
+    { title: "친구와 나누기", time: `${CLASS_CORE_LABEL} 안`, inClass: true, detail: "서로의 작품과 이야기를 함께 보며 오늘을 돌아봅니다." },
     { title: "교사 관찰 기록", time: "수업 중 · 후", inClass: false, detail: "아이의 말 · 선택 · 행동을 짧게 남깁니다. 무엇을 볼지는 회차별 관찰 포인트에 있습니다." },
   ],
-  timeNote: "수업 시간: CORE 50분(워크북 포함) + 선택 연계활동 10~15분. 단계별 시간 배분은 회차마다 다르며 교사용 수업가이드에 안내합니다.",
+  timeNote: `수업 시간: ${CLASS_TIME_STANDARD}. 단계별 시간 배분은 회차마다 다르며 교사용 수업가이드에 안내합니다.`,
   support: [
     { phase: "수업 전", items: ["오늘의 목표 한 장 요약", "준비물 · 공간 · 안전 확인", "권장 시간표"] },
     { phase: "수업 중", items: ["단계별 진행안과 발문", "이런 상황이 생기면 (대응 가이드)", "마무리 대화"] },
@@ -169,18 +170,37 @@ export const growthNarrative = {
   eyebrow: "GROWTH RECORD",
   headline: "잘했는지를 점수로 매기지 않습니다.\n어떻게 참여했는지를 기록합니다.",
   subCopy:
-    "교사는 활동마다 아이에게서 본 모습을 다섯 가지 지표 중에서 고르고, 그때 어떤 도움이 있었는지를 남깁니다.",
-  /** growth_metrics seed 와 같은 이름 · 순서 */
-  metrics: ["표현 다양성", "형태 · 공간 구성", "창의적 시도", "활동 참여 · 몰입", "자기 설명 · 소통"],
-  /** "기록 없음"은 단계가 아니라 기록이 없는 상태 (GrowthMetricSelector 기본값) */
-  noRecord: {
-    label: "기록 없음",
-    help: "이번 활동에서 해당 모습을 관찰하지 못했다는 뜻입니다. 부족함이나 실패가 아닙니다.",
+    "교사는 아이마다 이번 활동에서 본 관찰 영역을 고르고, 아이가 한 말과 관찰한 장면을 사실 그대로 남깁니다.",
+  /**
+   * 지금 제공하는 관찰 기록 — 공개 후보 앱의 실제 입력 항목.
+   * 영역 이름은 observation_domains seed (supabase/migrations/20260831093000) 의 label 과 같다.
+   * 운영자가 관리 화면에서 label 을 바꾸면 이 목록도 함께 고친다.
+   */
+  current: {
+    title: "지금 제공하는 관찰 기록",
+    availability: "포함" as Availability,
+    domains: ["색채 표현", "형태 · 공간 구성", "표현의 세밀도", "창의적 확장", "활동 완결성"],
+    fields: ["관찰 영역 선택", "아이가 한 말", "교사가 본 장면", "활동 사진 (비공개 보관)", "임시저장 · 작성완료"],
+  },
+  /**
+   * 출시 준비 중 — 성장 지표 5가지와 도움의 종류(관찰 단계).
+   * 공개 후보 앱에는 아직 없다 (다른 개발 브랜치의 growth_metrics · observation_growth_selections).
+   * "기록 없음"은 단계가 아니라 관찰하지 못했다는 별도 상태다.
+   */
+  upcoming: {
+    title: "성장 지표 · 관찰 단계",
+    availability: "준비 중" as Availability,
+    body: "다섯 가지 성장 지표마다 그때 어떤 도움이 있었는지를 함께 남기는 기능을 준비하고 있습니다.",
+    metrics: ["표현 다양성", "형태 · 공간 구성", "창의적 시도", "활동 참여 · 몰입", "자기 설명 · 소통"],
+    noRecord: {
+      label: "기록 없음",
+      help: "이번 활동에서 해당 모습을 관찰하지 못했다는 뜻입니다. 부족함이나 실패가 아닙니다.",
+    },
+    stageNote: "네 칸은 높낮이가 아니라 도움의 종류이며, 활동마다 달라질 수 있습니다.",
   },
   rules: [
     "점수 · 등급 · 합계를 내지 않습니다.",
     "다른 아이와 비교하지 않습니다. 같은 아이의 이전 기록과만 나란히 봅니다.",
-    "단계는 활동마다 오르내릴 수 있습니다.",
   ],
   /** content/starter/2026.1/week-01.txt §12 첫 항목 (canonical) */
   guideExample: {
@@ -213,9 +233,10 @@ export const rolesNarrative = {
       key: "director",
       label: "원장",
       title: "각 반이 어디까지 진행됐는지,\n한 화면에서 확인합니다.",
-      items: ["반별 수업 진행 현황", "지난 미완료 수업", "빠진 출결 · 관찰 기록", "주간 리포트 상태", "운영 중인 프로그램"],
+      /** 원장 대시보드(src/components/staff/DirectorDashboard.tsx) · 수업 이력 화면에 실제로 있는 항목만 */
+      items: ["오늘 반별 수업 현황", "빠진 출결 · 관찰 기록", "작성 완료된 성장 리포트", "지난 수업 이력"],
       availability: "계약 범위" as Availability,
-      note: "수업 운영 · 이력 화면은 모든 상품에, 원장 대시보드(빠진 기록 확인)는 STANDARD · PREMIUM에 포함됩니다.",
+      note: "수업 운영 · 이력 화면은 모든 상품에, 원장 대시보드(빠진 기록 확인)는 STANDARD · PREMIUM에 포함됩니다. 주간 리포트 상태 · 운영 중인 프로그램 보기는 출시 준비 중입니다.",
     },
     {
       key: "parent",
@@ -299,7 +320,11 @@ export const trustNarrative = {
     { title: "성장기록은 점수가 아닙니다", body: "등급 · 합계 · 순위를 만들지 않습니다." },
     { title: "다른 아이와 비교하지 않습니다", body: "같은 아이의 이전 기록과만 나란히 봅니다." },
     { title: "교사가 최종 기록을 확인합니다", body: "교사가 직접 확인하고 완료한 기록만 공유 대상이 됩니다." },
-    { title: "공개 범위는 원이 정합니다", body: "원장은 학부모 공개를 숨기거나 다시 열 수 있고, 그 사유가 남습니다." },
+    // 공유 링크: 원장만 만들고 중지 · 30일 뒤 만료 (20260903090000). 숨김 사유 기록 · 다시 열기는 아직 없다.
+    {
+      title: "공개 범위는 원이 정합니다",
+      body: "학부모 공유(출시 준비 중)는 원장만 링크를 만들고 언제든 중지할 수 있으며, 30일이 지나면 자동으로 닫힙니다. 공유를 숨긴 사유를 남기는 기능도 준비 중입니다.",
+    },
     { title: "보관 · 파기는 계약으로", body: "보관 기간과 종료 후 이관 · 파기 기준은 계약 시 서면으로 확정합니다." },
   ],
 };

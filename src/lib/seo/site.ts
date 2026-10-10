@@ -27,6 +27,22 @@ function resolveSiteUrl(): string {
 export const siteUrl = resolveSiteUrl();
 
 /**
+ * 검색엔진 소유 확인 meta.
+ *
+ * 구글 서치 콘솔 · 네이버 서치어드바이저에서 발급한 값을 환경변수로 넣으면 그 meta 만 생긴다.
+ * 값이 없으면 아무것도 출력하지 않는다 — 빈 content 의 meta 를 만들지 않는다.
+ */
+export function searchVerification(): { google?: string; other?: Record<string, string> } | undefined {
+  const google = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+  const naver = process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION?.trim();
+  if (!google && !naver) return undefined;
+  return {
+    ...(google && { google }),
+    ...(naver && { other: { "naver-site-verification": naver } }),
+  };
+}
+
+/**
  * 검색엔진에 알릴 공개 경로.
  *
  * ★ 실제로 존재하는 경로만 넣는다.

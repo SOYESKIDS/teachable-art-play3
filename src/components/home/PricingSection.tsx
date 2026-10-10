@@ -57,7 +57,7 @@ export function PricingSection() {
 
         <PricingCardGrid />
 
-        <div className="mt-6 text-center text-xs leading-relaxed text-ink-muted">
+        <div className="mt-6 text-center text-caption leading-relaxed text-ink-muted">
           {priceDisclaimerLines.map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -103,7 +103,7 @@ export function PricingSection() {
                 <p className="text-sm font-bold text-navy">
                   {pkg.name}
                 </p>
-                <dl className="mt-3 flex flex-col gap-2 text-xs">
+                <dl className="mt-3 flex flex-col gap-2 text-caption">
                   {comparisonRows.map((row) => (
                     <div key={row.label} className="flex justify-between gap-3">
                       <dt className="text-ink-muted">{row.label}</dt>
