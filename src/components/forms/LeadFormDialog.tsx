@@ -16,13 +16,14 @@ export function LeadFormDialog() {
     if (!isOpen) return;
 
     previouslyFocused.current = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const panel = panelRef.current;
-    const focusable = panel?.querySelectorAll<HTMLElement>(
-      'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])',
-    );
-    focusable?.[0]?.focus();
+    const getFocusable = () => Array.from(panel?.querySelectorAll<HTMLElement>(
+      'input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    ) ?? []).filter((item) => item.offsetParent !== null);
+    getFocusable()[0]?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -30,12 +31,18 @@ export function LeadFormDialog() {
         return;
       }
 
-      if (event.key !== "Tab" || !focusable || focusable.length === 0) return;
+      if (event.key !== "Tab") return;
+      // 성공 화면으로 바뀌거나 제출 버튼이 비활성화돼도 현재 DOM의 초점을 사용한다.
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
 
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
 
-      if (event.shiftKey && document.activeElement === first) {
+      if (!panel?.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -48,7 +55,7 @@ export function LeadFormDialog() {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       previouslyFocused.current?.focus();
     };
   }, [isOpen, closeLeadForm]);
@@ -75,7 +82,7 @@ export function LeadFormDialog() {
           type="button"
           onClick={closeLeadForm}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-navy/5 hover:text-navy"
+          className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-navy/5 hover:text-navy"
         >
           <svg
             viewBox="0 0 24 24"
@@ -92,6 +99,7 @@ export function LeadFormDialog() {
         </button>
 
         <LeadForm
+          key={`${formType}:${packageCode ?? "general"}`}
           type={formType}
           titleId={TITLE_ID}
           defaultPackageCode={packageCode}

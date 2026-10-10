@@ -34,7 +34,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export const alt =
-  "TeachAble Art Play — 아이의 놀이를, 성장 이야기로 기록합니다. 누리과정 연계 수업 · 교사 관찰기록 · 원 운영 확인를 제공하는 SOYESKIDS 유치원 교육 운영 플랫폼";
+  "TeachAble Art Play — 아이의 놀이를, 성장 이야기로 기록합니다. 누리과정 연계 수업 · 교사 관찰기록 · 원 운영 확인을 제공하는 SOYESKIDS 유치원 교육 운영 플랫폼";
 
 const navy = "#142B4A";
 // DEC-109: 강조색은 Coral. 어두운 바탕 위 글자는 대비 7:1 의 밝은 Coral.

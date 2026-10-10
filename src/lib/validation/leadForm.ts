@@ -11,6 +11,8 @@ export const LEAD_FORM_MAX_LENGTHS = {
 } as const;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PACKAGE_CODES = new Set(["starter", "standard", "premium", "undecided"]);
+const MAX_COUNT = 2_147_483_647; // PostgreSQL integer 범위
 
 export interface LeadFormValues {
   institutionName: string;
@@ -65,15 +67,15 @@ export function validateLeadForm(values: LeadFormValues): LeadFormErrors {
 
   if (values.childCount.trim()) {
     const parsed = Number(values.childCount);
-    if (!Number.isFinite(parsed) || parsed < 0) {
-      errors.childCount = "원아 수는 0 이상의 숫자로 입력해 주세요.";
+    if (!Number.isInteger(parsed) || parsed < 0 || parsed > MAX_COUNT) {
+      errors.childCount = "원아 수는 0 이상의 정수로 입력해 주세요.";
     }
   }
 
   if (values.classCount.trim()) {
     const parsed = Number(values.classCount);
-    if (!Number.isFinite(parsed) || parsed < 0) {
-      errors.classCount = "반 수는 0 이상의 숫자로 입력해 주세요.";
+    if (!Number.isInteger(parsed) || parsed < 0 || parsed > MAX_COUNT) {
+      errors.classCount = "반 수는 0 이상의 정수로 입력해 주세요.";
     }
   }
 
@@ -83,6 +85,10 @@ export function validateLeadForm(values: LeadFormValues): LeadFormErrors {
 
   if (!values.privacyAgreed) {
     errors.privacyAgreed = "개인정보 수집·이용에 동의해 주세요.";
+  }
+
+  if (values.packageCode && !PACKAGE_CODES.has(values.packageCode)) {
+    errors.packageCode = "관심 상품을 다시 선택해 주세요.";
   }
 
   return errors;
@@ -97,7 +103,7 @@ function toNullableInt(raw: string): number | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
   const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? Math.trunc(parsed) : null;
+  return Number.isInteger(parsed) && parsed >= 0 && parsed <= MAX_COUNT ? parsed : null;
 }
 
 /**
@@ -114,7 +120,7 @@ export function buildLeadSubmissionPayload(type: SubmissionType, values: LeadFor
     email: toNullableString(values.email),
     child_count: toNullableInt(values.childCount),
     class_count: toNullableInt(values.classCount),
-    package_code: values.packageCode ? values.packageCode : null,
+    package_code: (type === "consult" || type === "purchase_interest") && PACKAGE_CODES.has(values.packageCode) ? values.packageCode : null,
     message: toNullableString(values.message),
     privacy_agreed: values.privacyAgreed,
     marketing_agreed: values.marketingAgreed,

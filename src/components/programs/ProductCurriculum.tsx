@@ -400,7 +400,7 @@ export function StatusBadge({ label }: { label: "포함" | "준비 중" | "계�
         : "border-dashed border-control-border bg-white text-ink"; // 계약 범위 = neutral (HomeSection TAG_TONES 와 같은 규칙)
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-bold ${tone}`}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-caption font-bold ${tone}`}
     >
       <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" />
       {label}

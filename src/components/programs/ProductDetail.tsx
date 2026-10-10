@@ -66,12 +66,15 @@ export function ProductDetail({
             </div>
           ))}
         </dl>
-        {pkg.limits?.length ? (
-          <p className="mt-5 rounded-xl bg-warning-soft px-4 py-3 text-caption text-warning-text">
-            <span className="font-bold">지금 포함되지 않는 것 · </span>
-            {pkg.limits.join(" · ")}
+        {[
+          { title: "이 상품에 미포함", items: pkg.excludedItems },
+          { title: "준비 중 · 현재 제공 제외", items: pkg.pendingItems },
+        ].map(({ title, items }) => items?.length ? (
+          <p key={title} className="mt-5 rounded-xl bg-warning-soft px-4 py-3 text-caption text-warning-text">
+            <span className="font-bold">{title} · </span>
+            {items.join(" · ")}
           </p>
-        ) : null}
+        ) : null)}
       </section>
 
       {/* ──────────────────────────────── 1. 어떤 원에 적합 */}
@@ -196,7 +199,7 @@ export function ProductDetail({
                 <span className="min-w-0">
                   <span className="block break-keep text-label text-navy/85">{feature.label}</span>
                   {feature.note ? (
-                    <span className="mt-0.5 block break-keep text-micro text-ink-muted">
+                    <span className="mt-0.5 block break-keep text-caption text-ink-muted">
                       {feature.note}
                     </span>
                   ) : null}
@@ -265,10 +268,10 @@ export function ProductDetail({
               {`${pkg.totalPriceNote} ${pkg.totalPriceKrw.toLocaleString("ko-KR")}원 · ${pkg.priceUnitNote}`}
             </p>
           </div>
-          <p className="text-micro leading-relaxed text-ink-muted">{publicNotice.pricing}</p>
+          <p className="text-caption leading-relaxed text-ink-muted">{publicNotice.pricing}</p>
         </div>
 
-        <div className="mt-4 text-micro leading-relaxed text-ink-muted">
+        <div className="mt-4 text-caption leading-relaxed text-ink-muted">
           {priceDisclaimerLines.map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -289,6 +292,7 @@ export function ProductDetail({
             {/* 공개 페이지(PublicShell)에서는 상담 폼이 바로 열린다 — Provider 가 없으면 /#contact 로 대체 */}
             <LeadCtaButton
               type="consult"
+              packageCode={product.slug}
               variant="inverse"
               dataCta={`consult-program-${product.slug}`}
               className="mt-7 px-7 font-bold"

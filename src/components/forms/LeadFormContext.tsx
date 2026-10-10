@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import type { PackageCode, SubmissionType } from "@/types/leadForm";
 
 interface LeadFormContextValue {
@@ -24,14 +24,14 @@ export function LeadFormProvider({ children }: { children: ReactNode }) {
     null,
   );
 
-  const openLeadForm = (type: SubmissionType, code?: PackageCode) => {
+  const openLeadForm = useCallback((type: SubmissionType, code?: PackageCode) => {
     setFormType(type);
     setPackageCode(code ?? null);
     if (code) setLastSelectedPackageCode(code);
     setIsOpen(true);
-  };
+  }, []);
 
-  const closeLeadForm = () => setIsOpen(false);
+  const closeLeadForm = useCallback(() => setIsOpen(false), []);
 
   return (
     <LeadFormContext.Provider

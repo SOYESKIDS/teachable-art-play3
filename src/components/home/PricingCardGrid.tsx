@@ -163,17 +163,21 @@ export function PricingCardGrid() {
               </dl>
 
               <div>
-                <p className={`text-caption font-semibold text-ink-muted`}>포함 내용</p>
+                <p className={`text-caption font-semibold text-ink-muted`}>상품 구성 · 제공 상태</p>
                 <ul className={`mt-2 flex flex-col gap-1.5 text-label text-ink`}>
                   {(pkg.features ?? pkg.contentItems.map((label) => ({ label, availability: "포함" as const }))).map((feature) => (
                     <li key={feature.label} className="flex items-start justify-between gap-3">
                       <span className="flex items-start gap-2">
-                        <CheckIcon className={"mt-0.5 text-secondary"} />
+                        {feature.availability === "포함" ? (
+                          <CheckIcon className="mt-0.5 text-secondary" />
+                        ) : (
+                          <span aria-hidden="true" className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center text-ink-muted">{feature.availability === "준비 중" ? "◷" : "○"}</span>
+                        )}
                         {feature.label}
                       </span>
                       {feature.availability !== "포함" ? (
                         <span
-                          className={`shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold ${
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-caption font-semibold ${
                             feature.availability === "준비 중"
                               ? "border border-warning-border bg-warning-soft text-warning-text"
                               : "border border-dashed border-control-border bg-white text-ink"
@@ -194,16 +198,17 @@ export function PricingCardGrid() {
                 </div>
               ) : null}
 
-              {pkg.limits?.length ? (
-                <div>
-                  <p className={`text-caption font-semibold text-ink-muted`}>지금 포함되지 않는 것</p>
-                  <ul className={`mt-1.5 flex flex-col gap-1 text-caption text-ink-muted`}>
-                    {pkg.limits.map((limit) => (
-                      <li key={limit}>· {limit}</li>
-                    ))}
+              {[
+                { title: "이 상품에 미포함", items: pkg.excludedItems },
+                { title: "준비 중 · 현재 제공 제외", items: pkg.pendingItems },
+              ].map(({ title, items }) => items?.length ? (
+                <div key={title}>
+                  <p className="text-caption font-semibold text-ink-muted">{title}</p>
+                  <ul className="mt-1.5 flex flex-col gap-1 text-caption text-ink-muted">
+                    {items.map((item) => <li key={item}>· {item}</li>)}
                   </ul>
                 </div>
-              ) : null}
+              ) : null)}
 
               <div className={`border-t pt-5 border-line`}>
                 {/*
@@ -225,6 +230,7 @@ export function PricingCardGrid() {
               <div className="mt-auto" onClick={(event) => event.stopPropagation()}>
                 <LeadCtaButton
                   type="consult"
+                  packageCode={pkg.id}
                   variant="secondary"
                   dataCta={`consult-pricing-${pkg.id}`}
                   className="w-full font-bold"

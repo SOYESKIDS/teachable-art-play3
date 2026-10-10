@@ -21,10 +21,9 @@ import type {
  * ★ EBOOK · VOD · 음원은 "수업 자료"로 제공된다. 플랫폼 안 재생은 P1 (준비 중).
  *
  * ─────────────────────────────────────────────── SOURCE CONFLICTS (유지 중)
- *  SC-1 가격: STARTER 월 99,000원 · 8주 198,000원은 코드에만 있고
- *       상품소개서 v4 에서 확인되지 않는다. 값은 바꾸지 않았다 — 운영자 확인 필요.
- *       (STANDARD 150,000 / 600,000 · PREMIUM 250,000 / 1,500,000 도 값 변경 없음.)
- *  SC-2 대상 연령: "만 4~6세 / 만 4~7세"는 근거 원본이 없다 (BC-4 · DB age_group NULL).
+ *  SC-1 가격: 상품소개서 v4 18쪽 상품 구성표와 일치한다.
+ *       STARTER 99,000 / 198,000 · STANDARD 150,000 / 600,000 · PREMIUM 250,000 / 1,500,000.
+ *  SC-2 대상 연령: 상품소개서와 교안의 연령 표기가 서로 다르다.
  *       → "상담 시 안내"로 바꿨다. 확정되면 recommendedAge 값만 고치면 된다.
  *  SC-3 창의활동 키트 횟수(2 · 4 · 6회): 계약 납품물로 보고 값을 유지했다.
  *       원본(주차별 kit 목록)과 횟수 대응은 확인되지 않았다.
@@ -53,7 +52,7 @@ export const CLASS_CORE_WITH_WORKBOOK = `${CLASS_CORE_LABEL}(워크북 포함)`;
 export const CLASS_TIME_STANDARD = `${CLASS_CORE_WITH_WORKBOOK} + 선택 연계활동 10~15분`;
 const CLASS_FREQUENCY = `주 1회 · ${CLASS_TIME_STANDARD}`;
 
-/** SC-2: 근거 원본이 없어 연령을 단정하지 않는다. */
+/** SC-2: 자료 간 연령 표기가 달라 확정 전에는 단정하지 않는다. */
 const AGE_UNCONFIRMED = "상담 시 안내";
 
 const STARTER_FEATURES: PackageFeature[] = [
@@ -63,7 +62,7 @@ const STARTER_FEATURES: PackageFeature[] = [
   { label: "워크북 8권", availability: "포함" },
   { label: "교사용 수업가이드 8주", availability: "포함" },
   { label: "교사 관찰 기록 플랫폼", availability: "포함" },
-  { label: "주간 성장 리포트", availability: "준비 중", note: "개발 완료 · 출시 준비 중" },
+  { label: "주간 성장 리포트", availability: "준비 중" },
   { label: "창의활동 키트 2회", availability: "계약 범위" },
   { label: "8주 요약", availability: "준비 중" },
 ];
@@ -80,7 +79,7 @@ const STANDARD_FEATURES: PackageFeature[] = [
     note: "9~16주 준비 중",
   },
   { label: "교사 관찰 기록 플랫폼", availability: "포함" },
-  { label: "주간 성장 리포트", availability: "준비 중", note: "개발 완료 · 출시 준비 중" },
+  { label: "주간 성장 리포트", availability: "준비 중" },
   { label: "원장 대시보드", availability: "포함" },
   { label: "월간 요약", availability: "준비 중" },
   { label: "학기 성장 포트폴리오", availability: "준비 중" },
@@ -99,6 +98,9 @@ const PREMIUM_FEATURES: PackageFeature[] = [
     note: "9~24주 준비 중",
   },
   { label: "STANDARD 기록 · 대시보드 구성", availability: "포함" },
+  { label: "주간 성장 리포트", availability: "준비 중" },
+  { label: "월간 요약", availability: "준비 중" },
+  { label: "학기 성장 포트폴리오", availability: "준비 중" },
   { label: "원 브랜딩", availability: "계약 범위", note: "범위 상담" },
   { label: "창의활동 키트 6회", availability: "계약 범위" },
   { label: "도입원 현판", availability: "계약 범위" },
@@ -120,7 +122,8 @@ export const pricingPackages: PricingPackage[] = [
     // 2) 무엇을 운영
     operation: "8주 「씨앗에서 숲까지」 수업과 교사 관찰 기록",
     outcome: "8주 동안의 관찰 기록과 아이들이 함께 만든 ‘우리 반 숲’ 현수막",
-    limits: ["원장 대시보드 미포함", "AI 기록 보조 미포함", "주간 리포트 · 학부모 공유는 출시 준비 중"],
+    excludedItems: ["원장 대시보드", "AI 기록 보조"],
+    pendingItems: ["주간 성장 리포트", "8주 요약", "학부모 공유"],
     // 3) 기간
     durationWeeks: 8,
     frequency: CLASS_FREQUENCY,
@@ -146,7 +149,7 @@ export const pricingPackages: PricingPackage[] = [
     isBest: false,
     operation: "16주 수업 · 교사 관찰 기록 · 원장 대시보드",
     outcome: "한 학기 관찰 기록과 원장 대시보드로 확인하는 반별 운영 현황",
-    limits: ["주차별 콘텐츠 구성은 상담 시 안내 (일부 준비 중)", "월간 요약 · 학기 성장 포트폴리오 준비 중", "AI 기록 보조 · 학부모 공유 준비 중"],
+    pendingItems: ["9~16주 콘텐츠·워크북", "주간 성장 리포트", "월간 요약", "학기 성장 포트폴리오", "AI 기록 보조", "학부모 공유"],
     durationWeeks: 16,
     frequency: CLASS_FREQUENCY,
     recommendedAge: AGE_UNCONFIRMED,
@@ -169,7 +172,7 @@ export const pricingPackages: PricingPackage[] = [
     isBest: false,
     operation: "24주 수업 · STANDARD 구성 · 원 맞춤 납품물",
     outcome: "24주 누적 관찰 기록과 계약 범위의 원 맞춤 자료(현판 · 상담자료 팩)",
-    limits: ["주차별 콘텐츠 구성은 상담 시 안내 (일부 준비 중)", "원 브랜딩 범위는 상담에서 결정", "AI 기록 보조 · 학부모 공유 준비 중"],
+    pendingItems: ["9~24주 콘텐츠·워크북", "주간 성장 리포트", "월간 요약", "학기 성장 포트폴리오", "AI 기록 보조", "학부모 공유"],
     durationWeeks: 24,
     frequency: CLASS_FREQUENCY,
     recommendedAge: AGE_UNCONFIRMED,
@@ -191,6 +194,7 @@ export const pricingPackages: PricingPackage[] = [
  *   여기에는 v4에 명시된 다섯 줄만 둔다.
  */
 export const priceDisclaimerLines = [
+  "표시 금액은 상담을 위한 기준 정보입니다. 실제 제공 콘텐츠·준비 중 항목·키트 구성과 일정은 계약 전에 확인하며, 준비 중 항목은 현재 제공에 포함되지 않습니다.",
   "표시 가격은 1개 반 · 15명 기준입니다.",
   "부가세 별도입니다.",
   "15명 초과 시 원아 1인당 월 6,600원부터 추가됩니다.",

@@ -41,8 +41,8 @@ export function Footer() {
           <div className="flex flex-col items-start gap-4">
             <BrandMark tone="inverse" layout="stacked" />
             <p className="max-w-[34ch] text-label text-white/60">
-              누리과정 연계 미술 놀이 수업부터 관찰 기록 · 성장 리포트까지,
-              유치원 수업 운영을 한 흐름으로 연결합니다.
+              누리과정 연계 미술 놀이 수업과 교사 관찰 기록을 연결합니다.
+              주간 성장 리포트와 학부모 공유는 준비 중입니다.
             </p>
           </div>
 
