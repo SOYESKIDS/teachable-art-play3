@@ -4,7 +4,7 @@ import type { MouseEventHandler, ReactNode } from "react";
  * 마케팅 화면의 카드.
  *
  *   basic       — 흰 면. 정보 카드의 기본.
- *   highlighted — 따뜻한 아이보리 + 노란 테두리. 눈길을 한 번 끌어야 할 때.
+ *   highlighted — 옅은 Coral 면. 눈길을 한 번 끌어야 할 때.
  *   premium     — 남색 면. 섹션 안에서 결론이나 상위 상품을 말할 때.
  *
  * ★ 모든 것을 카드로 만들지 않는다.
@@ -19,7 +19,7 @@ type CardVariant = "basic" | "highlighted" | "premium";
 
 const variantClasses: Record<CardVariant, string> = {
   basic: "border-line bg-white text-navy",
-  highlighted: "border-yellow/25 bg-yellow-soft/50 text-navy",
+  highlighted: "border-accent/20 bg-accent-soft/70 text-navy",
   premium: "border-navy bg-navy text-white",
 };
 

@@ -1,126 +1,141 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/PublicButton";
 import { Container } from "@/components/ui/Container";
+import { cx } from "@/components/ui/cx";
 import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
+import { BrandMark } from "@/components/layout/BrandMark";
+import { toHomeAnchor } from "@/components/layout/home-anchor";
 import { ctaLabels, navigation } from "@/data/site-copy";
 
 /**
- * 공개 홈페이지 상단 Header.
+ * 공개 홈페이지 상단 Header (V3).
  *
  * ★ CTA 두 개의 위계를 섞지 않는다.
- *   도입 문의   = primary(노랑)  — 이 사이트가 방문자에게 바라는 단 하나의 행동
- *   유치원 로그인 = tertiary(흰 배경 + 테두리) — 이미 고객인 사람이 쓰는 조용한 입구
- *   둘 다 눈에 띄게 만들면 처음 온 사람이 어디를 눌러야 할지 알 수 없게 된다.
+ *   도입 문의     = primary(Navy 면) — 이 사이트가 방문자에게 바라는 단 하나의 행동
+ *   유치원 로그인 = tertiary(테두리)  — 이미 고객인 사람이 쓰는 조용한 입구
  *
  * ★ 본사 관리자 로그인(/admin/login)은 여기에 넣지 않는다.
- *   공개 홈페이지에서 본사 운영 화면으로 가는 길을 만들지 않는다.
  *
- * ★ nav 를 xl 부터 펼치는 이유
- *   메뉴 7개에 CTA 2개가 더해지면 lg(1024px) 폭에서 실측 합이 컨테이너를 넘어
- *   로고나 CTA 가 잘린다. 글자 크기를 억지로 줄여 맞추는 대신
- *   1280px 미만에서는 메뉴 버튼 안으로 접는다 — 접힌 메뉴에는 CTA 도 함께 들어간다.
+ * ★ 메뉴 링크는 "/#section" 으로 쓴다.
+ *   예전 "#section" 은 /programs · /privacy · /terms 에서 아무 데도 가지 않았다.
+ *   "/#section" 은 홈에서는 같은 페이지 안 이동, 다른 페이지에서는 홈의 해당 위치로 간다.
+ *
+ * ★ 스크롤하면 바탕이 불투명해지고 선이 진해진다 — 본문 위에 떠 있다는 신호를
+ *   그림자 대신 면의 밀도로 준다.
+ *
+ * ★ nav 를 xl 부터 펼친다. 메뉴 7개 + CTA 2개는 1024px 폭을 넘는다.
+ *   그보다 좁으면 메뉴 버튼 안으로 접고, 접힌 메뉴에는 CTA 도 함께 들어간다.
+ *
+ * ★ 헤더 버튼은 `hidden sm:inline-flex` 가 아니라 `max-sm:hidden` 을 쓴다.
+ *   Button 의 base 에 inline-flex 가 있어, variant 없는 hidden 은 CSS 순서에 따라 진다.
  */
 
 const KINDERGARTEN_LOGIN_LABEL = "유치원 로그인";
 const KINDERGARTEN_LOGIN_HREF = "/kindergarten";
 
-/*
- * ★ 헤더의 두 버튼은 `hidden ... sm:inline-flex`가 아니라 `max-sm:hidden`을 쓴다.
- *
- *   Button/ButtonLink의 baseClasses에 이미 `inline-flex`가 들어 있다.
- *   `hidden`과 `inline-flex`는 둘 다 variant 없는 display 유틸리티라
- *   승자는 클래스 문자열 순서가 아니라 **생성된 CSS의 등장 순서**로 정해진다.
- *   실측 결과 `.inline-flex{`가 `.hidden{`보다 뒤에 있어 `hidden`이 무효였고,
- *   360px에서 헤더가 528px로 벌어지며 문서 전체에 가로 스크롤이 생겼다.
- *
- *   `max-sm:hidden`은 variant라 base 유틸리티를 확실히 이긴다.
- *   sm 이상에서는 baseClasses의 inline-flex가 그대로 살아난다.
- */
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const closeMenu = () => setIsMenuOpen(false);
 
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // 펼친 메뉴: Esc 로 닫고 메뉴 버튼으로 초점을 돌려준다 · 넓은 화면이 되면 닫는다.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    const wide = window.matchMedia("(min-width: 1280px)");
+    const onWide = () => wide.matches && setIsMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    wide.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      wide.removeEventListener("change", onWide);
+    };
+  }, [isMenuOpen]);
+
   return (
-    /*
-      ★ 그림자를 걷고 선 하나로 띄운다.
-        머리띠에 그림자를 얹으면 본문 위로 떠 보여 화면이 무거워진다.
-        얇은 선과 반투명 배경이면 스크롤될 때 경계가 충분히 읽힌다 —
-        유리처럼 흐리게 만드는 효과는 여기까지만 쓴다.
-    */
-    <header className="sticky top-0 z-50 border-b border-line-soft bg-ivory/90 backdrop-blur-md">
-      <Container className="flex h-[72px] items-center justify-between gap-4 lg:h-20">
+    <header
+      className={cx(
+        "sticky top-0 z-50 border-b transition-[background-color,border-color] duration-200",
+        isScrolled || isMenuOpen
+          ? "border-line bg-ivory/95 backdrop-blur-md"
+          : "border-transparent bg-ivory/80 backdrop-blur-sm",
+      )}
+    >
+      <a href="#main" className="skip-link">
+        본문 바로가기
+      </a>
+
+      <Container
+        className={cx(
+          "flex items-center justify-between gap-4 transition-[height] duration-200",
+          isScrolled ? "h-[60px] lg:h-16" : "h-[68px] lg:h-[76px]",
+        )}
+      >
         <Link
           href="/"
-          className="flex shrink-0 flex-col items-start leading-none"
+          aria-label="TeachAble Art Play 홈"
+          className="flex min-h-11 shrink-0 items-center rounded-lg"
           onClick={closeMenu}
         >
-          {/*
-            공식 SOYESKIDS 워드마크. 원본(01_logo_2.png)은 625x625 안에 잉크가 587x103만
-            들어 있어 여백을 잘라낸 사본을 쓴다 — 그래야 지정한 높이가 곧 글자 높이가 된다.
-            높이로만 제어하는 이유는 Header 높이(72/80px)를 넘기지 않기 위해서다.
-            items-start가 없으면 flex column의 기본 stretch 때문에 로고가
-            아래 "TeachAble Art Play" 폭(약 198px)까지 늘어난다 — w-auto로는 막지 못한다.
-          */}
-          <Image
-            src="/images/site/brand/soyeskids-logo-primary.png"
-            alt="SOYESKIDS"
-            width={440}
-            height={77}
-            priority
-            className="h-[20px] w-auto lg:h-[24px]"
-          />
-          <span className="mt-1.5 whitespace-nowrap font-serif text-xl font-semibold italic text-navy sm:text-2xl">
-            TeachAble Art Play
-          </span>
+          <BrandMark priority />
         </Link>
 
-        {/*
-          ★ 클릭 영역을 글자 크기와 분리한다.
-            글자는 15px 그대로 두고 상하 여백으로 44px 높이를 만든다.
-            -mx 로 좌우 여백만큼 되돌려, 넓어진 것이 눌리는 범위이지
-            메뉴 사이 간격이 아니게 한다.
-        */}
-        <nav className="hidden items-center text-[15px] font-medium text-navy/70 xl:flex">
+        <nav
+          aria-label="주요 메뉴"
+          className="hidden items-center text-body-sm font-medium text-ink-muted xl:flex"
+        >
           {navigation.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
-              className="inline-flex min-h-11 items-center rounded-lg px-3 transition-colors duration-[var(--motion-fast)] hover:bg-navy/[0.04] hover:text-navy"
+              href={toHomeAnchor(item.href)}
+              className="relative inline-flex min-h-11 items-center rounded-lg px-3 transition-colors duration-[var(--motion-fast)] after:absolute after:inset-x-3 after:bottom-2 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:text-navy hover:after:scale-x-100"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           <ButtonLink
             href={KINDERGARTEN_LOGIN_HREF}
             variant="tertiary"
-            className="whitespace-nowrap px-4 text-sm font-semibold max-md:hidden"
+            className="min-h-11 whitespace-nowrap px-4 text-label max-md:hidden"
           >
             {KINDERGARTEN_LOGIN_LABEL}
           </ButtonLink>
 
           <LeadCtaButton
-            type="demo"
+            type="consult"
             variant="primary"
-            dataCta="demo-header"
-            className="whitespace-nowrap px-5 text-sm font-semibold max-sm:hidden"
+            dataCta="consult-header"
+            className="min-h-11 whitespace-nowrap px-5 text-label max-sm:hidden"
           >
-            {ctaLabels.demo}
+            {ctaLabels.consultApply}
           </LeadCtaButton>
 
           <button
+            ref={toggleRef}
             type="button"
-            aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-nav"
             onClick={() => setIsMenuOpen((open) => !open)}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-navy hover:bg-navy/5 xl:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-navy/5 xl:hidden"
           >
             <span className="sr-only">{isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}</span>
             <svg
@@ -136,7 +151,7 @@ export function Header() {
               {isMenuOpen ? (
                 <path d="M6 6l12 12M18 6l-12 12" />
               ) : (
-                <path d="M4 7h16M4 12h16M4 17h16" />
+                <path d="M4 7h16M4 12h16M4 17h10" />
               )}
             </svg>
           </button>
@@ -146,46 +161,51 @@ export function Header() {
       {isMenuOpen && (
         <nav
           id="mobile-nav"
-          className="border-t border-navy/10 bg-ivory px-5 py-4 xl:hidden"
+          aria-label="주요 메뉴"
+          className="max-h-[calc(100dvh-68px)] animate-fade-in overflow-y-auto border-t border-line bg-ivory xl:hidden"
         >
-          <ul className="flex flex-col gap-1">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={closeMenu}
-                  className="flex min-h-11 items-center rounded-lg px-2 text-base font-medium text-navy/85 hover:bg-navy/5"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <Container className="py-4">
+            <ul className="grid gap-1 sm:grid-cols-2">
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={toHomeAnchor(item.href)}
+                    onClick={closeMenu}
+                    className="flex min-h-12 items-center justify-between rounded-xl px-3 text-body font-semibold text-navy transition-colors hover:bg-white"
+                  >
+                    {item.label}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-subtle">
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                </li>
+              ))}
+            </ul>
 
-          {/*
-            ★ 접힌 메뉴 안에서는 CTA 가 반드시 보인다.
-              좁은 화면에서 헤더 밖으로 숨긴 두 버튼이 여기서 다시 나타나므로,
-              어떤 폭에서도 로그인 입구가 사라지는 구간이 없다.
-          */}
-          <div className="mt-4 flex flex-col gap-2 border-t border-navy/10 pt-4">
-            <ButtonLink
-              href={KINDERGARTEN_LOGIN_HREF}
-              variant="tertiary"
-              onClick={closeMenu}
-              className="w-full px-5 text-[15px] font-semibold"
-            >
-              {KINDERGARTEN_LOGIN_LABEL}
-            </ButtonLink>
-            <LeadCtaButton
-              type="demo"
-              variant="primary"
-              dataCta="demo-mobile-menu"
-              onBeforeOpen={closeMenu}
-              className="w-full px-5 text-[15px] font-bold"
-            >
-              {ctaLabels.demo}
-            </LeadCtaButton>
-          </div>
+            {/*
+              ★ 접힌 메뉴 안에서는 CTA 가 반드시 보인다 — 어떤 폭에서도
+                로그인 입구 · 상담 버튼이 사라지는 구간이 없다.
+            */}
+            <div className="mt-4 grid gap-2 border-t border-line pt-4 sm:grid-cols-2">
+              <ButtonLink
+                href={KINDERGARTEN_LOGIN_HREF}
+                variant="tertiary"
+                onClick={closeMenu}
+                className="w-full"
+              >
+                {KINDERGARTEN_LOGIN_LABEL}
+              </ButtonLink>
+              <LeadCtaButton
+                type="consult"
+                variant="primary"
+                dataCta="consult-mobile-menu"
+                onBeforeOpen={closeMenu}
+                className="w-full font-bold"
+              >
+                {ctaLabels.consultApply}
+              </LeadCtaButton>
+            </div>
+          </Container>
         </nav>
       )}
     </header>

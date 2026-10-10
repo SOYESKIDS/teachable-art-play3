@@ -1,104 +1,121 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { BrandMark } from "@/components/layout/BrandMark";
+import { toHomeAnchor } from "@/components/layout/home-anchor";
 import { brandMessage, contactInfo, legalLinks, navigation } from "@/data/site-copy";
+import { COMPANY_FIELDS } from "@/data/legal";
 
 /**
- * 사이트의 마지막 면.
+ * 맨 아래 사업자 표기 — legal.ts 의 확정된 값만 쓴다(값이 빈 항목은 그리지 않는다).
+ * 대표자 · 통신판매업 신고번호는 확정 전이라 legal.ts 에 없다 — 생기면 거기에만 추가한다.
+ */
+const BUSINESS_LABELS = ["상호", "사업자등록번호", "주소"];
+const businessFields = COMPANY_FIELDS.filter(
+  (field) => BUSINESS_LABELS.includes(field.label) && field.value,
+);
+
+/**
+ * 사이트의 마지막 면 (V3).
  *
  * ★ 기능의 끝이 아니라 브랜드의 마감이다.
- *   여기까지 내려온 사람은 이미 다 읽은 사람이다. 링크만 늘어놓고 끝내지 않고,
- *   이 서비스가 무엇을 남기는지 한 문장을 크게 둔다.
- *   그 문장은 새로 쓰지 않았다 — 사이트가 이미 쓰고 있는 문장(coreMessage)이다.
+ *   이 서비스가 무엇을 남기는지 한 문장(coreMessage)을 크게 두고,
+ *   그 아래를 세 칸(브랜드 · 바로가기 · 연락처)으로 정리한다.
  *
- * ★ 모바일에서 길어지지 않게 한다.
- *   문장 하나를 더했지만 나머지는 그대로다. 아래 고정 CTA 에 가리지 않도록
- *   확보해 둔 여백도 그대로 유지한다.
+ * ★ 메뉴 링크는 "/#section" — 홈이 아닌 페이지에서도 홈의 해당 위치로 간다.
+ *
+ * ★ 모바일 하단 고정 CTA(약 79px + safe-area)에 가리지 않도록
+ *   아래 여백은 Footer 안에서 확보한다. lg 이상은 고정 CTA 가 없다.
  */
 export function Footer() {
-  // 모바일 하단 고정 CTA(실측 79px + safe-area)에 Footer 내용이 가리지 않도록
-  // 아래 여백은 Footer 안에서 확보한다. lg 이상은 고정 CTA가 없어 pb-16이면 충분하다.
   return (
-    <footer className="border-t border-line-inverse bg-navy pt-14 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-16 lg:pb-16">
+    <footer
+      data-surface="dark"
+      className="bg-navy-deep pt-16 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-white/70 sm:pt-20 lg:pb-14"
+    >
       <Container>
-        {/* 브랜드 마감 한 문장 */}
-        <p className="measure text-h3 font-bold text-white">
+        <p className="max-w-[24ch] text-h3 font-bold text-white sm:max-w-[30ch]">
           {brandMessage.coreMessage}
         </p>
 
-        <div className="mt-12 flex flex-col gap-10 border-t border-line-inverse pt-10 sm:flex-row sm:justify-between">
-          <div className="flex flex-col items-start gap-2.5">
-            {/*
-              워드마크에 흰색 외곽선이 들어가 있어 Navy 배경에서도 대비가 확보된다.
-              (Ivory Header보다 오히려 또렷하다 — 별도 배경 카드를 두지 않는 이유다)
-            */}
-            <Image
-              src="/images/site/brand/soyeskids-logo-primary.png"
-              alt="SOYESKIDS"
-              width={440}
-              height={77}
-              className="h-[22px] w-auto"
-            />
-            <span className="font-serif text-xl italic text-white">TeachAble Art Play</span>
+        <div className="mt-12 grid gap-10 border-t border-line-inverse pt-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1.6fr_1fr] lg:gap-12">
+          <div className="flex flex-col items-start gap-4">
+            <BrandMark tone="inverse" layout="stacked" />
+            <p className="max-w-[34ch] text-label text-white/60">
+              누리과정 연계 미술 놀이 수업부터 관찰 기록 · 성장 리포트까지,
+              유치원 수업 운영을 한 흐름으로 연결합니다.
+            </p>
           </div>
 
-          {/*
-            ★ 링크마다 44px 높이를 만든다.
-              글자 크기는 그대로 두고 상하 여백으로만 넓힌다 — 손가락으로 누르는
-              대상은 글자가 아니라 링크 영역이다.
-
-            ★ 유치원 로그인을 여기에도 둔다.
-              공개 홈페이지는 모바일에서 매우 길다. 끝까지 내려온 사람에게
-              다시 맨 위로 올라가라고 하지 않는다.
-              도입 문의(상업 CTA)와 섞이지 않도록 구분선 뒤에 조용히 놓는다.
-          */}
-          <nav
-            aria-label="Footer 내비게이션"
-            className="flex flex-wrap items-center gap-x-5 gap-y-0 text-sm"
-          >
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="inline-flex min-h-11 items-center hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
-
+          <nav aria-label="바닥글 바로가기">
+            <p className="eyebrow-ko text-white/70">바로가기</p>
+            <ul className="mt-3 grid max-w-[320px] grid-cols-2 gap-x-6 text-label">
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={toHomeAnchor(item.href)}
+                    className="inline-flex min-h-11 items-center transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
             <Link
               href="/kindergarten"
-              className="inline-flex min-h-11 items-center rounded-full border border-white/25 px-4 font-semibold text-white/85 transition-colors hover:border-white/45 hover:text-white"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 px-4 text-label font-semibold text-white/90 transition-colors hover:border-white/50 hover:bg-white/5 hover:text-white"
             >
               유치원 로그인
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
             </Link>
           </nav>
+
+          <div>
+            <p className="eyebrow-ko text-white/70">문의</p>
+            <ul className="mt-3 flex flex-col text-label">
+              <li>
+                <a
+                  href={`tel:${contactInfo.phone}`}
+                  className="inline-flex min-h-11 items-center tabular-nums transition-colors hover:text-white"
+                >
+                  {contactInfo.phone}
+                </a>
+              </li>
+              {/* 공개 버전: mailto 바로가기 없이 이메일 주소를 텍스트로만 표기한다. */}
+              <li className="flex min-h-11 items-center">
+                <span className="select-all">{contactInfo.email}</span>
+              </li>
+              <li>
+                <a
+                  href={`https://${contactInfo.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 items-center transition-colors hover:text-white"
+                >
+                  {contactInfo.website}
+                  <span className="sr-only"> (새 창)</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-1.5 border-t border-line-inverse pt-8 text-sm">
-          <a href={`tel:${contactInfo.phone}`} className="w-fit hover:text-white">
-            {contactInfo.phone}
-          </a>
-          {/* 공개 버전: mailto 바로가기 없이 이메일 주소를 텍스트로만 표기한다. */}
-          <span className="w-fit select-all">{contactInfo.email}</span>
-          <a
-            href={`https://${contactInfo.website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-fit hover:text-white"
-          >
-            {contactInfo.website}
-          </a>
-        </div>
-
-        <div className="mt-8 flex flex-col-reverse gap-4 border-t border-line-inverse pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
-          <p>{contactInfo.copyright}</p>
-          {/*
-            ★ 누를 수 있는 링크가 되었다.
-              예전에는 "준비 중입니다"라는 제목을 단 회색 글자였다.
-              법적 고지는 서비스가 열리는 순간부터 읽을 수 있어야 한다.
-              글자 크기는 그대로 두고 상하 여백으로 44px 높이를 만든다.
-          */}
+        <div className="mt-10 flex flex-col-reverse gap-3 border-t border-line-inverse pt-6 text-caption text-white/65 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <p className="break-keep text-white/75">
+              {businessFields.map((field, i) => (
+                <span key={field.label}>
+                  {i > 0 ? <span aria-hidden="true"> · </span> : null}
+                  {/* 번호는 중간에서 줄이 바뀌지 않게 묶는다 · 주소는 길어서 자연스럽게 줄바꿈 */}
+                  <span className={field.label === "주소" ? undefined : "whitespace-nowrap"}>
+                    {field.label === "상호" ? field.value : `${field.label} ${field.value}`}
+                  </span>
+                </span>
+              ))}
+            </p>
+            <p>{contactInfo.copyright}</p>
+          </div>
           <div className="flex flex-wrap gap-x-5">
             {legalLinks.map((link) => (
               <Link

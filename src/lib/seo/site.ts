@@ -27,6 +27,22 @@ function resolveSiteUrl(): string {
 export const siteUrl = resolveSiteUrl();
 
 /**
+ * 검색엔진 소유 확인 meta.
+ *
+ * 구글 서치 콘솔 · 네이버 서치어드바이저에서 발급한 값을 환경변수로 넣으면 그 meta 만 생긴다.
+ * 값이 없으면 아무것도 출력하지 않는다 — 빈 content 의 meta 를 만들지 않는다.
+ */
+export function searchVerification(): { google?: string; other?: Record<string, string> } | undefined {
+  const google = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+  const naver = process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION?.trim();
+  if (!google && !naver) return undefined;
+  return {
+    ...(google && { google }),
+    ...(naver && { other: { "naver-site-verification": naver } }),
+  };
+}
+
+/**
  * 검색엔진에 알릴 공개 경로.
  *
  * ★ 실제로 존재하는 경로만 넣는다.
@@ -77,7 +93,7 @@ export const seoCopy = {
   siteName: "TeachAble Art Play",
   title: "TeachAble Art Play | 담임교사가 운영하는 유치원 교육 운영 시스템",
   description:
-    "담임교사가 직접 운영하는 8·16·24주 유치원 교육 운영 시스템. 마음동화·VOD·워크북·창의활동과 교사 관찰기록, AI 성장기록 초안, 학부모 리포트, 원장 운영 화면을 연결합니다.",
+    "담임교사가 직접 운영하는 유치원 통합예술 교육 운영 시스템. 마음동화·VOD·워크북·창의활동으로 이어지는 수업과 교사 관찰기록, 원 운영 확인을 하나의 흐름으로 연결합니다.",
   keywords: [
     "TeachAble Art Play",
     "소예키즈",
@@ -92,6 +108,6 @@ export const seoCopy = {
   openGraph: {
     title: "TeachAble Art Play | 아이의 놀이를 성장 이야기로 기록합니다",
     description:
-      "담임교사가 운영하고, 수업 이후의 성장기록까지 남는 8·16·24주 유치원 교육 운영 시스템입니다.",
+      "수업 준비부터 교사 관찰, 성장기록과 원 운영 확인까지 — 한 번의 수업이 기록으로 이어지는 유치원 교육 운영 시스템입니다.",
   },
 } as const;
