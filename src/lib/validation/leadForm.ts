@@ -123,6 +123,7 @@ export function buildLeadSubmissionPayload(type: SubmissionType, values: LeadFor
     package_code: (type === "consult" || type === "purchase_interest") && PACKAGE_CODES.has(values.packageCode) ? values.packageCode : null,
     message: toNullableString(values.message),
     privacy_agreed: values.privacyAgreed,
-    marketing_agreed: values.marketingAgreed,
+    // 이번 출시에서는 마케팅 수신 동의를 받지 않는다. 기존 DB 열과 과거 기록은 보존한다.
+    marketing_agreed: false,
   };
 }

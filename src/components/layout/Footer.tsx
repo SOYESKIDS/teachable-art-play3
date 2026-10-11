@@ -7,9 +7,9 @@ import { COMPANY_FIELDS } from "@/data/legal";
 
 /**
  * 맨 아래 사업자 표기 — legal.ts 의 확정된 값만 쓴다(값이 빈 항목은 그리지 않는다).
- * 대표자 · 통신판매업 신고번호는 확정 전이라 legal.ts 에 없다 — 생기면 거기에만 추가한다.
+ * 대표자와 통신판매업 신고번호도 legal.ts 에 확정값이 있는 경우에만 표시한다.
  */
-const BUSINESS_LABELS = ["상호", "사업자등록번호", "주소"];
+const BUSINESS_LABELS = ["상호", "대표자", "사업자등록번호", "통신판매업 신고번호", "주소"];
 const businessFields = COMPANY_FIELDS.filter(
   (field) => BUSINESS_LABELS.includes(field.label) && field.value,
 );

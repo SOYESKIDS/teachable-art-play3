@@ -25,7 +25,9 @@ export interface CompanyField {
 }
 
 /**
- * 회사 정보. 확정된 사업자 등록 정보다.
+ * 회사 정보. 대표자는 운영자가 2026-10-11 확정했다.
+ * 주소는 운영자의 비공개 요청에 따라 후보본에서 제외한다.
+ * 공개 의무 적용 여부와 개정 공지·시행일 확인 전에는 출시 확정본으로 보지 않는다.
  *
  * value 가 빈 문자열인 항목은 화면에 나오지 않는다 —
  * 확인되지 않은 값이 자리표시로 남을 자리를 만들지 않기 위한 구조다.
@@ -33,9 +35,10 @@ export interface CompanyField {
 export const COMPANY_FIELDS: CompanyField[] = [
   { label: "상호", value: "주식회사 소예키즈 (SOYE KIDS Co., Ltd.)" },
   { label: "서비스명", value: "TeachAble Art Play" },
+  { label: "대표자", value: "백향은" },
   {
     label: "주소",
-    value: "서울특별시 마포구 성암로 330 DMC첨단산업센터 404-4호",
+    value: "",
   },
   { label: "사업자등록번호", value: "371-86-01244" },
   { label: "대표번호", value: contactInfo.phone },
@@ -46,13 +49,11 @@ export const COMPANY_FIELDS: CompanyField[] = [
 /**
  * 개인정보 보호 업무 담당 창구.
  *
- * ★ 개인 실명을 공개 문서에 넣지 않는다.
- *   개인정보 보호법 제30조는 "보호책임자의 성명 또는 개인정보 보호업무를
- *   담당하는 부서의 명칭과 연락처"를 적도록 하고 있다. 둘 중 하나면 되므로
- *   담당부서와 연락처로 적는다 — 실명을 공개 웹페이지에 노출하지 않아도 되고,
- *   담당자가 바뀌어도 문서를 고치지 않아도 된다.
+ * 운영자가 2026-10-11 확정한 담당자를 표시한다.
+ * 관리 담당자 지정은 법정 개인정보 보호책임자 선임 여부의 판정과 별개다.
  */
 export const PRIVACY_CONTACT: CompanyField[] = [
+  { label: "개인정보·상담 정보 관리 담당자", value: "박종현" },
   { label: "담당부서", value: "SOYESKIDS 개인정보보호 담당" },
   { label: "전화", value: contactInfo.phone },
   { label: "이메일", value: contactInfo.email },
@@ -154,7 +155,7 @@ export const PRIVACY_POLICY: LegalDocument = {
             "수업 일정, 출결, 관찰기록 등 기관의 수업 운영 지원",
             "원아별 성장 기록 작성과 기관 내 공유",
             "교육기관이 승인한 성장 기록의 보호자 전달",
-            "서비스 도입 문의에 대한 응대",
+            LEAD_PRIVACY_NOTICE.purpose,
             "서비스 운영·유지보수 및 오류 대응",
           ],
         },

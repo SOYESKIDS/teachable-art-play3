@@ -318,16 +318,6 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
           </p>
         )}
 
-        <label className="flex min-h-11 items-start gap-3 py-1 text-sm text-ink-muted">
-          <input
-            type="checkbox"
-            checked={values.marketingAgreed}
-            onChange={(event) => updateField("marketingAgreed", event.target.checked)}
-            className="mt-0.5 h-5 w-5 shrink-0 accent-navy"
-          />
-          <span>프로그램 소식 및 도입 안내 수신에 동의합니다. (선택)<br />동의하지 않아도 상담 신청이 가능하며, 문의처를 통해 수신 동의를 철회할 수 있습니다.</span>
-        </label>
-
         <p className="text-sm leading-relaxed text-ink-muted">
           {"서비스 이용에 관한 사항은 "}
           <a

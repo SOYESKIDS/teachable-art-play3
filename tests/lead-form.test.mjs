@@ -56,3 +56,12 @@ test("이메일 형식과 문의 길이를 검사한다", () => {
   assert.ok(validateLeadForm({ ...valid(), email: "invalid" }).email);
   assert.ok(validateLeadForm({ ...valid(), message: "가".repeat(2001) }).message);
 });
+
+test("마케팅 동의를 받지 않는 출시에서는 모든 문의가 false로 제출된다", () => {
+  // 이전 상태나 호출자가 true를 전달하더라도 새 문의의 마케팅 동의로 저장하지 않는다.
+  for (const type of ["pilot", "demo", "consult", "purchase_interest"]) {
+    const values = { ...valid(), marketingAgreed: true };
+    assert.deepEqual(validateLeadForm(values), {});
+    assert.equal(buildLeadSubmissionPayload(type, values).marketing_agreed, false);
+  }
+});
