@@ -16,7 +16,8 @@ import {
   type LeadFormErrors,
   type LeadFormValues,
 } from "@/lib/validation/leadForm";
-import { leadFormCopy } from "@/data/site-copy";
+import { contactInfo, leadFormCopy } from "@/data/site-copy";
+import { LEAD_PRIVACY_NOTICE } from "@/data/lead-consent";
 import { buttonClasses } from "@/components/ui/PublicButton";
 import { fieldAuth } from "@/components/ui/field-public";
 import { pricingPackages } from "@/data/packages";
@@ -81,22 +82,19 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
 
     try {
       const supabase = createClient();
-      // pilot/demo/consult는 정규 상품 선택과 구분되어야 하므로 관심 상품 필드를 보여주지 않고,
-      // package_code는 항상 null로 저장한다. purchase_interest에서만 실제 선택값을 전달한다.
-      const effectiveValues: LeadFormValues =
-        type === "purchase_interest" ? values : { ...values, packageCode: "" };
-      const payload = buildLeadSubmissionPayload(type, effectiveValues);
+      const payload = buildLeadSubmissionPayload(type, values);
       const { error } = await supabase.from("lead_submissions").insert(payload);
 
       if (error) {
-        console.error("lead_submissions insert failed:", error);
+        // DB 오류 본문에는 문의 내용이 포함될 수 있어 원문을 콘솔에 남기지 않는다.
+        console.error("상담 저장 실패", { code: error.code });
         setSubmitStatus("error");
         return;
       }
 
       setSubmitStatus("success");
-    } catch (error) {
-      console.error("lead_submissions insert threw:", error);
+    } catch {
+      console.error("상담 저장 요청을 완료하지 못했습니다.");
       setSubmitStatus("error");
     } finally {
       submittingRef.current = false;
@@ -106,7 +104,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
 
   if (submitStatus === "success") {
     return (
-      <div className="flex flex-col items-center gap-4 py-8 text-center">
+      <div role="status" className="flex flex-col items-center gap-4 py-8 text-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-trust-blue/10 text-trust-blue">
           <svg
             viewBox="0 0 24 24"
@@ -219,12 +217,12 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
           />
         </Field>
 
-        {type === "purchase_interest" && (
-          <Field label="관심 상품">
+        {(type === "purchase_interest" || type === "consult") && (
+          <Field label="관심 상품" error={errors.packageCode}>
             <select
               value={values.packageCode}
               onChange={(event) => updateField("packageCode", event.target.value)}
-              className={inputClass(undefined)}
+              className={inputClass(errors.packageCode)}
             >
               <option value="">선택 안 함</option>
               {pricingPackages.map((pkg) => (
@@ -242,6 +240,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
             type="number"
             inputMode="numeric"
             min={0}
+            step={1}
             value={values.childCount}
             onChange={(event) => updateField("childCount", event.target.value)}
             className={inputClass(errors.childCount)}
@@ -253,6 +252,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
             type="number"
             inputMode="numeric"
             min={0}
+            step={1}
             value={values.classCount}
             onChange={(event) => updateField("classCount", event.target.value)}
             className={inputClass(errors.classCount)}
@@ -271,6 +271,24 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
       </Field>
 
       <div className="flex flex-col gap-3 border-t border-line pt-4">
+        <div className="rounded-xl border border-line bg-white p-4 text-sm leading-relaxed text-ink">
+          <p className="font-bold text-navy">상담 개인정보 수집·이용 안내</p>
+          <dl className="mt-3 flex flex-col gap-2">
+            {[
+              ["목적", LEAD_PRIVACY_NOTICE.purpose],
+              ["필수 항목", LEAD_PRIVACY_NOTICE.requiredItems],
+              ["선택 항목", LEAD_PRIVACY_NOTICE.optionalItems],
+              ["접수 정보", LEAD_PRIVACY_NOTICE.generatedItems],
+              ["보유·이용기간", LEAD_PRIVACY_NOTICE.retention],
+              ["동의 거부", LEAD_PRIVACY_NOTICE.refusal],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <dt className="font-semibold text-navy">{label}</dt>
+                <dd className="mt-0.5 break-keep">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
         <label className="flex min-h-11 items-start gap-3 py-1 text-sm text-ink">
           <input
             type="checkbox"
@@ -300,17 +318,7 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
           </p>
         )}
 
-        <label className="flex min-h-11 items-start gap-3 py-1 text-sm text-ink-muted">
-          <input
-            type="checkbox"
-            checked={values.marketingAgreed}
-            onChange={(event) => updateField("marketingAgreed", event.target.checked)}
-            className="mt-0.5 h-5 w-5 shrink-0 accent-navy"
-          />
-          <span>소식 및 안내 수신에 동의합니다. (선택)</span>
-        </label>
-
-        <p className="text-xs leading-relaxed text-ink-muted">
+        <p className="text-sm leading-relaxed text-ink-muted">
           {"서비스 이용에 관한 사항은 "}
           <a
             href="/terms"
@@ -325,11 +333,12 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
       </div>
 
       {submitStatus === "error" && (
-        <p role="alert" className="rounded-xl border border-danger-border bg-danger-soft px-4 py-3 text-sm font-medium leading-relaxed text-danger">
+        <div role="alert" className="rounded-xl border border-danger-border bg-danger-soft px-4 py-3 text-sm font-medium leading-relaxed text-danger">
           신청을 저장하지 못했습니다.
           <br />
-          잠시 후 다시 시도해주세요.
-        </p>
+          잠시 후 다시 시도해 주세요.
+          <p className="mt-2">계속 문제가 생기면 <a className="underline" href={`tel:${contactInfo.phone.replace(/[^\d+]/g, "")}`}>{contactInfo.phone}</a> 또는 <a className="break-all underline" href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>로 문의해 주세요.</p>
+        </div>
       )}
 
       <button

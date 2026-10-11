@@ -43,6 +43,10 @@ export default function NotFound() {
           >
             홈페이지로 돌아가기
           </Link>
+          <div className="mt-3 flex flex-wrap justify-center gap-3">
+            <Link href="/programs/starter" className={buttonClasses({ variant: "secondary", size: "md" })}>8주 프로그램 보기</Link>
+            <Link href="/#contact" className={buttonClasses({ variant: "tertiary", size: "md" })}>상담 문의 안내</Link>
+          </div>
         </div>
       </Container>
     </main>

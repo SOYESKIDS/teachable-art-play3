@@ -253,7 +253,7 @@ export const rolesNarrative = {
 export const dashboardNarrative = {
   eyebrow: "DIRECTOR",
   headline: "오늘의 우리 원,\n한 화면에서 확인합니다.",
-  subCopy: "오늘 수업 → 반별 진행 → 확인이 필요한 기록 순서로 보입니다. 꾸민 숫자 없이 실제 운영 기록만 씁니다.",
+  subCopy: "기관의 운영 화면에서는 오늘 수업 → 반별 진행 → 확인이 필요한 기록 순서로 봅니다. 아래 수치와 기관 정보는 화면 설명을 위한 예시입니다.",
   availability: "STANDARD 이상" as Availability,
   note: "원장 대시보드는 STANDARD · PREMIUM에 포함됩니다. 아래는 예시 화면입니다.",
   /** 실제 원장 대시보드(DirectorDashboard.tsx)의 항목과 같은 구성 · 값은 예시 */

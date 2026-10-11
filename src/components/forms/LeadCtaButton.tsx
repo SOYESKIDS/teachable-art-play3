@@ -18,7 +18,7 @@ interface LeadCtaButtonProps {
   className?: string;
   /** 분석용 식별자 (기존 data-cta 규칙 유지) */
   dataCta?: string;
-  /** purchase_interest에서만 의미가 있다 */
+  /** 상품별 상담과 도입 문의에서 선택한 상품을 전달한다 */
   packageCode?: PackageCode;
   /** 폼을 열기 전에 먼저 처리할 동작 (예: 모바일 메뉴 닫기) */
   onBeforeOpen?: () => void;

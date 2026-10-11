@@ -133,12 +133,12 @@ export function ProgramDetailOverlay({
 
     const openConsult = () => {
       if (leadForm) {
-        leadForm.openLeadForm("consult");
+        leadForm.openLeadForm("consult", slug);
         return;
       }
       document
         .getElementById("contact")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        ?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     };
 
     if (!waitForHistory) {
