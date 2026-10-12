@@ -2,15 +2,15 @@
  * RPC 오류 → 사용자 문구 (DEC-111 · state-error-model).
  *
  * PHASE 07 SQL 은 사용자에게 보여도 되는 문장을 앱 전용 SQLSTATE
- * (예: SS004 · RP006 · OB004) 와 함께 던진다. 이 코드일 때만 message 를 그대로 쓴다.
+ * (예: SS004 · RP006 · OB004 · LA400) 와 함께 던진다. 이 코드일 때만 message 를 그대로 쓴다.
  * 그 외(제약 이름 · 내부 오류 · 권한 오류 원문)는 절대 화면에 내보내지 않고
  * 호출한 곳이 정한 일반 문구로 바꾼다.
  */
 
-const APP_ERROR_CODE = /^(SS|OB|GM|QM|RP|PT|CT|CP|MD|CS|EN|HS|MB|AG)\d{3}$/;
+const APP_ERROR_CODE = /^(SS|OB|GM|QM|RP|PT|CT|CP|MD|CS|EN|HS|MB|AG|LA|PP|LN)\d{3}$/;
 
 /** 동시 수정 충돌 (last-write-wins 금지 · DEC-111) */
-const CONFLICT_CODES = new Set(["OB004", "QM005", "RP009", "CT008", "CP004", "MB005"]);
+const CONFLICT_CODES = new Set(["OB004", "QM005", "RP009", "CT008", "CP004", "MB005", "LA008", "LN003"]);
 
 export interface RpcErrorLike {
   code?: string | null;

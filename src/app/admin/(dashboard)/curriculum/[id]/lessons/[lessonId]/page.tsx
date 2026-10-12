@@ -17,6 +17,8 @@ import {
 } from "@/lib/admin/curriculum";
 import { ActivityFormDialog } from "./ActivityFormDialog";
 import { LessonSectionEditor } from "./LessonSectionEditor";
+import { LessonAssetSection } from "./LessonAssetSection";
+import { fetchAdminLessonAssets } from "@/lib/admin/lesson-asset-admin-queries";
 import { isLessonSectionCode, type LessonSectionCode } from "@/lib/curriculum/lesson-sections";
 
 export const metadata: Metadata = {
@@ -82,6 +84,9 @@ export default async function LessonDetailPage({
     fetchLessonActivities(supabase, lesson.id),
     supabase.from("lesson_sections").select("section_code, body, source_ref").eq("lesson_id", lesson.id),
   ]);
+
+  // 자산 목록은 별도 RPC 로 읽는다 (승인 전 자산을 HQ 는 봐야 한다).
+  const assetList = await fetchAdminLessonAssets(supabase, lesson.id);
 
   if (sectionResult.error) {
     console.error(`[admin/lesson] sections load failed: code=${sectionResult.error.code ?? "unknown"}`);
@@ -335,6 +340,13 @@ export default async function LessonDetailPage({
           sections={sections}
         />
       )}
+
+      {/*
+        수업 자산 등록 · 승인 · 내려받기 정책.
+        ★ 테이블을 직접 고치지 않고 RPC 를 쓴다 (사유 필수 · audit 기록).
+        ★ 등록은 자리를 만드는 것이고 제공이 아니다. 화면이 그것을 구분한다.
+      */}
+      <LessonAssetSection lessonId={lesson.id} list={assetList} />
     </div>
   );
 }
