@@ -6,7 +6,9 @@ import {
 } from "@/lib/admin/lead-filters";
 import { fetchLeadKpis, fetchLeadList } from "@/lib/admin/lead-queries";
 import { fetchLeadNotificationOverview } from "@/lib/admin/lead-notification-queries";
+import { fetchNotificationIssues } from "@/lib/admin/lead-notification-delivery";
 import { LeadNotificationCard } from "./LeadNotificationCard";
+import { NotificationRunPanel } from "./NotificationRunPanel";
 import { LeadFilterBar } from "./LeadFilterBar";
 import { LeadKpiRow } from "./LeadKpiRow";
 import { LeadsBrowser } from "./LeadsBrowser";
@@ -48,11 +50,13 @@ export default async function AdminLeadsPage({
   const now = new Date();
 
   // 알림 조회는 문의 목록과 독립이다 — 알림 테이블이 아직 없어도 목록은 그대로 보인다.
-  const [listResult, kpiResult, notificationOverview] = await Promise.all([
-    fetchLeadList(supabase, filters, now),
-    fetchLeadKpis(supabase),
-    fetchLeadNotificationOverview(supabase),
-  ]);
+  const [listResult, kpiResult, notificationOverview, notificationIssues] =
+    await Promise.all([
+      fetchLeadList(supabase, filters, now),
+      fetchLeadKpis(supabase),
+      fetchLeadNotificationOverview(supabase),
+      fetchNotificationIssues(supabase),
+    ]);
 
   const filtered = hasActiveFilters(filters);
 
@@ -65,8 +69,9 @@ export default async function AdminLeadsPage({
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col gap-4">
         <LeadNotificationCard overview={notificationOverview} />
+        <NotificationRunPanel issues={notificationIssues} />
       </div>
 
       {!listResult.ok || !kpiResult.ok ? (
