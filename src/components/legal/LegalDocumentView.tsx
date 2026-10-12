@@ -1,4 +1,10 @@
 import type { CompanyField, LegalBlock, LegalDocument } from "@/data/legal";
+import { LegalRevisionNotice } from "@/components/legal/LegalRevisionNotice";
+import {
+  effectiveRevisionOf,
+  repositoryTextIsEffective,
+  type LegalDocumentId,
+} from "@/lib/legal/revisions";
 
 /**
  * 법적 고지 문서를 그리는 공통 화면.
@@ -22,11 +28,22 @@ export function LegalDocumentView({
   company,
 }: {
   document: LegalDocument;
+  /**
+   * 판본 관리 대상 문서 id (실행 묶음 D2).
+   *
+   * 넘기면 본문 위에 판본 상태(현행본 · 개정안 · 시행 예정 · 이력)를 그린다.
+   * 넘기지 않으면 지금까지와 똑같이 `document.effectiveDate` 만 표시한다 —
+   * 기존 호출부를 깨지 않기 위해 선택 항목으로 둔다.
+   */
+  documentId?: LegalDocumentId;
   /** 개인정보 보호 담당부서 표. id "officer" 섹션 안에 그린다. */
   officer?: CompanyField[];
   /** 문서 끝에 붙는 사업자 정보 */
   company?: CompanyField[];
 }) {
+  // 저장소 본문이 현행본이 아니면 머리말의 시행일 표기를 그대로 쓰지 않는다.
+  const effective = documentId ? effectiveRevisionOf(documentId) : null;
+  const headerIsEffective = documentId ? repositoryTextIsEffective(documentId) : true;
   return (
     <main id="main" tabIndex={-1} className="flex-1 bg-white focus:outline-none">
       <div className="mx-auto w-full max-w-[860px] px-5 py-14 sm:px-8 sm:py-20">
@@ -36,9 +53,20 @@ export function LegalDocumentView({
           <p className="mt-4 text-body-sm leading-relaxed text-ink-muted">
             {document.description}
           </p>
-          <p className="mt-5 text-caption tabular-nums text-ink-muted">
-            시행일 {document.effectiveDate} · {document.revision}
-          </p>
+          {headerIsEffective ? (
+            <p className="mt-5 text-caption tabular-nums text-ink-muted">
+              시행일 {document.effectiveDate} · {document.revision}
+            </p>
+          ) : (
+            <p className="mt-5 text-caption tabular-nums text-ink-muted">
+              현행 시행일 {effective?.effectiveDate ?? document.effectiveDate} ·{" "}
+              {effective?.label ?? document.revision}
+              <span className="ml-1 font-semibold text-warning-text">
+                (아래 본문은 개정안)
+              </span>
+            </p>
+          )}
+          {documentId && <LegalRevisionNotice documentId={documentId} />}
         </header>
 
         <p className="mt-10 text-body leading-[1.9] text-navy/80">

@@ -24,6 +24,7 @@ export default function PrivacyPage() {
     <PublicShell stickyCta={false}>
       <LegalDocumentView
         document={PRIVACY_POLICY}
+        documentId="privacy"
         officer={PRIVACY_CONTACT}
         company={COMPANY_FIELDS}
       />

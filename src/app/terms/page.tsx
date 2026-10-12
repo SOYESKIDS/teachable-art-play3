@@ -24,7 +24,11 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <PublicShell stickyCta={false}>
-      <LegalDocumentView document={TERMS_OF_SERVICE} company={COMPANY_FIELDS} />
+      <LegalDocumentView
+        document={TERMS_OF_SERVICE}
+        documentId="terms"
+        company={COMPANY_FIELDS}
+      />
     </PublicShell>
   );
 }
