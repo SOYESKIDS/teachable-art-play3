@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { seoCopy, siteUrl } from "@/lib/seo/site";
+import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
 import "./globals.css";
 
 const pretendard = localFont({
@@ -33,6 +33,8 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  // 검색엔진 소유 확인 — 환경변수가 있을 때만 meta 가 생긴다 (lib/seo/site.ts)
+  verification: searchVerification(),
   openGraph: {
     type: "website",
     siteName: seoCopy.siteName,

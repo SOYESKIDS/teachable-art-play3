@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { PublicShell } from "@/components/layout/PublicShell";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
 import { COMPANY_FIELDS, PRIVACY_CONTACT, PRIVACY_POLICY } from "@/data/legal";
 
@@ -22,14 +21,12 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <>
-      <Header />
+    <PublicShell stickyCta={false}>
       <LegalDocumentView
         document={PRIVACY_POLICY}
         officer={PRIVACY_CONTACT}
         company={COMPANY_FIELDS}
       />
-      <Footer />
-    </>
+    </PublicShell>
   );
 }

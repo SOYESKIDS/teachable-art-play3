@@ -28,20 +28,20 @@ export function LegalDocumentView({
   company?: CompanyField[];
 }) {
   return (
-    <main className="flex-1 bg-white">
+    <main id="main" tabIndex={-1} className="flex-1 bg-white focus:outline-none">
       <div className="mx-auto w-full max-w-[860px] px-5 py-14 sm:px-8 sm:py-20">
         <header className="border-b border-line pb-8">
           <p className="eyebrow text-trust-blue">LEGAL</p>
           <h1 className="mt-3 text-h1 font-bold text-navy">{document.title}</h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-navy/60">
+          <p className="mt-4 text-body-sm leading-relaxed text-ink-muted">
             {document.description}
           </p>
-          <p className="mt-5 text-[13px] tabular-nums text-navy/45">
+          <p className="mt-5 text-caption tabular-nums text-ink-muted">
             시행일 {document.effectiveDate} · {document.revision}
           </p>
         </header>
 
-        <p className="mt-10 text-[16px] leading-[1.9] text-navy/80">
+        <p className="mt-10 text-body leading-[1.9] text-navy/80">
           {document.intro}
         </p>
 
@@ -52,7 +52,7 @@ export function LegalDocumentView({
               id={section.id}
               className="mt-12 scroll-mt-[calc(var(--header-height)_+_16px)]"
             >
-              <h2 className="text-[19px] font-bold leading-snug text-navy sm:text-[21px]">
+              <h2 className="text-title-sm font-bold leading-snug text-navy sm:text-title">
                 {section.title}
               </h2>
 
@@ -72,7 +72,7 @@ export function LegalDocumentView({
 
         {company ? (
           <section className="mt-16 border-t border-line pt-10">
-            <h2 className="text-[19px] font-bold text-navy">사업자 정보</h2>
+            <h2 className="text-title-sm font-bold text-navy">사업자 정보</h2>
             <div className="mt-4">
               <FieldTable fields={company} />
             </div>
@@ -86,7 +86,7 @@ export function LegalDocumentView({
 function Block({ block }: { block: LegalBlock }) {
   if (block.text) {
     return (
-      <p className="text-[16px] leading-[1.9] text-navy/75">{block.text}</p>
+      <p className="text-body leading-[1.9] text-navy/75">{block.text}</p>
     );
   }
 
@@ -96,7 +96,7 @@ function Block({ block }: { block: LegalBlock }) {
         {block.items.map((item) => (
           <li
             key={item}
-            className="flex items-start gap-2.5 text-[16px] leading-[1.85] text-navy/75"
+            className="flex items-start gap-2.5 text-body leading-[1.85] text-navy/75"
           >
             <span
               aria-hidden="true"
@@ -112,7 +112,7 @@ function Block({ block }: { block: LegalBlock }) {
   if (block.rows) {
     return (
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-[15px]">
+        <table className="w-full border-collapse text-left text-body-sm">
           <tbody>
             {block.rows.map(([label, value]) => (
               <tr key={label} className="border-b border-line-soft align-top">
@@ -140,7 +140,7 @@ function FieldTable({ fields }: { fields: CompanyField[] }) {
   if (filled.length === 0) return null;
 
   return (
-    <table className="w-full border-collapse text-left text-[15px]">
+    <table className="w-full border-collapse text-left text-body-sm">
       <tbody>
         {filled.map((field) => (
           <tr key={field.label} className="border-b border-line-soft align-top">
