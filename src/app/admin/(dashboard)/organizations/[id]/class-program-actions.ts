@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
@@ -80,6 +82,7 @@ export async function createClassProgramAssignmentAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-program-actions:createClassProgramAssignmentAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const classId = String(formData.get("classId") ?? "");
   const programId = String(formData.get("programId") ?? "");
@@ -219,6 +222,7 @@ export async function closeClassProgramAssignmentAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-program-actions:closeClassProgramAssignmentAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const assignmentId = String(formData.get("assignmentId") ?? "");
 

@@ -139,35 +139,77 @@ export function isNonProductionWriteGuardEnabled(): boolean {
 }
 
 export class NonProductionWriteBlockedError extends Error {
-  constructor(readonly surface: string) {
-    super(`Write blocked on production data from a non-production deployment: ${surface}`);
+  constructor(
+    readonly surface: string,
+    /** 왜 막혔는가. 사용자 화면에 그대로 쓰지 않는다 */
+    readonly verdict: Exclude<WriteGuardVerdict, "allow"> = "block_non_production_on_production",
+  ) {
+    super(`Write blocked (${verdict}): ${surface}`);
     this.name = "NonProductionWriteBlockedError";
   }
 }
 
+/** 쓰기 허용 판정 결과 */
+export type WriteGuardVerdict =
+  /** 써도 된다 */
+  | "allow"
+  /** 환경변수 한 세트가 서로 다른 프로젝트를 가리킨다 — 어느 배포에서든 막는다 */
+  | "block_env_mismatch"
+  /** URL 또는 공개키가 없다 */
+  | "block_env_incomplete"
+  /** 비운영 배포가 운영 데이터에 쓰려 한다 */
+  | "block_non_production_on_production";
+
 /**
- * 비운영 배포가 운영 데이터에 쓰는 것을 막는다.
+ * 쓰기를 허용할지 판정한다.
  *
- * 통과시키는 경우:
- *   · 운영 배포                      — 항상 통과. 실제 상담 접수를 막지 않는다.
- *   · 가드 꺼짐(기본값)               — 통과
- *   · 운영 프로젝트 ref 미설정        — 판정 근거가 없으므로 통과
- *   · 비운영이지만 운영 DB 가 아님     — 통과
+ * ── 운영 배포라는 이유만으로 통과시키지 않는다 ─────────────────────
  *
- * 막는 경우:
- *   · 가드 켜짐 + 비운영 배포 + 운영 프로젝트 ref 일치
+ * 이전 구현은 `env === "production"` 이면 곧바로 통과했다. 그러면 운영 배포가
+ * 다른 프로젝트의 서버키를 들고 있어도 그대로 쓴다. 잘못된 세트는 운영에서
+ * **더** 위험하므로, 세트 불일치는 배포 종류와 무관하게 막는다.
+ *
+ * ── 근거 없이 막지도 않는다 ────────────────────────────────────────
+ *
+ * `project_mismatch` 는 운영자가 `SUPABASE_SECRET_KEY_PROJECT_REF` 를 선언했을
+ * 때만 나온다. 선언이 없으면 `evaluateEnvSet()` 이 `consistent` 를 돌려주므로
+ * 기존 운영 상담은 정상 연결 조건에서 그대로 통과한다.
+ *
+ * ── 비운영 쓰기 차단은 옵트인이다 ──────────────────────────────────
+ *
+ * `BLOCK_WRITES_ON_PRODUCTION_DATA` 가 "1" 일 때만 적용되고, 판정 근거
+ * (`SUPABASE_PRODUCTION_PROJECT_REF`)가 없으면 추측하지 않는다.
+ */
+export function evaluateWriteGuard(): WriteGuardVerdict {
+  assertServerRuntime("evaluateWriteGuard");
+
+  const envSet = evaluateEnvSet();
+
+  // ★ 배포 종류와 무관하게 막는다. 잘못된 세트는 운영에서 더 위험하다.
+  if (envSet === "project_mismatch") return "block_env_mismatch";
+  if (envSet === "incomplete") return "block_env_incomplete";
+
+  if (!isNonProductionWriteGuardEnabled()) return "allow";
+
+  const { isNonProduction, nonProductionOnProductionData } = getDeploymentContext();
+  if (!isNonProduction) return "allow";
+  if (nonProductionOnProductionData !== true) return "allow";
+
+  return "block_non_production_on_production";
+}
+
+/**
+ * 쓰기가 막히면 예외를 던진다.
  *
  * @param surface 어떤 쓰기 경로인지. 오류 메시지에만 쓰이고 사용자 화면에는 나가지 않는다.
  */
 export function assertWriteAllowed(surface: string): void {
   assertServerRuntime("assertWriteAllowed");
-  if (!isNonProductionWriteGuardEnabled()) return;
 
-  const { isNonProduction, nonProductionOnProductionData } = getDeploymentContext();
-  if (!isNonProduction) return;
-  if (nonProductionOnProductionData !== true) return;
+  const verdict = evaluateWriteGuard();
+  if (verdict === "allow") return;
 
-  throw new NonProductionWriteBlockedError(surface);
+  throw new NonProductionWriteBlockedError(surface, verdict);
 }
 
 /**
@@ -177,6 +219,8 @@ export function assertWriteAllowed(surface: string): void {
 export interface DeploymentGuardSummary {
   env: DeploymentEnv;
   envSet: EnvSetVerdict;
+  /** 지금 쓰기가 허용되는가 */
+  writeVerdict: WriteGuardVerdict;
   writeGuardEnabled: boolean;
   /** null = 판정 근거(운영 ref 설정)가 없다 */
   nonProductionOnProductionData: boolean | null;
@@ -199,6 +243,7 @@ export function summarizeDeploymentGuard(): DeploymentGuardSummary {
   return {
     env: ctx.env,
     envSet: ctx.envSet,
+    writeVerdict: evaluateWriteGuard(),
     writeGuardEnabled: isNonProductionWriteGuardEnabled(),
     nonProductionOnProductionData: ctx.nonProductionOnProductionData,
     missingSettings: missing,

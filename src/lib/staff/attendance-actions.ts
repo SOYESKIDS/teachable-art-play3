@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireStaff } from "@/lib/auth/organization";
 import type { ClassStatus } from "@/types/class-child";
@@ -229,6 +231,7 @@ export async function saveAttendanceAction(
   _prevState: AttendanceFormState,
   formData: FormData,
 ): Promise<AttendanceFormState> {
+  guardWrite("lib/staff/attendance-actions:saveAttendanceAction");
   const sessionId = String(formData.get("sessionId") ?? "");
   const rawEntries = String(formData.get("entries") ?? "");
 

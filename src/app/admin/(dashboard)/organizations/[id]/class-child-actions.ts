@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -161,6 +163,7 @@ export async function createClassAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-child-actions:createClassAction");
   const organizationId = String(formData.get("organizationId") ?? "");
 
   if (!UUID_PATTERN.test(organizationId)) {
@@ -229,6 +232,7 @@ export async function updateClassAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-child-actions:updateClassAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const classId = String(formData.get("classId") ?? "");
 
@@ -294,6 +298,7 @@ export async function createChildAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-child-actions:createChildAction");
   const organizationId = String(formData.get("organizationId") ?? "");
 
   if (!UUID_PATTERN.test(organizationId)) {
@@ -354,6 +359,7 @@ export async function updateChildAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/class-child-actions:updateChildAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const childId = String(formData.get("childId") ?? "");
 

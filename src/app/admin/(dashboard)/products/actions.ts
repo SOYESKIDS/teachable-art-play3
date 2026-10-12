@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
@@ -24,6 +26,7 @@ export async function publishProductVersionAction(
   _prev: ProductActionState,
   formData: FormData,
 ): Promise<ProductActionState> {
+  guardWrite("app/admin/(dashboard)/products/actions:publishProductVersionAction");
   const versionId = String(formData.get("versionId") ?? "");
   const expectedUpdatedAt = String(formData.get("expectedUpdatedAt") ?? "");
   const expectedLabel = String(formData.get("expectedLabel") ?? "");
@@ -61,6 +64,7 @@ export async function setCapabilityReleasedAction(
   _prev: ProductActionState,
   formData: FormData,
 ): Promise<ProductActionState> {
+  guardWrite("app/admin/(dashboard)/products/actions:setCapabilityReleasedAction");
   const code = String(formData.get("code") ?? "");
   const releasedValue = String(formData.get("released") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();

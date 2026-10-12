@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
 import { randomBytes, createHash } from "node:crypto";
@@ -27,6 +29,7 @@ export interface WeeklySaveResult {
 const FALLBACK = "처리하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.";
 
 export async function createWeeklyDraftAction(formData: FormData): Promise<void> {
+  guardWrite("lib/staff/weekly-report-actions:createWeeklyDraftAction");
   const childId = String(formData.get("childId") ?? "");
   const assignmentId = String(formData.get("assignmentId") ?? "");
   const organizationId = String(formData.get("organizationId") ?? "");
@@ -55,6 +58,7 @@ export async function createWeeklyDraftsBulkAction(
   _prev: { message: string | null },
   formData: FormData,
 ): Promise<{ message: string | null }> {
+  guardWrite("lib/staff/weekly-report-actions:createWeeklyDraftsBulkAction");
   const assignmentId = String(formData.get("assignmentId") ?? "");
   const weekNo = Number(formData.get("weekNo"));
   const childIds = formData.getAll("childId").map(String).filter((id) => UUID_PATTERN.test(id));
@@ -105,6 +109,7 @@ function normalizeContent(content: WeeklyContent): WeeklyContent {
 }
 
 export async function saveWeeklyDraftAction(input: {
+  guardWrite("lib/staff/weekly-report-actions:saveWeeklyDraftAction");
   revisionId: string;
   content: WeeklyContent;
   mediaIds: string[];
@@ -135,6 +140,7 @@ export async function saveWeeklyDraftAction(input: {
 }
 
 export async function completeWeeklyAction(input: {
+  guardWrite("lib/staff/weekly-report-actions:completeWeeklyAction");
   revisionId: string;
   expectedUpdatedAt: string;
 }): Promise<WeeklySaveResult> {
@@ -162,6 +168,7 @@ export async function startCorrectionAction(
   _prev: { phase: "idle" | "error"; message: string | null },
   formData: FormData,
 ): Promise<{ phase: "idle" | "error"; message: string | null }> {
+  guardWrite("lib/staff/weekly-report-actions:startCorrectionAction");
   const reportId = String(formData.get("reportId") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();
 
@@ -185,6 +192,7 @@ export async function setReportVisibilityAction(
   _prev: { phase: "idle" | "success" | "error"; message: string | null },
   formData: FormData,
 ): Promise<{ phase: "idle" | "success" | "error"; message: string | null }> {
+  guardWrite("lib/staff/weekly-report-actions:setReportVisibilityAction");
   const reportId = String(formData.get("reportId") ?? "");
   const action = String(formData.get("action") ?? "");
   const memo = String(formData.get("reasonMemo") ?? "").trim();
@@ -229,6 +237,7 @@ export interface IssuePortalResult {
 }
 
 export async function issueChildPortalAction(input: { childId: string }): Promise<IssuePortalResult> {
+  guardWrite("lib/staff/weekly-report-actions:issueChildPortalAction");
   if (!UUID_PATTERN.test(input.childId)) return { ok: false, message: "요청 값을 확인할 수 없습니다.", sharePath: null };
 
   const token = randomBytes(32).toString("base64url");
@@ -251,6 +260,7 @@ export async function issueChildPortalAction(input: { childId: string }): Promis
 }
 
 export async function revokeChildPortalAction(input: { portalId: string }): Promise<{ ok: boolean; message: string }> {
+  guardWrite("lib/staff/weekly-report-actions:revokeChildPortalAction");
   if (!UUID_PATTERN.test(input.portalId)) return { ok: false, message: "요청 값을 확인할 수 없습니다." };
 
   const { supabase } = await requireDirector();
@@ -266,6 +276,7 @@ export async function revokeChildPortalAction(input: { portalId: string }): Prom
 }
 
 export async function recordMediaConsentAction(input: {
+  guardWrite("lib/staff/weekly-report-actions:recordMediaConsentAction");
   childId: string;
   status: "unknown" | "consented" | "declined";
 }): Promise<{ ok: boolean; message: string }> {

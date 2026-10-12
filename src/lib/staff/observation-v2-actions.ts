@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { requireTeacher } from "@/lib/auth/organization";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
 import type { GrowthSelection, GrowthStage } from "@/types/staff-observation";
@@ -36,6 +38,7 @@ export interface SaveObservationResult {
 const STAGES: GrowthStage[] = ["together", "after_modeling", "independent"];
 
 export async function saveClassObservationAction(input: SaveObservationInput): Promise<SaveObservationResult> {
+  guardWrite("lib/staff/observation-v2-actions:saveClassObservationAction");
   const fail = (message: string, conflict = false): SaveObservationResult => ({
     ok: false,
     message,

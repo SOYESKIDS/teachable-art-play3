@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireDirector } from "@/lib/auth/organization";
 import type { GrowthReportShareRevokeState } from "@/types/parent-share";
@@ -72,6 +74,7 @@ function toMessage(error: PostgrestLikeError): string {
  * 중지 즉시 기존 링크는 공개 함수의 조건에서 탈락한다.
  */
 export async function revokeGrowthReportShareAction(input: {
+  guardWrite("lib/staff/growth-report-share-actions:revokeGrowthReportShareAction");
   shareId: string;
 }): Promise<GrowthReportShareRevokeState> {
   const { supabase } = await requireDirector();

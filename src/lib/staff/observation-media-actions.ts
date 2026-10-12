@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireTeacher } from "@/lib/auth/organization";
@@ -336,6 +338,7 @@ export async function prepareObservationMediaUpload(input: {
  *   DB의 CHECK 제약과 trigger가 같은 규칙을 한 번 더 강제한다.
  */
 export async function finalizeObservationMediaUpload(input: {
+  guardWrite("lib/staff/observation-media-actions:finalizeObservationMediaUpload");
   sessionId: string;
   childId: string;
   storagePath: string;

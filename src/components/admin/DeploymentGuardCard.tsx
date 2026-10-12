@@ -23,6 +23,13 @@ const ENV_SET_LABEL: Record<DeploymentGuardSummary["envSet"], string> = {
   incomplete: "URL 또는 공개키가 없습니다",
 };
 
+const WRITE_VERDICT_LABEL: Record<DeploymentGuardSummary["writeVerdict"], string> = {
+  allow: "허용",
+  block_env_mismatch: "차단 — 서버키와 URL 이 다른 프로젝트를 가리킵니다",
+  block_env_incomplete: "차단 — URL 또는 공개키가 없습니다",
+  block_non_production_on_production: "차단 — 비운영 배포가 운영 데이터를 사용합니다",
+};
+
 const ENV_SET_TONE: Record<DeploymentGuardSummary["envSet"], string> = {
   consistent: "text-success-text",
   secret_absent: "text-ink-muted",
@@ -71,6 +78,17 @@ export function DeploymentGuardCard({ summary }: { summary: DeploymentGuardSumma
         </div>
 
         <div>
+          <dt className="text-caption text-ink-muted">현재 쓰기 판정</dt>
+          <dd
+            className={`mt-0.5 text-body-sm font-semibold ${
+              summary.writeVerdict === "allow" ? "text-success-text" : "text-danger"
+            }`}
+          >
+            {WRITE_VERDICT_LABEL[summary.writeVerdict]}
+          </dd>
+        </div>
+
+        <div>
           <dt className="text-caption text-ink-muted">비운영 쓰기 보호</dt>
           <dd className="mt-0.5 text-body-sm font-semibold text-ink">
             {summary.writeGuardEnabled ? (
@@ -101,10 +119,15 @@ export function DeploymentGuardCard({ summary }: { summary: DeploymentGuardSumma
         </div>
       )}
 
-      {summary.envSet === "project_mismatch" && (
+      {summary.writeVerdict !== "allow" && (
         <div className="mt-3 rounded-xl border border-danger-border bg-danger-soft px-4 py-3">
           <p className="text-caption font-semibold text-danger">
-            서버키와 URL 이 서로 다른 프로젝트를 가리킵니다. 설정을 확인해 주세요.
+            {WRITE_VERDICT_LABEL[summary.writeVerdict]}
+          </p>
+          <p className="mt-1.5 text-caption leading-relaxed text-danger/85">
+            모든 서버 쓰기 경로가 막혀 있습니다. 공개 상담 접수도 저장되지 않습니다.
+            {summary.writeVerdict === "block_env_mismatch" &&
+              " 환경변수 세트 불일치는 운영 배포에서도 막습니다 — 잘못된 세트는 운영에서 더 위험합니다."}
           </p>
         </div>
       )}

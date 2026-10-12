@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth/organization";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
@@ -28,6 +30,7 @@ export async function startClassSessionFromBeforeAction(
   _prev: ClassModeActionState,
   formData: FormData,
 ): Promise<ClassModeActionState> {
+  guardWrite("lib/staff/class-mode-actions:startClassSessionFromBeforeAction");
   const sessionId = String(formData.get("sessionId") ?? "");
   const organizationId = String(formData.get("organizationId") ?? "");
   const safety = formData.get("safetyConfirmed") === "on";
@@ -68,6 +71,7 @@ export async function finishClassSessionAction(
   _prev: ClassModeActionState,
   formData: FormData,
 ): Promise<ClassModeActionState> {
+  guardWrite("lib/staff/class-mode-actions:finishClassSessionAction");
   const sessionId = String(formData.get("sessionId") ?? "");
   const organizationId = String(formData.get("organizationId") ?? "");
 
@@ -95,6 +99,7 @@ export interface QuickMemoSaveResult {
 }
 
 export async function saveQuickMemoAction(input: {
+  guardWrite("lib/staff/class-mode-actions:saveQuickMemoAction");
   sessionId: string;
   body: string;
   expectedUpdatedAt: string | null;

@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import { UUID_PATTERN, logRpcFailure } from "@/lib/errors/rpc-errors";
@@ -23,6 +25,7 @@ const BODY_MAX = 10000;
 const SOURCE_MAX = 300;
 
 export async function saveLessonSectionAction(_prev: SectionActionState, formData: FormData): Promise<SectionActionState> {
+  guardWrite("app/admin/(dashboard)/curriculum/section-actions:saveLessonSectionAction");
   const programId = String(formData.get("programId") ?? "");
   const lessonId = String(formData.get("lessonId") ?? "");
   const sectionCode = String(formData.get("sectionCode") ?? "");

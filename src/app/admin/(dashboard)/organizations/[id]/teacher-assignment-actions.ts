@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import type { ClassChildFormState } from "./class-child-state";
@@ -66,6 +68,7 @@ export async function saveTeacherAssignmentsAction(
   _prevState: ClassChildFormState,
   formData: FormData,
 ): Promise<ClassChildFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/teacher-assignment-actions:saveTeacherAssignmentsAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const membershipId = String(formData.get("organizationMemberId") ?? "");
 

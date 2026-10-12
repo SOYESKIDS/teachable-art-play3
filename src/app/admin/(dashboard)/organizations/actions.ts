@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -46,6 +48,7 @@ export async function createOrganizationAction(
   _prevState: OrganizationFormState,
   formData: FormData,
 ): Promise<OrganizationFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/actions:createOrganizationAction");
   const name = parseName(formData.get("name"));
 
   if (!name) {
@@ -93,6 +96,7 @@ export async function updateOrganizationAction(
   _prevState: OrganizationFormState,
   formData: FormData,
 ): Promise<OrganizationFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/actions:updateOrganizationAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const name = parseName(formData.get("name"));
 
@@ -166,6 +170,7 @@ export async function inviteDirectorAction(
   _prevState: DirectorInviteState,
   formData: FormData,
 ): Promise<DirectorInviteState> {
+  guardWrite("app/admin/(dashboard)/organizations/actions:inviteDirectorAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const displayName = String(formData.get("display_name") ?? "").trim();
   const email = String(formData.get("email") ?? "")
@@ -340,6 +345,7 @@ export async function inviteTeacherAction(
   _prevState: TeacherInviteState,
   formData: FormData,
 ): Promise<TeacherInviteState> {
+  guardWrite("app/admin/(dashboard)/organizations/actions:inviteTeacherAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const displayName = String(formData.get("display_name") ?? "").trim();
   const email = String(formData.get("email") ?? "")

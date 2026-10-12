@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -128,6 +130,7 @@ export async function createProgramAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/actions:createProgramAction");
   const parsed = parseProgramForm(formData);
 
   if (!parsed.ok) return parsed.state;
@@ -181,6 +184,7 @@ export async function updateProgramAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/actions:updateProgramAction");
   const programId = String(formData.get("programId") ?? "");
 
   if (!UUID_PATTERN.test(programId)) return error(MESSAGES.notFound);

@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireStaff } from "@/lib/auth/organization";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
@@ -22,6 +24,7 @@ export interface HideMediaResult {
  * storage_path 는 화면 · 로그에 내보내지 않는다.
  */
 export async function hideObservationMediaAction(input: { mediaId: string }): Promise<HideMediaResult> {
+  guardWrite("lib/staff/observation-media-hide-actions:hideObservationMediaAction");
   if (!UUID_PATTERN.test(input.mediaId)) {
     return { ok: false, message: "요청 값을 확인할 수 없습니다." };
   }

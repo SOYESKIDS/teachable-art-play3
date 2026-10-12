@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireStaff } from "@/lib/auth/organization";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
@@ -28,6 +30,7 @@ export async function cancelStaffSessionAction(
   _prevState: StaffSessionFormState,
   formData: FormData,
 ): Promise<StaffSessionFormState> {
+  guardWrite("lib/staff/session-actions:cancelStaffSessionAction");
   const sessionId = String(formData.get("sessionId") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();
 
@@ -53,6 +56,7 @@ export async function recoverStaffSessionAction(
   _prevState: StaffSessionFormState,
   formData: FormData,
 ): Promise<StaffSessionFormState> {
+  guardWrite("lib/staff/session-actions:recoverStaffSessionAction");
   const sessionId = String(formData.get("sessionId") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();
 

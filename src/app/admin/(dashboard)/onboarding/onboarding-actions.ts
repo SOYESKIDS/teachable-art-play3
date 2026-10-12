@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import { parseBirthYear, parseEntityName } from "@/lib/admin/class-child";
@@ -130,6 +132,7 @@ export async function createChildrenBulkAction(
   _prevState: BulkChildState,
   formData: FormData,
 ): Promise<BulkChildState> {
+  guardWrite("app/admin/(dashboard)/onboarding/onboarding-actions:createChildrenBulkAction");
   const organizationId = String(formData.get("organizationId") ?? "");
 
   if (!UUID_PATTERN.test(organizationId)) {

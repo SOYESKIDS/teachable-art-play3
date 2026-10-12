@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -196,6 +198,7 @@ export async function createActivityAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/activity-actions:createActivityAction");
   const programId = String(formData.get("programId") ?? "");
   const lessonId = String(formData.get("lessonId") ?? "");
 
@@ -251,6 +254,7 @@ export async function updateActivityAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/activity-actions:updateActivityAction");
   const programId = String(formData.get("programId") ?? "");
   const lessonId = String(formData.get("lessonId") ?? "");
   const activityId = String(formData.get("activityId") ?? "");

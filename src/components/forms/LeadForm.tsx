@@ -9,13 +9,12 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { createClient } from "@/lib/supabase/client";
 import {
-  buildLeadSubmissionPayload,
   validateLeadForm,
   type LeadFormErrors,
   type LeadFormValues,
 } from "@/lib/validation/leadForm";
+import { submitLeadAction } from "@/lib/public/lead-submit-actions";
 import { contactInfo, leadFormCopy } from "@/data/site-copy";
 import { LEAD_PRIVACY_NOTICE } from "@/data/lead-consent";
 import { buttonClasses } from "@/components/ui/PublicButton";
@@ -55,6 +54,8 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
   // 같은 틱 안의 두 번째 제출(빠른 연타 · 중복 이벤트)을 막는다 — state 는 다음 렌더 전까지 false 로 보인다
   const submittingRef = useRef(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  /** 서버가 준 실패 문구. null 이면 기존 기본 안내를 쓴다 */
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
 
   const copy = leadFormCopy[type];
 
@@ -81,13 +82,36 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
     setSubmitStatus("idle");
 
     try {
-      const supabase = createClient();
-      const payload = buildLeadSubmissionPayload(type, values);
-      const { error } = await supabase.from("lead_submissions").insert(payload);
+      /**
+       * ★ 저장은 서버에서 한다 (실행 묶음 E 보완).
+       *   브라우저에서 직접 INSERT 하면 배포 환경 가드를 지나지 않아,
+       *   비운영 배포가 운영 DB 에 붙어 있을 때 공개 폼이 그대로 쓴다.
+       *   검증 · payload 조립 · marketing_agreed=false 는 서버가 같은 모듈을 쓴다.
+       */
+      const form = new FormData();
+      form.set("submissionType", type);
+      form.set("institutionName", values.institutionName);
+      form.set("contactName", values.contactName);
+      form.set("position", values.position);
+      form.set("phone", values.phone);
+      form.set("email", values.email);
+      form.set("childCount", values.childCount);
+      form.set("classCount", values.classCount);
+      form.set("packageCode", values.packageCode);
+      form.set("message", values.message);
+      if (values.privacyAgreed) form.set("privacyAgreed", "true");
+      form.set("website", values.website);
 
-      if (error) {
-        // DB 오류 본문에는 문의 내용이 포함될 수 있어 원문을 콘솔에 남기지 않는다.
-        console.error("상담 저장 실패", { code: error.code });
+      const result = await submitLeadAction(null, form);
+
+      if (result.phase === "invalid") {
+        setErrors(result.errors as LeadFormErrors);
+        return;
+      }
+
+      if (result.phase === "blocked" || result.phase === "error") {
+        // 사용자에게는 서버가 준 문구만 보여 준다. 오류 코드는 서버 로그에만 있다.
+        setSubmitMessage(result.message);
         setSubmitStatus("error");
         return;
       }
@@ -334,9 +358,13 @@ export function LeadForm({ type, titleId, defaultPackageCode, onClose }: LeadFor
 
       {submitStatus === "error" && (
         <div role="alert" className="rounded-xl border border-danger-border bg-danger-soft px-4 py-3 text-sm font-medium leading-relaxed text-danger">
-          신청을 저장하지 못했습니다.
-          <br />
-          잠시 후 다시 시도해 주세요.
+          {submitMessage ?? (
+            <>
+              신청을 저장하지 못했습니다.
+              <br />
+              잠시 후 다시 시도해 주세요.
+            </>
+          )}
           <p className="mt-2">계속 문제가 생기면 <a className="underline" href={`tel:${contactInfo.phone.replace(/[^\d+]/g, "")}`}>{contactInfo.phone}</a> 또는 <a className="break-all underline" href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>로 문의해 주세요.</p>
         </div>
       )}

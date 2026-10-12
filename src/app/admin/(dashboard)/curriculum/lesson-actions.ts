@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -188,6 +190,7 @@ export async function createLessonAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/lesson-actions:createLessonAction");
   const programId = String(formData.get("programId") ?? "");
 
   if (!UUID_PATTERN.test(programId)) return error(MESSAGES.invalidProgram);
@@ -237,6 +240,7 @@ export async function updateLessonAction(
   _prevState: CurriculumFormState,
   formData: FormData,
 ): Promise<CurriculumFormState> {
+  guardWrite("app/admin/(dashboard)/curriculum/lesson-actions:updateLessonAction");
   const programId = String(formData.get("programId") ?? "");
   const lessonId = String(formData.get("lessonId") ?? "");
 

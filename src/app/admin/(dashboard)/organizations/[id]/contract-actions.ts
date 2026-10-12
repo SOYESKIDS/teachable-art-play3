@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
@@ -26,6 +28,7 @@ function fail(message: string): ContractActionState {
 }
 
 export async function createContractAction(_prev: ContractActionState, formData: FormData): Promise<ContractActionState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/contract-actions:createContractAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const productVersionId = String(formData.get("productVersionId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
@@ -54,6 +57,7 @@ export async function createContractAction(_prev: ContractActionState, formData:
 }
 
 export async function addContractClassAction(_prev: ContractActionState, formData: FormData): Promise<ContractActionState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/contract-actions:addContractClassAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const contractId = String(formData.get("contractId") ?? "");
   const classId = String(formData.get("classId") ?? "");
@@ -75,6 +79,7 @@ export async function addContractClassAction(_prev: ContractActionState, formDat
 }
 
 export async function removeContractClassAction(formData: FormData): Promise<void> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/contract-actions:removeContractClassAction");
   const contractClassId = String(formData.get("contractClassId") ?? "");
   if (!UUID_PATTERN.test(contractClassId)) return;
 
@@ -85,6 +90,7 @@ export async function removeContractClassAction(formData: FormData): Promise<voi
 }
 
 export async function activateContractAction(_prev: ContractActionState, formData: FormData): Promise<ContractActionState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/contract-actions:activateContractAction");
   const contractId = String(formData.get("contractId") ?? "");
   const expectedUpdatedAt = String(formData.get("expectedUpdatedAt") ?? "");
 
@@ -109,6 +115,7 @@ export async function changeContractStatusAction(
   _prev: ContractActionState,
   formData: FormData,
 ): Promise<ContractActionState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/contract-actions:changeContractStatusAction");
   const contractId = String(formData.get("contractId") ?? "");
   const status = String(formData.get("status") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();

@@ -1,5 +1,7 @@
 "use server";
 
+import { guardWrite } from "@/lib/env/write-guard";
+
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
@@ -157,6 +159,7 @@ export async function createClassSessionAction(
   _prevState: ClassSessionFormState,
   formData: FormData,
 ): Promise<ClassSessionFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/program-assignments/[assignmentId]/class-session-actions:createClassSessionAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const assignmentId = String(formData.get("assignmentId") ?? "");
   const lessonId = String(formData.get("lessonId") ?? "");
@@ -401,6 +404,7 @@ export async function transitionClassSessionAction(
   _prevState: ClassSessionFormState,
   formData: FormData,
 ): Promise<ClassSessionFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/program-assignments/[assignmentId]/class-session-actions:transitionClassSessionAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const assignmentId = String(formData.get("assignmentId") ?? "");
   const sessionId = String(formData.get("sessionId") ?? "");
@@ -482,6 +486,7 @@ export async function rescheduleClassSessionAction(
   _prevState: ClassSessionFormState,
   formData: FormData,
 ): Promise<ClassSessionFormState> {
+  guardWrite("app/admin/(dashboard)/organizations/[id]/program-assignments/[assignmentId]/class-session-actions:rescheduleClassSessionAction");
   const organizationId = String(formData.get("organizationId") ?? "");
   const assignmentId = String(formData.get("assignmentId") ?? "");
   const sessionId = String(formData.get("sessionId") ?? "");
