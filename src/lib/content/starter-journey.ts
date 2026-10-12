@@ -1,4 +1,8 @@
 import manifest from "../../../content/starter/2026.1/manifest.json";
+import {
+  NURI_AREA_CODES,
+  NURI_AREA_LABEL,
+} from "@/lib/curriculum/taxonomies";
 
 /**
  * STARTER 2026.1 8주 여정 — 화면 표시용 읽기 전용 데이터.
@@ -76,13 +80,9 @@ interface ManifestWeek {
  *   공개 화면에서 "누리과정"이라는 라벨 아래 비공식 영역이 나가지 않도록
  *   표시 계층에서만 갈라 놓는다.
  */
-export const NURI_AREAS: readonly string[] = [
-  "신체운동·건강",
-  "의사소통",
-  "사회관계",
-  "예술경험",
-  "자연탐구",
-] as const;
+export const NURI_AREAS: readonly string[] = NURI_AREA_CODES.map(
+  (code) => NURI_AREA_LABEL[code],
+);
 
 function splitNuriAreas(raw: string[]): { nuri: string[]; soye: string[] } {
   const nuri: string[] = [];
