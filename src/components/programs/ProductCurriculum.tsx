@@ -349,11 +349,20 @@ function WeekDetail({
         {/*
           원본 §3 표에는 누리과정 5영역이 아닌 값이 섞인 주차가 있다 (W2 "정서·자기조절").
           표준화 규격 §5 에 따라 "누리과정" 라벨 밖으로 빼서 따로 표기한다.
-          해당 값이 없는 주차에서는 ChipList 가 null 을 반환해 칸이 생기지 않는다.
+
+          ★ 누리에 없는 값을 전부 핵심경험으로 올리지 않는다.
+            승인된 목록에 있는 것만 "SOYE KIDS 핵심경험" 이고, 그 밖의 원문 값은
+            "분류 미승인" 으로 따로 둔다. 해당 값이 없는 주차에서는 ChipList 가
+            null 을 반환해 칸이 생기지 않는다.
         */}
         <ChipList
           label="SOYE KIDS 핵심경험"
           items={detail.soyeCoreExperiences}
+          accentText={accentText}
+        />
+        <ChipList
+          label="분류 미승인"
+          items={detail.unclassifiedAreas}
           accentText={accentText}
         />
       </div>

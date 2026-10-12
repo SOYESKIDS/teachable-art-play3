@@ -2,6 +2,7 @@ import manifest from "../../../content/starter/2026.1/manifest.json";
 import {
   NURI_AREA_CODES,
   NURI_AREA_LABEL,
+  classifyAreaLabels,
 } from "@/lib/curriculum/taxonomies";
 
 /**
@@ -37,8 +38,15 @@ export interface StarterWeek {
   materials: string;
   /** 누리과정 공식 5영역만 (원본 nuri_areas 에서 걸러낸 값) */
   nuriAreas: string[];
-  /** 원본 nuri_areas 중 누리과정 영역이 아닌 값 — SOYE KIDS 핵심경험으로 분리 표기한다 */
+  /** 원본 값 중 **승인된** SOYE KIDS 핵심경험 */
   soyeCoreExperiences: string[];
+  /**
+   * 누리 영역도, 승인된 핵심경험도 아닌 원문 값.
+   *
+   * 원문에 그렇게 적혀 있다는 사실을 버리지 않는다. 다만 공식 이름을 붙이지 않고
+   * "분류 미승인"으로 따로 표시한다.
+   */
+  unclassifiedAreas: string[];
   observationFocus: string[];
   familyConnection: string;
   media: string[];
@@ -79,18 +87,18 @@ interface ManifestWeek {
  * ★ 원본과 정본 적재본(manifest)은 바꾸지 않는다 — 원본에 그렇게 적혀 있는 것이 사실이다.
  *   공개 화면에서 "누리과정"이라는 라벨 아래 비공식 영역이 나가지 않도록
  *   표시 계층에서만 갈라 놓는다.
+ *
+ * ★ 누리에 없는 값을 전부 핵심경험으로 자동 승인하지 않는다.
+ *   승인된 목록(`APPROVED_SOYE_CORE_EXPERIENCES`)에 있는 것만 핵심경험이고,
+ *   나머지는 `unclassifiedAreas` 로 남는다.
  */
 export const NURI_AREAS: readonly string[] = NURI_AREA_CODES.map(
   (code) => NURI_AREA_LABEL[code],
 );
 
-function splitNuriAreas(raw: string[]): { nuri: string[]; soye: string[] } {
-  const nuri: string[] = [];
-  const soye: string[] = [];
-  for (const area of raw) {
-    (NURI_AREAS.includes(area) ? nuri : soye).push(area);
-  }
-  return { nuri, soye };
+/** 세 갈래 분류는 taxonomies.ts 가 단일 출처다 */
+function splitAreas(raw: string[]) {
+  return classifyAreaLabels(raw);
 }
 
 export const STARTER_PROGRAM_CODE: string = manifest.program.code;
@@ -110,8 +118,9 @@ export const STARTER_WEEKS: StarterWeek[] = (manifest.weeks as ManifestWeek[]).m
     artActivity: w.art_activity,
     workbook: w.workbook,
     materials: w.materials,
-    nuriAreas: splitNuriAreas(w.nuri_areas).nuri,
-    soyeCoreExperiences: splitNuriAreas(w.nuri_areas).soye,
+    nuriAreas: splitAreas(w.nuri_areas).nuri,
+    soyeCoreExperiences: splitAreas(w.nuri_areas).soyeCoreExperiences,
+    unclassifiedAreas: splitAreas(w.nuri_areas).unclassified,
     observationFocus: w.observation_focus,
     familyConnection: w.family_connection,
     media: w.media,

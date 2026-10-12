@@ -118,6 +118,7 @@ function weekDetailsFor(slug: ProgramSlug): StarterWeekDetail[] | undefined {
     materials: w.materials,
     nuriAreas: w.nuriAreas,
     soyeCoreExperiences: w.soyeCoreExperiences,
+    unclassifiedAreas: w.unclassifiedAreas,
     observationFocus: w.observationFocus,
     familyConnection: w.familyConnection,
     crossWeek: w.crossWeek,

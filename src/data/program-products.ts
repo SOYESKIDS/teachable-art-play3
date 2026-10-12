@@ -143,8 +143,10 @@ export interface StarterWeekDetail {
   materials: string;
   /** 누리과정 공식 5영역만 (starter-journey.ts 가 원본에서 걸러낸 값) */
   nuriAreas: string[];
-  /** 원본 §3 표의 비(非)누리 영역 — "SOYE KIDS 핵심경험"으로 따로 표기한다 */
+  /** 원본 §3 표의 값 중 **승인된** SOYE KIDS 핵심경험 */
   soyeCoreExperiences: string[];
+  /** 누리도 승인된 핵심경험도 아닌 원문 값 — "분류 미승인"으로 표기한다 */
+  unclassifiedAreas: string[];
   observationFocus: string[];
   familyConnection: string;
   crossWeek: string[];

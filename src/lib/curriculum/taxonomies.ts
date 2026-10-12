@@ -75,20 +75,80 @@ export function isNuriAreaLabel(label: string): boolean {
  *   (W2 "정서·자기조절"). STARTER 표준화 규격 §5 가 그것을 누리과정 영역으로
  *   표기하지 말고 "SOYE KIDS 핵심경험"으로 분리하도록 지정했다.
  *
- * ★ 목록을 미리 고정하지 않는다.
- *   원본에 어떤 표현이 더 있을지 모른 채 열거하면, 목록에 없는 값이 조용히
- *   누리 영역으로 분류된다. 그래서 "누리 5영역이 아닌 것"으로 정의하고
- *   실제 값은 원본에서 온 문자열을 그대로 보존한다.
- *   현재 저장소 정본(content/starter/2026.1)에서 확인된 값은 아래 하나다.
+ * ★ **누리에 없는 값을 전부 핵심경험으로 자동 승인하지 않는다.**
+ *   이전 구현은 "누리 5영역이 아니면 핵심경험"으로 보았다. 그러면 원본의 오기나
+ *   아직 검수되지 않은 표현까지 "SOYE KIDS 핵심경험"이라는 공식 이름을 얻는다.
+ *   핵심경험은 **승인된 목록에 있는 것만** 이고, 나머지는 `unclassified` 다.
+ *
+ * ★ 승인 목록은 규격 문서가 명시한 것만 담는다.
+ *   현재 저장소 정본(content/starter/2026.1)에서 확인되고 규격 §5 가 분리를
+ *   지정한 값은 "정서·자기조절" 하나다. 목록을 늘리는 것은 교육 결정이다.
  */
-export const KNOWN_SOYE_CORE_EXPERIENCES = ["정서·자기조절"] as const;
+export const APPROVED_SOYE_CORE_EXPERIENCES = ["정서·자기조절"] as const;
 
-/** 라벨이 누리 영역이 아니면 SOYE 핵심경험으로 본다 */
-export function classifyAreaLabel(
-  label: string,
-): "nuri" | "soye_core_experience" {
-  return isNuriAreaLabel(label) ? "nuri" : "soye_core_experience";
+export type SoyeCoreExperience = (typeof APPROVED_SOYE_CORE_EXPERIENCES)[number];
+
+export function isApprovedSoyeCoreExperience(label: string): boolean {
+  return (APPROVED_SOYE_CORE_EXPERIENCES as readonly string[]).includes(label);
 }
+
+/** 분류 결과 세 갈래 */
+export type AreaLabelKind =
+  /** 누리과정 공식 5영역 */
+  | "nuri"
+  /** 승인된 SOYE KIDS 핵심경험 */
+  | "soye_core_experience"
+  /**
+   * 어느 쪽으로도 승인되지 않은 원문 값.
+   *
+   * 원문에 그렇게 적혀 있다는 사실은 보존하고, 공식 이름을 붙이지 않는다.
+   * 화면은 "분류 미승인" 으로 따로 표시하고, 리포트·집계가 근거로 쓰지 않는다.
+   */
+  | "unclassified";
+
+export function classifyAreaLabel(label: string): AreaLabelKind {
+  if (isNuriAreaLabel(label)) return "nuri";
+  if (isApprovedSoyeCoreExperience(label)) return "soye_core_experience";
+  return "unclassified";
+}
+
+/** 세 갈래로 나눈 결과. 원문 문자열을 그대로 보존한다. */
+export interface ClassifiedAreaLabels {
+  nuri: string[];
+  soyeCoreExperiences: string[];
+  unclassified: string[];
+}
+
+export function classifyAreaLabels(raw: readonly string[]): ClassifiedAreaLabels {
+  const out: ClassifiedAreaLabels = {
+    nuri: [],
+    soyeCoreExperiences: [],
+    unclassified: [],
+  };
+  for (const label of raw) {
+    switch (classifyAreaLabel(label)) {
+      case "nuri":
+        out.nuri.push(label);
+        break;
+      case "soye_core_experience":
+        out.soyeCoreExperiences.push(label);
+        break;
+      case "unclassified":
+        out.unclassified.push(label);
+        break;
+    }
+  }
+  return out;
+}
+
+export const AREA_KIND_LABEL: Record<AreaLabelKind, string> = {
+  nuri: "누리과정",
+  soye_core_experience: "SOYE KIDS 핵심경험",
+  unclassified: "분류 미승인",
+};
+
+export const UNCLASSIFIED_NOTICE =
+  "원본 자료에 적힌 값이지만 누리과정 영역도, 승인된 SOYE KIDS 핵심경험도 아닙니다. 교육 검수 전까지 분류를 확정하지 않습니다.";
 
 /* ══════════════════════════════ C. 기존 observation_domains */
 
