@@ -12,6 +12,8 @@ import {
 import { finishClassSessionAction, type ClassModeActionState } from "@/lib/staff/class-mode-actions";
 import type { ClassModeStep } from "@/lib/staff/class-mode-queries";
 import { QuickMemoPanel } from "./QuickMemoPanel";
+import { ShortModeNotice, type ShortModeStep } from "./ShortModeNotice";
+import { StepTimer } from "./StepTimer";
 import { useOnlineStatus } from "./useOnlineStatus";
 
 interface DuringViewProps {
@@ -22,6 +24,13 @@ interface DuringViewProps {
   memo: { body: string; updatedAt: string } | null;
   /** 새 기록 작성이 막힌 이유 (계약 없음 · 읽기 전용 · 범위 밖). 있으면 빠른 메모를 숨긴다 — 수업 마치기는 가능 */
   writeBlockedReason?: string | null;
+  /**
+   * 승인된 단축 시간표 (실행 묶음 B1).
+   *
+   * ★ 승인안이 없으면 null 이다. 그때 단축 버튼은 비활성이고, 원문 시간표를
+   *   임의로 압축하지 않는다. 기준은 CORE 50분 + 선택 연계활동 10~15분이다.
+   */
+  shortSteps?: ShortModeStep[] | null;
 }
 
 const INITIAL: ClassModeActionState = { phase: "idle", message: null };
@@ -35,7 +44,15 @@ const INITIAL: ClassModeActionState = { phase: "idle", message: null };
  * · 오프라인이면 [수업 마치기] 를 하지 않는다
  * · 현재 단계는 이 화면 메모리에만 둔다 (비민감 navigation state)
  */
-export function DuringView({ sessionId, organizationId, steps, fallbackObjective, memo, writeBlockedReason = null }: DuringViewProps) {
+export function DuringView({
+  sessionId,
+  organizationId,
+  steps,
+  fallbackObjective,
+  memo,
+  writeBlockedReason = null,
+  shortSteps = null,
+}: DuringViewProps) {
   const online = useOnlineStatus();
   const effectiveSteps: ClassModeStep[] =
     steps.length > 0
@@ -43,6 +60,7 @@ export function DuringView({ sessionId, organizationId, steps, fallbackObjective
       : [{ sequenceNo: 1, title: "수업 진행", description: fallbackObjective, durationMinutes: null, materials: null }];
 
   const [index, setIndex] = useState(0);
+  const [shortMode, setShortMode] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [showMemo, setShowMemo] = useState(false);
   const [state, formAction, pending] = useActionState(finishClassSessionAction, INITIAL);
@@ -57,6 +75,18 @@ export function DuringView({ sessionId, organizationId, steps, fallbackObjective
           인터넷 연결이 끊겼습니다. 연결되면 다시 시도해 주세요.
         </p>
       ) : null}
+
+      {/*
+        실행 묶음 B1 — 단계 타이머와 단축 운영 안내.
+        타이머는 기준 시각으로 계산해 탭 비활성·재렌더와 무관하게 흐른다.
+        단계를 옮기면 stepKey 가 바뀌어 초기화된다.
+      */}
+      <StepTimer
+        stepKey={`${sessionId}:${step.sequenceNo}`}
+        recommendedMinutes={step.durationMinutes}
+      />
+
+      <ShortModeNotice shortSteps={shortSteps} active={shortMode} onToggle={setShortMode} />
 
       <section aria-labelledby="step-title" className="rounded-2xl border border-hairline bg-white p-6">
         <p className="text-[16px] font-semibold text-ink-muted">
