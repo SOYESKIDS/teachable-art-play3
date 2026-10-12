@@ -2,7 +2,13 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { BrandMark } from "@/components/layout/BrandMark";
 import { toHomeAnchor } from "@/components/layout/home-anchor";
-import { brandMessage, contactInfo, legalLinks, navigation } from "@/data/site-copy";
+import {
+  brandMessage,
+  contactInfo,
+  infoLinks,
+  legalLinks,
+  navigation,
+} from "@/data/site-copy";
 import { COMPANY_FIELDS } from "@/data/legal";
 
 /**
@@ -60,6 +66,21 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+            {/* 실행 묶음 D1 — 안내 페이지. 헤더는 폭 제약으로 "제공 현황"만 올린다. */}
+            <p className="eyebrow-ko mt-6 text-white/70">안내</p>
+            <ul className="mt-3 flex flex-col text-label">
+              {infoLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="inline-flex min-h-11 items-center transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
             <Link
               href="/kindergarten"
               className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 px-4 text-label font-semibold text-white/90 transition-colors hover:border-white/50 hover:bg-white/5 hover:text-white"

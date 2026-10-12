@@ -49,15 +49,34 @@ export const ctaLabels = {
   contact: "도입 상담 문의",
 };
 
-/** 기획서 23번: 헤더 내비게이션 (아직 없는 개별 라우트로 연결하지 않도록 전부 홈페이지 앵커로 구성) */
+/**
+ * 헤더 내비게이션.
+ *
+ * ★ 기존 홈 앵커를 그대로 둔다 (실행 묶음 D1).
+ *   앵커는 toHomeAnchor() 가 어느 페이지에서나 "/#..." 로 바꿔 준다.
+ *   뒤로가기 동작도 그대로다.
+ *
+ * ★ 안내 페이지는 실제 경로로 연결한다.
+ *   /faq · /guide/teacher · /roadmap 은 이제 존재하는 페이지다.
+ */
 export const navigation = [
-  { label: "운영 흐름", href: "#solution" },
-  { label: "한 번의 수업", href: "#program" },
-  { label: "8주 프로그램", href: "#journey" },
+  { label: "프로그램", href: "#journey" },
+  { label: "수업 방식", href: "#program" },
   { label: "성장기록", href: "#growth-record" },
   { label: "상품", href: "#pricing" },
   { label: "도입 안내", href: "#adoption" },
+  { label: "제공 현황", href: "/roadmap" },
   { label: "문의", href: "#contact" },
+];
+
+/**
+ * 안내 페이지 목록. Footer 가 쓴다.
+ * 헤더는 폭 제약이 있어 "제공 현황" 하나만 올린다.
+ */
+export const infoLinks: { label: string; href: string }[] = [
+  { label: "자주 묻는 질문", href: "/faq" },
+  { label: "교사용 안내", href: "/guide/teacher" },
+  { label: "제공 현황", href: "/roadmap" },
 ];
 
 /** Lead Form(4개 Type) 전용 Headline/설명 */

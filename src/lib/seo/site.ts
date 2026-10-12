@@ -65,6 +65,9 @@ export const publicRoutes: readonly PublicRoute[] = [
   { path: "/programs/starter", changeFrequency: "monthly", priority: 0.8 },
   { path: "/programs/standard", changeFrequency: "monthly", priority: 0.8 },
   { path: "/programs/premium", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/faq", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/guide/teacher", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/roadmap", changeFrequency: "weekly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
 ] as const;
