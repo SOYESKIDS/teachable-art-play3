@@ -6,6 +6,10 @@ import { LEAD_STATUSES } from "@/lib/admin/lead-filters";
 import type { LeadStatus } from "@/types/lead";
 import type { StatusUpdateState } from "./status-state";
 import { STATUS_UPDATE_FAILURE, statusUpdateOutcome } from "./status-outcome";
+import {
+  NonProductionWriteBlockedError,
+  assertWriteAllowed,
+} from "@/lib/env/deployment-guard";
 
 /**
  * 이 파일의 런타임 export는 async Server Action 함수뿐이어야 한다.
@@ -34,6 +38,22 @@ export async function updateLeadStatusAction(
   // Server Action은 Proxy 게이트와 무관하게 독립적으로 권한을 재확인한다.
   // Admin · Sales 공통 업무. 범위는 lead_submissions RLS 가 판정한다 (DEC-079).
   const { supabase } = await requireHqStaff();
+
+  // 실행 묶음 E — 비운영 배포가 운영 데이터에 쓰는 것을 막는다.
+  // 기본값은 꺼짐이라 이 호출은 지금 아무것도 바꾸지 않는다. 운영 배포에서는 항상 통과한다.
+  // 공개 상담 접수(client insert)는 이 경로를 지나지 않으므로 영향 범위가 분리되어 있다.
+  try {
+    assertWriteAllowed("admin/leads:status");
+  } catch (guardError) {
+    if (guardError instanceof NonProductionWriteBlockedError) {
+      return {
+        phase: "error",
+        message:
+          "비운영 환경에서 운영 데이터 쓰기가 차단되어 있습니다. 운영자에게 문의해 주세요.",
+      };
+    }
+    throw guardError;
+  }
 
   // status 단일 컬럼만 UPDATE한다.
   // DB에서도 grant update (status)로 다른 컬럼 변경이 차단되어 있다.

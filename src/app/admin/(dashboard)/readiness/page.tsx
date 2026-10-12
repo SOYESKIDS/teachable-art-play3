@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { fetchServiceReadiness } from "@/lib/admin/readiness-queries";
 import { todayInSeoul } from "@/lib/staff/class-session-queries";
 import { AdminReadinessView } from "@/components/admin/AdminReadinessView";
+import { DeploymentGuardCard } from "@/components/admin/DeploymentGuardCard";
+import { summarizeDeploymentGuard } from "@/lib/env/deployment-guard";
 
 export const metadata: Metadata = {
   title: "서비스 오픈 준비 | SOYESKIDS Admin",
@@ -23,6 +25,13 @@ export default async function AdminReadinessPage() {
   const { supabase } = await requireAdmin();
 
   const data = await fetchServiceReadiness(supabase, todayInSeoul());
+  // 실행 묶음 E — 판정 결과만 받는다. 환경변수 값은 이 경계를 넘지 않는다.
+  const guard = summarizeDeploymentGuard();
 
-  return <AdminReadinessView data={data} />;
+  return (
+    <div className="space-y-6">
+      <DeploymentGuardCard summary={guard} />
+      <AdminReadinessView data={data} />
+    </div>
+  );
 }
