@@ -141,7 +141,10 @@ export interface StarterWeekDetail {
   kit: string;
   workbook: string;
   materials: string;
+  /** 누리과정 공식 5영역만 (starter-journey.ts 가 원본에서 걸러낸 값) */
   nuriAreas: string[];
+  /** 원본 §3 표의 비(非)누리 영역 — "SOYE KIDS 핵심경험"으로 따로 표기한다 */
+  soyeCoreExperiences: string[];
   observationFocus: string[];
   familyConnection: string;
   crossWeek: string[];

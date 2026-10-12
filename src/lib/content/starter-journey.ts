@@ -31,7 +31,10 @@ export interface StarterWeek {
   artActivity: string;
   workbook: string;
   materials: string;
+  /** 누리과정 공식 5영역만 (원본 nuri_areas 에서 걸러낸 값) */
   nuriAreas: string[];
+  /** 원본 nuri_areas 중 누리과정 영역이 아닌 값 — SOYE KIDS 핵심경험으로 분리 표기한다 */
+  soyeCoreExperiences: string[];
   observationFocus: string[];
   familyConnection: string;
   media: string[];
@@ -62,6 +65,34 @@ interface ManifestWeek {
   cross_week: string[];
 }
 
+/**
+ * 2019 개정 누리과정의 공식 5영역.
+ *
+ * ★ 원본 교사용 가이드의 §3 표에는 이 다섯 개 밖의 값이 섞여 있는 주차가 있다
+ *   (W2 "정서·자기조절"). STARTER 표준화 규격 v1.0 §5 가 그 표기를 금지하고
+ *   "SOYE KIDS 핵심경험으로 분리"하도록 지정했다.
+ *
+ * ★ 원본과 정본 적재본(manifest)은 바꾸지 않는다 — 원본에 그렇게 적혀 있는 것이 사실이다.
+ *   공개 화면에서 "누리과정"이라는 라벨 아래 비공식 영역이 나가지 않도록
+ *   표시 계층에서만 갈라 놓는다.
+ */
+export const NURI_AREAS: readonly string[] = [
+  "신체운동·건강",
+  "의사소통",
+  "사회관계",
+  "예술경험",
+  "자연탐구",
+] as const;
+
+function splitNuriAreas(raw: string[]): { nuri: string[]; soye: string[] } {
+  const nuri: string[] = [];
+  const soye: string[] = [];
+  for (const area of raw) {
+    (NURI_AREAS.includes(area) ? nuri : soye).push(area);
+  }
+  return { nuri, soye };
+}
+
 export const STARTER_PROGRAM_CODE: string = manifest.program.code;
 
 export const STARTER_WEEKS: StarterWeek[] = (manifest.weeks as ManifestWeek[]).map(
@@ -79,7 +110,8 @@ export const STARTER_WEEKS: StarterWeek[] = (manifest.weeks as ManifestWeek[]).m
     artActivity: w.art_activity,
     workbook: w.workbook,
     materials: w.materials,
-    nuriAreas: w.nuri_areas,
+    nuriAreas: splitNuriAreas(w.nuri_areas).nuri,
+    soyeCoreExperiences: splitNuriAreas(w.nuri_areas).soye,
     observationFocus: w.observation_focus,
     familyConnection: w.family_connection,
     media: w.media,

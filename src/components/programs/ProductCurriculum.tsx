@@ -346,6 +346,16 @@ function WeekDetail({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <ChipList label="관찰 포인트" items={detail.observationFocus} accentText={accentText} />
         <ChipList label="누리과정" items={detail.nuriAreas} accentText={accentText} />
+        {/*
+          원본 §3 표에는 누리과정 5영역이 아닌 값이 섞인 주차가 있다 (W2 "정서·자기조절").
+          표준화 규격 §5 에 따라 "누리과정" 라벨 밖으로 빼서 따로 표기한다.
+          해당 값이 없는 주차에서는 ChipList 가 null 을 반환해 칸이 생기지 않는다.
+        */}
+        <ChipList
+          label="SOYE KIDS 핵심경험"
+          items={detail.soyeCoreExperiences}
+          accentText={accentText}
+        />
       </div>
     </div>
   );
