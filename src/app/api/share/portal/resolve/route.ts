@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createPublicClient } from "@/lib/supabase/public";
+import { registerPortalAccess } from "@/lib/share/portal-throttle";
 import {
   PORTAL_TOKEN_PATTERN,
   type ChildPortalResolveResponse,
@@ -12,7 +13,9 @@ import {
  * · anon 은 read_child_portal RPC 만 쓴다 (테이블 직접 SELECT 없음)
  * · 실패 원인(무효 · 중지 · 만료 · 숨김 · 계약 제한)을 구분하지 않는다 → 항상 { ok: false }
  * · token 을 로그에 남기지 않는다
- * · anon rate limit 은 AD-14 OPEN (IB-5)
+ * · 공개 조회 rate limit 은 DB(portal_access_throttle)로 전역 제한한다 — 실행 묶음 C3.
+ *   제한 장치가 미적용·미설정이면 조회를 막지 않고 degraded 로 기록한다.
+ *   "제한 적용 완료"로 조용히 넘기지 않는다.
  */
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -79,6 +82,21 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createPublicClient();
+
+    /**
+     * ★ 실행 묶음 C3 — 조회 1회를 기록하고 허용 여부를 받는다.
+     *   token·IP 원문을 넘기지 않는다 (서버 salt 로 해시한 키만 전달).
+     *   제한 초과도 다른 실패와 같은 응답을 쓴다 — 어느 쪽인지 알려 주지 않는다.
+     */
+    const throttle = await registerPortalAccess(supabase, request, "portal_resolve");
+    if (!throttle.allowed) {
+      return unavailable();
+    }
+    if (throttle.degraded) {
+      // 제한이 동작하지 않는 상태를 운영자가 알 수 있게 코드만 남긴다.
+      console.warn(`[share/portal] throttle degraded: ${throttle.reason}`);
+    }
+
     const { data, error } = await supabase.rpc("read_child_portal", { p_public_id: portalId, p_token: token });
 
     if (error) {
