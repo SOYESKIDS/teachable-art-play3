@@ -5,6 +5,8 @@ import {
   parseLeadFilters,
 } from "@/lib/admin/lead-filters";
 import { fetchLeadKpis, fetchLeadList } from "@/lib/admin/lead-queries";
+import { fetchLeadNotificationOverview } from "@/lib/admin/lead-notification-queries";
+import { LeadNotificationCard } from "./LeadNotificationCard";
 import { LeadFilterBar } from "./LeadFilterBar";
 import { LeadKpiRow } from "./LeadKpiRow";
 import { LeadsBrowser } from "./LeadsBrowser";
@@ -45,9 +47,11 @@ export default async function AdminLeadsPage({
   const filters = parseLeadFilters(await searchParams);
   const now = new Date();
 
-  const [listResult, kpiResult] = await Promise.all([
+  // 알림 조회는 문의 목록과 독립이다 — 알림 테이블이 아직 없어도 목록은 그대로 보인다.
+  const [listResult, kpiResult, notificationOverview] = await Promise.all([
     fetchLeadList(supabase, filters, now),
     fetchLeadKpis(supabase),
+    fetchLeadNotificationOverview(supabase),
   ]);
 
   const filtered = hasActiveFilters(filters);
@@ -61,8 +65,12 @@ export default async function AdminLeadsPage({
         </p>
       </div>
 
+      <div className="mt-6">
+        <LeadNotificationCard overview={notificationOverview} />
+      </div>
+
       {!listResult.ok || !kpiResult.ok ? (
-        <div className="mt-6">
+        <div className="mt-5">
           <PanelMessage
             title="문의 데이터를 불러오지 못했습니다."
             description="잠시 후 다시 시도해주세요."
