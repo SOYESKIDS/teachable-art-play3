@@ -27,6 +27,8 @@ export interface ClassModeData {
     id: string;
     organizationId: string;
     classId: string;
+    /** 자산 목록 조회에 쓴다 (자산 자체는 여기서 읽지 않는다) */
+    lessonId: string;
     status: ClassSessionStatus;
     scheduledDate: string | null;
     weekNo: number | null;
@@ -185,6 +187,7 @@ export async function fetchClassModeData(
         id: session.id,
         organizationId: session.organization_id,
         classId: session.class_id,
+        lessonId: session.lesson_id,
         status: session.status,
         scheduledDate: session.scheduled_date,
         weekNo: session.week_no,

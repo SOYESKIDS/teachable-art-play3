@@ -120,10 +120,16 @@ revoke execute on function public.portal_unlimited_access_count() from anon;
 grant execute on function public.portal_unlimited_access_count() to authenticated;
 
 
+-- ★ SECURITY DEFINER 다.
+--   ① audit 기록 helper(`private.record_audit_event`)는 소유자 권한으로만
+--      호출할 수 있다 — `authenticated` 에게서 EXECUTE 가 회수되어 있다.
+--   ② 이 함수가 쓰는 테이블에 `authenticated` 쓰기 grant 를 주지 않았다.
+--   그래서 권한 판정을 함수 안에서 직접 한다. 아래 is_hq_admin 검사가 그 게이트다.
+
 create or replace function public.apply_portal_share_window(p_confirm_count integer)
 returns integer
 language plpgsql
-security invoker
+security definer
 set search_path = ''
 as $$
 declare
@@ -153,12 +159,8 @@ begin
 
   get diagnostics v_changed = row_count;
 
-  insert into public.audit_events (
-    organization_id, actor_user_id, event_type, target_type, target_id, reason, metadata
-  )
-  values (
+  perform private.record_audit_event(
     null,
-    auth.uid(),
     'portal.share_window_applied',
     'child_portal',
     null,

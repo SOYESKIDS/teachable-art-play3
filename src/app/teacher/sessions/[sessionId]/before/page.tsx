@@ -3,6 +3,10 @@ import { notFound, redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth/organization";
 import { resolveMembership } from "@/lib/staff/membership";
 import { fetchClassModeData } from "@/lib/staff/class-mode-queries";
+import { fetchLessonAssets } from "@/lib/curriculum/lesson-asset-queries";
+import { getLessonAssetUrlAction } from "@/lib/staff/lesson-asset-actions";
+import { LessonAssetPanel } from "@/components/teacher/LessonAssetPanel";
+import { LessonAssetDownloadPanel } from "@/components/teacher/LessonAssetDownloadPanel";
 import { ClassModeShell } from "@/components/class-mode/ClassModeShell";
 import { BeforeChecklist } from "@/components/class-mode/BeforeChecklist";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
@@ -83,6 +87,8 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
     .flatMap((value) => value.split(/[\n,·]/).map((item) => item.trim()))
     .filter(Boolean);
 
+  const assetList = await fetchLessonAssets(supabase, data.session.classId, data.session.lessonId);
+
   const blockedReason = !data.entitlements.classModeWrite
     ? data.entitlements.serviceMode === "active"
       ? "현재 이용 상품 또는 계약 범위에서 이 반의 수업을 진행할 수 없습니다. 원장님께 문의해 주세요."
@@ -118,6 +124,29 @@ export default async function TeacherBeforePage({ params, searchParams }: Before
           </ol>
         ) : null}
       </section>
+
+      {/*
+        수업 자산 — 재생은 B2, 미리 받기는 B2b.
+        ★ 미리 받기는 `download_allowed` 가 켜진 자료만 보여 준다. 기본값이
+          꺼짐이므로 정책 확정 전에는 비어 있고, 화면이 그 이유를 적는다.
+        ★ 목록 조회가 실패하거나 미적용이면 패널이 그 상태를 그대로 보여 준다.
+          수업 진행과 기록은 그대로 동작한다.
+      */}
+      <div className="mb-6 flex flex-col gap-4">
+        <LessonAssetPanel
+          classId={data.session.classId}
+          assets={assetList.assets}
+          ok={assetList.ok}
+          notInstalled={assetList.notInstalled}
+          resolveUrl={getLessonAssetUrlAction}
+        />
+        {assetList.ok && !assetList.notInstalled ? (
+          <LessonAssetDownloadPanel
+            classId={data.session.classId}
+            assets={assetList.assets}
+          />
+        ) : null}
+      </div>
 
       <BeforeChecklist
         sessionId={data.session.id}

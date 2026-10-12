@@ -34,8 +34,17 @@ export interface AssetUrlResponse {
   reason?: LessonAssetUnavailableReason;
 }
 
-/** 서명 URL 을 받아 오는 함수. 서버 action 또는 route handler 를 감싼다. */
-export type AssetUrlResolver = (assetId: string) => Promise<AssetUrlResponse>;
+/**
+ * 서명 URL 을 받아 오는 함수. **서버 action 참조를 그대로 넘긴다.**
+ *
+ * ★ 서버 컴포넌트에서 인라인 화살표 함수를 넘기지 않는다. 그것은
+ *   클라이언트로 직렬화되지 않는다. 그래서 `classId` 를 첫 인자로 받는 모양으로
+ *   두고, 호출부가 action 자체를 넘긴다.
+ */
+export type AssetUrlResolver = (
+  classId: string,
+  assetId: string,
+) => Promise<AssetUrlResponse>;
 
 type PlaybackState =
   | { kind: "idle" }
@@ -69,11 +78,13 @@ function durationLabel(seconds: number | null): string | null {
 }
 
 export function LessonAssetPanel({
+  classId,
   assets,
   ok,
   notInstalled,
   resolveUrl,
 }: {
+  classId: string;
   assets: LessonAsset[];
   ok: boolean;
   notInstalled: boolean;
@@ -97,7 +108,7 @@ export function LessonAssetPanel({
       stopCurrent();
       setPlayback({ kind: "loading", assetId: asset.assetId });
 
-      const result = await resolveUrl(asset.assetId);
+      const result = await resolveUrl(classId, asset.assetId);
 
       if (!result.ok || !result.url) {
         setPlayback({
@@ -110,7 +121,7 @@ export function LessonAssetPanel({
 
       setPlayback({ kind: "ready", assetId: asset.assetId, url: result.url });
     },
-    [resolveUrl, stopCurrent],
+    [classId, resolveUrl, stopCurrent],
   );
 
   const close = useCallback(() => {

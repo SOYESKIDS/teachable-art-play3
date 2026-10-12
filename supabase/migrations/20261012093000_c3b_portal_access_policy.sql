@@ -176,13 +176,19 @@ grant execute on function public.read_child_portal_guarded(uuid, text) to anon;
 -- 4. 정책 변경 RPC (HQ Admin)
 -- ---------------------------------------------------------------------
 
+-- ★ SECURITY DEFINER 다.
+--   ① audit 기록 helper(`private.record_audit_event`)는 소유자 권한으로만
+--      호출할 수 있다 — `authenticated` 에게서 EXECUTE 가 회수되어 있다.
+--   ② 이 함수가 쓰는 테이블에 `authenticated` 쓰기 grant 를 주지 않았다.
+--   그래서 권한 판정을 함수 안에서 직접 한다. 아래 is_hq_admin 검사가 그 게이트다.
+
 create or replace function public.set_portal_access_policy(
   p_allow_unlimited_legacy boolean,
   p_decision_note text
 )
 returns void
 language plpgsql
-security invoker
+security definer
 set search_path = ''
 as $$
 declare
@@ -208,12 +214,8 @@ begin
     updated_at = pg_catalog.clock_timestamp()
   where id;
 
-  insert into public.audit_events (
-    organization_id, actor_user_id, event_type, target_type, target_id, reason, metadata
-  )
-  values (
+  perform private.record_audit_event(
     null,
-    auth.uid(),
     'portal.access_policy_changed',
     'portal_policy',
     null,

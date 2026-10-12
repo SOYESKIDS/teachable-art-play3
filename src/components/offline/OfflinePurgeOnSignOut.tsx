@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { purgeAll } from "@/lib/offline/offline-store";
+import { purgeAllAssets } from "@/lib/offline/asset-cache";
 
 /**
  * 로그인 화면 도착 시 오프라인 대기 기록 정리 — 사용자 지시 항목 4.
@@ -20,11 +21,15 @@ import { purgeAll } from "@/lib/offline/offline-store";
  * 맞다 — 다음 사용자가 이전 사용자의 기록을 읽거나 동기화하는 일을 막는 것이
  * 목적이기 때문이다. 레코드와 암호화 키를 함께 지운다.
  *
+ * 미리 받아 둔 수업 자료 파일(`asset-cache`)도 함께 지운다. 다음 사용자가
+ * 이전 기관의 자료를 열 수 없어야 한다.
+ *
  * ── 화면에 아무것도 그리지 않는다 ──────────────────────────────────
  */
 export function OfflinePurgeOnSignOut() {
   useEffect(() => {
     void purgeAll();
+    void purgeAllAssets();
   }, []);
 
   return null;
