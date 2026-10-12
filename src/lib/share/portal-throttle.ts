@@ -12,15 +12,24 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  *   서버 비밀값(`PORTAL_THROTTLE_SALT`)을 섞어 sha256 hex 를 만들고 그것만 넘긴다.
  *   DB 만 보고 누가 접속했는지 되짚을 수 없다.
  *
- * ★ 제한 자체가 실패하면 조회를 막지 않는다.
- *   throttle 테이블이 아직 적용되지 않았거나 RPC 가 없으면 `allowed` 로 돌려준다.
- *   보호자가 기록을 못 보는 것보다, 제한이 아직 없는 상태를 보고하는 쪽이 낫다.
- *   그 사실은 `degraded: true` 로 알린다 — 조용히 "제한 적용됨"으로 넘기지 않는다.
+ * ★ 제한이 동작하지 않으면 **조회를 막는다 (fail-closed).**
+ *   이전 구현은 salt 미설정·migration 미적용 때 통과시켰다. 그러면 보안 설정이
+ *   빠진 환경에서 아동 기록이 제한 없이 나간다. 보호자가 일시적으로 못 보는 것보다
+ *   민감 기록이 통제 없이 나가는 쪽이 더 나쁘다.
+ *
+ *   막힌 이유는 서버 로그에만 남기고, 응답은 다른 실패와 같은 형태를 쓴다.
+ *   운영자는 로그와 `/admin/readiness` 로 원인을 본다.
  */
 
 export interface ThrottleVerdict {
+  /** false 면 민감 내용을 제공하지 않는다 */
   allowed: boolean;
-  /** 제한 장치가 동작하지 않았다 (미적용 · 설정 없음 · 조회 실패) */
+  /**
+   * 제한 장치가 동작하지 않았다 (미적용 · 설정 없음 · 조회 실패).
+   *
+   * degraded 이면 `allowed` 는 항상 false 다 — 제한을 우회해 제공하지 않는다.
+   * 운영자가 원인을 알 수 있게 사유를 함께 돌려준다.
+   */
   degraded: boolean;
   /** degraded 사유. 운영자 확인용이며 사용자 화면에 쓰지 않는다 */
   reason:
@@ -81,8 +90,8 @@ export async function registerPortalAccess(
   const key = bucketKey(request, scope);
 
   if (key === null) {
-    // salt 미설정. 제한이 동작하지 않는다는 사실을 숨기지 않는다.
-    return { allowed: true, degraded: true, reason: "salt_missing" };
+    // ★ salt 미설정 — 제한을 걸 수 없으므로 제공하지 않는다.
+    return { allowed: false, degraded: true, reason: "salt_missing" };
   }
 
   const { data, error } = await supabase.rpc("register_portal_access_attempt", {
@@ -94,8 +103,9 @@ export async function registerPortalAccess(
       error.code === UNDEFINED_FUNCTION || error.code === UNDEFINED_TABLE;
     // 오류 코드만 남긴다. 키·IP·token 은 로그에 넣지 않는다.
     console.error("[share/portal] throttle unavailable:", { code: error.code ?? null });
+    // ★ 제한 장치가 없으면 제공하지 않는다 (fail-closed).
     return {
-      allowed: true,
+      allowed: false,
       degraded: true,
       reason: missing ? "rpc_missing" : "rpc_failed",
     };

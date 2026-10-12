@@ -14,8 +14,10 @@ import {
  * · 실패 원인(무효 · 중지 · 만료 · 숨김 · 계약 제한)을 구분하지 않는다 → 항상 { ok: false }
  * · token 을 로그에 남기지 않는다
  * · 공개 조회 rate limit 은 DB(portal_access_throttle)로 전역 제한한다 — 실행 묶음 C3.
- *   제한 장치가 미적용·미설정이면 조회를 막지 않고 degraded 로 기록한다.
- *   "제한 적용 완료"로 조용히 넘기지 않는다.
+ *   **제한 장치가 미적용·미설정이면 제공하지 않는다 (fail-closed).**
+ *   사유는 서버 로그에만 남기고 응답은 다른 실패와 같다.
+ * · 접근 정책(무기한 legacy 링크 허용 여부)은 read_child_portal_guarded 가 판정한다.
+ *   그 함수가 없으면(migration 미적용) 역시 제공하지 않는다.
  */
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -90,14 +92,20 @@ export async function POST(request: Request) {
      */
     const throttle = await registerPortalAccess(supabase, request, "portal_resolve");
     if (!throttle.allowed) {
+      if (throttle.degraded) {
+        // 보안 설정·migration 이 빠져 제한을 걸 수 없다. 사유는 로그에만 남긴다.
+        console.error(`[share/portal] blocked, throttle unavailable: ${throttle.reason}`);
+      }
       return unavailable();
     }
-    if (throttle.degraded) {
-      // 제한이 동작하지 않는 상태를 운영자가 알 수 있게 코드만 남긴다.
-      console.warn(`[share/portal] throttle degraded: ${throttle.reason}`);
-    }
 
-    const { data, error } = await supabase.rpc("read_child_portal", { p_public_id: portalId, p_token: token });
+    /**
+     * ★ 정책 게이트를 지난 wrapper 를 쓴다.
+     *   무기한 legacy 링크를 제공할지는 portal_access_policy 가 정하고,
+     *   토큰·중지·만료·계약 범위·숨김 판정은 기존 read_child_portal 이 한다.
+     *   wrapper 가 없으면(migration 미적용) 아래 error 분기에서 제공하지 않는다.
+     */
+    const { data, error } = await supabase.rpc("read_child_portal_guarded", { p_public_id: portalId, p_token: token });
 
     if (error) {
       console.error(`[share/portal] resolve failed: code=${error.code ?? "unknown"}`);

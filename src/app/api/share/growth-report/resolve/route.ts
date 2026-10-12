@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createPublicClient } from "@/lib/supabase/public";
+import { registerPortalAccess } from "@/lib/share/portal-throttle";
 import {
   SHARE_TOKEN_PATTERN,
   type ParentSharedActivity,
@@ -138,6 +139,23 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createPublicClient();
+
+    /**
+     * ★ 공개 조회 제한 — 보호자 기록은 민감 내용이다 (사용자 지시 항목 3).
+     *   legacy 공유도 Portal 과 같은 전역 제한을 지난다. 제한 장치가 없으면
+     *   제공하지 않는다 (fail-closed). 사유는 서버 로그에만 남긴다.
+     *
+     *   ⚠️ 배포 전제: `PORTAL_THROTTLE_SALT` 가 설정되어 있어야 한다.
+     *      설정이 없으면 기존에 나간 공유 링크도 열리지 않는다.
+     *      08_운영설정_결정대기 에 배포 전제로 기록했다.
+     */
+    const throttle = await registerPortalAccess(supabase, request, "growth_report_resolve");
+    if (!throttle.allowed) {
+      if (throttle.degraded) {
+        console.error(`[share/growth-report] blocked, throttle unavailable: ${throttle.reason}`);
+      }
+      return unavailable();
+    }
 
     // ★ 원본 token 을 그대로 넘긴다. 해시는 DB 함수 안에서만 만들어진다.
     //   token 은 여기서 어디에도 저장·기록되지 않고 이 호출과 함께 사라진다.
