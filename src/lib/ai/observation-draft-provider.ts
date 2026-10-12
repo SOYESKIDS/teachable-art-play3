@@ -1,5 +1,11 @@
 import "server-only";
 import OpenAI from "openai";
+import {
+  minimizeFreeText,
+  summarizeMinimization,
+  type KnownIdentifiers,
+  type MinimizationSummary,
+} from "@/lib/ai/identifier-minimization";
 
 /**
  * SERVICE-10A — 관찰기록 정리 초안 provider.
@@ -67,6 +73,17 @@ export interface ObservationDraftInput {
   childVoice: string | null;
   /** 교사 관찰 메모 (교사가 기록한 원문) */
   teacherNote: string | null;
+  /**
+   * 자유서술 치환에만 쓰는 등록된 이름 (실행 묶음 C4).
+   *
+   * ★ 이 값 자체는 **전송되지 않는다.**
+   *   childVoice · teacherNote 안에 적힌 이름을 자리표시로 바꾸기 위한 대조용이다.
+   *   호출자는 서버에서 조회한 값만 넣는다.
+   *
+   * ★ 넘기지 않아도 동작한다. 그때는 연락처·이메일·식별번호·보호자 호칭만 가려지고,
+   *   이름 치환은 일어나지 않는다. 결과의 residualRisk 가 그 사실을 반영한다.
+   */
+  knownIdentifiers?: KnownIdentifiers;
 }
 
 export type ObservationDraftResult =
@@ -85,7 +102,15 @@ export type ObservationDraftResult =
        * failed         : provider 호출 실패 (네트워크 · 인증 · 서버 오류 · 타임아웃)
        * invalid_output : 응답이 비었거나 너무 길다
        */
-      reason: "not_configured" | "no_source" | "failed" | "invalid_output";
+      reason:
+        | "not_configured"
+        | "no_source"
+        | "failed"
+        | "invalid_output"
+        /** 실행 묶음 C4 — 진단·의료 표현이 보여 전송하지 않았다 */
+        | "sensitive_input";
+      /** 치환 결과 요약 (있을 때만). 원문 조각을 담지 않는다 */
+      minimization?: MinimizationSummary;
     };
 
 /**
@@ -134,12 +159,33 @@ const SYSTEM_INSTRUCTIONS = [
 ].join("\n");
 
 /** provider에 보낼 사용자 입력을 만든다. 값이 없는 항목은 아예 넣지 않는다. */
-function buildUserInput(input: ObservationDraftInput): string | null {
-  const childVoice = input.childVoice?.trim() ?? "";
-  const teacherNote = input.teacherNote?.trim() ?? "";
+interface BuiltUserInput {
+  text: string | null;
+  /** 치환 결과 요약. 원문 조각을 담지 않는다. */
+  minimization: MinimizationSummary;
+}
+
+/**
+ * 전송할 prompt 본문을 만든다.
+ *
+ * ★ 실행 묶음 C4 — 자유서술은 전송 직전에 치환한다.
+ *   원문(DB 의 관찰기록)은 바꾸지 않는다. 여기서 만드는 것은 전송용 사본이다.
+ *   치환이 완전한 익명화가 아니라는 점은 identifier-minimization.ts 주석에 있다.
+ */
+function buildUserInput(input: ObservationDraftInput): BuiltUserInput {
+  const known = input.knownIdentifiers ?? {};
+
+  const voice = minimizeFreeText(input.childVoice, known);
+  const note = minimizeFreeText(input.teacherNote, known);
+  const minimization = summarizeMinimization([voice, note]);
+
+  const childVoice = voice.text.trim();
+  const teacherNote = note.text.trim();
 
   // 정리할 원문이 하나도 없으면 호출하지 않는다.
-  if (childVoice === "" && teacherNote === "") return null;
+  if (childVoice === "" && teacherNote === "") {
+    return { text: null, minimization };
+  }
 
   const lines: string[] = [];
 
@@ -153,7 +199,7 @@ function buildUserInput(input: ObservationDraftInput): string | null {
   if (childVoice !== "") lines.push(`아이의 말: ${childVoice}`);
   if (teacherNote !== "") lines.push(`교사 관찰: ${teacherNote}`);
 
-  return lines.join("\n");
+  return { text: lines.join("\n"), minimization };
 }
 
 /**
@@ -189,11 +235,27 @@ export async function generateObservationDraft(
     return { ok: false, reason: "not_configured" };
   }
 
-  const userInput = buildUserInput(input);
+  const built = buildUserInput(input);
 
-  if (userInput === null) {
+  if (built.text === null) {
     return { ok: false, reason: "no_source" };
   }
+
+  /**
+   * ★ 실행 묶음 C4 — 진단·의료 표현이 보이면 전송하지 않는다.
+   *   아이를 진단하지 않는 서비스이고, 그런 문장이 메모에 들어왔다면
+   *   AI 로 보내기 전에 사람이 먼저 봐야 한다.
+   *   원문·치환문을 로그에 남기지 않는다 — 판정 결과만 돌려준다.
+   */
+  if (built.minimization.blocked) {
+    return {
+      ok: false,
+      reason: "sensitive_input",
+      minimization: built.minimization,
+    };
+  }
+
+  const userInput = built.text;
 
   let rawText: string;
 

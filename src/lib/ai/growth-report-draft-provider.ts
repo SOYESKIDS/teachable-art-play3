@@ -1,5 +1,12 @@
 import "server-only";
 import OpenAI from "openai";
+import {
+  minimizeFreeText,
+  summarizeMinimization,
+  type KnownIdentifiers,
+  type MinimizationResult,
+  type MinimizationSummary,
+} from "@/lib/ai/identifier-minimization";
 
 /**
  * SERVICE-11B — 성장 리포트 초안 provider.
@@ -61,6 +68,11 @@ export interface GrowthReportDraftInput {
     sessionCount: number;
   };
   evidence: GrowthReportEvidenceInput[];
+  /**
+   * 자유서술 치환에만 쓰는 등록된 이름 (실행 묶음 C4).
+   * 이 값 자체는 전송되지 않는다. 넘기지 않아도 동작한다.
+   */
+  knownIdentifiers?: KnownIdentifiers;
 }
 
 export type GrowthReportDraftResult =
@@ -81,7 +93,15 @@ export type GrowthReportDraftResult =
        * failed         : provider 호출 실패 (네트워크 · 인증 · 서버 오류 · 타임아웃)
        * invalid_output : 응답이 비었거나 형식이 어긋나거나 저장 한도를 넘었다
        */
-      reason: "not_configured" | "no_source" | "failed" | "invalid_output";
+      reason:
+        | "not_configured"
+        | "no_source"
+        | "failed"
+        | "invalid_output"
+        /** 실행 묶음 C4 — 진단·의료 표현이 보여 전송하지 않았다 */
+        | "sensitive_input";
+      /** 치환 결과 요약 (있을 때만). 원문 조각을 담지 않는다 */
+      minimization?: MinimizationSummary;
     };
 
 /**
@@ -171,8 +191,24 @@ function logFailure(scope: string, message: string) {
 }
 
 /** provider에 보낼 사용자 입력을 만든다. 값이 없는 항목은 아예 넣지 않는다. */
-function buildUserInput(input: GrowthReportDraftInput): string | null {
-  if (input.evidence.length === 0) return null;
+interface BuiltUserInput {
+  text: string | null;
+  minimization: MinimizationSummary;
+}
+
+/**
+ * 전송할 prompt 본문을 만든다.
+ *
+ * ★ 실행 묶음 C4 — 자유서술 세 칸(아이의 말 · 교사 관찰 · 교사 검토 완료 기록)을
+ *   전송 직전에 치환한다. 근거 스냅샷 원문은 바꾸지 않는다.
+ */
+function buildUserInput(input: GrowthReportDraftInput): BuiltUserInput {
+  const known = input.knownIdentifiers ?? {};
+  const minimizationResults: MinimizationResult[] = [];
+
+  if (input.evidence.length === 0) {
+    return { text: null, minimization: summarizeMinimization([]) };
+  }
 
   const lines: string[] = [];
 
@@ -193,13 +229,21 @@ function buildUserInput(input: GrowthReportDraftInput): string | null {
     if (item.domainLabels.length > 0) {
       lines.push(`관찰영역: ${item.domainLabels.join(", ")}`);
     }
-    if (item.childVoice) lines.push(`아이의 말: ${item.childVoice}`);
-    if (item.teacherNote) lines.push(`교사 관찰: ${item.teacherNote}`);
-    lines.push(`교사 검토 완료 기록: ${item.reviewedText}`);
+    const voice = minimizeFreeText(item.childVoice, known);
+    const note = minimizeFreeText(item.teacherNote, known);
+    const reviewed = minimizeFreeText(item.reviewedText, known);
+    minimizationResults.push(voice, note, reviewed);
+
+    if (voice.text) lines.push(`아이의 말: ${voice.text}`);
+    if (note.text) lines.push(`교사 관찰: ${note.text}`);
+    lines.push(`교사 검토 완료 기록: ${reviewed.text}`);
     lines.push("");
   });
 
-  return lines.join("\n").trim();
+  return {
+    text: lines.join("\n").trim(),
+    minimization: summarizeMinimization(minimizationResults),
+  };
 }
 
 /** 모델 응답에서 JSON 객체를 꺼낸다. 추측하지 않고 형식이 어긋나면 실패로 본다. */
@@ -290,11 +334,22 @@ export async function generateGrowthReportDraft(
     return { ok: false, reason: "not_configured" };
   }
 
-  const userInput = buildUserInput(input);
+  const built = buildUserInput(input);
 
-  if (userInput === null) {
+  if (built.text === null) {
     return { ok: false, reason: "no_source" };
   }
+
+  // ★ 실행 묶음 C4 — 진단·의료 표현이 보이면 전송하지 않는다. 판정 결과만 돌려준다.
+  if (built.minimization.blocked) {
+    return {
+      ok: false,
+      reason: "sensitive_input",
+      minimization: built.minimization,
+    };
+  }
+
+  const userInput = built.text;
 
   let rawText: string;
 
