@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OfflinePurgeOnSignOut } from "@/components/offline/OfflinePurgeOnSignOut";
 import { StaffLoginCard } from "@/components/auth/StaffLoginCard";
 import { resolveLoginNotice } from "./form-state";
 
@@ -29,6 +30,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
+      {/* 로그인 화면 = 세션 없음. 이전 사용자의 오프라인 대기 기록을 지운다 (항목 4) */}
+      <OfflinePurgeOnSignOut />
       <div className="w-full max-w-[440px]">
         <StaffLoginCard
           title="기관 로그인"

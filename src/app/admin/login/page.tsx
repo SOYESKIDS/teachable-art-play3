@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OfflinePurgeOnSignOut } from "@/components/offline/OfflinePurgeOnSignOut";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -24,6 +25,8 @@ export default async function AdminLoginPage({
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
+      {/* 로그인 화면 = 세션 없음. 이전 사용자의 오프라인 대기 기록을 지운다 (항목 4) */}
+      <OfflinePurgeOnSignOut />
       <div className="w-full max-w-[420px]">
         <div className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-8 shadow-[var(--shadow-card)] sm:p-10">
           <p className="text-[12px] font-bold tracking-[0.18em] text-yellow">
