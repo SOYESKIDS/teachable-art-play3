@@ -11,6 +11,7 @@ import {
   noticeWarning,
 } from "@/components/ui/app-button";
 import { fieldLabel, fieldTextarea } from "@/components/ui/field";
+import { ReportPrintActions } from "@/components/staff/ReportPrintActions";
 import { completeWeeklyAction, saveWeeklyDraftAction, startCorrectionAction } from "@/lib/staff/weekly-report-actions";
 import type { WeeklyComposerData, WeeklyContent } from "@/lib/staff/weekly-report-queries";
 import { formatDotDate } from "@/lib/entitlement/labels";
@@ -279,11 +280,8 @@ export function WeeklyComposer({ data, canWrite }: WeeklyComposerProps) {
                 수정본 만들기
               </button>
             ) : null}
-            {!data.report.hidden ? (
-              <button type="button" onClick={() => window.print()} className={appButtonSecondary}>
-                인쇄
-              </button>
-            ) : null}
+            {/* 숨긴 기록은 인쇄를 제안하지 않는다 (DEC-102) */}
+            {!data.report.hidden ? <ReportPrintActions /> : null}
           </div>
         </section>
       ) : (

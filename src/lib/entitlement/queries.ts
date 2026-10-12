@@ -26,6 +26,12 @@ export interface ClassEntitlements {
   inContractScope: boolean;
   classModeWrite: boolean;
   weeklyReportWrite: boolean;
+  /** 계약 ∧ 출시. 출시 전에는 계약에 있어도 false 다 (P1) */
+  monthlyReportWrite: boolean;
+  /** 계약 ∧ 출시 (P2) */
+  semesterReportWrite: boolean;
+  /** 계약 ∧ 출시. 반별 일괄 인쇄 (P1) */
+  bulkPrint: boolean;
   aiC1: boolean;
 }
 
@@ -46,6 +52,9 @@ const CLOSED_CLASS: ClassEntitlements = {
   inContractScope: false,
   classModeWrite: false,
   weeklyReportWrite: false,
+  monthlyReportWrite: false,
+  semesterReportWrite: false,
+  bulkPrint: false,
   aiC1: false,
 };
 
@@ -101,6 +110,11 @@ export async function fetchClassEntitlements(supabase: SupabaseClient, classId: 
     inContractScope: row.in_contract_scope === true,
     classModeWrite: row.class_mode_write === true,
     weeklyReportWrite: row.weekly_report_write === true,
+    // ★ 없는 key 는 false 다. 구 RPC 가 아직 적용된 환경에서 월간·학기·일괄
+    //   인쇄를 열어 주지 않는다 (fail closed).
+    monthlyReportWrite: row.monthly_report_write === true,
+    semesterReportWrite: row.semester_report_write === true,
+    bulkPrint: row.bulk_print === true,
     aiC1: row.ai_c1 === true,
   };
 }

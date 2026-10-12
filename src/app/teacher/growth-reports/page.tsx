@@ -9,6 +9,12 @@ import { GrowthReportList } from "@/components/staff/GrowthReportList";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { WeeklyQueue } from "@/components/staff/WeeklyQueue";
+import { PeriodQueue } from "@/components/staff/PeriodQueue";
+import {
+  blocksFromWeeks,
+  fetchPeriodQueue,
+} from "@/lib/staff/period-report-composer-queries";
+import { PERIOD_REPORT_LABEL } from "@/lib/staff/period-report-queries";
 import { TEACHER_NAV } from "../nav";
 
 export const metadata: Metadata = {
@@ -53,6 +59,30 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
   const selectedOption = queue && selected ? queue.classes.find((item) => item.assignmentId === selected.assignmentId) : null;
   const entitlements = selected ? await fetchClassEntitlements(supabase, selected.classId) : null;
   const orgQuery = `org=${encodeURIComponent(membership.organizationId)}`;
+
+  /**
+   * 월간 요약 — 4주 블록.
+   *
+   * ★ 블록 목록은 **수업이 있는 주차에서 파생**한다. 1~13 을 전부 늘어놓고
+   *   재료 없는 블록을 제안하지 않는다.
+   * ★ 기능이 꺼져 있어도 목록은 보여 준다. 다만 작성 버튼을 두지 않고 이유를 쓴다.
+   */
+  const blocks = selectedOption ? blocksFromWeeks(selectedOption.weeks) : [];
+  const requestedBlock = Number(first(params.block));
+  const activeBlock = blocks.includes(requestedBlock)
+    ? requestedBlock
+    : selected
+      ? (blocks.find((block) => block === Math.floor((selected.weekNo - 1) / 4) + 1) ??
+         blocks[blocks.length - 1] ??
+         null)
+      : null;
+
+  const periodQueue =
+    selected && activeBlock !== null
+      ? await fetchPeriodQueue(supabase, selected.assignmentId, "monthly", {
+          blockNo: activeBlock,
+        })
+      : null;
 
   return (
     <StaffShell
@@ -120,6 +150,16 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
                 현재 읽기 전용 상태이거나 이용 상품에 포함되지 않아 새 리포트를 작성할 수 없습니다. 원장님께 문의해 주세요.
               </p>
             ) : null}
+            {entitlements?.bulkPrint ? (
+              <p className="mt-3">
+                <Link
+                  href={`/teacher/growth-reports/print?${orgQuery}&class=${selected.classId}&assignment=${selected.assignmentId}&week=${selected.weekNo}`}
+                  className="inline-flex min-h-11 items-center text-[14px] font-semibold text-brand-navy underline"
+                >
+                  이 반 {selected.weekNo}주 완료본 인쇄 · PDF 저장
+                </Link>
+              </p>
+            ) : null}
             <div className="mt-4">
               <WeeklyQueue
                 organizationId={membership.organizationId}
@@ -132,6 +172,75 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
           </>
         )}
       </section>
+
+      {selected && selectedOption && activeBlock !== null ? (
+        <section aria-labelledby="monthly-heading" className="mt-10">
+          <h2 id="monthly-heading" className="text-[19px] font-bold text-ink">
+            {PERIOD_REPORT_LABEL.monthly}
+          </h2>
+          <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">
+            같은 원아의 완료된 주간 기록을 모아 구성합니다. 기록에 없는 관찰·발화·사진을 만들지
+            않고, 평균·성장률·서열을 계산하지 않습니다.
+          </p>
+
+          <nav aria-label="기간 선택" className="mt-3 flex flex-wrap gap-2">
+            {blocks.map((block) => (
+              <Link
+                key={block}
+                href={`/teacher/growth-reports?${orgQuery}&class=${selected.classId}&week=${selected.weekNo}&block=${block}`}
+                aria-current={block === activeBlock ? "page" : undefined}
+                className={`inline-flex min-h-11 items-center rounded-lg border px-3 text-[14px] ${
+                  block === activeBlock
+                    ? "border-brand-navy bg-brand-sky font-bold text-ink"
+                    : "border-hairline bg-white text-ink"
+                }`}
+              >
+                {block}번째 4주
+              </Link>
+            ))}
+          </nav>
+
+          {entitlements && !entitlements.monthlyReportWrite ? (
+            <p className="mt-3 rounded-lg border border-warning-border bg-warning-soft px-4 py-3 text-[14px] leading-relaxed text-warning-text">
+              월간 요약은 현재 이용 상품에 포함되지 않았거나 아직 출시되지 않아 새로 작성할 수
+              없습니다. 이미 완료된 내용은 열어서 볼 수 있습니다.
+            </p>
+          ) : null}
+
+          {entitlements?.bulkPrint ? (
+            <p className="mt-3">
+              <Link
+                href={`/teacher/growth-reports/print?${orgQuery}&class=${selected.classId}&assignment=${selected.assignmentId}&block=${activeBlock}`}
+                className="inline-flex min-h-11 items-center text-[14px] font-semibold text-brand-navy underline"
+              >
+                이 반 {activeBlock}번째 4주 완료본 인쇄 · PDF 저장
+              </Link>
+            </p>
+          ) : null}
+
+          {periodQueue && !periodQueue.ok && !periodQueue.notInstalled ? (
+            <p className="mt-3 rounded-xl border border-hairline bg-white px-4 py-8 text-center text-[15px] text-ink">
+              월간 요약 상태를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
+            </p>
+          ) : (
+            <div className="mt-4">
+              <PeriodQueue
+                organizationId={membership.organizationId}
+                assignmentId={selected.assignmentId}
+                kind="monthly"
+                blockNo={activeBlock}
+                childRows={queue?.rows.map((row) => ({
+                  childId: row.childId,
+                  childName: row.childName,
+                })) ?? []}
+                rows={periodQueue?.rows ?? []}
+                canWrite={Boolean(entitlements?.monthlyReportWrite)}
+                notInstalled={Boolean(periodQueue?.notInstalled)}
+              />
+            </div>
+          )}
+        </section>
+      ) : null}
 
       <section aria-labelledby="legacy-heading" className="mt-10">
         <h2 id="legacy-heading" className="text-[19px] font-bold text-ink">

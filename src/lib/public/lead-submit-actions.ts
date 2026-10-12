@@ -7,10 +7,7 @@ import {
   type LeadFormValues,
 } from "@/lib/validation/leadForm";
 import { SUBMISSION_TYPES, type SubmissionType } from "@/types/leadForm";
-import {
-  NonProductionWriteBlockedError,
-  assertWriteAllowed,
-} from "@/lib/env/deployment-guard";
+import { tryGuardWrite } from "@/lib/env/write-guard";
 
 /**
  * 공개 상담 접수 — 실행 묶음 E 보완.
@@ -117,14 +114,8 @@ export async function submitLeadAction(
    *   세트 불일치는 배포 종류와 무관하게 막는다. 비운영 배포의 운영 데이터
    *   쓰기는 옵트인 설정이 켜졌을 때 막는다. 정상 연결된 운영 배포는 통과한다.
    */
-  try {
-    assertWriteAllowed("public/lead:submit");
-  } catch (guardError) {
-    if (guardError instanceof NonProductionWriteBlockedError) {
-      console.error("[public/lead] write blocked:", { verdict: guardError.verdict });
-      return { phase: "blocked", message: BLOCKED_MESSAGE };
-    }
-    throw guardError;
+  if (!tryGuardWrite("public/lead:submit").allowed) {
+    return { phase: "blocked", message: BLOCKED_MESSAGE };
   }
 
   const payload = buildLeadSubmissionPayload(type, values);
