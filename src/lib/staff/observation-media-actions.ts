@@ -338,7 +338,6 @@ export async function prepareObservationMediaUpload(input: {
  *   DB의 CHECK 제약과 trigger가 같은 규칙을 한 번 더 강제한다.
  */
 export async function finalizeObservationMediaUpload(input: {
-  guardWrite("lib/staff/observation-media-actions:finalizeObservationMediaUpload");
   sessionId: string;
   childId: string;
   storagePath: string;
@@ -346,6 +345,7 @@ export async function finalizeObservationMediaUpload(input: {
   byteSize: number;
   originalFilename?: string | null;
 }): Promise<ObservationMediaFinalizeState> {
+  guardWrite("lib/staff/observation-media-actions:finalizeObservationMediaUpload");
   const sessionId = String(input?.sessionId ?? "");
   const childId = String(input?.childId ?? "");
   const storagePath = String(input?.storagePath ?? "");

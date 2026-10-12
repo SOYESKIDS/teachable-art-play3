@@ -74,9 +74,9 @@ function toMessage(error: PostgrestLikeError): string {
  * 중지 즉시 기존 링크는 공개 함수의 조건에서 탈락한다.
  */
 export async function revokeGrowthReportShareAction(input: {
-  guardWrite("lib/staff/growth-report-share-actions:revokeGrowthReportShareAction");
   shareId: string;
 }): Promise<GrowthReportShareRevokeState> {
+  guardWrite("lib/staff/growth-report-share-actions:revokeGrowthReportShareAction");
   const { supabase } = await requireDirector();
 
   const shareId = typeof input?.shareId === "string" ? input.shareId : "";

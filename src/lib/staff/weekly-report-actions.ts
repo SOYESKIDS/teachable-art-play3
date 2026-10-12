@@ -109,12 +109,12 @@ function normalizeContent(content: WeeklyContent): WeeklyContent {
 }
 
 export async function saveWeeklyDraftAction(input: {
-  guardWrite("lib/staff/weekly-report-actions:saveWeeklyDraftAction");
   revisionId: string;
   content: WeeklyContent;
   mediaIds: string[];
   expectedUpdatedAt: string;
 }): Promise<WeeklySaveResult> {
+  guardWrite("lib/staff/weekly-report-actions:saveWeeklyDraftAction");
   if (!UUID_PATTERN.test(input.revisionId) || !Array.isArray(input.mediaIds)) {
     return { ok: false, message: "요청 값을 확인할 수 없습니다.", conflict: false, updatedAt: null };
   }
@@ -140,10 +140,10 @@ export async function saveWeeklyDraftAction(input: {
 }
 
 export async function completeWeeklyAction(input: {
-  guardWrite("lib/staff/weekly-report-actions:completeWeeklyAction");
   revisionId: string;
   expectedUpdatedAt: string;
 }): Promise<WeeklySaveResult> {
+  guardWrite("lib/staff/weekly-report-actions:completeWeeklyAction");
   if (!UUID_PATTERN.test(input.revisionId)) {
     return { ok: false, message: "요청 값을 확인할 수 없습니다.", conflict: false, updatedAt: null };
   }
@@ -276,10 +276,10 @@ export async function revokeChildPortalAction(input: { portalId: string }): Prom
 }
 
 export async function recordMediaConsentAction(input: {
-  guardWrite("lib/staff/weekly-report-actions:recordMediaConsentAction");
   childId: string;
   status: "unknown" | "consented" | "declined";
 }): Promise<{ ok: boolean; message: string }> {
+  guardWrite("lib/staff/weekly-report-actions:recordMediaConsentAction");
   if (!UUID_PATTERN.test(input.childId) || !["unknown", "consented", "declined"].includes(input.status)) {
     return { ok: false, message: "요청 값을 확인할 수 없습니다." };
   }

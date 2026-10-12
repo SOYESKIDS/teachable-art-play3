@@ -99,11 +99,11 @@ export interface QuickMemoSaveResult {
 }
 
 export async function saveQuickMemoAction(input: {
-  guardWrite("lib/staff/class-mode-actions:saveQuickMemoAction");
   sessionId: string;
   body: string;
   expectedUpdatedAt: string | null;
 }): Promise<QuickMemoSaveResult> {
+  guardWrite("lib/staff/class-mode-actions:saveQuickMemoAction");
   if (!UUID_PATTERN.test(input.sessionId) || typeof input.body !== "string" || input.body.length > 2000) {
     return { ok: false, updatedAt: null, message: "메모는 2,000자 이내로 입력해 주세요.", conflict: false };
   }
