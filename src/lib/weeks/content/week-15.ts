@@ -126,6 +126,7 @@ export const WEEK_15_BLOCKS: WeekBlocks = {
       "벨을 친구 귀 가까이에서 크게 울리거나 반복해서 흔들지 않도록 안내합니다.",
       "전달 대상 어른의 업무를 방해하지 않도록 기관 사정에 맞춰 짧은 시간에 진행합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -251,18 +252,24 @@ export const WEEK_15_BLOCKS: WeekBlocks = {
           "친구가 올 때 기다려주기",
           "필요한 물건 건네주기",
         ],
+        stepTable: null,
       },
       {
         label: "PLAY 2",
         title: "마음벨 소리를 들어요",
         points: [
           "활동용 벨을 살짝 흔들어 소리를 들어보고, 세게 흔들었을 때와 작게 흔들었을 때의 차이를 비교합니다. “따뜻한 마음을 전하는 소리”는 어떤 세기와 속도가 어울리는지 아이가 직접 정해봅니다.",
-          "1. 벨을 한 번 가볍게 울림 — “이 소리를 들으니 어떤 느낌이 들어?”",
-          "2. 흔드는 세기를 다르게 보여줌 — “세게 흔들 때와 살짝 흔들 때 무엇이 달라?”",
-          "3. 아이에게 자기 소리 선택 기회 제공 — “네 마음은 어떤 소리로 전하고 싶어?”",
-          "4. 하트카드와 벨을 함께 들게 함 — “이 마음을 누구에게 가져가고 싶어?”",
-          "5. 전달 전 짧게 연습 — “말하지 않아도 벨을 건네는 것만으로 괜찮아.”",
         ],
+        stepTable: {
+          columns: ["순서", "교사 행동", "교사 언어"],
+          rows: [
+            ["1", "벨을 한 번 가볍게 울림", "“이 소리를 들으니 어떤 느낌이 들어?”"],
+            ["2", "흔드는 세기를 다르게 보여줌", "“세게 흔들 때와 살짝 흔들 때 무엇이 달라?”"],
+            ["3", "아이에게 자기 소리 선택 기회 제공", "“네 마음은 어떤 소리로 전하고 싶어?”"],
+            ["4", "하트카드와 벨을 함께 들게 함", "“이 마음을 누구에게 가져가고 싶어?”"],
+            ["5", "전달 전 짧게 연습", "“말하지 않아도 벨을 건네는 것만으로 괜찮아.”"],
+          ],
+        },
       },
       {
         label: "PLAY 3",
@@ -274,6 +281,7 @@ export const WEEK_15_BLOCKS: WeekBlocks = {
           "가능하면 어른이 벨을 달아보거나 손에 들어보고 “고마워”라고 짧게 반응해줍니다.",
           "동생반 아이에게 전달하는 활동으로 바꾸지 않습니다. 이번 주의 대상은 아이의 생활을 돕는 주변 어른입니다.",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -330,6 +338,8 @@ export const WEEK_15_BLOCKS: WeekBlocks = {
         question: "“말하지 않아도 어떻게 전할 수 있을까?”",
       },
     ],
+    outro:
+      "워크북에서 떠올린 사람은 이후 마음벨 전달 활동의 선택 기준으로 활용하되, 실제 상황에 따라 아이가 다른 사람으로 바꾸어도 괜찮습니다.",
   },
 
   // ★ 원문 8. 미술활동
@@ -439,11 +449,13 @@ export const WEEK_15_BLOCKS: WeekBlocks = {
       "부모·조부모·가족을 자주 돕는 가까운 어른 등 아이가 실제로 떠올린 한 사람을 선택합니다.",
       "작은 그림, 포옹, 물건 건네기, 짧은 말 등 아이가 편한 방식으로 마음을 표현합니다.",
       "어른은 “왜 고마워?”라고 캐묻기보다 아이가 건넨 표현을 그대로 받아주고 짧게 반응합니다.",
-      "겨울의 따뜻한 장면은 아이에게는 즐거운 나눔의 경험으로 남고, 16주차에서는 지나온 계절을 돌아볼 때 선생님·친구들과 함께한 추억의 한 조각으로 이어집니다.",
     ],
     noticeExample:
       "“감사 표현을 시키기보다 아이가 실제로 도움받았던 장면을 함께 떠올려주세요. 말이 짧거나 없어도 그림을 건네고 안아주는 행동 자체가 충분한 마음 표현입니다.”",
     status: "ready",
+    closingNote:
+      "겨울의 따뜻한 장면은 아이에게는 즐거운 나눔의 경험으로 남고, 16주차에서는 지나온 계절을 돌아볼 때 선생님·친구들과 함께한 추억의 한 조각으로 이어집니다.",
+    examples: null,
   },
 
   situations: [
@@ -656,13 +668,24 @@ export const WEEK_15_SCENES: WeekScene[] = [
 
 export const WEEK_15_NOTES: TranscriptionNote[] = [
   {
+    section: "7. 핵심활동 · 표를 표로 되돌림",
+    page: 5,
+    issue:
+      "PLAY 2 「마음벨 소리를 들어요」의 원문은 「순서 / 교사 행동 / 교사 언어」 세 칸짜리 표인데, 전사 때 한 줄로 이어 적어 어느 말이 어느 칸의 것인지가 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 열 제목과 각 행의 칸 대응을 눈으로 확인했다. CoreActivityBlock 의 plays 에 stepTable(columns·rows)을 추가해 표를 그대로 담고 화면도 표로 그리도록 고쳤다. 열 제목은 주차마다 달라 고정하지 않고 원문 값을 쓴다. 문구는 바꾸지 않았다.",
+  },
+  {
     section: "장면 순서 · PLAY 3 과 미술의 자리",
     page: 5,
     issue:
       "원문 7번의 PLAY 3(전달)은 미술활동으로 마음벨을 완성한 뒤에 일어난다. 그래서 장면을 PLAY 1 → PLAY 2 → 워크북 → 미술 → PLAY 3 순으로 두었다. 섹션 번호 순서(7번 → 8번)와 교실 진행 순서가 다르다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 와 p.3 을 이미지로 렌더링해 확인했다. p.5 의 PLAY 3 설명이 「마음벨을 완성한 뒤 아이가 선택한 원 안의 어른을 찾아갑니다」로 시작하고, p.3 권장 시간표도 「워크북 → 미술·전달」 순이다. 섹션 번호가 아니라 교실 진행 순서를 따른 장면 배열이 원문과 맞다.",
   },
   {
     section: "5. 권장 시간표 · 미술·전달",
@@ -670,8 +693,9 @@ export const WEEK_15_NOTES: TranscriptionNote[] = [
     issue:
       "원문 시간표가 미술과 전달을 「미술·전달 20~25분」 한 단계로 묶었다. 장면은 둘을 나누되 baseSeconds 를 넣지 않았다 — 나눠 적으면 수업 시간이 늘어난다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.3 렌더링에서 시간표 다섯째 행이 단계 「미술·전달」, 시간 「20~25분」 한 칸임을 확인했다. 두 장면에 시간을 각각 넣지 않은 처리가 원문과 맞다. 합계를 두 번 세지 않는다.",
   },
   {
     section: "8. 미술활동 · 교사 주의",
@@ -679,8 +703,9 @@ export const WEEK_15_NOTES: TranscriptionNote[] = [
     issue:
       "1권에서 「활동의 기준」이 들어가던 자리에 「교사 주의」가 있다. standard 필드에 그 문장을 넣고 앞에 「교사 주의 — 」를 붙였다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 을 이미지로 렌더링해 확인했다. 상자 제목이 「교사 주의」가 맞고 본문도 전사본과 같다. 같은 쪽에서 진행 순서 6항목·교사 발문 5항목도 확인했다.",
   },
   {
     section: "7. 핵심활동 PLAY 2 · 순서 표",
@@ -688,17 +713,29 @@ export const WEEK_15_NOTES: TranscriptionNote[] = [
     issue:
       "순서 표의 교사 행동 다섯 개와 교사 언어 다섯 개가 PLAY 3 제목을 사이에 두고 떨어져 나온다. 순서대로 짝지어 「N. 행동 — 언어」로 이어 적었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 표의 다섯 행을 눈으로 대조했다. 교사 행동·교사 언어 짝이 전사본과 같다.",
   },
   {
     section: "7. 핵심활동 · 현장 조절표",
     page: 5,
     issue:
-      "조절표가 5쪽에서 6쪽으로 넘어가고 상황 다섯 개와 조절 다섯 개가 떨어져 나온다. 순서대로 짝지었다.",
+      "조절표의 상황 다섯 개와 조절 다섯 개가 열 단위로 떨어져 나온다. 순서대로 짝지었다. 전사 때 「5쪽에서 6쪽으로 넘어간다」고 적었으나 이는 사실이 아니었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 렌더링에서 조절표 다섯 행이 모두 5쪽 안에서 끝나는 것을 확인했다. 쪽을 넘지 않는다. 다섯 행의 짝도 전사본과 같다.",
+  },
+  {
+    section: "9. 워크북 운영 가이드 · 표 뒤 마무리 문장",
+    page: 6,
+    issue:
+      "표 뒤에 이어지는 「워크북에서 떠올린 사람은 … 아이가 다른 사람으로 바꾸어도 괜찮습니다.」를 **전사에서 빠뜨렸다.**",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 표 아래 한 문장을 직접 확인하고 WorkbookBlock 의 outro 에 그대로 담았다. 같은 쪽에서 워크북 표 네 행과 10번 음원 표 네 행도 대조했다.",
   },
   {
     section: "12. 관찰 및 기록 가이드",
@@ -706,8 +743,9 @@ export const WEEK_15_NOTES: TranscriptionNote[] = [
     issue:
       "관찰할 행동과 기록 문장 열이 섞여 나온다. 특히 뒤쪽 세 행의 기록 문장이 한꺼번에 몰려 나온다. 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 을 이미지로 렌더링해 표의 다섯 행(사회관계 / 의사소통 / 신체조절 / 예술표현 / 정서이해)을 눈으로 대조했다. 관찰할 행동·기록 문장 짝이 전사본과 같다. 같은 쪽에서 키즈노트 기록 예시 문단도 확인했다.",
   },
   {
     section: "14. 수업 중 이런 상황이 생기면",
@@ -715,17 +753,19 @@ export const WEEK_15_NOTES: TranscriptionNote[] = [
     issue:
       "권장 대응 여섯 개가 15번 섹션 제목 뒤에 나온다. 상황·피해야 할 반응과 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.8 을 이미지로 렌더링해 표의 여섯 행을 눈으로 대조했다. 짝이 전사본과 같다. 같은 쪽에서 15번 퀵 가이드 여덟 행과 마무리 문단도 확인했다.",
   },
   {
-    section: "13. 가정연계 · 마지막 문장",
+    section: "13. 가정연계 · 마지막 문단",
     page: 7,
     issue:
-      "14주차와 같이 「숨은 성장 연결」 대신 16주차로 이어지는 문장이 있다. steps 의 마지막 항목으로 이어 적었다.",
+      "14주차와 같이 「숨은 성장 연결」 대신 16주차로 이어지는 문장이 있다. 진행 방법 목록의 마지막 항목으로 이어 적어 원문 구조가 흐려졌다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 렌더링에서 이 문장이 「부모님께 전달할 핵심 문장」 뒤에 오는 **별도 문단**임을 확인했다. HomeConnectionBlock 의 closingNote 로 옮겨 따로 담고 화면도 구분해 그린다.",
   },
 ];
 

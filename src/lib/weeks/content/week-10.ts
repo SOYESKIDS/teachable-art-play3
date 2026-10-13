@@ -122,6 +122,7 @@ export const WEEK_10_BLOCKS: WeekBlocks = {
       "탐색 구역을 이동할 때 친구와 부딪히지 않도록 출발 인원을 조절합니다.",
       "여름 야외 관찰로 확장할 경우 햇볕·수분 섭취·벌레 물림 등 기관의 야외 안전수칙을 우선합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -239,18 +240,24 @@ export const WEEK_10_BLOCKS: WeekBlocks = {
           "소리가 커지면 우리가 가까워진 걸까?",
           "시원한 곳을 찾아 움직이면 또 무엇을 만날 수 있을까?",
         ],
+        stepTable: null,
       },
       {
         label: "PLAY 2",
         title: "숨어 있는 곤충을 찾아요",
         points: [
           "아이들은 2~4명 소그룹으로 탐색 구역을 돌아다니며 곤충 모형을 찾아 채집통에 넣습니다. 한 아이가 많이 모으는 방식이 아니라 각자 한두 마리씩 발견하고 친구에게 보여주는 흐름으로 운영합니다.",
-          "1. 단서 카드 한 장 제시 — “긴 다리를 가진 친구는 어디 숨어 있을까?”",
-          "2. 아이들이 탐색하도록 기다림 — “천천히 주변을 살펴보자.”",
-          "3. 발견해도 이름을 먼저 말하지 않음 — “무엇을 보고 이 친구를 찾았어?”",
-          "4. 채집통에 넣고 친구와 관찰 — “친구가 찾은 것과 어디가 다르지?”",
-          "5. 다음 구역으로 이동 — “이번엔 나무 근처에 사는 친구를 찾아볼까?”",
         ],
+        stepTable: {
+          columns: ["순서", "교사 행동", "교사 언어"],
+          rows: [
+            ["1", "단서 카드 한 장 제시", "“긴 다리를 가진 친구는 어디 숨어 있을까?”"],
+            ["2", "아이들이 탐색하도록 기다림", "“천천히 주변을 살펴보자.”"],
+            ["3", "발견해도 이름을 먼저 말하지 않음", "“무엇을 보고 이 친구를 찾았어?”"],
+            ["4", "채집통에 넣고 친구와 관찰", "“친구가 찾은 것과 어디가 다르지?”"],
+            ["5", "다음 구역으로 이동", "“이번엔 나무 근처에 사는 친구를 찾아볼까?”"],
+          ],
+        },
       },
       {
         label: "PLAY 3",
@@ -262,6 +269,7 @@ export const WEEK_10_BLOCKS: WeekBlocks = {
           "“둘 다 비슷해 보이는데 가장 먼저 눈에 들어오는 다른 점은 뭐야?”",
           "“이 친구를 다시 찾아야 한다면 어떤 특징을 기억하면 좋을까?”",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -317,6 +325,8 @@ export const WEEK_10_BLOCKS: WeekBlocks = {
         question: "“무엇을 보고 그렇게 생각했어?”",
       },
     ],
+    outro:
+      "워크북은 아이가 오늘 발견한 곤충을 다시 떠올리게 하는 기록 도구로 활용합니다.",
   },
 
   /*
@@ -419,11 +429,13 @@ export const WEEK_10_BLOCKS: WeekBlocks = {
       "가정에서 냉장고나 자석이 붙는 곳에 붙입니다.",
       "“이 곤충은 어디에서 찾았어?”, “무엇이 제일 신기했어?”처럼 아이의 발견을 들어줍니다.",
       "이름을 맞히는 퀴즈보다 아이가 직접 본 특징을 이야기하도록 기다려줍니다.",
-      "숨은 성장 연결: 아빠의 여름 → 자랑. 이 의미를 아이에게 가르치지 않고, 아이가 오늘의 발견을 가족에게 신나게 들려주는 경험으로 자연스럽게 남겨둡니다.",
     ],
     noticeExample:
       "“정답을 알려주기보다 아이가 관찰한 것을 먼저 이야기하게 해주세요. 이름을 정확히 기억하지 못해도 ‘뿔이 있었어’, ‘다리가 길었어’처럼 자기 눈으로 발견한 특징을 말하는 경험이 더 중요합니다.”",
     status: "ready",
+    closingNote:
+      "숨은 성장 연결: 아빠의 여름 → 자랑. 이 의미를 아이에게 가르치지 않고, 아이가 오늘의 발견을 가족에게 신나게 들려주는 경험으로 자연스럽게 남겨둡니다.",
+    examples: null,
   },
 
   situations: [
@@ -615,13 +627,34 @@ export const WEEK_10_SCENES: WeekScene[] = [
 
 export const WEEK_10_NOTES: TranscriptionNote[] = [
   {
+    section: "7. 핵심활동 · 표를 표로 되돌림",
+    page: 5,
+    issue:
+      "PLAY 2 「숨어 있는 곤충을 찾아요」의 원문은 「순서 / 교사 행동 / 교사 언어」 세 칸짜리 표인데, 전사 때 한 줄로 이어 적어 어느 말이 어느 칸의 것인지가 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 열 제목과 각 행의 칸 대응을 눈으로 확인했다. CoreActivityBlock 의 plays 에 stepTable(columns·rows)을 추가해 표를 그대로 담고 화면도 표로 그리도록 고쳤다. 열 제목은 주차마다 달라 고정하지 않고 원문 값을 쓴다. 문구는 바꾸지 않았다.",
+  },
+  {
+    section: "9. 워크북 운영 가이드 · 표 뒤 마무리 문장",
+    page: 6,
+    issue:
+      "표 뒤에 이어지는 「워크북은 아이가 오늘 발견한 곤충을 다시 떠올리게 하는 기록 도구로 활용합니다.」를 **전사에서 빠뜨렸다.** WorkbookBlock 에 담을 자리가 없어 글이 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 표 아래 문장을 직접 확인하고 WorkbookBlock 에 추가한 outro 에 그대로 담았다. 같은 자리의 문장이 9~16주차 모두에 있었고 1~8주차에는 없다는 것도 확인해 1~8주차는 outro: null 로 두었다. 담을 자리가 없으면 글이 조용히 사라진다.",
+  },
+  {
     section: "8. 미술활동 · 별도 제작 활동 없음",
     page: 6,
     issue:
-      "8번 섹션은 있지만 「별도 제작 활동 없음」이고 진행 순서·교사 발문이 없다. 섹션을 지우지 않고 제목과 설명을 그대로 옮겼으며 steps·questions 를 빈 배열로 두었다. 서비스 화면이 이 블록을 다른 주차의 미술활동과 같은 모양으로 그리면 「만들 것이 있는데 비어 있다」로 읽힐 수 있다.",
+      "8번 섹션은 있지만 「별도 제작 활동 없음」이고 진행 순서·교사 발문이 없다. 섹션을 지우지 않고 제목과 설명을 그대로 옮겼으며 steps·questions 를 빈 배열로 두었다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 을 이미지로 렌더링해 확인했다. 섹션 제목이 「8. 미술활동 - 별도 제작 활동 없음」이고 설명 한 문단과 「운영 포인트」 상자만 있다. 진행 순서·교사 발문 목록이 없다. steps: []·questions: [] 가 원문과 맞다. 화면이 이 블록을 다른 주차의 미술활동과 같은 모양으로 그리면 「만들 것이 있는데 비어 있다」로 읽힐 수 있어 표현 문제는 남는다.",
   },
   {
     section: "8. 미술활동 · 운영 포인트",
@@ -629,8 +662,9 @@ export const WEEK_10_NOTES: TranscriptionNote[] = [
     issue:
       "1권에서 「활동의 기준」이 들어가던 자리에 「운영 포인트」가 있다. standard 필드에 그 문장을 넣고 앞에 「운영 포인트 — 」를 붙였다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 상자 제목이 「운영 포인트」임을 확인했다. 본문도 전사본과 같다.",
   },
   {
     section: "7. 핵심활동 PLAY 2 · 순서 표",
@@ -638,8 +672,9 @@ export const WEEK_10_NOTES: TranscriptionNote[] = [
     issue:
       "순서 표(순서 / 교사 행동 / 교사 언어)가 추출본에서 열 단위로 떨어져 나오고 PLAY 3 제목이 사이에 끼어 있다. 다섯 줄을 순서대로 짝지어 「N. 행동 — 언어」로 이어 적었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 표의 다섯 행을 눈으로 대조했다. 교사 행동·교사 언어 짝이 전사본과 같다.",
   },
   {
     section: "7. 핵심활동 · 현장 조절표",
@@ -647,8 +682,9 @@ export const WEEK_10_NOTES: TranscriptionNote[] = [
     issue:
       "조절표가 5쪽에서 6쪽으로 넘어가고 상황 다섯 개와 조절 다섯 개가 떨어져 나온다. 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 렌더링에서 조절표가 5쪽 안에서 다섯 행으로 끝나는 것을 확인했다 (쪽을 넘지 않는다). 상황·조절 짝이 전사본과 같다. 같은 쪽에서 PLAY 1·3 목록도 확인했다.",
   },
   {
     section: "14. 수업 중 이런 상황이 생기면",
@@ -656,8 +692,9 @@ export const WEEK_10_NOTES: TranscriptionNote[] = [
     issue:
       "상황 여섯 개가 먼저 나오고 피해야 할 반응·권장 대응이 뒤에 몰려 나온다. 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.8 을 이미지로 렌더링해 표의 여섯 행을 눈으로 대조했다. 짝이 전사본과 같다. 같은 쪽에서 15번 퀵 가이드 일곱 행과 마무리 문단도 전사본과 같음을 확인했다.",
   },
   {
     section: "13. 가정연계 · 숨은 성장 연결",
@@ -665,8 +702,9 @@ export const WEEK_10_NOTES: TranscriptionNote[] = [
     issue:
       "9주차와 같이 「숨은 성장 연결」 항목이 있다. steps 의 마지막 항목으로 이어 적어 별도 묶음 구분이 흐려졌다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 을 이미지로 렌더링해 확인했다. 13. 가정연계는 설명문 → 「진행 방법」 4항목 → 「부모님께 전달할 핵심 문장」 → 굵은 글씨의 「숨은 성장 연결」 문단 순이다. 이 문단은 진행 방법의 한 줄이 아니므로 HomeConnectionBlock 에 closingNote 를 추가해 목록에서 꺼내 따로 담고 화면도 구분해 그리도록 고쳤다. 9~16주차 모두 같은 자리에 문단이 있고 1~8주차에는 없다.",
   },
 ];
 

@@ -122,6 +122,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
       "한꺼번에 많은 아이가 현수막 앞으로 몰리지 않도록 2~3명씩 순환합니다.",
       "바닥에 떨어진 부착재와 완성품을 바로 정리해 미끄러짐을 예방합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -244,6 +245,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "씨앗을 든 아이들이 현수막 아래쪽으로 이동해 붙입니다.",
           "“우리 숲의 시작! 작은 씨앗은 어디에 심어볼까?”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 2",
@@ -252,11 +254,13 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "새싹을 들고 씨앗 위·주변에 이어 붙입니다.",
           "“씨앗에서 초록 새싹이 쏙! 어디에서 자랄까?”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 3",
         title: "꽃이 피어요",
         points: ["꽃을 들고 숲 곳곳에 배치합니다.", "“새싹이 자라 예쁜 꽃이 피었어요.”"],
+        stepTable: null,
       },
       {
         label: "STEP 4",
@@ -265,6 +269,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "날씨 요소를 하늘과 숲의 공간에 붙입니다.",
           "“숲이 잘 자라려면 어떤 날씨 친구가 필요할까?”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 5",
@@ -273,6 +278,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "나비·벌을 붙이며 숲을 더 풍성하게 완성합니다.",
           "“꽃이 피니까 어떤 친구들이 찾아왔지?”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 6",
@@ -281,6 +287,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "모두 뒤로 물러나 완성된 현수막을 함께 바라봅니다.",
           "“하나씩 모이니까 어떤 숲이 되었어?”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -291,6 +298,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
           "완성품이 현수막에 잘 붙도록 뒷면 양면테이프의 이형지는 교사가 미리 쉽게 떼어낼 수 있게 준비합니다.",
           "활동 전 빈 숲 → 중간 과정 → 완성된 숲을 영상으로 담아 변화가 보이게 기록합니다.",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -346,6 +354,7 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
         question: "“우리 반 숲에는 어떤 친구들이 함께 있지?”",
       },
     ],
+    outro: null,
   },
 
   art: {
@@ -461,6 +470,8 @@ export const WEEK_08_BLOCKS: WeekBlocks = {
     // ★ 원문에 「부모님께 전달할 핵심 문장」이 없다 (7주차와 같다).
     noticeExample: null,
     status: "ready",
+    closingNote: null,
+    examples: null,
   },
 
   situations: [

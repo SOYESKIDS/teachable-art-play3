@@ -161,7 +161,7 @@ export function PrepPanel({ content }: { content: WeekContent }) {
             ))}
           </ul>
 
-          <h4 className="mt-5 text-[15px] font-bold text-forest">C. 안전 확인</h4>
+          <h4 className="mt-5 text-[15px] font-bold text-forest">C. {preparation.safetyLabel}</h4>
           <ul className="mt-2 flex flex-col gap-1.5">
             {preparation.safety.map((s) => (
               <li key={s} className={bullet}>
@@ -353,6 +353,50 @@ export function GuidePanel({ content }: { content: WeekContent }) {
                     </li>
                   ))}
                 </ul>
+                {/*
+                  ★ 원문이 표로 둔 묶음은 표로 그린다. 한 줄로 이어 적으면
+                    어느 말이 교사 행동이고 어느 말이 교사 언어인지가 사라진다.
+                    열 제목도 주차마다 달라 고정하지 않고 원문 값을 쓴다.
+                */}
+                {p.stepTable ? (
+                  <div className="mt-3 overflow-x-auto">
+                    <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
+                      <thead className="bg-paper text-[13px] text-muted-ink">
+                        <tr>
+                          {p.stepTable.columns.map((c) => (
+                            <th key={c} scope="col" className="px-3 py-2 font-semibold">
+                              {c}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {p.stepTable.rows.map((row) => (
+                          <tr key={row.join("|")} className="border-t border-rule-soft align-top">
+                            <th
+                              scope="row"
+                              className="whitespace-nowrap px-3 py-2 text-left font-semibold text-forest"
+                            >
+                              {row[0]}
+                            </th>
+                            {row.slice(1).map((cell, i) => (
+                              <td
+                                key={cell}
+                                className={
+                                  i === row.length - 2
+                                    ? "px-3 py-2 font-serif text-forest"
+                                    : "px-3 py-2 text-forest/90"
+                                }
+                              >
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -415,6 +459,10 @@ export function GuidePanel({ content }: { content: WeekContent }) {
               </tbody>
             </table>
           </div>
+          {/* ★ 2권(9~16주차)은 표 뒤에 이어지는 문장이 있다. 1권에는 없다. */}
+          {workbook.outro ? (
+            <p className="mt-3 text-[15px] leading-relaxed text-forest/90">{workbook.outro}</p>
+          ) : null}
         </Section>
       ) : null}
 
@@ -438,23 +486,40 @@ export function GuidePanel({ content }: { content: WeekContent }) {
           {art.intro ? (
             <p className="text-[15px] leading-relaxed text-forest/90">{art.intro}</p>
           ) : null}
-          <h4 className="mt-4 text-[15px] font-bold text-forest">진행 순서</h4>
-          <ol className="mt-2 flex flex-col gap-1.5">
-            {art.steps.map((s, i) => (
-              <li key={s} className={bullet}>
-                <span className="shrink-0 font-bold tabular-nums text-leaf">{i + 1}</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <h4 className="mt-4 text-[15px] font-bold text-forest">교사 발문</h4>
-          <ul className="mt-2 flex flex-col gap-1.5">
-            {art.questions.map((q) => (
-              <li key={q} className="font-serif text-[16px] leading-relaxed text-forest">
-                {q}
-              </li>
-            ))}
-          </ul>
+          {/*
+            ★ 원문이 「별도 제작 활동 없음」이라고 적은 주차가 있다 (10·16주차).
+              진행 순서와 교사 발문 제목만 비워 두면 「만들 것이 있는데 아직 안 옮겼다」로
+              읽힌다. 비어 있는 이유를 적고 빈 제목은 그리지 않는다.
+          */}
+          {art.steps.length === 0 && art.questions.length === 0 ? (
+            <p
+              role="note"
+              className="mt-3 rounded-[10px] border border-rule bg-paper px-4 py-3 text-[14px] leading-relaxed text-forest"
+            >
+              <strong className="font-bold">원문에 진행 순서와 교사 발문이 없습니다.</strong> 이
+              주차는 공식 가이드가 별도 제작 활동을 두지 않았습니다. 옮기지 않은 것이 아닙니다.
+            </p>
+          ) : (
+            <>
+              <h4 className="mt-4 text-[15px] font-bold text-forest">진행 순서</h4>
+              <ol className="mt-2 flex flex-col gap-1.5">
+                {art.steps.map((s, i) => (
+                  <li key={s} className={bullet}>
+                    <span className="shrink-0 font-bold tabular-nums text-leaf">{i + 1}</span>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ol>
+              <h4 className="mt-4 text-[15px] font-bold text-forest">교사 발문</h4>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {art.questions.map((q) => (
+                  <li key={q} className="font-serif text-[16px] leading-relaxed text-forest">
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {art.standard ? (
             <p className="mt-4 rounded-[10px] bg-sprout px-4 py-3 text-[14px] leading-relaxed text-forest">
               {art.standard}
@@ -743,6 +808,18 @@ export function ReportPanel({
               ))}
             </ul>
           ) : null}
+          {/*
+            ★ 진행 방법과 핵심 문장 사이에 소제목이 붙은 예시 묶음이 들어가는 주차가 있다.
+              목록에 섞으면 교사가 그것도 해야 할 절차로 읽는다.
+          */}
+          {home.examples ? (
+            <>
+              <h4 className="mt-4 text-[15px] font-bold text-forest">{home.examples.label}</h4>
+              <p className="mt-2 text-[14px] leading-relaxed text-forest/90">
+                {home.examples.text}
+              </p>
+            </>
+          ) : null}
           {home.noticeExample ? (
             <>
               <h4 className="mt-4 text-[15px] font-bold text-forest">부모님께 전달할 핵심 문장</h4>
@@ -750,6 +827,15 @@ export function ReportPanel({
                 {home.noticeExample}
               </p>
             </>
+          ) : null}
+          {/*
+            ★ 2권(9~16주차)은 핵심 문장 뒤에 마무리 문단이 따로 있다.
+              진행 방법 항목이 아니므로 목록에 섞지 않고 따로 적는다.
+          */}
+          {home.closingNote ? (
+            <p className="mt-4 border-t border-rule-soft pt-3 text-[14px] leading-relaxed text-forest/85">
+              {home.closingNote}
+            </p>
           ) : null}
         </Section>
       ) : (

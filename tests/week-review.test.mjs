@@ -273,3 +273,86 @@ test("핵심활동과 같은 미술활동은 장면을 두 벌 만들지 않는�
     );
   }
 });
+
+test("가정연계 마무리 문단은 진행 방법 목록에 섞이지 않는다", () => {
+  // ★ 원문은 「부모님께 전달할 핵심 문장」 뒤에 별도 문단을 둔다 (9~16주차).
+  //   목록의 한 줄로 적으면 교사가 그것을 할 일로 읽는다.
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const home = content.blocks.homeConnection;
+    if (!home) continue;
+
+    for (const step of home.steps) {
+      assert.ok(
+        !step.startsWith("숨은 성장"),
+        `${week.weekNo}주차 가정연계 진행 방법에 「숨은 성장」 문단이 섞여 있다`,
+      );
+    }
+  }
+});
+
+test("워크북 표 뒤 마무리 문장은 2권에만 있고 1권에는 없다", () => {
+  // ★ 원문을 쪽으로 확인한 결과다. 자리가 없어 전사에서 빠졌던 문장이다.
+  //   null 과 「원문에 없다」를 구분하기 위해 주차별로 기대값을 고정한다.
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const workbook = content.blocks.workbook;
+    if (!workbook) continue;
+
+    if (week.weekNo <= 8) {
+      assert.equal(
+        workbook.outro,
+        null,
+        `${week.weekNo}주차(1권) 워크북에는 표 뒤 문장이 없어야 한다`,
+      );
+    } else if (week.weekNo <= 16) {
+      assert.ok(
+        typeof workbook.outro === "string" && workbook.outro.length > 0,
+        `${week.weekNo}주차(2권) 워크북의 표 뒤 문장이 비어 있다`,
+      );
+    }
+  }
+});
+
+test("수업 전 준비 C항 제목은 주차의 원문 제목을 그대로 쓴다", () => {
+  // ★ 16주차만 「안전·개인정보 확인」이다. 화면이 제목을 고정하면 원문과 달라진다.
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const prep = content.blocks.preparation;
+    if (!prep) continue;
+
+    assert.ok(
+      prep.safetyLabel.length > 0,
+      `${week.weekNo}주차 C항 제목이 비어 있다`,
+    );
+    if (week.weekNo === 16) {
+      assert.equal(prep.safetyLabel, "안전·개인정보 확인");
+    }
+  }
+});
+
+test("원문이 표로 둔 묶음은 표로 남는다 (한 줄로 이어 적지 않는다)", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    for (const play of content.blocks.coreActivity?.plays ?? []) {
+      if (play.stepTable) {
+        assert.ok(play.stepTable.columns.length >= 2, `${week.weekNo}주차 「${play.title}」 표의 열이 모자란다`);
+        for (const row of play.stepTable.rows) {
+          assert.equal(
+            row.length,
+            play.stepTable.columns.length,
+            `${week.weekNo}주차 「${play.title}」 표의 행과 열 개수가 다르다`,
+          );
+        }
+      }
+
+      // ★ 표를 한 줄로 이어 붙인 흔적이 points 에 남아 있으면 안 된다.
+      for (const pt of play.points) {
+        assert.ok(
+          !/^\d+\.\s.+\u2014/.test(pt),
+          `${week.weekNo}주차 「${play.title}」 설명에 표 한 행이 한 줄로 들어 있다: ${pt.slice(0, 40)}`,
+        );
+      }
+    }
+  }
+});

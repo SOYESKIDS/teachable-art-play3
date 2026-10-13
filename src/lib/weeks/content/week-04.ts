@@ -115,6 +115,7 @@ export const WEEK_04_BLOCKS: WeekBlocks = {
       "바닥에 떨어진 씨앗은 즉시 치워 미끄러짐과 오인 섭취를 예방합니다.",
       "마라카스 통 뚜껑은 교사가 단단히 잠그고 완성 후 다시 확인합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -236,11 +237,16 @@ export const WEEK_04_BLOCKS: WeekBlocks = {
         title: "씨앗 관찰하기",
         points: [
           "콩·팥·옥수수·해바라기씨 등 서로 다른 씨앗을 관찰합니다. 이름 암기보다 ‘무엇이 같고 다른지’를 발견하는 것이 중심입니다.",
-          "1. 종류별 씨앗을 투명 용기에 제시 — “눈으로 먼저 자세히 살펴보자.”",
-          "2. 크기·모양·색을 비교 — “가장 작은 건? 길쭉한 건? 색은 어떻게 다르지?”",
-          "3. 용기를 흔들어 소리 비교 — “이 씨앗은 어떤 소리가 나? 다른 씨앗과 같을까?”",
-          "4. 아이의 발견을 말로 정리 — “○○는 작고 단단해서 가볍게 톡톡 소리가 났구나.”",
         ],
+        stepTable: {
+          columns: ["순서", "교사 행동", "교사 언어"],
+          rows: [
+            ["1", "종류별 씨앗을 투명 용기에 제시", "“눈으로 먼저 자세히 살펴보자.”"],
+            ["2", "크기·모양·색을 비교", "“가장 작은 건? 길쭉한 건? 색은 어떻게 다르지?”"],
+            ["3", "용기를 흔들어 소리 비교", "“이 씨앗은 어떤 소리가 나? 다른 씨앗과 같을까?”"],
+            ["4", "아이의 발견을 말로 정리", "“○○는 작고 단단해서 가볍게 톡톡 소리가 났구나.”"],
+          ],
+        },
       },
       {
         label: "MISSION 2",
@@ -252,6 +258,7 @@ export const WEEK_04_BLOCKS: WeekBlocks = {
           "“음악이 멈추면 우리 씨앗도 잠깐 쉬어요.”",
           "“친구 마라카스와 내 마라카스 소리가 어떻게 달라?”",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -307,6 +314,7 @@ export const WEEK_04_BLOCKS: WeekBlocks = {
         question: "“새싹이 자라려면 어떤 도움이 필요할까?”",
       },
     ],
+    outro: null,
   },
 
   art: {
@@ -421,6 +429,8 @@ export const WEEK_04_BLOCKS: WeekBlocks = {
     noticeExample:
       "아이의 성장과 사진을 보며 결과나 빠르기를 비교하기보다 ‘처음에는 이렇게 작았는데 조금씩 자랐구나’라는 과정에 초점을 맞춰 이야기해주세요. 가정에서 씨앗 마라카스 음원을 함께 들으며 연주해보셔도 좋습니다.",
     status: "ready",
+    closingNote: null,
+    examples: null,
   },
 
   situations: [
@@ -606,6 +616,16 @@ export const WEEK_04_SCENES: WeekScene[] = [
 ];
 
 export const WEEK_04_NOTES: TranscriptionNote[] = [
+  {
+    section: "7. 핵심활동 · 표를 표로 되돌림",
+    page: 5,
+    issue:
+      "MISSION 1 「씨앗 관찰하기」의 원문은 「순서 / 교사 행동 / 교사 언어」 세 칸짜리 표인데, 전사 때 한 줄로 이어 적어 어느 말이 어느 칸의 것인지가 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 열 제목과 각 행의 칸 대응을 눈으로 확인했다. CoreActivityBlock 의 plays 에 stepTable(columns·rows)을 추가해 표를 그대로 담고 화면도 표로 그리도록 고쳤다. 열 제목은 주차마다 달라 고정하지 않고 원문 값을 쓴다. 문구는 바꾸지 않았다.",
+  },
   {
     section: "14. 수업 중 이런 상황이 생기면",
     page: 9,

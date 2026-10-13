@@ -118,6 +118,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
       "대형 종이집은 넘어짐·모서리·테이프 돌출 여부를 수업 전에 확인하고 아이가 올라타거나 매달리지 않게 합니다.",
       "전구 장식은 실제 전원 연결 제품보다 안전한 배터리형 장식 또는 모형을 우선 사용하고 기관 안전기준을 따릅니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -239,6 +240,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
           "‘머리·어깨·무릎·발’ 등 노래와 리듬에 맞춰 손가락으로 자기 몸에 빗방울 표현",
           "“톡, 톡, 톡! 내 몸에 작은 비가 내려요.”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 2",
@@ -247,6 +249,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
           "교사가 이름을 부르면 해당 친구에게 다가가 어깨·등 등에 가볍게 빗방울 표현",
           "“○○에게 빗방울이 필요하대. 살금살금 찾아가 톡톡!”",
         ],
+        stepTable: null,
       },
       {
         label: "STEP 3",
@@ -255,6 +258,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
           "이름이 불린 친구에게 다가가 손뼉·토닥토닥 등 약속한 동작으로 햇살 표현",
           "“이번에는 따뜻한 햇살을 친구에게 전해볼까?”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -263,6 +267,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
           "짝 또는 작은 모둠으로 비-햇살 동작을 번갈아 만들어봄",
           "“이번엔 친구가 만든 동작을 보고 같이 이어볼까?”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -272,6 +277,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
           "신체 접촉이 불편한 아이는 친구 앞에서 손가락으로 비를 표현하거나 공중에 햇살 동작을 보내는 방식으로 참여할 수 있습니다.",
           "‘도와줬다’에서 끝내지 말고 “친구가 와주니 어땠어?”, “네가 해주니 친구 표정이 어땠어?”로 관계 경험을 언어화합니다.",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -326,6 +332,7 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
         question: "“친구와 같이 놀 비밀기지에는 무엇이 있으면 좋을까?”",
       },
     ],
+    outro: null,
   },
 
   art: {
@@ -441,6 +448,8 @@ export const WEEK_06_BLOCKS: WeekBlocks = {
     noticeExample:
       "아이에게 모든 일을 대신 해주기보다 작은 역할을 함께 나눠보세요. 식탁 정리, 장난감 정돈처럼 가족이 함께하는 일에서 “네가 도와줘서 함께 끝냈어”라고 구체적으로 말해주면 협력의 의미를 일상에서 자연스럽게 경험할 수 있습니다.",
     status: "ready",
+    closingNote: null,
+    examples: null,
   },
 
   situations: [

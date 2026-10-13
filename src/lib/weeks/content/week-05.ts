@@ -113,6 +113,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
       "가위가 필요한 경우 연령에 맞는 안전가위를 사용하고 교사가 가까이 지원합니다.",
       "사진 사용 여부와 가정연계 자료는 기관의 개인정보·사진 활용 기준을 따릅니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -233,6 +234,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
           "아이들이 음악에 맞춰 움직이다 ‘분홍꽃!’ 신호에 분홍 꽃판으로 모임",
           "“분홍꽃 친구들, 서로 자리를 나눠서 동글게 모여볼까?”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -241,6 +243,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
           "‘노란꽃!’ 신호에 깡충깡충 뛰며 노란 꽃판으로 이동",
           "“이번에는 노란꽃까지 깡충깡충! 친구와 부딪히지 않게.”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -249,6 +252,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
           "파랑·보라·주황 등 여러 색 신호를 섞어 자유롭게 이동",
           "“이번 꽃은 어떤 색일까? 네가 고른 꽃에서 어떤 움직임을 해볼래?”",
         ],
+        stepTable: null,
       },
       {
         label: null,
@@ -258,6 +262,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
           "‘빨리 찾기’ 경쟁보다 천천히 공간을 살피고 안전하게 이동하는 것을 강조합니다.",
           "아이들이 익숙해지면 ‘작은 꽃처럼 웅크리기 - 활짝 핀 꽃처럼 크게 펴기’ 등 자유 신체표현으로 확장합니다.",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -314,6 +319,7 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
         question: "“이 꽃이 너를 닮았다면 어떤 꽃이 될까?”",
       },
     ],
+    outro: null,
   },
 
   art: {
@@ -428,6 +434,8 @@ export const WEEK_05_BLOCKS: WeekBlocks = {
     noticeExample:
       "‘누구보다 잘해’라는 비교형 칭찬보다 아이의 구체적인 모습과 행동을 발견해 말해주세요. “네가 동생을 기다려준 모습이 참 따뜻했어”, “끝까지 그려보려고 한 모습이 멋졌어”처럼 아이가 자신의 좋은 점을 실제 경험 속에서 알아갈 수 있도록 도와주세요.",
     status: "ready",
+    closingNote: null,
+    examples: null,
   },
 
   situations: [

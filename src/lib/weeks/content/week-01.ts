@@ -116,6 +116,7 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
       "탐험 중 화장실이나 출입구 등에서 아이가 대열을 이탈하지 않도록 인원 확인을 반복합니다.",
       "액자 꾸미기의 작은 장식은 입에 넣지 않도록 연령에 맞게 관리합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -233,21 +234,25 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
         label: "교실",
         title: "내 자리·사물함·놀이영역을 찾아봅니다.",
         points: ["“네 이름은 어디에 있을까? 네가 앉을 자리를 찾아볼까?”"],
+        stepTable: null,
       },
       {
         label: "놀이실",
         title: "좋아하는 놀이를 하나 찾아봅니다.",
         points: ["“여기서는 어떤 놀이를 해보고 싶어?”"],
+        stepTable: null,
       },
       {
         label: "화장실",
         title: "위치와 기본 사용 방법을 확인합니다.",
         points: ["“화장실이 필요하면 여기로 오면 돼. 선생님에게 말해도 좋아.”"],
+        stepTable: null,
       },
       {
         label: "놀이터",
         title: "안전한 이동 경로와 놀이기구를 살펴봅니다.",
         points: ["“밖에서 놀 때 우리가 기억할 약속은 무엇일까?”"],
+        stepTable: null,
       },
       {
         label: "탐험 미션 카드",
@@ -258,6 +263,7 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
           "‘좋아하는 놀이 찾기’ - 교사가 정하지 않고 아이가 관심 가는 영역을 선택합니다.",
           "‘친구와 손잡고 이동하기’ - 동의하는 친구끼리 시도하고, 불편한 아이는 나란히 걷기로 대체합니다.",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -305,6 +311,7 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
         question: "“오늘 네 마음은 어떤 색 같아?”",
       },
     ],
+    outro: null,
   },
 
   art: {
@@ -411,6 +418,8 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
     noticeExample:
       "첫 적응 기간에는 ‘오늘 안 울었어?’, ‘친구랑 잘 놀았어?’처럼 결과를 확인하기보다 “오늘 어떤 곳을 봤어?”, “기억나는 장난감이 있었어?”처럼 아이가 경험한 작은 장면을 물어봐 주세요. 가정연계 활동은 아이의 성장에 큰 힘이 됩니다.",
     status: "ready",
+    closingNote: null,
+    examples: null,
   },
 
   situations: [

@@ -125,6 +125,7 @@ export const WEEK_11_BLOCKS: WeekBlocks = {
       "훌라댄스는 충분한 간격을 확보하고 서로의 치마나 목걸이를 잡아당기지 않게 합니다.",
       "작은 장식 재료를 사용할 경우 입에 넣지 않도록 사전에 확인합니다.",
     ],
+    safetyLabel: "안전 확인",
   },
 
   timetable: {
@@ -247,18 +248,24 @@ export const WEEK_11_BLOCKS: WeekBlocks = {
           "탑승권에는 어떤 표시가 보이니?",
           "선글라스까지 챙겼다면 준비 완료!",
         ],
+        stepTable: null,
       },
       {
         label: "PLAY 2",
         title: "체크인 → 탑승 → 출발!",
         points: [
           "체크인 표식에서 여권과 탑승권을 보여준 뒤 탑승구를 지나 비행기 좌석으로 이동합니다. 교사는 절차를 엄격하게 검사하기보다 이동의 흐름이 자연스럽게 이어지도록 돕습니다.",
-          "1. 여권·탑승권 확인 — “여행 준비가 되었는지 한번 볼까요?”",
-          "2. 탑승구로 이동 — “탑승권을 들고 천천히 이동해볼까?”",
-          "3. 좌석에 앉기 — “우리 비행기가 곧 출발합니다!”",
-          "4. 몸으로 비행 표현 — “슈우우웅! 구름 위로 올라가요.”",
-          "5. 도착 신호 주기 — “새로운 여름 여행지에 도착했습니다!”",
         ],
+        stepTable: {
+          columns: ["순서", "교사 행동", "교사 언어"],
+          rows: [
+            ["1", "여권·탑승권 확인", "“여행 준비가 되었는지 한번 볼까요?”"],
+            ["2", "탑승구로 이동", "“탑승권을 들고 천천히 이동해볼까?”"],
+            ["3", "좌석에 앉기", "“우리 비행기가 곧 출발합니다!”"],
+            ["4", "몸으로 비행 표현", "“슈우우웅! 구름 위로 올라가요.”"],
+            ["5", "도착 신호 주기", "“새로운 여름 여행지에 도착했습니다!”"],
+          ],
+        },
       },
       {
         label: "PLAY 3",
@@ -270,6 +277,7 @@ export const WEEK_11_BLOCKS: WeekBlocks = {
           "친구와 마주 보고 같은 방향으로 움직여보기",
           "파도가 오는 것처럼 몸을 낮췄다가 크게 펴보기",
         ],
+        stepTable: null,
       },
     ],
     adaptations: [
@@ -324,6 +332,8 @@ export const WEEK_11_BLOCKS: WeekBlocks = {
         question: "“도착하면 제일 먼저 무엇을 하고 싶어?”",
       },
     ],
+    outro:
+      "워크북에서 만든 여권과 탑승권은 실제 역할놀이에 다시 사용해도 좋습니다.",
   },
 
   // ★ 원문 8. 미술활동
@@ -431,11 +441,13 @@ export const WEEK_11_BLOCKS: WeekBlocks = {
       "기관에서는 아이가 가져온 준비물을 실제 여행 역할놀이에 사용합니다.",
       "수업 후 아이가 여권과 탑승권을 가족에게 보여주며 오늘의 여행을 이야기하게 합니다.",
       "가족은 ‘어디까지 갔어?’, ‘가장 재미있었던 건 뭐야?’처럼 아이의 이야기를 들어줍니다.",
-      "숨은 성장 연결: 아빠의 여름 → 자랑. 이 의미를 아이에게 가르치지 않고, 아이가 오늘의 여행을 가족에게 신나게 들려주는 경험 속에서 자연스럽게 남겨둡니다.",
     ],
     noticeExample:
       "“오늘 아이가 경험한 여행을 정답처럼 확인하기보다, 어떤 장면이 가장 즐거웠는지 이야기를 들어주세요. 아이가 만든 여권과 탑승권을 보여주며 자신의 경험을 신나게 들려주는 시간이면 충분합니다.”",
     status: "ready",
+    closingNote:
+      "숨은 성장 연결: 아빠의 여름 → 자랑. 이 의미를 아이에게 가르치지 않고, 아이가 오늘의 여행을 가족에게 신나게 들려주는 경험 속에서 자연스럽게 남겨둡니다.",
+    examples: null,
   },
 
   situations: [
@@ -644,13 +656,34 @@ export const WEEK_11_SCENES: WeekScene[] = [
 
 export const WEEK_11_NOTES: TranscriptionNote[] = [
   {
+    section: "7. 핵심활동 · 표를 표로 되돌림",
+    page: 5,
+    issue:
+      "PLAY 2 「체크인 → 탑승 → 출발!」의 원문은 「순서 / 교사 행동 / 교사 언어」 세 칸짜리 표인데, 전사 때 한 줄로 이어 적어 어느 말이 어느 칸의 것인지가 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 열 제목과 각 행의 칸 대응을 눈으로 확인했다. CoreActivityBlock 의 plays 에 stepTable(columns·rows)을 추가해 표를 그대로 담고 화면도 표로 그리도록 고쳤다. 열 제목은 주차마다 달라 고정하지 않고 원문 값을 쓴다. 문구는 바꾸지 않았다.",
+  },
+  {
+    section: "9. 워크북 운영 가이드 · 표 뒤 마무리 문장",
+    page: 6,
+    issue:
+      "표 뒤에 이어지는 「워크북에서 만든 여권과 탑승권은 실제 역할놀이에 다시 사용해도 좋습니다.」를 **전사에서 빠뜨렸다.** WorkbookBlock 에 담을 자리가 없어 글이 사라졌다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 표 아래 문장을 직접 확인하고 WorkbookBlock 에 추가한 outro 에 그대로 담았다. 같은 자리의 문장이 9~16주차 모두에 있었고 1~8주차에는 없다는 것도 확인해 1~8주차는 outro: null 로 두었다. 담을 자리가 없으면 글이 조용히 사라진다.",
+  },
+  {
     section: "5. 권장 시간표 · 워크북·미술",
     page: 3,
     issue:
-      "원문 시간표가 워크북과 미술을 「워크북·미술 10~15분」 한 단계로 묶었다. 장면은 둘을 나눠 두되 baseSeconds 를 넣지 않았다 — 나눠 적으면 수업 시간이 늘어난다. 화면에서 두 장면이 각각 10~15분으로 읽히지 않는지 확인이 필요하다.",
+      "원문 시간표가 워크북과 미술을 「워크북·미술 10~15분」 한 단계로 묶었다. 장면은 둘을 나눠 두되 baseSeconds 를 넣지 않았다 — 나눠 적으면 수업 시간이 늘어난다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.3 을 이미지로 렌더링해 시간표 여섯 행을 눈으로 대조했다. 다섯째 행이 단계 「워크북·미술」, 시간 「10~15분」 한 칸이 맞다. 두 장면에 시간을 각각 넣지 않은 처리가 원문과 맞고 화면도 장면별 시간을 표시하지 않는다. 합계를 두 번 세지 않는다. 같은 쪽에서 준비물 7행·공간 세팅 5항목·안전 확인 5항목도 확인했다.",
   },
   {
     section: "8. 미술활동 · 교사 주의",
@@ -658,8 +691,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "1권에서 「활동의 기준」이 들어가던 자리에 「교사 주의」가 있다 (9주차와 같다). standard 필드에 그 문장을 넣고 앞에 「교사 주의 — 」를 붙였다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 을 이미지로 렌더링해 확인했다. 8. 미술활동의 마지막 상자 제목이 「교사 주의」가 맞고 본문도 전사본과 같다. 같은 쪽에서 진행 순서 5항목·교사 발문 4항목도 확인했다.",
   },
   {
     section: "7. 핵심활동 PLAY 2 · 순서 표",
@@ -667,8 +701,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "순서 표의 교사 행동 다섯 개와 교사 언어 다섯 개가 PLAY 3 제목을 사이에 두고 떨어져 나온다. 순서대로 짝지어 「N. 행동 — 언어」로 이어 적었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 를 이미지로 렌더링해 표의 다섯 행을 눈으로 대조했다. 교사 행동·교사 언어 짝이 전사본과 같다.",
   },
   {
     section: "7. 핵심활동 · 현장 조절표",
@@ -676,8 +711,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "조절표가 5쪽에서 6쪽으로 넘어가고 상황 다섯 개와 조절 다섯 개가 떨어져 나온다. 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.5 렌더링에서 조절표가 5쪽 안에서 다섯 행으로 끝나는 것을 확인했다 (쪽을 넘지 않는다). 상황·조절 짝이 전사본과 같다. 같은 쪽에서 PLAY 1·3 목록도 확인했다.",
   },
   {
     section: "14. 수업 중 이런 상황이 생기면",
@@ -685,8 +721,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "권장 대응 여섯 개가 15번 섹션 제목 뒤에 나온다. 상황·피해야 할 반응과 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.8 을 이미지로 렌더링해 표의 여섯 행을 눈으로 대조했다. 짝이 전사본과 같다. 같은 쪽에서 15번 퀵 가이드 여덟 행과 마무리 문단도 확인했다.",
   },
   {
     section: "9. 워크북 운영 가이드 · 표",
@@ -694,8 +731,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "활동 네 개의 교사 초점과 발문 예시가 열 단위로 떨어져 나온다. 특히 「나의 여권」의 발문만 교사 초점 바로 뒤에 붙어 나왔다. 순서대로 짝지었다.",
     category: "extraction",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 워크북 표의 네 행을 눈으로 대조했다. 교사 초점·발문 짝이 전사본과 같다. 같은 쪽에서 음원 표 네 행도 확인했다.",
   },
   {
     section: "13. 가정연계 · 숨은 성장 연결",
@@ -703,8 +741,9 @@ export const WEEK_11_NOTES: TranscriptionNote[] = [
     issue:
       "9·10주차와 같이 「숨은 성장 연결」 항목이 있다. steps 의 마지막 항목으로 이어 적어 별도 묶음 구분이 흐려졌다. 10주차와 같은 「아빠의 여름 → 자랑」이다.",
     category: "structure",
-    status: "unresolved",
-    evidence: null,
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 을 이미지로 렌더링해 확인했다. 13. 가정연계는 설명문 → 「진행 방법」 4항목 → 「부모님께 전달할 핵심 문장」 → 굵은 글씨의 「숨은 성장 연결」 문단 순이다. 이 문단은 진행 방법의 한 줄이 아니므로 HomeConnectionBlock 에 closingNote 를 추가해 목록에서 꺼내 따로 담고 화면도 구분해 그리도록 고쳤다. 9~16주차 모두 같은 자리에 문단이 있고 1~8주차에는 없다.",
   },
 ];
 

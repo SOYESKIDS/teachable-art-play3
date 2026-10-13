@@ -71,6 +71,11 @@ export interface PreparationBlock {
   materials: { group: string; item: string }[];
   spaceSetup: string[];
   safety: string[];
+  /**
+   * C항의 원문 제목. 대부분 「안전 확인」이지만 16주차는 「안전·개인정보 확인」이다.
+   * 화면이 제목을 고정해 그리면 원문과 달라지므로 주차마다 그대로 담는다.
+   */
+  safetyLabel: string;
 }
 
 /** 5. 권장 시간표 / 관찰 시간표 (주차에 따라 다르다) */
@@ -97,7 +102,18 @@ export interface CoreActivityBlock {
   title: string;
   intro: string | null;
   /** PLAY / MISSION / 탐험 장소 등 주차마다 단계 수가 다르다 */
-  plays: { label: string | null; title: string; points: string[] }[];
+  plays: {
+    label: string | null;
+    title: string;
+    points: string[];
+    /**
+     * 원문이 표로 둔 묶음. 열 제목이 주차마다 다르다
+     * (순서/교사 행동/교사 언어 · 단계/진행 방법/교사 언어 · 단계/움직임/교사 언어 ·
+     *  카드 예시/표현에서 볼 점/교사 언어). 한 줄로 이어 적으면 어느 칸의 말인지가 사라진다.
+     * 표가 없는 묶음은 null 이다.
+     */
+    stepTable: { columns: string[]; rows: string[][] } | null;
+  }[];
   /** 현장 난이도·개별 지원 */
   adaptations: { condition: string; adjust: string }[];
   situations: { situation: string; say: string }[];
@@ -108,6 +124,11 @@ export interface WorkbookBlock {
   title: string | null;
   intro: string | null;
   pages: { activity: string; focus: string; question: string }[];
+  /**
+   * 표 뒤에 이어지는 마무리 문장. 2권(9~16주차)에만 있고 1권(1~8주차)에는 없다.
+   * 원문에 없으면 null 로 둔다 — 지어내지 않는다.
+   */
+  outro: string | null;
 }
 
 /** 8 또는 9. 미술활동 */
@@ -163,8 +184,20 @@ export interface HomeConnectionBlock {
   title: string;
   description: string | null;
   steps: string[];
+  /**
+   * 진행 방법과 핵심 문장 사이에 소제목이 붙은 예시 묶음이 들어가는 주차가 있다 (2주차 「가정 미션 예시」).
+   * 소제목이 원문마다 다르므로 label 을 함께 담는다. 없으면 null.
+   */
+  examples: { label: string; text: string } | null;
   /** 부모님께 전달할 핵심 문장 */
   noticeExample: string | null;
+  /**
+   * 핵심 문장 뒤에 이어지는 마무리 문단. 진행 방법 항목이 아니다.
+   * 9~13주차는 「숨은 성장 연결: …」, 16주차는 「숨은 성장 이야기는 …」,
+   * 14·15주차는 다음 계절로 잇는 다른 형식의 문장이다. 1권(1~8주차)에는 없다.
+   * 원문 문장을 그대로 담는다 — 요약하거나 지어내지 않는다.
+   */
+  closingNote: string | null;
   /** 원문이 「미정」인 주차가 있다 (19주) */
   status: "ready" | "undecided";
 }
