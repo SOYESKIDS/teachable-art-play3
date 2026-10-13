@@ -96,6 +96,54 @@ import {
   WEEK_16_SOURCE_FILE,
 } from "./content/week-16";
 import {
+  WEEK_17_BLOCKS,
+  WEEK_17_NOTES,
+  WEEK_17_SCENES,
+  WEEK_17_SOURCE_FILE,
+} from "./content/week-17";
+import {
+  WEEK_18_BLOCKS,
+  WEEK_18_NOTES,
+  WEEK_18_SCENES,
+  WEEK_18_SOURCE_FILE,
+} from "./content/week-18";
+import {
+  WEEK_19_BLOCKS,
+  WEEK_19_NOTES,
+  WEEK_19_SCENES,
+  WEEK_19_SOURCE_FILE,
+} from "./content/week-19";
+import {
+  WEEK_20_BLOCKS,
+  WEEK_20_NOTES,
+  WEEK_20_SCENES,
+  WEEK_20_SOURCE_FILE,
+} from "./content/week-20";
+import {
+  WEEK_21_BLOCKS,
+  WEEK_21_NOTES,
+  WEEK_21_SCENES,
+  WEEK_21_SOURCE_FILE,
+} from "./content/week-21";
+import {
+  WEEK_22_BLOCKS,
+  WEEK_22_NOTES,
+  WEEK_22_SCENES,
+  WEEK_22_SOURCE_FILE,
+} from "./content/week-22";
+import {
+  WEEK_23_BLOCKS,
+  WEEK_23_NOTES,
+  WEEK_23_SCENES,
+  WEEK_23_SOURCE_FILE,
+} from "./content/week-23";
+import {
+  WEEK_24_BLOCKS,
+  WEEK_24_NOTES,
+  WEEK_24_SCENES,
+  WEEK_24_SOURCE_FILE,
+} from "./content/week-24";
+import {
   hiddenReason,
   isVisibleTo,
   type ContentAudience,
@@ -256,6 +304,54 @@ const FIXTURES: Record<number, WeekFixture> = {
     scenes: WEEK_16_SCENES,
     sourceFile: WEEK_16_SOURCE_FILE,
     notes: WEEK_16_NOTES,
+  },
+  17: {
+    blocks: WEEK_17_BLOCKS,
+    scenes: WEEK_17_SCENES,
+    sourceFile: WEEK_17_SOURCE_FILE,
+    notes: WEEK_17_NOTES,
+  },
+  18: {
+    blocks: WEEK_18_BLOCKS,
+    scenes: WEEK_18_SCENES,
+    sourceFile: WEEK_18_SOURCE_FILE,
+    notes: WEEK_18_NOTES,
+  },
+  19: {
+    blocks: WEEK_19_BLOCKS,
+    scenes: WEEK_19_SCENES,
+    sourceFile: WEEK_19_SOURCE_FILE,
+    notes: WEEK_19_NOTES,
+  },
+  20: {
+    blocks: WEEK_20_BLOCKS,
+    scenes: WEEK_20_SCENES,
+    sourceFile: WEEK_20_SOURCE_FILE,
+    notes: WEEK_20_NOTES,
+  },
+  21: {
+    blocks: WEEK_21_BLOCKS,
+    scenes: WEEK_21_SCENES,
+    sourceFile: WEEK_21_SOURCE_FILE,
+    notes: WEEK_21_NOTES,
+  },
+  22: {
+    blocks: WEEK_22_BLOCKS,
+    scenes: WEEK_22_SCENES,
+    sourceFile: WEEK_22_SOURCE_FILE,
+    notes: WEEK_22_NOTES,
+  },
+  23: {
+    blocks: WEEK_23_BLOCKS,
+    scenes: WEEK_23_SCENES,
+    sourceFile: WEEK_23_SOURCE_FILE,
+    notes: WEEK_23_NOTES,
+  },
+  24: {
+    blocks: WEEK_24_BLOCKS,
+    scenes: WEEK_24_SCENES,
+    sourceFile: WEEK_24_SOURCE_FILE,
+    notes: WEEK_24_NOTES,
   },
 };
 

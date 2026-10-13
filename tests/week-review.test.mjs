@@ -8,7 +8,7 @@ import {
   canStartReview,
   publishBlockers,
 } from "../src/lib/weeks/content-state.ts";
-import { hqDecisionNotes, unresolvedNotes } from "../src/lib/weeks/week-types.ts";
+import { EMPTY_BLOCKS, hqDecisionNotes, unresolvedNotes } from "../src/lib/weeks/week-types.ts";
 import { SECTION_TOTAL, weekCoverage } from "../src/lib/weeks/week-coverage.ts";
 import {
   ASSET_ACCESS_NOTE,
@@ -82,11 +82,19 @@ test("전사된 주차의 섹션 범위를 센다", () => {
 });
 
 test("전사되지 않은 주차는 섹션이 비고 출처 파일도 없다", () => {
+  // ★ 24주 전사가 끝나 전사 전 주차가 더 이상 없다. 규칙 자체는 남겨둔다 —
+  //   새 주차가 추가되거나 전사를 되돌릴 때 빈 블록이 「채워진 것」으로 세어지면 안 된다.
   const pending = WEEK_INDEX.find((w) => w.status.transcription === "pending");
-  assert.ok(pending, "전사 전 주차가 하나도 없다 — 이 테스트의 전제가 바뀌었다");
+  const content = pending
+    ? getWeekContent(pending.weekNo, "internal_review").content
+    : {
+        ...getWeekContent(1, "internal_review").content,
+        blocks: EMPTY_BLOCKS,
+        scenes: [],
+        sourceFile: null,
+      };
 
-  const result = getWeekContent(pending.weekNo, "internal_review");
-  const coverage = weekCoverage(result.content);
+  const coverage = weekCoverage(content);
   assert.equal(coverage.filledCount, 0);
   assert.equal(coverage.sceneCount, 0);
   assert.equal(coverage.sourceFile, null);
@@ -112,14 +120,18 @@ test("자료 언급은 전사된 원문 문구를 그대로 돌려준다", () =>
 });
 
 test("전사 전 주차에서는 자료 언급을 찾을 수 없다", () => {
+  // ★ 24주 전사가 끝나 전사 전 주차가 더 이상 없다. 빈 블록으로 직접 확인한다.
+  //   「전사 전 주차가 없으니 검사도 없다」로 두면 규칙이 조용히 사라진다.
   const pending = WEEK_INDEX.find((w) => w.status.transcription === "pending");
-  const result = getWeekContent(pending.weekNo, "internal_review");
+  const target = pending
+    ? getWeekContent(pending.weekNo, "internal_review").content
+    : { ...getWeekContent(1, "internal_review").content, blocks: EMPTY_BLOCKS, sourceFile: null };
 
   for (const assetType of REVIEWED_ASSET_TYPES) {
     assert.deepEqual(
-      findGuideMentions(result.content, assetType),
+      findGuideMentions(target, assetType),
       [],
-      `${pending.weekNo}주차는 전사 전인데 ${assetType} 근거가 나왔다`,
+      `전사 전 주차에서 ${assetType} 근거가 나왔다`,
     );
   }
 });
@@ -310,6 +322,13 @@ test("워크북 표 뒤 마무리 문장은 2권에만 있고 1권에는 없다"
         typeof workbook.outro === "string" && workbook.outro.length > 0,
         `${week.weekNo}주차(2권) 워크북의 표 뒤 문장이 비어 있다`,
       );
+    } else {
+      // ★ 3권(17~24주) 원문에도 표 뒤 문장이 없다. 쪽 이미지로 확인했다.
+      assert.equal(
+        workbook.outro,
+        null,
+        `${week.weekNo}주차(3권) 워크북에는 표 뒤 문장이 없어야 한다`,
+      );
     }
   }
 });
@@ -354,5 +373,148 @@ test("원문이 표로 둔 묶음은 표로 남는다 (한 줄로 이어 적지 
         );
       }
     }
+  }
+});
+
+/* ───────────────────────── 3권(17~24주) 원문 구조 */
+
+const PART3 = WEEK_INDEX.filter((w) => w.weekNo >= 17);
+
+test("3권은 「관찰 시간표」이고 시간 칸이 없다", () => {
+  // ★ 1·2권은 「단계/시간/교사 역할/아이 경험」 네 칸, 3권은 세 칸이다.
+  //   없는 시간을 화면이 지어내면 교사가 단계별 분을 배분해 버린다.
+  for (const week of PART3) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const t = content.blocks.timetable;
+    if (!t) continue;
+
+    assert.equal(t.kind, "observation", `${week.weekNo}주차 시간표 종류가 다르다`);
+    assert.deepEqual(
+      t.table.columns,
+      ["단계", "교사가 볼 것", "관찰 예시"],
+      `${week.weekNo}주차 관찰 시간표의 열 제목이 원문과 다르다`,
+    );
+
+    // 단계별 시간이 없으므로 장면에도 권장 초를 넣지 않는다.
+    for (const scene of content.scenes) {
+      assert.equal(
+        scene.baseSeconds,
+        null,
+        `${week.weekNo}주차 장면 ${scene.sceneNo}에 원문에 없는 권장 시간이 들어 있다`,
+      );
+    }
+  }
+});
+
+test("14번 가운데 칸의 뜻은 권마다 다르다", () => {
+  // ★ 1·2권 「피해야 할 반응」(하지 말 것) vs 3권 「교사가 볼 점」(살펴볼 것).
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const s = content.blocks.situations;
+    if (!s) continue;
+
+    const expected =
+      week.weekNo <= 16
+        ? ["상황", "피해야 할 반응", "권장 대응"]
+        : ["상황", "교사가 볼 점", "바로 사용할 말"];
+    assert.deepEqual(s.columns, expected, `${week.weekNo}주차 14번 표의 열 제목이 원문과 다르다`);
+  }
+});
+
+test("15번 셋째 칸은 1·2권 「핵심 문장」, 3권 「핵심 질문」이다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const g = content.blocks.quickGuide;
+    if (!g) continue;
+
+    assert.equal(
+      g.table.columns[2],
+      week.weekNo <= 16 ? "핵심 문장" : "핵심 질문",
+      `${week.weekNo}주차 퀵 가이드 셋째 칸 제목이 원문과 다르다`,
+    );
+  }
+});
+
+test("3권에는 현장 난이도표가 없고 핵심활동 상황표가 있다", () => {
+  // ★ null 은 「비어 있다」가 아니라 「원문에 없다」는 뜻이다.
+  for (const week of PART3) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const core = content.blocks.coreActivity;
+    if (!core) continue;
+
+    assert.equal(core.adaptations, null, `${week.weekNo}주차에 원문에 없는 현장 난이도표가 있다`);
+    assert.ok(core.situations, `${week.weekNo}주차 핵심활동 상황표가 비어 있다`);
+    assert.deepEqual(
+      core.situations.columns,
+      ["상황", "바로 사용할 교사 말"],
+      `${week.weekNo}주차 핵심활동 상황표의 열 제목이 원문과 다르다`,
+    );
+  }
+});
+
+test("3권 가정연계는 「안내 문구 예시」뿐이고 진행 방법 목록이 없다", () => {
+  for (const week of PART3) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const home = content.blocks.homeConnection;
+    if (!home) continue;
+
+    assert.equal(home.stepsLabel, null, `${week.weekNo}주차 가정연계에 없는 소제목이 들어 있다`);
+    assert.equal(home.steps.length, 0, `${week.weekNo}주차 가정연계에 원문에 없는 목록이 들어 있다`);
+    assert.equal(home.noticeLabel, "안내 문구 예시", `${week.weekNo}주차 안내 문구 소제목이 다르다`);
+  }
+});
+
+test("3권 12번에는 키즈노트 예시가 없고 「기록 시 주의」가 있다", () => {
+  for (const week of PART3) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const guide = content.blocks.observationGuide;
+    if (!guide) continue;
+
+    assert.equal(guide.recordExample, null, `${week.weekNo}주차에 원문에 없는 기록 예시가 있다`);
+    assert.equal(guide.cautionsLabel, "기록 시 주의", `${week.weekNo}주차 주의 묶음 제목이 다르다`);
+    assert.ok(guide.cautions.length > 0, `${week.weekNo}주차 「기록 시 주의」가 비어 있다`);
+    assert.deepEqual(
+      guide.table.columns,
+      ["관찰영역", "관찰 행동", "기록 문장 예시"],
+      `${week.weekNo}주차 12번 표의 열 제목이 원문과 다르다`,
+    );
+  }
+});
+
+test("원문이 「미정」이라고 적은 가정연계는 채우지 않는다", () => {
+  // ★ 19주차. 확정 전까지 보호자에게 보내지 않는다.
+  const { content } = getWeekContent(19, "internal_review");
+  const home = content.blocks.homeConnection;
+
+  assert.ok(home, "19주차 가정연계 블록이 없다");
+  assert.equal(home.status, "undecided");
+  assert.equal(home.title, "미정");
+  assert.equal(home.steps.length, 0, "미정인 가정연계에 진행 방법이 들어 있다");
+
+  // 교실 화면에도 가정 과제를 예고하는 장면을 만들지 않는다.
+  const homeScenes = content.scenes.filter((s) => s.sceneType === "home");
+  assert.equal(homeScenes.length, 0, "가정연계가 미정인데 가정 장면이 있다");
+});
+
+test("11번 마무리 상자 제목은 1·2권 「마지막 한 문장」, 3권 「마무리 한 문장」이다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const closing = content.blocks.closing;
+    if (!closing?.closingLine) continue;
+
+    assert.equal(
+      closing.closingLineLabel,
+      week.weekNo <= 16 ? "마지막 한 문장" : "마무리 한 문장",
+      `${week.weekNo}주차 마무리 상자 제목이 원문과 다르다`,
+    );
+  }
+});
+
+test("24주 전체가 전사되고 15개 섹션이 모두 채워진다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    assert.equal(week.status.transcription, "done", `${week.weekNo}주차가 아직 전사되지 않았다`);
+    assert.ok(content.sourceFile, `${week.weekNo}주차 원문 파일명이 없다`);
+    assert.ok(content.scenes.length > 0, `${week.weekNo}주차 교실 화면 장면이 없다`);
   }
 });

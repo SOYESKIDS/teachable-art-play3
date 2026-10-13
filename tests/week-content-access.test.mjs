@@ -72,13 +72,22 @@ test("audience 를 빠뜨리면 좁은 쪽(정식 서비스)으로 동작한다"
 test("전사하지 않은 주차는 두 경로 모두 본문이 없다", () => {
   // ★ 주차 번호를 박아 두지 않는다. 전사가 진행되면서 그 번호가 전사 완료로
   //   바뀌면 이 테스트는 규칙이 아니라 진행 상황을 재는 것이 된다.
+  // ★ 24주 전사가 끝나 전사 전 주차가 없다. 그래도 규칙은 남긴다 —
+  //   전사 데이터가 없는 주차 번호(25주)로 같은 동작을 확인한다.
   const pending = WEEK_INDEX.find((w) => w.status.transcription === "pending");
-  assert.ok(pending, "전사 전 주차가 하나도 없다 — 이 테스트의 전제가 바뀌었다");
 
   for (const audience of ["service", "internal_review"]) {
-    const r = getWeekContent(pending.weekNo, audience);
-    assert.equal(r.bodyVisible, false);
-    assert.equal(r.content.scenes.length, 0);
+    if (pending) {
+      const r = getWeekContent(pending.weekNo, audience);
+      assert.equal(r.bodyVisible, false, `${pending.weekNo}주차 본문이 열렸다`);
+      assert.equal(r.content.scenes.length, 0, `${pending.weekNo}주차 장면이 들어 있다`);
+      assert.equal(r.content.sourceFile, null, `${pending.weekNo}주차 출처 파일명이 들어 있다`);
+    }
+
+    // 24주 밖의 번호는 주차 자체가 없다. 빈 본문이 아니라 null 이어야 한다 —
+    // 빈 객체를 돌려주면 화면이 「전사 전 주차」로 그려 없는 주차를 만들어낸다.
+    assert.equal(getWeekContent(25, audience), null, "없는 주차가 본문을 돌려줬다");
+    assert.equal(getWeekContent(0, audience), null, "없는 주차가 본문을 돌려줬다");
   }
 });
 
