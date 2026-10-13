@@ -1,4 +1,4 @@
-import type { ReviewState } from "@/lib/weeks/week-types";
+import type { ContentStatus } from "@/lib/weeks/content-state";
 
 /**
  * 24주 책갈피 — 디자인 기획안의 유일한 시그니처 장치.
@@ -19,11 +19,20 @@ import type { ReviewState } from "@/lib/weeks/week-types";
  * 비율 2.4:1, 최소 너비 18px.
  */
 
-export type RibbonState = "done" | "current" | "next" | "locked";
+/**
+ * 책갈피 상태.
+ *
+ * ★ `current`(이번 주)와 `selected`(선택한 주차)는 다르다.
+ *   「이번 주」는 **반의 실제 진행 상태**다 — 회차와 일정이 있어야 말할 수
+ *   있다. 주차 페이지를 열었다는 것은 그냥 그 주차를 **보고 있다**는 뜻이다.
+ *   둘을 같은 표시로 쓰면 교사가 반의 진도를 잘못 읽는다.
+ */
+export type RibbonState = "done" | "current" | "selected" | "next" | "locked";
 
 const STATE_LABEL: Record<RibbonState, string> = {
   done: "완료",
   current: "이번 주",
+  selected: "선택한 주차",
   next: "다음",
   locked: "이용권 밖",
 };
@@ -39,20 +48,21 @@ export function WeekRibbon({
   themeColor,
   state = "next",
   size = "m",
-  reviewState,
+  status,
 }: {
   weekNo: number;
   themeColor: string;
   state?: RibbonState;
   size?: keyof typeof SIZE;
-  /** 전사·검수 상태. 전달하면 화면 읽기 이름에 덧붙는다 */
-  reviewState?: ReviewState;
+  /** 전사·발행 상태. 전달하면 화면 읽기 이름에 덧붙는다 */
+  status?: ContentStatus;
 }) {
   const { w, text } = SIZE[size];
   // 이번 주는 길게 — 색이 아니라 길이로도 구분된다.
+  // 선택한 주차는 길이를 늘리지 않는다. 진도가 아니라 보기 위치이기 때문이다.
   const height = Math.round(w * 2.4 * (state === "current" ? 1.25 : 1));
 
-  const filled = state === "done" || state === "current";
+  const filled = state === "done" || state === "current" || state === "selected";
   const background = filled ? themeColor : "transparent";
   const border = state === "locked" ? "#d7e0d8" : filled ? themeColor : "#bfccc3";
   const color = filled ? "#ffffff" : state === "locked" ? "#bfccc3" : "#51605a";
@@ -60,7 +70,8 @@ export function WeekRibbon({
   const label = [
     `${weekNo}주차`,
     STATE_LABEL[state],
-    reviewState === "pending_transcription" ? "원문 검수 대기" : null,
+    status && status.transcription !== "done" ? "원문 미전사" : null,
+    status && status.publication !== "published" ? "검수 전" : null,
   ]
     .filter(Boolean)
     .join(", ");
@@ -98,7 +109,7 @@ export function WeekRibbonTrack({
   completedThrough,
   entitledTo,
 }: {
-  weeks: { weekNo: number; themeColor: string; reviewState: ReviewState }[];
+  weeks: { weekNo: number; themeColor: string; status: ContentStatus }[];
   currentWeek: number | null;
   /** 이 주차까지 완료 */
   completedThrough: number;
@@ -124,7 +135,7 @@ export function WeekRibbonTrack({
               themeColor={w.themeColor}
               state={state}
               size="s"
-              reviewState={w.reviewState}
+              status={w.status}
             />
           );
         })}

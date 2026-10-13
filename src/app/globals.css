@@ -23,6 +23,17 @@
    * 대비: 숲 잉크 12.5:1 · 잎 초록 4.9:1 · 하늘 5.9:1 (흰 바탕)
    * 노랑은 강조 배경에만. 노랑 위 글자는 항상 숲 잉크.
    */
+  /*
+   * 제목·이야기 글꼴.
+   *
+   * ★ Tailwind 기본 `font-serif` 는 라틴 전용 스택이라 한글이 기기 기본
+   *   명조로 떨어진다. 여기서 한글 명조를 앞에 세워 화면마다 다르게 보이는
+   *   것을 막는다. 글꼴 파일은 layout.tsx 가 싣는다.
+   */
+  --font-serif:
+    var(--font-serif-kr), "Noto Serif KR", "Nanum Myeongjo", Batang, AppleMyungjo,
+    serif;
+
   --color-forest: #173a2c;        /* 숲 잉크 — 제목·본문·주 버튼 */
   --color-leaf: #2b7f5e;          /* 잎 초록 (주색) — 링크·선택·진행 */
   --color-leaf-bright: #3fa27a;   /* 큰 그림·아이콘 전용 (본문 금지) */
@@ -559,6 +570,7 @@
   --color-pale-yellow: var(--color-pale-yellow);
 
   /* ── 수업 운영실 토큰 (새 화면 전용) ── */
+  --font-serif: var(--font-serif);
   --color-forest: var(--color-forest);
   --color-leaf: var(--color-leaf);
   --color-leaf-bright: var(--color-leaf-bright);

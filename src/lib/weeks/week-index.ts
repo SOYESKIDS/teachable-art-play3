@@ -1,4 +1,5 @@
-import { partOf, type ReviewState, type WeekSummary } from "./week-types";
+import type { ContentStatus } from "./content-state";
+import { partOf, type WeekSummary } from "./week-types";
 
 /**
  * 24주 수업 지도 — B단계.
@@ -29,9 +30,24 @@ import { partOf, type ReviewState, type WeekSummary } from "./week-types";
  * (디자인 기획안 9쪽).
  */
 
-/** 본문을 전사한 주차. 나머지는 메타만 있다 */
-const TRANSCRIBED: Record<number, ReviewState> = {
-  1: "transcribed",
+/**
+ * 주차별 상태.
+ *
+ * ★ 전사와 발행을 따로 적는다.
+ *   1주차는 원문을 옮겼지만(`done`) 본사 대조 검수 전이라 발행되지 않았다
+ *   (`draft`). 그래서 정식 서비스 경로에서는 아직 본문이 열리지 않고,
+ *   내부 검수 화면에서만 열린다.
+ *
+ * ★ 발행 상태를 코드가 올리지 않는다.
+ *   검수는 사람이 하는 일이다. 전사했다고 자동으로 `published` 가 되지 않는다.
+ */
+const STATUS: Record<number, ContentStatus> = {
+  1: { transcription: "done", publication: "draft" },
+};
+
+const NOT_TRANSCRIBED: ContentStatus = {
+  transcription: "pending",
+  publication: "draft",
 };
 
 interface WeekSeed {
@@ -303,7 +319,7 @@ export const WEEK_INDEX: WeekSummary[] = SEEDS.map((seed) => ({
   activitySummary: seed.activitySummary,
   outcome: seed.outcome,
   themeColor: seed.themeColor,
-  reviewState: TRANSCRIBED[seed.weekNo] ?? "pending_transcription",
+  status: STATUS[seed.weekNo] ?? NOT_TRANSCRIBED,
 }));
 
 export function weekSummary(weekNo: number): WeekSummary | null {

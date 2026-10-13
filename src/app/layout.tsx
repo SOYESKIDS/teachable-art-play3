@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Noto_Serif_KR } from "next/font/google";
 import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -8,6 +9,27 @@ const pretendard = localFont({
   variable: "--font-pretendard",
   weight: "45 920",
   display: "swap",
+});
+
+/**
+ * 제목·이야기용 명조.
+ *
+ * ★ 왜 추가하는가 — `font-serif` 는 Tailwind 기본값이 라틴 세리프 스택
+ *   (ui-serif, Georgia, Times …)이라 **한글에는 아무 글꼴도 지정하지 않는
+ *   것과 같다.** 기기 기본 명조(Windows 바탕 · macOS 애플명조)로 떨어져
+ *   화면마다 다르게 보인다. 그래서 글꼴을 직접 싣는다.
+ *
+ * ★ 굵기 2종만 — 제목 700, 큰 인용 500. 본문에는 쓰지 않으므로 더 받지 않는다.
+ * ★ 본문은 Pretendard 그대로라 이 글꼴이 늦게 와도 본문 읽기는 영향이 없다.
+ *   그래서 preload 를 끄고 display: swap 으로 둔다.
+ */
+const serifKr = Noto_Serif_KR({
+  weight: ["500", "700"],
+  subsets: ["latin"],
+  variable: "--font-serif-kr",
+  display: "swap",
+  preload: false,
+  fallback: ["Noto Serif KR", "Nanum Myeongjo", "Batang", "AppleMyungjo", "serif"],
 });
 
 /**
@@ -54,7 +76,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
+    <html
+      lang="ko"
+      className={`${pretendard.variable} ${serifKr.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

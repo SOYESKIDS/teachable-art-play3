@@ -8,7 +8,9 @@ import { StaffShell } from "@/components/staff/StaffShell";
 import { WeekRibbon } from "@/components/weeks/WeekRibbon";
 import {
   ContentOriginBadge,
-  ReviewStateNotice,
+  ContentStatusBadges,
+  HiddenBodyNotice,
+  PublicationNotice,
 } from "@/components/weeks/ContentOriginNotice";
 import { WeekTabs, isWeekTab, type WeekTabKey } from "@/components/weeks/WeekTabs";
 import {
@@ -18,7 +20,8 @@ import {
   PrepPanel,
   ReportPanel,
 } from "@/components/weeks/WeekTabPanels";
-import { getWeekContent, shouldMarkFixture } from "@/lib/weeks/week-source";
+import { getWeekContent } from "@/lib/weeks/week-source";
+import { showsDevelopmentMarkers } from "@/lib/weeks/content-state";
 import { partOf } from "@/lib/weeks/week-types";
 import { isIntegrationWeek } from "@/lib/weeks/week-index";
 import { TEACHER_NAV } from "../../nav";
@@ -77,10 +80,11 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
     );
   }
 
-  const result = getWeekContent(weekNo);
+  // ★ 정식 서비스 경로다. 발행된 주차의 본문만 내려온다.
+  const result = getWeekContent(weekNo, "service");
   if (!result) notFound();
 
-  const { origin, content } = result;
+  const { origin, content, bodyVisible, hidden } = result;
   const { summary } = content;
   const part = partOf(weekNo);
   const orgQuery = `org=${encodeURIComponent(membership.organizationId)}`;
@@ -107,9 +111,9 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
         <WeekRibbon
           weekNo={weekNo}
           themeColor={summary.themeColor}
-          state="current"
+          state="selected"
           size="l"
-          reviewState={summary.reviewState}
+          status={summary.status}
         />
         <div className="min-w-0 pt-2">
           <p className="text-[13px] text-muted-ink">
@@ -134,20 +138,29 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
       </header>
 
       <div className="mt-4 flex flex-col gap-2">
-        <ReviewStateNotice state={summary.reviewState} />
-        <ContentOriginBadge origin={origin} show={shouldMarkFixture()} />
+        <ContentStatusBadges status={summary.status} />
+        <PublicationNotice status={summary.status} />
+        <ContentOriginBadge origin={origin} show={showsDevelopmentMarkers()} />
         {content.sourceFile ? (
           <p className="text-[12px] text-muted-ink">원문 파일: {content.sourceFile}</p>
         ) : null}
       </div>
 
-      <WeekTabs weekNo={weekNo} active={tab} orgQuery={orgQuery} />
+      {bodyVisible ? (
+        <>
+          <WeekTabs weekNo={weekNo} active={tab} orgQuery={orgQuery} />
 
-      {tab === "prep" ? <PrepPanel content={content} /> : null}
-      {tab === "guide" ? <GuidePanel content={content} /> : null}
-      {tab === "class" ? <ClassPanel content={content} /> : null}
-      {tab === "observe" ? <ObservePanel content={content} orgQuery={orgQuery} /> : null}
-      {tab === "report" ? <ReportPanel content={content} orgQuery={orgQuery} /> : null}
+          {tab === "prep" ? <PrepPanel content={content} /> : null}
+          {tab === "guide" ? <GuidePanel content={content} /> : null}
+          {tab === "class" ? <ClassPanel content={content} /> : null}
+          {tab === "observe" ? <ObservePanel content={content} orgQuery={orgQuery} /> : null}
+          {tab === "report" ? <ReportPanel content={content} orgQuery={orgQuery} /> : null}
+        </>
+      ) : (
+        <div className="mt-6">
+          <HiddenBodyNotice reason={hidden ?? "not_transcribed"} />
+        </div>
+      )}
     </StaffShell>
   );
 }

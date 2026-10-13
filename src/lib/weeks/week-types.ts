@@ -26,32 +26,14 @@
 export type PartNo = 1 | 2 | 3;
 
 /**
- * 콘텐츠 검수 상태.
+ * 콘텐츠 상태는 `content-state.ts` 의 두 축을 쓴다.
  *
- * ★ `transcribed` 와 `published` 를 반드시 구분한다.
- *   전사만 된 주차를 교사 화면에 "제공"으로 내보내지 않는다.
+ * ★ 전사(옮겼나)와 발행(검수했나)을 한 값에 섞지 않는다. 섞으면 전사만 된
+ *   원문이 발행본처럼 읽힌다.
  */
-export type ReviewState =
-  /** 원문을 아직 옮기지 않았다. 메타(제목·키워드·시간)만 있다 */
-  | "pending_transcription"
-  /** 원문을 옮겼고 본사 대조 검수를 기다린다 */
-  | "transcribed"
-  /** 대조 검수를 마쳤다. 교사에게 보여도 된다 */
-  | "published";
+export type { ContentStatus } from "./content-state";
 
-export const REVIEW_STATE_LABEL: Record<ReviewState, string> = {
-  pending_transcription: "원문 검수 대기",
-  transcribed: "전사 완료 · 검수 대기",
-  published: "검수 완료 · 발행",
-};
-
-export const REVIEW_STATE_NOTE: Record<ReviewState, string> = {
-  pending_transcription:
-    "공식 가이드 원문이 아직 이 화면에 들어오지 않았습니다. 수업은 인쇄된 가이드로 진행해 주세요.",
-  transcribed:
-    "원문을 옮겨 적었고 본사 대조 검수를 기다리는 중입니다. 수업 전 인쇄본과 함께 확인해 주세요.",
-  published: "본사 대조 검수를 마친 내용입니다.",
-};
+import type { ContentStatus } from "./content-state";
 
 /* ══════════════════════════════════════════ 15개 블록 */
 
@@ -287,7 +269,8 @@ export interface WeekSummary {
   outcome: string | null;
   /** 24주 책갈피 테마색 */
   themeColor: string;
-  reviewState: ReviewState;
+  /** 전사 · 발행 두 축 */
+  status: ContentStatus;
 }
 
 export interface WeekContent {

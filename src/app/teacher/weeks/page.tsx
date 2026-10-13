@@ -5,9 +5,13 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { WeekRibbon } from "@/components/weeks/WeekRibbon";
-import { ContentOriginBadge } from "@/components/weeks/ContentOriginNotice";
-import { listWeeks, shouldMarkFixture } from "@/lib/weeks/week-source";
-import { PARTS, REVIEW_STATE_LABEL } from "@/lib/weeks/week-types";
+import {
+  ContentOriginBadge,
+  ContentStatusBadges,
+} from "@/components/weeks/ContentOriginNotice";
+import { listWeeks } from "@/lib/weeks/week-source";
+import { showsDevelopmentMarkers } from "@/lib/weeks/content-state";
+import { PARTS } from "@/lib/weeks/week-types";
 import { isIntegrationWeek } from "@/lib/weeks/week-index";
 import { TEACHER_NAV } from "../nav";
 
@@ -72,7 +76,7 @@ export default async function TeacherWeeksPage({ searchParams }: WeeksPageProps)
       </p>
 
       <div className="mt-3">
-        <ContentOriginBadge origin={origin} show={shouldMarkFixture()} />
+        <ContentOriginBadge origin={origin} show={showsDevelopmentMarkers()} />
       </div>
 
       {PARTS.map((part) => {
@@ -106,7 +110,7 @@ export default async function TeacherWeeksPage({ searchParams }: WeeksPageProps)
                       themeColor={week.themeColor}
                       state="next"
                       size="m"
-                      reviewState={week.reviewState}
+                      status={week.status}
                     />
                     <span className="min-w-0 pt-4">
                       <span className="block font-serif text-[18px] font-bold text-forest">
@@ -130,11 +134,9 @@ export default async function TeacherWeeksPage({ searchParams }: WeeksPageProps)
                             앞선 주차 결과물을 모으는 주
                           </span>
                         ) : null}
-                        {week.reviewState !== "published" ? (
-                          <span className="rounded-[4px] border border-rule px-2 py-0.5 text-[12px] text-muted-ink">
-                            {REVIEW_STATE_LABEL[week.reviewState]}
-                          </span>
-                        ) : null}
+                      </span>
+                      <span className="mt-1.5 block">
+                        <ContentStatusBadges status={week.status} />
                       </span>
                     </span>
                   </Link>
