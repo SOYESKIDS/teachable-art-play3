@@ -12,6 +12,12 @@ import {
   WEEK_02_SOURCE_FILE,
 } from "./content/week-02";
 import {
+  WEEK_03_BLOCKS,
+  WEEK_03_NOTES,
+  WEEK_03_SCENES,
+  WEEK_03_SOURCE_FILE,
+} from "./content/week-03";
+import {
   hiddenReason,
   isVisibleTo,
   type ContentAudience,
@@ -88,6 +94,12 @@ const FIXTURES: Record<number, WeekFixture> = {
     scenes: WEEK_02_SCENES,
     sourceFile: WEEK_02_SOURCE_FILE,
     notes: WEEK_02_NOTES,
+  },
+  3: {
+    blocks: WEEK_03_BLOCKS,
+    scenes: WEEK_03_SCENES,
+    sourceFile: WEEK_03_SOURCE_FILE,
+    notes: WEEK_03_NOTES,
   },
 };
 
