@@ -99,33 +99,41 @@ export function QuickGuideSheet({
             {/* ── 진행 표 ── */}
             <section className="mt-3">
               <h2 className="text-[11pt] font-bold">수업 진행</h2>
+              {/* ★ 열 제목은 원문 값이다. 3권은 셋째 칸이 「핵심 질문」이다. */}
               <table className="mt-1 w-full border-collapse text-[10pt]">
                 <thead>
                   <tr className="border-y border-black text-left">
-                    <th scope="col" className="w-[8%] py-1 pr-1 font-bold">
-                      순서
-                    </th>
-                    <th scope="col" className="w-[20%] py-1 pr-2 font-bold">
-                      단계
-                    </th>
-                    <th scope="col" className="w-[36%] py-1 pr-2 font-bold">
-                      교사가 할 일
-                    </th>
-                    <th scope="col" className="py-1 font-bold">
-                      핵심 발문
-                    </th>
+                    {guide.table.columns.map((c, i) => (
+                      <th
+                        key={c}
+                        scope="col"
+                        className={
+                          i === 0 ? "w-[22%] py-1 pr-2 font-bold" : "py-1 pr-2 font-bold"
+                        }
+                      >
+                        {c}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {guide.rows.map((row) => (
+                  {guide.table.rows.map((row) => (
                     <tr
-                      key={row.order}
+                      key={row.join("|")}
                       className="break-inside-avoid border-b border-black/30 align-top"
                     >
-                      <td className="py-1.5 pr-1 tabular-nums">{row.order}</td>
-                      <td className="py-1.5 pr-2 font-semibold leading-snug">{row.stage}</td>
-                      <td className="py-1.5 pr-2 leading-snug">{row.todo}</td>
-                      <td className="py-1.5 leading-snug">{row.keyQuestion}</td>
+                      {row.map((cell, i) => (
+                        <td
+                          key={`${i}:${cell}`}
+                          className={
+                            i === 0
+                              ? "py-1.5 pr-2 font-semibold leading-snug"
+                              : "py-1.5 pr-2 leading-snug"
+                          }
+                        >
+                          {cell}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>

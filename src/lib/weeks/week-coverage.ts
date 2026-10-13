@@ -74,25 +74,25 @@ function countItems(key: BlockKey, blocks: WeekBlocks): number | null {
             blocks.preparation.safety.length
         : null;
     case "timetable":
-      return blocks.timetable?.rows.length ?? null;
+      return blocks.timetable?.table.rows.length ?? null;
     case "coreActivity":
       return blocks.coreActivity
-        ? blocks.coreActivity.plays.length + blocks.coreActivity.situations.length
+        ? blocks.coreActivity.plays.length + (blocks.coreActivity.situations?.rows.length ?? 0)
         : null;
     case "workbook":
-      return blocks.workbook?.pages.length ?? null;
+      return blocks.workbook?.table.rows.length ?? null;
     case "art":
       return blocks.art?.steps.length ?? null;
     case "mediaOrWatch":
-      return blocks.mediaOrWatch?.items.length ?? null;
+      return blocks.mediaOrWatch?.table.rows.length ?? null;
     case "closing":
       return blocks.closing?.questions.length ?? null;
     case "observationGuide":
-      return blocks.observationGuide?.areas.length ?? null;
+      return blocks.observationGuide?.table.rows.length ?? null;
     case "homeConnection":
       return blocks.homeConnection?.steps.length ?? null;
     case "quickGuide":
-      return blocks.quickGuide?.rows.length ?? null;
+      return blocks.quickGuide?.table.rows.length ?? null;
     case "beforeStart":
       return blocks.beforeStart
         ? blocks.beforeStart.experienceFlow.length + blocks.beforeStart.teacherRoles.length
@@ -101,6 +101,9 @@ function countItems(key: BlockKey, blocks: WeekBlocks): number | null {
       return blocks.atAGlance
         ? blocks.atAGlance.coreActivities.length + blocks.atAGlance.linkedContents.length
         : null;
+    case "situations":
+      // ★ 14번은 표 하나다. 배열이 아니므로 줄 수로 센다.
+      return blocks.situations?.rows.length ?? null;
     default:
       return null;
   }

@@ -37,6 +37,23 @@ import type { ContentStatus } from "./content-state";
 
 /* ══════════════════════════════════════════ 15개 블록 */
 
+/**
+ * 원문 표 하나. 열 제목까지 데이터로 들고 간다.
+ *
+ * ── 왜 열 제목이 데이터인가 ────────────────────────────────────
+ *
+ * 1·2·3권이 같은 섹션 번호를 쓰지만 표의 열 제목이 다르다. 예를 들어
+ * 14번 표는 1·2권이 「상황 / 피해야 할 반응 / 권장 대응」이고 3권은
+ * 「상황 / 교사가 볼 점 / 바로 사용할 말」이다. 뜻이 다른 칸이다.
+ * 화면이 제목을 고정해 그리면 교사가 **다른 뜻으로 읽는다.**
+ *
+ * ★ rows 의 각 줄은 columns 와 길이가 같아야 한다.
+ */
+export interface SourceTable {
+  columns: string[];
+  rows: string[][];
+}
+
 /** 1. N주차 수업을 시작하기 전에 */
 export interface BeforeStartBlock {
   intro: string;
@@ -78,10 +95,16 @@ export interface PreparationBlock {
   safetyLabel: string;
 }
 
-/** 5. 권장 시간표 / 관찰 시간표 (주차에 따라 다르다) */
+/**
+ * 5. 권장 시간표 / 관찰 시간표 (권마다 다르다)
+ *
+ * 1·2권: 「단계 / 시간 / 교사 역할 / 아이 경험」 네 칸.
+ * 3권: 「단계 / 교사가 볼 것 / 관찰 예시」 세 칸 — **시간 칸이 없다.**
+ *   없는 시간을 화면이 지어내지 않도록 표를 그대로 담는다.
+ */
 export interface TimetableBlock {
   kind: "time" | "observation";
-  rows: { stage: string; duration: string | null; teacherRole: string; childExperience: string }[];
+  table: SourceTable;
 }
 
 /** 6. 실제 수업 진행안 */
@@ -93,8 +116,13 @@ export interface LessonStep {
   questions: string[];
   /** 아이 반응 → 교사 대응 */
   responses: { child: string; teacher: string }[];
-  /** 교사 주의 등 */
+  /** 교사 주의 · 교사 팁 등 */
   notes: string[];
+  /**
+   * 소제목이 붙은 별도 목록이 들어가는 단계가 있다
+   * (3권 「N주 핵심 연결 문장」). 목록에 섞으면 교사 발문으로 읽힌다.
+   */
+  extraList: { label: string; items: string[] } | null;
 }
 
 /** 7. 핵심활동 */
@@ -114,19 +142,32 @@ export interface CoreActivityBlock {
      */
     stepTable: { columns: string[]; rows: string[][] } | null;
   }[];
-  /** 현장 난이도·개별 지원 */
-  adaptations: { condition: string; adjust: string }[];
-  situations: { situation: string; say: string }[];
+  /**
+   * 현장 난이도·개별 지원 표. 열 제목이 권마다 다르다
+   * (1권 「아이 상태 / 바로 적용할 조절」, 2권 「상황 / 바로 적용할 조절」).
+   * 3권에는 이 표가 없어 null 이다 — 비어 있는 것이 아니라 원문에 없다.
+   */
+  adaptations: SourceTable | null;
+  /**
+   * 핵심활동 안의 상황표. 1권 일부(「관찰 상황 / 교사 개입」)와
+   * 3권(「상황 / 바로 사용할 교사 말」)에 있다. 없으면 null.
+   */
+  situations: SourceTable | null;
 }
 
 /** 8 또는 9. 워크북 */
 export interface WorkbookBlock {
   title: string | null;
   intro: string | null;
-  pages: { activity: string; focus: string; question: string }[];
   /**
-   * 표 뒤에 이어지는 마무리 문장. 2권(9~16주차)에만 있고 1권(1~8주차)에는 없다.
-   * 원문에 없으면 null 로 둔다 — 지어내지 않는다.
+   * 열 제목이 권마다 다르다.
+   * 1권 「활동 / 교사 초점 / 발문 예시」, 2권 「활동 방향 / 교사 초점 / 발문 예시」,
+   * 3권 「활동 방향 / 교사 질문 / 관찰 포인트」 — 3권은 셋째 칸의 뜻 자체가 다르다.
+   */
+  table: SourceTable;
+  /**
+   * 표 뒤에 이어지는 마무리 문장. 2권(9~16주차)에만 있다.
+   * 1권·3권에는 원문에 없으므로 null 로 둔다 — 지어내지 않는다.
    */
   outro: string | null;
 }
@@ -156,26 +197,41 @@ export interface ArtBlock {
   sameAsCoreActivity?: boolean;
 }
 
-/** 10. 음원·뮤직비디오 활용 / 관찰 포인트 */
+/**
+ * 10. 음원·뮤직비디오 활용(1·2권) / 활동을 관찰하며 보는 포인트(3권)
+ *
+ * 같은 번호지만 다른 섹션이다. 1·2권은 「콘텐츠 / 권장 사용 시점 / 활용」
+ * 세 칸, 3권은 「관찰 포인트 / 예시 행동」 두 칸이다.
+ */
 export interface MediaOrWatchBlock {
   kind: "media" | "watch";
-  items: { name: string; usedAt: string | null; how: string }[];
+  /** 원문 섹션 제목 (1·2권 「음원·뮤직비디오 활용」, 3권 「활동을 관찰하며 보는 포인트」) */
+  title: string;
+  table: SourceTable;
 }
 
 /** 11. 마무리 대화 */
 export interface ClosingBlock {
   intro: string | null;
   questions: string[];
-  /** 마지막 한 문장 */
+  /** 상자의 원문 제목. 1·2권 「마지막 한 문장」, 3권 「마무리 한 문장」 */
+  closingLineLabel: string | null;
   closingLine: string | null;
 }
 
 /** 12. 관찰 및 기록 가이드 */
 export interface ObservationGuideBlock {
-  /** 주차별 관찰영역은 원문 그대로 쓴다 */
-  areas: { area: string; behavior: string; recordFocus: string }[];
+  /**
+   * 1·2권 「관찰영역 / 관찰할 행동 / 기록 문장에 담을 것」,
+   * 3권 「관찰영역 / 관찰 행동 / 기록 문장 예시」.
+   */
+  table: SourceTable;
+  /** 기록 예시 묶음의 원문 제목 (「키즈노트 기록 예시」·「키즈노트 성장기록 예시」 등) */
+  recordExampleLabel: string | null;
   /** 기록 예시 (원문). 교사가 복사해 쓰지 않도록 화면에서 접어 둔다 */
   recordExample: string | null;
+  /** 주의 묶음의 원문 제목 (3권 「기록 시 주의」). 없으면 null */
+  cautionsLabel: string | null;
   cautions: string[];
 }
 
@@ -183,13 +239,23 @@ export interface ObservationGuideBlock {
 export interface HomeConnectionBlock {
   title: string;
   description: string | null;
+  /**
+   * steps 묶음의 원문 소제목. 「진행 방법」(2권 다수), 「영상편지 준비 안내」(16주),
+   * 「가정에 안내할 질문 예시」(7·8주) 등 주차마다 다르다.
+   * 소제목 없이 목록만 있는 주차도 있어 null 을 허용한다.
+   */
+  stepsLabel: string | null;
   steps: string[];
   /**
    * 진행 방법과 핵심 문장 사이에 소제목이 붙은 예시 묶음이 들어가는 주차가 있다 (2주차 「가정 미션 예시」).
    * 소제목이 원문마다 다르므로 label 을 함께 담는다. 없으면 null.
    */
   examples: { label: string; text: string } | null;
-  /** 부모님께 전달할 핵심 문장 */
+  /**
+   * 안내 문구 묶음의 원문 소제목.
+   * 1·2권 「부모님께 전달할 핵심 문장」, 3권 「안내 문구 예시」.
+   */
+  noticeLabel: string | null;
   noticeExample: string | null;
   /**
    * 핵심 문장 뒤에 이어지는 마무리 문단. 진행 방법 항목이 아니다.
@@ -202,19 +268,22 @@ export interface HomeConnectionBlock {
   status: "ready" | "undecided";
 }
 
-/** 14. 수업 중 이런 상황이 생기면 */
-export interface SituationRow {
-  situation: string;
-  /** 피해야 할 반응 */
-  avoid: string;
-  /** 권장 대응 */
-  recommend: string;
-}
+/**
+ * 14. 수업 중 이런 상황이 생기면
+ *
+ * 1·2권 「상황 / 피해야 할 반응 / 권장 대응」,
+ * 3권 「상황 / 교사가 볼 점 / 바로 사용할 말」.
+ * 가운데 칸의 뜻이 정반대다 — 하지 말 것 vs 살펴볼 것. 섞으면 안 된다.
+ */
+export type SituationsBlock = SourceTable;
 
 /** 15. 교사용 1페이지 퀵 가이드 */
 export interface QuickGuideBlock {
   goal: string;
-  rows: { order: number; stage: string; todo: string; keyQuestion: string }[];
+  /**
+   * 1·2권 「순서 / 교사가 할 일 / 핵심 문장」, 3권 「순서 / 교사가 할 일 / 핵심 질문」.
+   */
+  table: SourceTable;
   closingNote: string | null;
 }
 
@@ -233,7 +302,7 @@ export interface WeekBlocks {
   closing: ClosingBlock | null;
   observationGuide: ObservationGuideBlock | null;
   homeConnection: HomeConnectionBlock | null;
-  situations: SituationRow[] | null;
+  situations: SituationsBlock | null;
   quickGuide: QuickGuideBlock | null;
 }
 

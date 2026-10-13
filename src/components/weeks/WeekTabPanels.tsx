@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { WeekContent } from "@/lib/weeks/week-types";
+import type { SourceTable, WeekContent } from "@/lib/weeks/week-types";
 import { SCENE_TYPE_LABEL } from "@/lib/weeks/week-types";
 import {
   SESSION_STATUS_LABEL,
@@ -53,6 +53,67 @@ function NotWritten({ what }: { what: string }) {
 }
 
 const bullet = "flex gap-2 text-[15px] leading-relaxed text-forest/90";
+
+/**
+ * 원문 표 하나를 그대로 그린다.
+ *
+ * ★ 열 제목을 화면이 정하지 않는다. 1·2·3권이 같은 섹션 번호를 쓰면서도
+ *   표의 열 제목이 다르다. 제목을 고정하면 교사가 다른 뜻으로 읽는다.
+ *   예: 14번 가운데 칸은 1·2권 「피해야 할 반응」, 3권 「교사가 볼 점」이다.
+ */
+function SourceTableView({
+  table,
+  caption,
+  serifColumn,
+  minWidth = 520,
+}: {
+  table: SourceTable;
+  caption?: string;
+  /** 발문·교사 언어처럼 본문체로 보여줄 열 번호 (0부터). 없으면 모두 같은 서체 */
+  serifColumn?: number;
+  minWidth?: number;
+}) {
+  return (
+    <div className="mt-3 overflow-x-auto">
+      <table
+        className="w-full border-collapse text-left text-[14px]"
+        style={{ minWidth: `${minWidth}px` }}
+      >
+        {caption ? <caption className="sr-only">{caption}</caption> : null}
+        <thead className="bg-paper text-[13px] text-muted-ink">
+          <tr>
+            {table.columns.map((c) => (
+              <th key={c} scope="col" className="px-3 py-2 font-semibold">
+                {c}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row) => (
+            <tr key={row.join("|")} className="border-t border-rule-soft align-top">
+              <th scope="row" className="px-3 py-2 text-left font-semibold text-forest">
+                {row[0]}
+              </th>
+              {row.slice(1).map((cell, i) => (
+                <td
+                  key={`${i}:${cell}`}
+                  className={
+                    serifColumn === i + 1
+                      ? "px-3 py-2 font-serif text-forest"
+                      : "px-3 py-2 text-forest/90"
+                  }
+                >
+                  {cell === "" ? "—" : cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 /**
  * 회차가 있어야 하는 작업의 안내.
@@ -220,38 +281,7 @@ export function PrepPanel({ content }: { content: WeekContent }) {
           title={timetable.kind === "time" ? "권장 시간표" : "관찰 시간표"}
           source="가이드 5. 권장 시간표 / 관찰 시간표"
         >
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
-              <thead className="bg-paper text-[13px] text-muted-ink">
-                <tr>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    단계
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    시간
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    교사 역할
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    아이 경험
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {timetable.rows.map((r) => (
-                  <tr key={r.stage} className="border-t border-rule-soft align-top">
-                    <th scope="row" className="px-3 py-2 text-left font-semibold text-forest">
-                      {r.stage}
-                    </th>
-                    <td className="px-3 py-2 tabular-nums text-forest/90">{r.duration ?? "—"}</td>
-                    <td className="px-3 py-2 text-forest/90">{r.teacherRole}</td>
-                    <td className="px-3 py-2 text-forest/90">{r.childExperience}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SourceTableView table={timetable.table} caption="주차 시간표" />
           {atAGlance ? (
             <p className="mt-3 text-[13px] leading-relaxed text-muted-ink">
               원문 권장 시간: {atAGlance.durationLabel}. 45분·30분 단축 운영은 주차별 교육 검수
@@ -314,6 +344,25 @@ export function GuidePanel({ content }: { content: WeekContent }) {
                       </tbody>
                     </table>
                   </div>
+                ) : null}
+
+                {/* ★ 소제목이 붙은 별도 목록 (3권 「N주 핵심 연결 문장」). */}
+                {step.extraList ? (
+                  <>
+                    <h5 className="mt-4 text-[14px] font-bold text-forest">
+                      {step.extraList.label}
+                    </h5>
+                    <ul className="mt-2 flex flex-col gap-1.5">
+                      {step.extraList.items.map((it) => (
+                        <li key={it} className={bullet}>
+                          <span aria-hidden className="shrink-0 text-leaf">
+                            ·
+                          </span>
+                          <span>{it}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 ) : null}
 
                 {step.notes.map((n) => (
@@ -401,26 +450,29 @@ export function GuidePanel({ content }: { content: WeekContent }) {
             ))}
           </ul>
 
-          {coreActivity.adaptations.length > 0 ? (
+          {coreActivity.adaptations ? (
             <>
               <h4 className="mt-5 text-[15px] font-bold text-forest">현장 난이도 · 개별 지원</h4>
-              <div className="mt-2 overflow-x-auto">
-                <table className="w-full min-w-[440px] border-collapse text-left text-[14px]">
-                  <tbody>
-                    {coreActivity.adaptations.map((a) => (
-                      <tr key={a.condition} className="border-t border-rule-soft align-top">
-                        <th
-                          scope="row"
-                          className="w-[180px] px-3 py-2 text-left font-bold text-forest"
-                        >
-                          {a.condition}
-                        </th>
-                        <td className="px-3 py-2 text-forest/90">{a.adjust}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <SourceTableView
+                table={coreActivity.adaptations}
+                caption="현장 난이도 · 개별 지원"
+                minWidth={440}
+              />
+            </>
+          ) : null}
+          {/*
+            ★ 핵심활동 안에 상황표가 따로 있는 주차가 있다 (1권 일부·3권 전체).
+              3권에는 반대로 현장 난이도표가 없다. 없는 표를 빈 표로 그리지 않는다.
+          */}
+          {coreActivity.situations ? (
+            <>
+              <h4 className="mt-5 text-[15px] font-bold text-forest">활동 중 상황별 교사 말</h4>
+              <SourceTableView
+                table={coreActivity.situations}
+                caption="활동 중 상황별 교사 말"
+                minWidth={440}
+                serifColumn={1}
+              />
             </>
           ) : null}
         </Section>
@@ -431,34 +483,7 @@ export function GuidePanel({ content }: { content: WeekContent }) {
           {workbook.intro ? (
             <p className="text-[15px] leading-relaxed text-forest/90">{workbook.intro}</p>
           ) : null}
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
-              <thead className="bg-paper text-[13px] text-muted-ink">
-                <tr>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    활동
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    교사 초점
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    발문 예시
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {workbook.pages.map((p) => (
-                  <tr key={p.activity} className="border-t border-rule-soft align-top">
-                    <th scope="row" className="px-3 py-2 text-left font-semibold text-forest">
-                      {p.activity}
-                    </th>
-                    <td className="px-3 py-2 text-forest/90">{p.focus}</td>
-                    <td className="px-3 py-2 font-serif text-forest">{p.question}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SourceTableView table={workbook.table} caption="워크북 운영" serifColumn={2} />
           {/* ★ 2권(9~16주차)은 표 뒤에 이어지는 문장이 있다. 1권에는 없다. */}
           {workbook.outro ? (
             <p className="mt-3 text-[15px] leading-relaxed text-forest/90">{workbook.outro}</p>
@@ -530,26 +555,19 @@ export function GuidePanel({ content }: { content: WeekContent }) {
 
       {mediaOrWatch ? (
         <Section
-          title={mediaOrWatch.kind === "media" ? "음원 · 뮤직비디오 활용" : "활동 관찰 포인트"}
-          source="가이드 10. 음원·뮤직비디오 활용 / 관찰 포인트"
+          title={mediaOrWatch.title}
+          source="가이드 10. 음원·뮤직비디오 활용 / 활동을 관찰하며 보는 포인트"
         >
-          <ul className="flex flex-col gap-2">
-            {mediaOrWatch.items.map((it) => (
-              <li
-                key={it.name}
-                className="flex flex-wrap items-baseline gap-x-2 rounded-[10px] border border-rule px-4 py-3"
-              >
-                <span className="text-[15px] font-semibold text-forest">{it.name}</span>
-                {it.usedAt ? (
-                  <span className="text-[13px] text-muted-ink">· {it.usedAt}</span>
-                ) : null}
-                <span className="w-full text-[14px] leading-relaxed text-forest/85">{it.how}</span>
-                <span className="rounded-[4px] border border-rule px-2 py-0.5 text-[12px] text-muted-ink">
-                  자료 준비 중 — 재생 파일이 아직 등록되지 않았습니다
-                </span>
-              </li>
-            ))}
-          </ul>
+          <SourceTableView table={mediaOrWatch.table} caption={mediaOrWatch.title} />
+          {/*
+            ★ 1·2권 10번은 음원·영상 안내이고 3권 10번은 관찰 포인트다.
+              재생 파일이 필요한 쪽에만 등록 상태를 적는다.
+          */}
+          {mediaOrWatch.kind === "media" ? (
+            <p className="mt-2 text-[13px] leading-relaxed text-muted-ink">
+              자료 준비 중 — 재생 파일이 아직 등록되지 않았습니다. 위 표는 원문 안내입니다.
+            </p>
+          ) : null}
         </Section>
       ) : null}
 
@@ -566,28 +584,33 @@ export function GuidePanel({ content }: { content: WeekContent }) {
             ))}
           </ul>
           {closing.closingLine ? (
-            <p className="mt-4 border-l-2 border-leaf pl-4 font-serif text-[17px] leading-relaxed text-forest">
-              {closing.closingLine}
-            </p>
+            <>
+              {/* ★ 상자 제목이 1·2권 「마지막 한 문장」, 3권 「마무리 한 문장」이다. */}
+              {closing.closingLineLabel ? (
+                <h4 className="mt-4 text-[15px] font-bold text-forest">
+                  {closing.closingLineLabel}
+                </h4>
+              ) : null}
+              <p className="mt-2 border-l-2 border-leaf pl-4 font-serif text-[17px] leading-relaxed text-forest">
+                {closing.closingLine}
+              </p>
+            </>
           ) : null}
         </Section>
       ) : null}
 
       {situations ? (
         <Section title="수업 중 이런 상황이 생기면" source="가이드 14. 수업 중 이런 상황이 생기면">
-          <ul className="flex flex-col gap-3">
-            {situations.map((s) => (
-              <li key={s.situation} className="rounded-[10px] border border-rule px-4 py-3">
-                <p className="text-[15px] font-bold text-forest">{s.situation}</p>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-muted-ink">
-                  <span className="font-semibold">피하기</span> · {s.avoid}
-                </p>
-                <p className="mt-1 text-[14px] leading-relaxed text-forest/90">
-                  <span className="font-semibold text-leaf">권장</span> · {s.recommend}
-                </p>
-              </li>
-            ))}
-          </ul>
+          {/*
+            ★ 가운데 칸의 뜻이 권마다 다르다 — 1·2권 「피해야 할 반응」,
+              3권 「교사가 볼 점」. 화면이 「피하기」로 적으면 반대로 읽힌다.
+          */}
+          <SourceTableView
+            table={situations}
+            caption="수업 중 상황별 대응"
+            minWidth={640}
+            serifColumn={2}
+          />
         </Section>
       ) : null}
 
@@ -596,34 +619,7 @@ export function GuidePanel({ content }: { content: WeekContent }) {
           <p className="rounded-[10px] bg-sprout px-4 py-3 text-[15px] leading-relaxed text-forest">
             오늘의 목표 — {quickGuide.goal}
           </p>
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
-              <thead className="bg-paper text-[13px] text-muted-ink">
-                <tr>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    순서
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    교사가 할 일
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    핵심 문장
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {quickGuide.rows.map((r) => (
-                  <tr key={r.order} className="border-t border-rule-soft align-top">
-                    <th scope="row" className="px-3 py-2 text-left font-semibold text-forest">
-                      {r.order} {r.stage}
-                    </th>
-                    <td className="px-3 py-2 text-forest/90">{r.todo}</td>
-                    <td className="px-3 py-2 font-serif text-forest">{r.keyQuestion}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SourceTableView table={quickGuide.table} caption="퀵 가이드" serifColumn={2} />
           {quickGuide.closingNote ? (
             <p className="mt-3 text-[14px] leading-relaxed text-muted-ink">
               {quickGuide.closingNote}
@@ -708,34 +704,7 @@ export function ObservePanel({
     <div className="flex flex-col gap-6 py-6">
       {guide ? (
         <Section title="이번 주 관찰 기준" source="가이드 12. 관찰 및 기록 가이드">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
-              <thead className="bg-paper text-[13px] text-muted-ink">
-                <tr>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    관찰영역
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    관찰할 행동
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    기록 문장에 담을 것
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {guide.areas.map((a) => (
-                  <tr key={a.area} className="border-t border-rule-soft align-top">
-                    <th scope="row" className="px-3 py-2 text-left font-semibold text-forest">
-                      {a.area}
-                    </th>
-                    <td className="px-3 py-2 text-forest/90">{a.behavior}</td>
-                    <td className="px-3 py-2 text-forest/90">{a.recordFocus}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SourceTableView table={guide.table} caption="관찰 및 기록 가이드" />
 
           <p className="mt-4 rounded-[10px] bg-sprout px-4 py-3 text-[14px] leading-relaxed text-forest">
             관찰영역 이름은 원문 그대로입니다. 점수·등급·횟수 칸은 두지 않습니다. 보지 못한 영역은
@@ -745,7 +714,7 @@ export function ObservePanel({
           {guide.recordExample ? (
             <details className="mt-3 rounded-[10px] border border-rule px-4 py-3">
               <summary className="cursor-pointer text-[14px] font-semibold text-forest">
-                원문 기록 예시 보기
+                {guide.recordExampleLabel ?? "원문 기록 예시"} 보기
               </summary>
               <p className="mt-2 text-[14px] leading-relaxed text-forest/85">
                 {guide.recordExample}
@@ -755,6 +724,24 @@ export function ObservePanel({
                 적습니다.
               </p>
             </details>
+          ) : null}
+          {/* ★ 3권에는 「기록 시 주의」가 따로 있다. 1·2권에는 없다. */}
+          {guide.cautions.length > 0 ? (
+            <>
+              <h4 className="mt-4 text-[15px] font-bold text-forest">
+                {guide.cautionsLabel ?? "기록 시 주의"}
+              </h4>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {guide.cautions.map((c) => (
+                  <li key={c} className={bullet}>
+                    <span aria-hidden className="shrink-0 text-leaf">
+                      ·
+                    </span>
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
           ) : null}
         </Section>
       ) : (
@@ -796,6 +783,10 @@ export function ReportPanel({
           {home.description ? (
             <p className="text-[15px] leading-relaxed text-forest/90">{home.description}</p>
           ) : null}
+          {/* ★ 목록 소제목이 주차마다 다르다. 없는 주차도 있다. */}
+          {home.steps.length > 0 && home.stepsLabel ? (
+            <h4 className="mt-4 text-[15px] font-bold text-forest">{home.stepsLabel}</h4>
+          ) : null}
           {home.steps.length > 0 ? (
             <ul className="mt-3 flex flex-col gap-1.5">
               {home.steps.map((s) => (
@@ -822,7 +813,9 @@ export function ReportPanel({
           ) : null}
           {home.noticeExample ? (
             <>
-              <h4 className="mt-4 text-[15px] font-bold text-forest">부모님께 전달할 핵심 문장</h4>
+              <h4 className="mt-4 text-[15px] font-bold text-forest">
+                {home.noticeLabel ?? "부모님께 전달할 핵심 문장"}
+              </h4>
               <p className="mt-2 rounded-[10px] bg-sky-pale px-4 py-3 text-[14px] leading-relaxed text-sky-deep">
                 {home.noticeExample}
               </p>

@@ -143,8 +143,9 @@ export function findGuideMentions(
 
   // 10. 음원·뮤직비디오 활용
   if (blocks.mediaOrWatch?.kind === "media") {
-    for (const item of blocks.mediaOrWatch.items) {
-      scan(`${item.name} — ${item.how}`, "10. 음원 · 뮤직비디오 활용");
+    // ★ 열 순서는 「콘텐츠 / 권장 사용 시점 / 활용」이다 (1·2권).
+    for (const row of blocks.mediaOrWatch.table.rows) {
+      scan(`${row[0]} — ${row[2] ?? ""}`, "10. 음원 · 뮤직비디오 활용");
     }
   }
 
