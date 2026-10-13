@@ -420,6 +420,21 @@ export function GuidePanel({ content }: { content: WeekContent }) {
 
       {art ? (
         <Section title={`미술활동 — ${art.title}`} source="가이드 9. 미술활동">
+          {/*
+            ★ 원문이 「핵심활동과 같은 활동」이라고 밝힌 주차가 있다 (8주차).
+              섹션은 둘이지만 교실에서 하는 일은 하나다. 적지 않으면 교사가
+              활동을 두 번 하는 것으로 읽고 수업 시간을 두 배로 잡는다.
+          */}
+          {art.sameAsCoreActivity ? (
+            <p
+              role="note"
+              className="mb-3 rounded-[10px] border border-[color:var(--color-crayon)] bg-crayon-soft px-4 py-3 text-[14px] leading-relaxed text-forest"
+            >
+              <strong className="font-bold">위 핵심활동과 같은 활동입니다.</strong> 따로 한 번 더
+              하지 않습니다. 원문 권장 시간표에도 이 활동은 한 번만 들어 있어 수업 시간이 두 번
+              계산되지 않습니다.
+            </p>
+          ) : null}
           {art.intro ? (
             <p className="text-[15px] leading-relaxed text-forest/90">{art.intro}</p>
           ) : null}

@@ -8,7 +8,7 @@ import {
   canStartReview,
   publishBlockers,
 } from "../src/lib/weeks/content-state.ts";
-import { unresolvedNotes } from "../src/lib/weeks/week-types.ts";
+import { hqDecisionNotes, unresolvedNotes } from "../src/lib/weeks/week-types.ts";
 import { SECTION_TOTAL, weekCoverage } from "../src/lib/weeks/week-coverage.ts";
 import {
   ASSET_ACCESS_NOTE,
@@ -28,27 +28,27 @@ import { WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
 
 test("전사하지 않은 주차는 발행할 수 없다", () => {
   const status = { transcription: "pending", publication: "draft" };
-  assert.equal(canPublish(status), false);
-  assert.deepEqual(publishBlockers(status), ["not_transcribed"]);
+  assert.equal(canPublish(status, 0), false);
+  assert.deepEqual(publishBlockers(status, 0), ["not_transcribed"]);
 });
 
 test("검수 중이어도 전사 전이면 여전히 막힌다", () => {
   // in_review 로 올려 두었다고 전사가 된 것이 아니다.
   const status = { transcription: "pending", publication: "in_review" };
-  assert.equal(canPublish(status), false);
-  assert.ok(publishBlockers(status).includes("not_transcribed"));
+  assert.equal(canPublish(status, 0), false);
+  assert.ok(publishBlockers(status, 0).includes("not_transcribed"));
 });
 
 test("전사가 끝나면 발행 조건을 만족한다", () => {
   const status = { transcription: "done", publication: "draft" };
-  assert.equal(canPublish(status), true);
-  assert.deepEqual(publishBlockers(status), []);
+  assert.equal(canPublish(status, 0), true);
+  assert.deepEqual(publishBlockers(status, 0), []);
 });
 
 test("이미 발행된 주차는 다시 발행하지 않는다", () => {
   const status = { transcription: "done", publication: "published" };
-  assert.equal(canPublish(status), false);
-  assert.deepEqual(publishBlockers(status), ["already_published"]);
+  assert.equal(canPublish(status, 0), false);
+  assert.deepEqual(publishBlockers(status, 0), ["already_published"]);
 });
 
 test("검수 시작은 전사된 draft 에서만 가능하다", () => {
@@ -62,7 +62,7 @@ test("24주 전체에서 전사 전 주차는 하나도 발행 가능하지 않�
   for (const week of WEEK_INDEX) {
     if (week.status.transcription === "pending") {
       assert.equal(
-        canPublish(week.status),
+        canPublish(week.status, 0),
         false,
         `${week.weekNo}주차가 전사 전인데 발행 가능으로 판정됐다`,
       );
@@ -212,5 +212,64 @@ test("미해결 기록이 남은 주차는 24주 어디서도 발행 가능으�
         `${week.weekNo}주차에 미해결 ${open}건이 있는데 발행 가능으로 판정됐다`,
       );
     }
+  }
+});
+
+/* ══════════════════════════════════ 기록 분류와 본사 결정 목록 */
+
+test("미해결 건수를 빠뜨린 발행 판정은 통과하지 않고 던진다", () => {
+  // ★ 세지 않은 것이 「0건」으로 읽히면 판정이 없는 것과 같다.
+  const status = { transcription: "done", publication: "draft" };
+  assert.throws(() => publishBlockers(status), TypeError);
+  assert.throws(() => publishBlockers(status, -1), TypeError);
+  assert.throws(() => publishBlockers(status, 1.5), TypeError);
+  assert.doesNotThrow(() => publishBlockers(status, 0));
+});
+
+test("모든 기록에 분류가 있고 세 종류 안에 든다", () => {
+  const allowed = new Set(["extraction", "structure", "decision"]);
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    for (const note of content.transcriptionNotes) {
+      assert.ok(
+        allowed.has(note.category),
+        `${week.weekNo}주차 「${note.section}」의 분류가 없거나 알 수 없다: ${note.category}`,
+      );
+    }
+  }
+});
+
+test("본사 결정 목록은 decision 분류의 미해결만 모은다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    for (const note of hqDecisionNotes(content.transcriptionNotes)) {
+      assert.equal(note.category, "decision");
+      assert.equal(note.status, "unresolved");
+    }
+  }
+});
+
+test("핵심활동과 같은 미술활동은 장면을 두 벌 만들지 않는다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    if (content.blocks.art?.sameAsCoreActivity !== true) continue;
+
+    // ★ 같은 활동이면 create 장면을 따로 두지 않는다. 두 번 하는 것으로 읽힌다.
+    const createScenes = content.scenes.filter((s) => s.sceneType === "create");
+    assert.equal(
+      createScenes.length,
+      0,
+      `${week.weekNo}주차는 미술이 핵심활동과 같은 활동인데 create 장면이 ${createScenes.length}개 있다`,
+    );
+
+    // ★ 권장 시간표에도 미술 단계가 따로 있으면 시간이 두 번 세어진다.
+    const artRows = (content.blocks.timetable?.rows ?? []).filter((r) =>
+      r.stage.includes("미술"),
+    );
+    assert.equal(
+      artRows.length,
+      0,
+      `${week.weekNo}주차 권장 시간표에 미술 단계가 따로 있어 시간이 중복 계산된다`,
+    );
   }
 });

@@ -143,6 +143,10 @@ export const PUBLISH_BLOCKER_NOTE: Record<PublishBlocker, string> = {
  *   않는다 — 이력은 남고 발행은 막지 않는다. 기록을 지워야 발행되는 구조를
  *   만들지 않기 위해서다.
  *
+ *   ★ **기본값을 두지 않는다.** 예전에는 `= 0` 이 기본값이었는데, 그러면 인자를
+ *     빠뜨린 호출이 「미해결 없음」으로 통과한다. 세는 것을 잊은 것과 세어 보니
+ *     0인 것은 다르다. 부르는 쪽이 반드시 숫자를 넘기게 한다.
+ *
  * ★ 이 함수는 "해도 되는가"만 답한다. 실제로 올리는 일은 사람이 검수한 뒤에
  *   한다. 코드가 저절로 발행하지 않는다.
  *
@@ -151,8 +155,20 @@ export const PUBLISH_BLOCKER_NOTE: Record<PublishBlocker, string> = {
  */
 export function publishBlockers(
   status: ContentStatus,
-  unresolvedNoteCount = 0,
+  unresolvedNoteCount: number,
 ): PublishBlocker[] {
+  /*
+    ★ 타입만으로는 부족하다. 타입 검사를 거치지 않는 호출(테스트의 .mjs,
+      JSON 에서 온 값)이 인자를 빠뜨리면 `undefined > 0` 이 false 가 되어
+      조용히 통과한다. 세지 않은 것이 「0건」으로 읽히는 것을 막는다.
+  */
+  if (!Number.isInteger(unresolvedNoteCount) || unresolvedNoteCount < 0) {
+    throw new TypeError(
+      "publishBlockers: unresolvedNoteCount must be a non-negative integer. " +
+        "세지 않은 상태로 발행을 판정하지 않는다.",
+    );
+  }
+
   const blockers: PublishBlocker[] = [];
   if (status.transcription !== "done") blockers.push("not_transcribed");
   if (unresolvedNoteCount > 0) blockers.push("unresolved_notes");
@@ -160,7 +176,7 @@ export function publishBlockers(
   return blockers;
 }
 
-export function canPublish(status: ContentStatus, unresolvedNoteCount = 0): boolean {
+export function canPublish(status: ContentStatus, unresolvedNoteCount: number): boolean {
   return publishBlockers(status, unresolvedNoteCount).length === 0;
 }
 
@@ -187,8 +203,18 @@ export class PublishBlockedError extends Error {
  *   있다.
  *
  * ★ E단계에서 발행 Server Action 을 만들 때 **첫 줄에서 이 함수를 부른다.**
- *   이 모듈은 DB 를 모르므로, 그때 호출하는 쪽이 DB 에서 읽은 상태와 미해결
- *   기록 수를 넘긴다.
+ *
+ * ── 무엇을 넘겨야 하는가 ─────────────────────────────────────────
+ *
+ * 이 모듈은 DB 를 모른다. 그래서 호출하는 쪽이 값을 넘기는데, **그 값은
+ * 서버가 신뢰할 수 있는 저장 데이터에서 직접 읽은 것이어야 한다.**
+ *
+ *   · 상태(`status`) — 요청 본문이 아니라 DB 의 주차 행에서 읽는다.
+ *   · 미해결 건수 — DB 의 대조 주의 행을 `status = 'unresolved'` 로 **세어서**
+ *     구한다. 화면이 보낸 숫자를 그대로 믿지 않는다.
+ *
+ * ★ 클라이언트가 보낸 값으로 판정하면 판정이 없는 것과 같다. 요청을 직접
+ *   만들어 「미해결 0건」이라고 적어 보내면 통과한다.
  */
 export function assertPublishable(
   status: ContentStatus,

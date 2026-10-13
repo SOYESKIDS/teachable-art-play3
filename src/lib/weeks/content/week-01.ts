@@ -652,6 +652,7 @@ export const WEEK_01_NOTES: TranscriptionNote[] = [
     page: 5,
     issue:
       "PDF 추출에서 가운뎃점(·)이 사라진다 (예: 「내 자리사물함놀이영역」). 원문 표기가 「내 자리·사물함·놀이영역」이라 보고 가운뎃점을 넣어 적었다. 항목이 정말 세 개인지, 탐험 장소 네 행의 진행 방법·교사 언어 짝이 맞는지 확인이 필요하다.",
+    category: "extraction",
     status: "resolved",
     evidence:
       "2026-10-13 원문 p.5 를 이미지로 렌더링해 표를 눈으로 대조했다. 「내 자리 · 사물함 · 놀이영역」이 가운뎃점으로 나뉜 세 항목이 맞고, 네 행(교실 / 놀이실 / 화장실 / 놀이터)의 진행 방법·교사 언어 짝도 전사본과 같다.",
@@ -661,16 +662,20 @@ export const WEEK_01_NOTES: TranscriptionNote[] = [
     page: 4,
     issue:
       "「교사 주의」 라벨이 표 셀에 따로 있어 추출본에서는 본문 뒤에 나온다. 본문 앞에 「교사 주의 — 」를 붙여 적었다. 문장 자체는 원문 그대로다.",
-    status: "unresolved",
-    evidence: null,
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.4 를 이미지로 렌더링해 확인했다. 원문도 분홍 상자 안에 「교사 주의」를 제목으로 두고 그 아래 본문을 둔다. 라벨 + 본문 구조가 맞고, STEP 1 의 아이 반응 4행과 STEP 3 약속 4개도 전사본과 같다.",
   },
   {
     section: "13. 가정연계",
     page: 7,
     issue:
       "안내 문구가 7쪽에서 8쪽으로 넘어가 추출본에서는 바닥글이 사이에 끼어 끊긴다 (「…성장에 큰」 + 8쪽 「힘이 됩니다.」). 한 문장으로 이어 적었다.",
-    status: "unresolved",
-    evidence: null,
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 을 이미지로 렌더링해 확인했다. 「부모님께 전달할 핵심 문장」 본문이 7쪽 끝에서 끊기고 8쪽으로 이어진다. 한 문장으로 이은 것이 맞다. 같은 쪽에서 13. 가정연계 4단계와 12. 관찰 5영역도 전사본과 같음을 확인했다.",
   },
 ];
 

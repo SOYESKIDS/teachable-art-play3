@@ -118,6 +118,21 @@ export interface ArtBlock {
   questions: string[];
   /** 활동의 기준 */
   standard: string | null;
+  /**
+   * 핵심활동(7번)과 **같은 활동**인가.
+   *
+   * ── 왜 이 표시가 필요한가 ──────────────────────────────────────
+   *
+   * 8주차 원문은 「8주차의 미술활동은 별도의 개인 만들기가 아니라 대형 숲
+   * 현수막을 함께 완성하는 공동작품입니다」라고 밝힌다. 섹션은 둘이지만
+   * 교실에서 하는 일은 하나다.
+   *
+   * ★ 화면은 두 블록을 다른 자리에 그리므로, 이 값이 true 면 **연결 관계를
+   *   적는다.** 적지 않으면 교사가 활동을 두 번 하는 것으로 읽는다.
+   * ★ 시간을 두 번 세지 않는다. 원문 권장 시간표에도 「공동활동 20분」 한 줄만
+   *   있고 미술 단계가 따로 없다. 장면도 한 벌만 만든다.
+   */
+  sameAsCoreActivity?: boolean;
 }
 
 /** 10. 음원·뮤직비디오 활용 / 관찰 포인트 */
@@ -308,6 +323,31 @@ export interface WeekSummary {
  */
 export type NoteStatus = "unresolved" | "resolved";
 
+/**
+ * 기록의 종류. **해결하는 방법이 다르기 때문에** 나눈다.
+ *
+ * ★ `extraction` — 글자를 뽑는 과정에서 생긴 문제. 표의 행·열이 섞이거나
+ *   문장이 쪽에 걸쳐 끊긴다. **원문 쪽을 보면 풀린다.** 렌더링해 확인하고
+ *   해결 처리한다.
+ *
+ * ★ `structure` — 원문 자체가 다른 주차와 형식이 다르다 (섹션 번호가 바뀌거나,
+ *   어떤 항목이 아예 없다). **형식이 다르다는 것만으로 미해결로 두지 않는다.**
+ *   원문을 눈으로 확인해 그대로 반영했다면 해결이다. 화면에서 어떻게 보여
+ *   줄지는 별개의 일이고, 그 자체가 전사 오류는 아니다.
+ *
+ * ★ `decision` — **원문 자체가 서로 모순되거나 상품 기준을 정해야 한다.**
+ *   (예: 같은 문서 안에서 핵심 메시지가 두 가지, 음원명이 다른 주차와 같음)
+ *   전사로 풀 수 없고 본사가 정해야 한다. **임의로 고치지 않는다.**
+ *   이 종류는 {@link hqDecisionNotes} 로 따로 모아 본사 결정 목록으로 관리한다.
+ */
+export type NoteCategory = "extraction" | "structure" | "decision";
+
+export const NOTE_CATEGORY_LABEL: Record<NoteCategory, string> = {
+  extraction: "추출·표 대응",
+  structure: "원문 구조 차이",
+  decision: "본사 결정 필요",
+};
+
 export interface TranscriptionNote {
   /** 원문 섹션 (예: "5. 권장 시간표") */
   section: string;
@@ -315,6 +355,8 @@ export interface TranscriptionNote {
   page: number;
   /** 무엇이 분명하지 않은가 */
   issue: string;
+  /** 어떻게 풀어야 하는 문제인가 */
+  category: NoteCategory;
   /** 확인했나 */
   status: NoteStatus;
   /**
@@ -328,6 +370,16 @@ export interface TranscriptionNote {
 /** 아직 확인하지 못한 기록만 */
 export function unresolvedNotes(notes: TranscriptionNote[]): TranscriptionNote[] {
   return notes.filter((n) => n.status === "unresolved");
+}
+
+/**
+ * 본사가 정해야 하는 것들.
+ *
+ * ★ 전사자가 풀 수 없는 종류다. 원문이 스스로 어긋나 있거나 상품 기준을
+ *   정해야 한다. 코드가 한쪽을 고르면 그것이 공식 콘텐츠가 되어 버린다.
+ */
+export function hqDecisionNotes(notes: TranscriptionNote[]): TranscriptionNote[] {
+  return notes.filter((n) => n.category === "decision" && n.status === "unresolved");
 }
 
 export interface WeekContent {

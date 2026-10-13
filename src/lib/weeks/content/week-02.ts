@@ -405,7 +405,7 @@ export const WEEK_02_BLOCKS: WeekBlocks = {
   },
 
   homeConnection: {
-    title: "‘우리 가족 도전 OO’ 미션",
+    title: "우리 가족 ‘도전 OO’ 미션",
     description:
       "기관에서의 도전을 일상으로 이어갑니다. 가정에서는 거창한 과제보다 아이가 실제 생활에서 ‘조금 어렵지만 해볼 수 있는 일’을 선택하는 것이 좋습니다.",
     steps: [
@@ -603,7 +603,7 @@ export const WEEK_02_SCENES: WeekScene[] = [
   {
     sceneNo: 10,
     sceneType: "home",
-    kidText: "‘우리 가족 도전 OO’ 미션",
+    kidText: "우리 가족 ‘도전 OO’ 미션",
     stageLabel: "가정연계",
     teacherNote:
       "가정에서는 거창한 과제보다 아이가 실제 생활에서 ‘조금 어렵지만 해볼 수 있는 일’을 선택하는 것이 좋습니다.",
@@ -624,6 +624,7 @@ export const WEEK_02_NOTES: TranscriptionNote[] = [
     page: 3,
     issue:
       "PDF 에서 「교사 역할」과 「아이 경험」 열의 4~5행이 섞여 나온다. 용기 메달·마무리 두 단계의 교사 역할을 어느 쪽에 넣을지 글자만으로는 가릴 수 없었다.",
+    category: "extraction",
     status: "resolved",
     evidence:
       "2026-10-13 원문 p.3 을 이미지로 렌더링해 표의 행·열을 눈으로 대조했다. 용기 메달 = 교사 「오늘의 도전을 회상하게 함」 / 아이 「도전 경험을 상징으로 남김」, 마무리 = 교사 「경험 언어화, 서로 격려」 / 아이 「나의 변화와 친구의 노력 발견」. 처음 추측과 반대였고 전사본을 고쳤다.",
@@ -633,6 +634,7 @@ export const WEEK_02_NOTES: TranscriptionNote[] = [
     page: 5,
     issue:
       "순서 표(순서 / 교사 행동 / 교사 언어)를 한 줄씩 「N. 행동 — 언어」로 이어 적었다. 표가 목록이 되어 열 구분이 사라졌고, 다섯 줄의 짝이 맞는지 글자만으로는 확인되지 않았다.",
+    category: "extraction",
     status: "resolved",
     evidence:
       "2026-10-13 원문 p.5 를 이미지로 렌더링해 다섯 행의 교사 행동·교사 언어 짝을 눈으로 대조했다. 전사본과 같다. 열 구분이 목록으로 바뀐 것은 화면 표현 문제로 남는다.",
@@ -642,6 +644,7 @@ export const WEEK_02_NOTES: TranscriptionNote[] = [
     page: 5,
     issue:
       "관찰 상황 4행과 교사 개입, 난이도 조절표 5행의 짝이 추출본에서 떨어져 나온다.",
+    category: "extraction",
     status: "resolved",
     evidence:
       "2026-10-13 원문 p.5 를 이미지로 렌더링해 두 표의 행 짝을 눈으로 대조했다. 전사본과 같다.",
@@ -650,40 +653,58 @@ export const WEEK_02_NOTES: TranscriptionNote[] = [
     section: "8. 미술활동 / 9. 워크북",
     page: 6,
     issue:
-      "2주차는 미술이 8번, 워크북이 9번이다 (1주차는 반대). 서비스 화면은 두 블록을 같은 자리에 그리므로 주차마다 번호가 다른 것이 맞는지 확인이 필요하다.",
-    status: "unresolved",
-    evidence: null,
+      "2주차는 미술이 8번, 워크북이 9번이다 (1주차는 반대). 서비스 화면은 두 블록을 같은 자리에 그린다.",
+    category: "structure",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 을 이미지로 렌더링해 확인했다. 「8. 미술활동 - 끝까지 해본 용기 메달」, 「9. 워크북 운영 가이드」가 맞다. 원문 번호를 그대로 반영했고 sourceRef 가 각 주차의 실제 번호를 가리킨다. 섹션 번호가 주차마다 다른 것은 원문의 성격이지 전사 오류가 아니다.",
   },
   {
     section: "8. 미술활동 · 활동의 기준",
     page: 6,
     issue:
       "1주차에 있던 「활동의 기준」 항목이 2주차 원문에는 보이지 않는다. 옮기지 않아 빈 것이 아니라 원문에 없어 비워 두었다 (standard: null).",
-    status: "unresolved",
-    evidence: null,
+    category: "structure",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.6 렌더링에서 8. 미술활동이 「진행 순서」와 「교사 발문」만 두고 「활동의 기준」 상자가 없음을 확인했다. standard: null 이 원문과 맞다.",
   },
   {
     section: "12. 관찰 및 기록 가이드 · 주의",
     page: 7,
     issue:
       "1주차에 있던 「주의」 목록이 2주차 원문에는 보이지 않는다. 원문에 없어 빈 배열로 두었다.",
-    status: "unresolved",
-    evidence: null,
+    category: "structure",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 렌더링에서 12번이 관찰 표와 「키즈노트 기록 예시」만 두고 주의 목록이 없음을 확인했다. cautions: [] 가 원문과 맞다.",
   },
   {
     section: "7. 핵심활동 MISSION 1 · 설명문",
     page: 5,
     issue:
       "설명문이 쪽 머리말에 끊긴다 (「…‘한 개 성공’부터 시작합」 + 머리말 + 「니다.」). 한 문장으로 이어 적었다.",
+    category: "extraction",
     status: "resolved",
     evidence:
       "2026-10-13 원문 p.5 렌더링에서 한 문단으로 이어진 것을 확인했다. 끊김은 추출 과정에서만 생긴다.",
   },
   {
-    section: "13. 가정연계 · 설명문",
+    section: "13. 가정연계 · 제목과 설명문",
     page: 7,
     issue:
-      "제목(「‘우리 가족 도전 OO’ 미션」)이 설명문 중간에 끼어 추출된다. 설명문을 한 문장으로 이어 적고 제목은 따로 두었다.",
+      "제목이 설명문 중간에 끼어 추출된다. 제목의 따옴표 위치도 추출본에서는 가릴 수 없었다.",
+    category: "extraction",
+    status: "resolved",
+    evidence:
+      "2026-10-14 원문 p.7 을 이미지로 렌더링해 확인했다. 섹션 제목은 「13. 가정연계 - 우리 가족 ‘도전 OO’ 미션」이다. 전사본이 「‘우리 가족 도전 OO’ 미션」으로 따옴표를 앞에 두고 있었고 원문 위치로 고쳤다. 설명문을 한 문장으로 이은 것도 원문과 맞다.",
+  },
+  {
+    section: "13. 가정연계 · 가정 미션 예시",
+    page: 7,
+    issue:
+      "「가정 미션 예시」가 원문에서는 소제목이 붙은 별도 묶음인데 steps 의 마지막 항목으로 이어 적어 구분이 흐려졌다. 화면 표현 문제이고 문구는 원문 그대로다.",
+    category: "structure",
     status: "unresolved",
     evidence: null,
   },
@@ -691,7 +712,8 @@ export const WEEK_02_NOTES: TranscriptionNote[] = [
     section: "2. 수업 한눈에 보기 · 권장 핵심수업 시간",
     page: 2,
     issue:
-      "원문은 「약 55~65 분 (기관 일정에 따라 분리 운영 가능)」이다. 24주 지도(week-index)의 요약 칸에는 「약 55~65분」만 적혀 있고 괄호 안 운영 안내는 이 블록에만 들어 있다. 요약 칸을 늘릴지 결정이 필요하다.",
+      "원문은 「약 55~65 분 (기관 일정에 따라 분리 운영 가능)」이다. 24주 지도(week-index)의 요약 칸에는 「약 55~65분」만 적혀 있고 괄호 안 운영 안내는 이 블록에만 들어 있다. 요약 칸을 늘릴지 상품 기준 결정이 필요하다.",
+    category: "decision",
     status: "unresolved",
     evidence: null,
   },

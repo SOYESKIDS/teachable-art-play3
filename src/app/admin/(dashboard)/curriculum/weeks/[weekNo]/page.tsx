@@ -20,7 +20,13 @@ import {
   registrationOf,
   type AssetRegistration,
 } from "@/lib/weeks/week-asset-queries";
-import { SCENE_TYPE_LABEL, partOf, unresolvedNotes } from "@/lib/weeks/week-types";
+import {
+  NOTE_CATEGORY_LABEL,
+  SCENE_TYPE_LABEL,
+  hqDecisionNotes,
+  partOf,
+  unresolvedNotes,
+} from "@/lib/weeks/week-types";
 import { guideSourceOf, shortHash } from "@/lib/weeks/guide-sources";
 
 export const metadata: Metadata = {
@@ -91,6 +97,8 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
   const part = partOf(weekNo);
   // ★ 미해결 대조 주의가 남아 있으면 발행을 막는다. 해결된 기록은 세지 않는다.
   const pending = unresolvedNotes(content.transcriptionNotes);
+  // ★ 본사가 정해야 풀리는 것들. 전사자가 고칠 수 없다.
+  const decisions = hqDecisionNotes(content.transcriptionNotes);
   const blockers = publishBlockers(summary.status, pending.length);
   const assets = await fetchWeekAssetStatus(supabase, weekNo);
   const guideSource = guideSourceOf(weekNo);
@@ -153,9 +161,46 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
             ? "검수 시작 가능 — 원문과 대조할 전사본이 들어와 있습니다."
             : "검수 상태는 코드가 자동으로 올리지 않습니다."}{" "}
           발행 상태는 지금 저장소 값(<code>week-index.ts</code>)에 적혀 있고, 화면에서 바꾸는
-          기능은 데이터베이스 연결 단계에서 만듭니다.
+          기능은 데이터베이스 연결 단계에서 만듭니다. 그때 서버는 저장된 데이터에서 상태와
+          미해결 건수를 직접 읽어 같은 판정을 다시 합니다.
         </p>
       </section>
+
+      {/*
+        ── 본사 결정 목록 ─────────────────────────────────────────────
+        ★ 전사자가 풀 수 없는 것들만 모은다. 원문이 스스로 어긋나 있거나 상품
+          기준을 정해야 한다. 코드가 한쪽을 고르면 그것이 공식 콘텐츠가 된다.
+      */}
+      {decisions.length > 0 ? (
+        <section className="mt-5 rounded-xl border-2 border-rose-300 bg-rose-50 px-5 py-4">
+          <h2 className="text-[15px] font-bold text-rose-900">
+            본사 결정 필요{" "}
+            <span className="text-[13px] font-normal tabular-nums">{decisions.length}건</span>
+          </h2>
+          <p className="mt-1 text-[12px] leading-relaxed text-rose-900/80">
+            원문 자체가 어긋나 있거나 상품 기준을 정해야 하는 항목입니다. 전사로는 풀 수 없고
+            임의로 고치지 않았습니다. 정하신 뒤에 발행할 수 있습니다.
+          </p>
+          <ul className="mt-2 flex flex-col gap-2">
+            {decisions.map((note, index) => (
+              <li
+                key={`decision-${index}`}
+                className="rounded-lg border border-rose-200 bg-white px-3 py-2"
+              >
+                <p className="text-[13px] font-semibold text-rose-900">
+                  {note.section}
+                  <span className="ml-2 text-[12px] font-normal tabular-nums">
+                    원문 p.{note.page}
+                  </span>
+                </p>
+                <p className="mt-0.5 text-[12px] leading-relaxed text-rose-900/90">
+                  {note.issue}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {/* ── 1. 원문 ── */}
       <section className="mt-5 rounded-xl border border-navy/10 bg-white px-5 py-4">
@@ -317,6 +362,9 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
                           }`}
                         >
                           {open ? "미해결" : "해결"}
+                        </span>
+                        <span className="rounded border border-navy/20 px-1.5 py-0.5 text-[11px] font-normal text-navy/60">
+                          {NOTE_CATEGORY_LABEL[note.category]}
                         </span>
                         {note.section}
                         <span className="text-[12px] font-normal tabular-nums">
