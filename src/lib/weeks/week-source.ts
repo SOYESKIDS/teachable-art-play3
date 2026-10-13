@@ -18,6 +18,18 @@ import {
   WEEK_03_SOURCE_FILE,
 } from "./content/week-03";
 import {
+  WEEK_04_BLOCKS,
+  WEEK_04_NOTES,
+  WEEK_04_SCENES,
+  WEEK_04_SOURCE_FILE,
+} from "./content/week-04";
+import {
+  WEEK_05_BLOCKS,
+  WEEK_05_NOTES,
+  WEEK_05_SCENES,
+  WEEK_05_SOURCE_FILE,
+} from "./content/week-05";
+import {
   hiddenReason,
   isVisibleTo,
   type ContentAudience,
@@ -100,6 +112,18 @@ const FIXTURES: Record<number, WeekFixture> = {
     scenes: WEEK_03_SCENES,
     sourceFile: WEEK_03_SOURCE_FILE,
     notes: WEEK_03_NOTES,
+  },
+  4: {
+    blocks: WEEK_04_BLOCKS,
+    scenes: WEEK_04_SCENES,
+    sourceFile: WEEK_04_SOURCE_FILE,
+    notes: WEEK_04_NOTES,
+  },
+  5: {
+    blocks: WEEK_05_BLOCKS,
+    scenes: WEEK_05_SCENES,
+    sourceFile: WEEK_05_SOURCE_FILE,
+    notes: WEEK_05_NOTES,
   },
 };
 
