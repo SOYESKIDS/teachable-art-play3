@@ -53,6 +53,11 @@ const STATUS: Record<number, ContentStatus> = {
   9: { transcription: "done", publication: "draft" },
   10: { transcription: "done", publication: "draft" },
   11: { transcription: "done", publication: "draft" },
+  12: { transcription: "done", publication: "draft" },
+  13: { transcription: "done", publication: "draft" },
+  14: { transcription: "done", publication: "draft" },
+  15: { transcription: "done", publication: "draft" },
+  16: { transcription: "done", publication: "draft" },
 };
 
 const NOT_TRANSCRIBED: ContentStatus = {

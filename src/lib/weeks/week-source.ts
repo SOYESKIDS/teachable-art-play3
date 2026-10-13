@@ -66,6 +66,36 @@ import {
   WEEK_11_SOURCE_FILE,
 } from "./content/week-11";
 import {
+  WEEK_12_BLOCKS,
+  WEEK_12_NOTES,
+  WEEK_12_SCENES,
+  WEEK_12_SOURCE_FILE,
+} from "./content/week-12";
+import {
+  WEEK_13_BLOCKS,
+  WEEK_13_NOTES,
+  WEEK_13_SCENES,
+  WEEK_13_SOURCE_FILE,
+} from "./content/week-13";
+import {
+  WEEK_14_BLOCKS,
+  WEEK_14_NOTES,
+  WEEK_14_SCENES,
+  WEEK_14_SOURCE_FILE,
+} from "./content/week-14";
+import {
+  WEEK_15_BLOCKS,
+  WEEK_15_NOTES,
+  WEEK_15_SCENES,
+  WEEK_15_SOURCE_FILE,
+} from "./content/week-15";
+import {
+  WEEK_16_BLOCKS,
+  WEEK_16_NOTES,
+  WEEK_16_SCENES,
+  WEEK_16_SOURCE_FILE,
+} from "./content/week-16";
+import {
   hiddenReason,
   isVisibleTo,
   type ContentAudience,
@@ -196,6 +226,36 @@ const FIXTURES: Record<number, WeekFixture> = {
     scenes: WEEK_11_SCENES,
     sourceFile: WEEK_11_SOURCE_FILE,
     notes: WEEK_11_NOTES,
+  },
+  12: {
+    blocks: WEEK_12_BLOCKS,
+    scenes: WEEK_12_SCENES,
+    sourceFile: WEEK_12_SOURCE_FILE,
+    notes: WEEK_12_NOTES,
+  },
+  13: {
+    blocks: WEEK_13_BLOCKS,
+    scenes: WEEK_13_SCENES,
+    sourceFile: WEEK_13_SOURCE_FILE,
+    notes: WEEK_13_NOTES,
+  },
+  14: {
+    blocks: WEEK_14_BLOCKS,
+    scenes: WEEK_14_SCENES,
+    sourceFile: WEEK_14_SOURCE_FILE,
+    notes: WEEK_14_NOTES,
+  },
+  15: {
+    blocks: WEEK_15_BLOCKS,
+    scenes: WEEK_15_SCENES,
+    sourceFile: WEEK_15_SOURCE_FILE,
+    notes: WEEK_15_NOTES,
+  },
+  16: {
+    blocks: WEEK_16_BLOCKS,
+    scenes: WEEK_16_SCENES,
+    sourceFile: WEEK_16_SOURCE_FILE,
+    notes: WEEK_16_NOTES,
   },
 };
 
