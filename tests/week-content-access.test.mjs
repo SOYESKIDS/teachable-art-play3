@@ -115,3 +115,46 @@ test("개발 표시는 운영 배포에서만 꺼진다", () => {
     else process.env.VERCEL_ENV = saved;
   }
 });
+
+test("교실 화면에 넘기는 장면에는 정해진 필드만 있다 (원아 정보 없음)", () => {
+  const allowed = [
+    "sceneNo",
+    "sceneType",
+    "kidText",
+    "stageLabel",
+    "teacherNote",
+    "sourceRef",
+    "baseSeconds",
+  ].sort();
+
+  const { content } = getWeekContent(1, "internal_review");
+  assert.ok(content.scenes.length > 0);
+
+  for (const scene of content.scenes) {
+    assert.deepEqual(Object.keys(scene).sort(), allowed, `${scene.sceneNo}번 장면 필드`);
+
+    // 아이들이 보는 문장과 교사 노트에 이름 자리표시가 섞이지 않았는지.
+    for (const field of ["kidText", "stageLabel", "teacherNote"]) {
+      const value = scene[field];
+      if (typeof value !== "string") continue;
+      assert.equal(/\{\{|\$\{|childName|원아명/.test(value), false, `${field} 치환자`);
+    }
+  }
+});
+
+test("장면 유형은 8종 안에 있고 아이 화면 문장은 비어 있지 않다", () => {
+  const types = ["intro", "story", "promise", "play", "workbook", "create", "share", "home"];
+  const { content } = getWeekContent(1, "internal_review");
+
+  for (const scene of content.scenes) {
+    assert.ok(types.includes(scene.sceneType), `${scene.sceneNo}번 유형 ${scene.sceneType}`);
+    assert.ok(scene.kidText.trim().length > 0, `${scene.sceneNo}번 아이 화면 문장`);
+    assert.ok(scene.sourceRef.trim().length > 0, `${scene.sceneNo}번 출처`);
+  }
+
+  // 장면 번호는 1부터 빠짐없이 이어진다.
+  assert.deepEqual(
+    content.scenes.map((s) => s.sceneNo),
+    content.scenes.map((_, i) => i + 1),
+  );
+});
