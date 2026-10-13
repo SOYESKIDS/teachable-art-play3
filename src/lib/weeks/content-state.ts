@@ -115,12 +115,17 @@ export function showsDevelopmentMarkers(): boolean {
 /* ══════════════════════════════════════════ 발행 조건 */
 
 /** 발행을 막는 이유 */
-export type PublishBlocker = "not_transcribed" | "already_published";
+export type PublishBlocker =
+  | "not_transcribed"
+  | "already_published"
+  | "unresolved_notes";
 
 export const PUBLISH_BLOCKER_NOTE: Record<PublishBlocker, string> = {
   not_transcribed:
     "원문을 아직 옮기지 않았습니다. 전사하지 않은 주차는 발행할 수 없습니다.",
   already_published: "이미 발행된 주차입니다.",
+  unresolved_notes:
+    "전사 중 확인하지 못한 곳이 남아 있습니다. 그 자리는 잠정 해석이므로 원문 쪽을 대조해 해결 처리한 뒤에 발행할 수 있습니다.",
 };
 
 /**
@@ -130,18 +135,67 @@ export const PUBLISH_BLOCKER_NOTE: Record<PublishBlocker, string> = {
  *   교사 화면에는 빈 수업이 열린다. 그래서 순서를 코드가 강제한다 — 화면에서
  *   버튼을 숨기는 것으로 끝내지 않는다.
  *
+ * ★ **미해결 대조 주의가 있으면 막는다.** 전사는 끝났지만 표의 행·열이나 활동
+ *   순서를 확인하지 못한 자리가 남아 있다면, 그 자리는 잠정 해석이다. 잠정
+ *   해석을 교사에게 정식 콘텐츠로 내보내지 않는다.
+ *
+ *   `unresolvedNoteCount` 는 **해결되지 않은** 기록 수다. 해결된 기록은 세지
+ *   않는다 — 이력은 남고 발행은 막지 않는다. 기록을 지워야 발행되는 구조를
+ *   만들지 않기 위해서다.
+ *
  * ★ 이 함수는 "해도 되는가"만 답한다. 실제로 올리는 일은 사람이 검수한 뒤에
  *   한다. 코드가 저절로 발행하지 않는다.
+ *
+ * ★ 화면과 서버가 **같은 함수**를 부른다. E단계에서 발행 기능을 붙일 때
+ *   서버 쪽은 {@link assertPublishable} 을 통과해야 쓰기로 넘어간다.
  */
-export function publishBlockers(status: ContentStatus): PublishBlocker[] {
+export function publishBlockers(
+  status: ContentStatus,
+  unresolvedNoteCount = 0,
+): PublishBlocker[] {
   const blockers: PublishBlocker[] = [];
   if (status.transcription !== "done") blockers.push("not_transcribed");
+  if (unresolvedNoteCount > 0) blockers.push("unresolved_notes");
   if (status.publication === "published") blockers.push("already_published");
   return blockers;
 }
 
-export function canPublish(status: ContentStatus): boolean {
-  return publishBlockers(status).length === 0;
+export function canPublish(status: ContentStatus, unresolvedNoteCount = 0): boolean {
+  return publishBlockers(status, unresolvedNoteCount).length === 0;
+}
+
+/** 발행이 막혔다 */
+export class PublishBlockedError extends Error {
+  readonly blockers: PublishBlocker[];
+
+  constructor(blockers: PublishBlocker[]) {
+    super(`publish blocked: ${blockers.join(", ")}`);
+    this.name = "PublishBlockedError";
+    this.blockers = blockers;
+  }
+}
+
+/**
+ * 서버에서 발행 직전에 부른다.
+ *
+ * ── 왜 화면 판정으로 끝내지 않는가 ───────────────────────────────
+ *
+ * 화면이 버튼을 숨겨도 요청은 직접 만들어 보낼 수 있다. 발행은 교사·원장에게
+ * 콘텐츠를 열어 주는 일이라 **쓰기 직전 서버에서 다시 판정**해야 한다.
+ *
+ * ★ 던진다. 조용히 `false` 를 돌려주면 호출한 쪽이 무시하고 쓰기로 넘어갈 수
+ *   있다.
+ *
+ * ★ E단계에서 발행 Server Action 을 만들 때 **첫 줄에서 이 함수를 부른다.**
+ *   이 모듈은 DB 를 모르므로, 그때 호출하는 쪽이 DB 에서 읽은 상태와 미해결
+ *   기록 수를 넘긴다.
+ */
+export function assertPublishable(
+  status: ContentStatus,
+  unresolvedNoteCount: number,
+): void {
+  const blockers = publishBlockers(status, unresolvedNoteCount);
+  if (blockers.length > 0) throw new PublishBlockedError(blockers);
 }
 
 /**

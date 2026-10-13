@@ -20,7 +20,7 @@ import {
   registrationOf,
   type AssetRegistration,
 } from "@/lib/weeks/week-asset-queries";
-import { SCENE_TYPE_LABEL, partOf } from "@/lib/weeks/week-types";
+import { SCENE_TYPE_LABEL, partOf, unresolvedNotes } from "@/lib/weeks/week-types";
 import { guideSourceOf, shortHash } from "@/lib/weeks/guide-sources";
 
 export const metadata: Metadata = {
@@ -89,7 +89,9 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
   const summary = content.summary;
   const coverage = weekCoverage(content);
   const part = partOf(weekNo);
-  const blockers = publishBlockers(summary.status);
+  // ★ 미해결 대조 주의가 남아 있으면 발행을 막는다. 해결된 기록은 세지 않는다.
+  const pending = unresolvedNotes(content.transcriptionNotes);
+  const blockers = publishBlockers(summary.status, pending.length);
   const assets = await fetchWeekAssetStatus(supabase, weekNo);
   const guideSource = guideSourceOf(weekNo);
 
@@ -269,9 +271,15 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
           <h3 className="text-[14px] font-bold text-navy">
             전사 중 분명하지 않았던 곳{" "}
             <span className="text-[12px] font-normal tabular-nums text-navy/55">
-              {content.transcriptionNotes.length}건
+              미해결 {pending.length}건 · 해결 {content.transcriptionNotes.length - pending.length}
+              건
             </span>
           </h3>
+          <p className="mt-1 text-[12px] leading-relaxed text-navy/55">
+            미해결이 하나라도 있으면 발행할 수 없습니다. 해결된 기록은 지우지 않고 남겨
+            둡니다 — 무엇을 어떻게 확인했는지가 사라지면 다음 판본에서 같은 자리를 다시
+            의심해야 합니다.
+          </p>
           {content.transcriptionNotes.length === 0 ? (
             <p className="mt-1 text-[12px] leading-relaxed text-navy/55">
               {transcribed
@@ -280,22 +288,60 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
             </p>
           ) : (
             <ul className="mt-1.5 flex flex-col gap-1.5">
-              {content.transcriptionNotes.map((note, index) => (
-                <li
-                  key={`${note.section}-${index}`}
-                  className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
-                >
-                  <p className="text-[13px] font-semibold text-amber-900">
-                    {note.section}
-                    <span className="ml-2 text-[12px] font-normal tabular-nums">
-                      원문 p.{note.page}
-                    </span>
-                  </p>
-                  <p className="mt-0.5 text-[12px] leading-relaxed text-amber-900">
-                    {note.issue}
-                  </p>
-                </li>
-              ))}
+              {/* ★ 미해결을 먼저 보여 준다. 해결된 것은 이력으로 아래에 남는다. */}
+              {[...content.transcriptionNotes]
+                .sort((a, b) =>
+                  a.status === b.status ? 0 : a.status === "unresolved" ? -1 : 1,
+                )
+                .map((note, index) => {
+                  const open = note.status === "unresolved";
+                  return (
+                    <li
+                      key={`${note.section}-${index}`}
+                      className={`rounded-lg border px-3 py-2 ${
+                        open
+                          ? "border-amber-300 bg-amber-50"
+                          : "border-navy/10 bg-navy/[0.02]"
+                      }`}
+                    >
+                      <p
+                        className={`flex flex-wrap items-baseline gap-x-2 text-[13px] font-semibold ${
+                          open ? "text-amber-900" : "text-navy/70"
+                        }`}
+                      >
+                        <span
+                          className={`rounded px-1.5 py-0.5 text-[11px] ${
+                            open
+                              ? "bg-amber-200 text-amber-900"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}
+                        >
+                          {open ? "미해결" : "해결"}
+                        </span>
+                        {note.section}
+                        <span className="text-[12px] font-normal tabular-nums">
+                          원문 p.{note.page}
+                        </span>
+                      </p>
+                      <p
+                        className={`mt-0.5 text-[12px] leading-relaxed ${
+                          open ? "text-amber-900" : "text-navy/60"
+                        }`}
+                      >
+                        {note.issue}
+                      </p>
+                      {note.evidence ? (
+                        <p className="mt-1 text-[12px] leading-relaxed text-emerald-800">
+                          확인 근거 — {note.evidence}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[12px] leading-relaxed text-amber-900/70">
+                          확인 근거 없음. 전사본의 이 자리는 잠정 해석입니다.
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
             </ul>
           )}
         </div>

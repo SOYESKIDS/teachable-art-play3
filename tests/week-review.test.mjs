@@ -2,10 +2,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  PublishBlockedError,
+  assertPublishable,
   canPublish,
   canStartReview,
   publishBlockers,
 } from "../src/lib/weeks/content-state.ts";
+import { unresolvedNotes } from "../src/lib/weeks/week-types.ts";
 import { SECTION_TOTAL, weekCoverage } from "../src/lib/weeks/week-coverage.ts";
 import {
   ASSET_ACCESS_NOTE,
@@ -144,4 +147,70 @@ test("registrationOf 는 없는 종류를 0건으로 돌려준다 (undefined 로
 test("경로 등록과 실제 재생을 구분하는 문구가 있다", () => {
   // 화면이 「경로 N건」을 「재생 가능 N건」으로 읽지 않도록 함께 내보낸다.
   assert.match(ASSET_ACCESS_NOTE, /확인하지 않았습니다/);
+});
+
+/* ══════════════════════════════════ 미해결 대조 주의 */
+
+test("미해결 대조 주의가 있으면 전사가 끝나도 발행할 수 없다", () => {
+  const status = { transcription: "done", publication: "draft" };
+  assert.equal(canPublish(status, 0), true);
+  assert.equal(canPublish(status, 1), false);
+  assert.ok(publishBlockers(status, 1).includes("unresolved_notes"));
+});
+
+test("해결된 기록은 발행을 막지 않는다 (이력은 남는다)", () => {
+  const notes = [
+    { section: "a", page: 1, issue: "x", status: "resolved", evidence: "확인함" },
+    { section: "b", page: 2, issue: "y", status: "resolved", evidence: "확인함" },
+  ];
+  assert.equal(unresolvedNotes(notes).length, 0);
+  assert.equal(canPublish({ transcription: "done", publication: "draft" }, 0), true);
+  // ★ 기록 자체는 지워지지 않는다. 지워야 발행되는 구조를 만들지 않는다.
+  assert.equal(notes.length, 2);
+});
+
+test("서버 판정은 막히면 던진다 (조용히 false 를 돌려주지 않는다)", () => {
+  assert.throws(
+    () => assertPublishable({ transcription: "done", publication: "draft" }, 2),
+    (err) => err instanceof PublishBlockedError && err.blockers.includes("unresolved_notes"),
+  );
+  assert.doesNotThrow(() =>
+    assertPublishable({ transcription: "done", publication: "draft" }, 0),
+  );
+});
+
+test("해결로 표시한 기록에는 확인 근거가 반드시 있다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    for (const note of content.transcriptionNotes) {
+      if (note.status === "resolved") {
+        assert.equal(
+          typeof note.evidence,
+          "string",
+          `${week.weekNo}주차 「${note.section}」이 근거 없이 해결로 표시됐다`,
+        );
+        assert.ok(note.evidence.length > 0);
+      } else {
+        assert.equal(
+          note.evidence,
+          null,
+          `${week.weekNo}주차 「${note.section}」은 미해결인데 근거가 적혀 있다`,
+        );
+      }
+    }
+  }
+});
+
+test("미해결 기록이 남은 주차는 24주 어디서도 발행 가능으로 판정되지 않는다", () => {
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    const open = unresolvedNotes(content.transcriptionNotes).length;
+    if (open > 0) {
+      assert.equal(
+        canPublish(week.status, open),
+        false,
+        `${week.weekNo}주차에 미해결 ${open}건이 있는데 발행 가능으로 판정됐다`,
+      );
+    }
+  }
 });

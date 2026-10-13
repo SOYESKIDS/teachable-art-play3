@@ -17,7 +17,7 @@ import {
   fetchWeekAssetRollup,
 } from "@/lib/weeks/week-asset-queries";
 import { WEEK_INDEX } from "@/lib/weeks/week-index";
-import { PARTS } from "@/lib/weeks/week-types";
+import { PARTS, unresolvedNotes } from "@/lib/weeks/week-types";
 
 export const metadata: Metadata = {
   title: "주차 콘텐츠 검수 | SOYESKIDS Admin",
@@ -50,7 +50,8 @@ export default async function AdminWeekReviewPage() {
     // ★ 내부 검수 경로 — 전사된 본문까지 읽는다.
     const result = getWeekContent(summary.weekNo, "internal_review");
     const coverage = result ? weekCoverage(result.content) : null;
-    return { summary, coverage };
+    const notes = result?.content.transcriptionNotes ?? [];
+    return { summary, coverage, openNotes: unresolvedNotes(notes).length };
   });
 
   const transcribedCount = rows.filter(
@@ -129,8 +130,8 @@ export default async function AdminWeekReviewPage() {
                 (r) =>
                   r.summary.weekNo >= part.weekFrom && r.summary.weekNo <= part.weekTo,
               )
-              .map(({ summary, coverage }) => {
-                const blockers = publishBlockers(summary.status);
+              .map(({ summary, coverage, openNotes }) => {
+                const blockers = publishBlockers(summary.status, openNotes);
                 const weekRollup = assetRollup.byWeek.get(summary.weekNo);
                 const lessonCount = weekRollup?.lessonCount ?? 0;
                 const programCount = weekRollup?.programCount ?? 0;
@@ -169,6 +170,11 @@ export default async function AdminWeekReviewPage() {
                         섹션 {coverage?.filledCount ?? 0} / {SECTION_TOTAL}
                       </span>
                       <span className="tabular-nums">장면 {coverage?.sceneCount ?? 0}개</span>
+                      {openNotes > 0 ? (
+                        <span className="tabular-nums font-semibold text-amber-800">
+                          미해결 대조 {openNotes}건
+                        </span>
+                      ) : null}
                       <span>성장키워드 {summary.growthKeyword}</span>
                       <span className="tabular-nums">
                         {lessonCount > 0
@@ -224,7 +230,7 @@ export default async function AdminWeekReviewPage() {
                       <p className="mt-2 text-[12px] text-navy/50">
                         발행 불가 — {blockers.map((b) => PUBLISH_BLOCKER_NOTE[b]).join(" ")}
                       </p>
-                    ) : canPublish(summary.status) ? (
+                    ) : canPublish(summary.status, openNotes) ? (
                       <p className="mt-2 text-[12px] font-semibold text-emerald-700">
                         전사 완료 — 본사 대조 검수 후 발행할 수 있습니다.
                       </p>
