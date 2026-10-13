@@ -11,6 +11,38 @@
   --background: #fbf8f1;
   --foreground: #152e4f;
 
+
+  /* ── 수업 운영실 토큰 (디자인 기획안 v1.0) ───────────────────
+   *
+   * ★ 기존 변수를 다시 가리키지 않는다.
+   *   공개 사이트와 기존 업무 화면은 출시 검토를 마친 상태다. 토큰 이름을
+   *   바꿔 끼우면 그 화면들이 한 번에 바뀐다. 그래서 새 이름으로만 추가하고,
+   *   새로 만드는 수업 화면부터 쓴다. 기존 화면 이전은 별도 단계다
+   *   (디자인 기획안 37쪽 적용 순서 7·8번).
+   *
+   * 대비: 숲 잉크 12.5:1 · 잎 초록 4.9:1 · 하늘 5.9:1 (흰 바탕)
+   * 노랑은 강조 배경에만. 노랑 위 글자는 항상 숲 잉크.
+   */
+  --color-forest: #173a2c;        /* 숲 잉크 — 제목·본문·주 버튼 */
+  --color-leaf: #2b7f5e;          /* 잎 초록 (주색) — 링크·선택·진행 */
+  --color-leaf-bright: #3fa27a;   /* 큰 그림·아이콘 전용 (본문 금지) */
+  --color-sprout: #e7f2ea;        /* 선택된 단계 바탕 */
+  --color-sky-deep: #2a67a0;      /* 보조 — 정보·안내·학부모 영역 */
+  --color-sky-pale: #e8f0f8;      /* 안내 상자 바탕 */
+  --color-crayon: #f2b33a;        /* 강조 배경 (글자 색으로 쓰지 않음) */
+  --color-crayon-soft: #fdf3dc;
+  --color-paper: #f5f8f3;         /* 종이 바탕 */
+  --color-stage: #fbf9f2;         /* 교실 화면 바탕 */
+  --color-rule-soft: #e3eae4;
+  --color-rule: #d7e0d8;
+  --color-rule-strong: #bfccc3;
+  --color-muted-ink: #51605a;     /* 설명·메타 6.6:1 */
+
+  /* 모서리 3단계 */
+  --radius-chip: 4px;
+  --radius-card-flat: 10px;
+  --radius-stage: 18px;
+
   /* ── Brand core ─────────────────────────────────────────────── */
   --color-navy: #152e4f;
   --color-navy-deep: #102744;
@@ -525,6 +557,25 @@
   --color-soft-coral: var(--color-soft-coral);
   --color-soft-green: var(--color-soft-green);
   --color-pale-yellow: var(--color-pale-yellow);
+
+  /* ── 수업 운영실 토큰 (새 화면 전용) ── */
+  --color-forest: var(--color-forest);
+  --color-leaf: var(--color-leaf);
+  --color-leaf-bright: var(--color-leaf-bright);
+  --color-sprout: var(--color-sprout);
+  --color-sky-deep: var(--color-sky-deep);
+  --color-sky-pale: var(--color-sky-pale);
+  --color-crayon: var(--color-crayon);
+  --color-crayon-soft: var(--color-crayon-soft);
+  --color-paper: var(--color-paper);
+  --color-stage: var(--color-stage);
+  --color-rule-soft: var(--color-rule-soft);
+  --color-rule: var(--color-rule);
+  --color-rule-strong: var(--color-rule-strong);
+  --color-muted-ink: var(--color-muted-ink);
+  --radius-chip: var(--radius-chip);
+  --radius-card-flat: var(--radius-card-flat);
+  --radius-stage: var(--radius-stage);
 }
 
 
