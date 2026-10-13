@@ -18,6 +18,7 @@ import {
 } from "../src/lib/weeks/week-asset-queries.ts";
 import { getWeekContent } from "../src/lib/weeks/week-source.ts";
 import { WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
+import { HQ_DECISIONS } from "../src/lib/weeks/hq-decisions.ts";
 
 /**
  * 본사 검수 화면이 기대는 규칙을 고정한다.
@@ -516,5 +517,32 @@ test("24주 전체가 전사되고 15개 섹션이 모두 채워진다", () => {
     assert.equal(week.status.transcription, "done", `${week.weekNo}주차가 아직 전사되지 않았다`);
     assert.ok(content.sourceFile, `${week.weekNo}주차 원문 파일명이 없다`);
     assert.ok(content.scenes.length > 0, `${week.weekNo}주차 교실 화면 장면이 없다`);
+  }
+});
+
+test("본사 결정 목록은 주의 기록의 decision 분류와 일대일로 맞는다", () => {
+  // ★ 한쪽만 늘면 결정이 화면에서 사라지거나 근거 없는 항목이 생긴다.
+  const noteKeys = new Set();
+  for (const week of WEEK_INDEX) {
+    const { content } = getWeekContent(week.weekNo, "internal_review");
+    for (const n of hqDecisionNotes(content.transcriptionNotes)) {
+      noteKeys.add(`${week.weekNo}:${n.page}`);
+    }
+  }
+
+  assert.equal(
+    HQ_DECISIONS.length,
+    noteKeys.size,
+    `본사 결정 목록 ${HQ_DECISIONS.length}건과 decision 주의 기록 ${noteKeys.size}건이 다르다`,
+  );
+
+  for (const d of HQ_DECISIONS) {
+    assert.ok(d.recommendation.length > 0, `${d.id} 권장안이 비어 있다`);
+    assert.ok(d.affectedWeeks.length > 0, `${d.id} 영향 주차가 비어 있다`);
+    assert.ok(
+      d.affectedWeeks.includes(d.weekNo),
+      `${d.id} 영향 주차에 자기 주차(${d.weekNo})가 빠져 있다`,
+    );
+    assert.equal(typeof d.needsSourceFix, "boolean", `${d.id} 원문 수정 필요 여부가 없다`);
   }
 });

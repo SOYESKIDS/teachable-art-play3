@@ -27,6 +27,7 @@ import {
   partOf,
   unresolvedNotes,
 } from "@/lib/weeks/week-types";
+import { affectedByOtherDecisions, hqDecisionsOf } from "@/lib/weeks/hq-decisions";
 import { guideSourceOf, shortHash } from "@/lib/weeks/guide-sources";
 
 export const metadata: Metadata = {
@@ -99,6 +100,10 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
   const pending = unresolvedNotes(content.transcriptionNotes);
   // ★ 본사가 정해야 풀리는 것들. 전사자가 고칠 수 없다.
   const decisions = hqDecisionNotes(content.transcriptionNotes);
+  // ★ 주의 기록은 「무엇이 모호했나」만 적는다. 결정하려면 권장안과 영향 주차가
+  //   필요해서 별도 목록(hq-decisions)이 그 둘을 들고 간다.
+  const decisionDetails = hqDecisionsOf(weekNo);
+  const affectedHere = affectedByOtherDecisions(weekNo);
   const blockers = publishBlockers(summary.status, pending.length);
   const assets = await fetchWeekAssetStatus(supabase, weekNo);
   const guideSource = guideSourceOf(weekNo);
@@ -196,6 +201,47 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
                 <p className="mt-0.5 text-[12px] leading-relaxed text-rose-900/90">
                   {note.issue}
                 </p>
+              </li>
+            ))}
+          </ul>
+
+          {/* ★ 권장안과 영향 주차. 결정을 내리려면 이 둘이 있어야 한다. */}
+          {decisionDetails.map((d) => (
+            <div key={d.id} className="mt-3 rounded-lg border border-rose-200 bg-white px-3 py-2">
+              <p className="text-[13px] font-semibold text-rose-900">{d.sourceLocation}</p>
+              <dl className="mt-1.5 flex flex-col gap-1.5 text-[12px] leading-relaxed">
+                <div>
+                  <dt className="font-semibold text-rose-900/70">지금 들어 있는 값</dt>
+                  <dd className="text-rose-900/90">{d.currentValue}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-rose-900/70">전사자 권장안 (적용본 아님)</dt>
+                  <dd className="text-rose-900/90">{d.recommendation}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-rose-900/70">영향 주차</dt>
+                  <dd className="tabular-nums text-rose-900/90">
+                    {d.affectedWeeks.map((w) => `${w}주`).join(" · ")}
+                    {d.needsSourceFix ? " — 결정 후 원문 PDF 수정이 선행되어야 합니다" : " — 화면 표현 결정 (원문 수정 불필요)"}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ))}
+        </section>
+      ) : null}
+
+      {/* ★ 다른 주차의 결정이 이 주차에도 걸리는 경우 (5주 음원 → 4주). */}
+      {affectedHere.length > 0 ? (
+        <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 px-5 py-4">
+          <h2 className="text-[15px] font-bold text-amber-900">
+            다른 주차의 본사 결정에 영향을 받습니다{" "}
+            <span className="text-[13px] font-normal tabular-nums">{affectedHere.length}건</span>
+          </h2>
+          <ul className="mt-2 flex flex-col gap-1.5">
+            {affectedHere.map((d) => (
+              <li key={d.id} className="text-[12px] leading-relaxed text-amber-900/90">
+                <strong className="font-semibold">{d.weekNo}주차 결정</strong> · {d.conflict}
               </li>
             ))}
           </ul>
