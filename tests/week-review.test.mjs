@@ -8,8 +8,10 @@ import {
 } from "../src/lib/weeks/content-state.ts";
 import { SECTION_TOTAL, weekCoverage } from "../src/lib/weeks/week-coverage.ts";
 import {
+  ASSET_ACCESS_NOTE,
   REVIEWED_ASSET_TYPES,
   findGuideMentions,
+  registrationOf,
 } from "../src/lib/weeks/week-asset-queries.ts";
 import { getWeekContent } from "../src/lib/weeks/week-source.ts";
 import { WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
@@ -127,4 +129,19 @@ test("검수 자료 다섯 종이 유지된다", () => {
     "music_video",
     "workbook",
   ]);
+});
+
+test("registrationOf 는 없는 종류를 0건으로 돌려준다 (undefined 로 터지지 않는다)", () => {
+  const reg = registrationOf([], "audio");
+  assert.equal(reg.assetType, "audio");
+  assert.equal(reg.rowCount, 0);
+  assert.equal(reg.withPathCount, 0);
+  assert.equal(reg.publishedCount, 0);
+  assert.equal(reg.rightsClearedCount, 0);
+  assert.equal(reg.downloadAllowedCount, 0);
+});
+
+test("경로 등록과 실제 재생을 구분하는 문구가 있다", () => {
+  // 화면이 「경로 N건」을 「재생 가능 N건」으로 읽지 않도록 함께 내보낸다.
+  assert.match(ASSET_ACCESS_NOTE, /확인하지 않았습니다/);
 });

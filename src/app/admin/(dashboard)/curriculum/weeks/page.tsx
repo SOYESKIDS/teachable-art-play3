@@ -11,6 +11,7 @@ import {
 import { getWeekContent } from "@/lib/weeks/week-source";
 import { SECTION_TOTAL, weekCoverage } from "@/lib/weeks/week-coverage";
 import {
+  ASSET_ACCESS_NOTE,
   REVIEWED_ASSET_LABEL,
   REVIEWED_ASSET_TYPES,
   fetchWeekAssetRollup,
@@ -83,7 +84,7 @@ export default async function AdminWeekReviewPage() {
           <p className="text-[13px] text-navy/55">자료 연결</p>
           <p className="mt-0.5 text-[15px] font-semibold text-navy">
             {assetRollup.ok
-              ? `차시 연결 ${assetRollup.rollup.lessonCountByWeek.size}주차`
+              ? `차시 연결 ${assetRollup.byWeek.size}주차`
               : "불러오지 못함"}
           </p>
         </div>
@@ -93,6 +94,12 @@ export default async function AdminWeekReviewPage() {
         전사와 검수·발행은 다른 일입니다. 원문을 옮겼다고 교사에게 열리는 것이 아니고, 아직
         옮기지 않은 주차는 <strong>발행할 수 없도록 코드가 막습니다</strong>. 자료 등록 건수는
         수업 차시(<code>curriculum_lessons</code>)가 연결된 주차에서만 셉니다.
+      </p>
+
+      <p className="mt-2 text-[12px] leading-relaxed text-navy/55">
+        아래 자료 칸은 그 주차에 걸린 <strong>여러 프로그램을 더한 합계</strong>입니다. 합계가
+        0이 아니어도 그 자료가 아예 없는 프로그램이 있을 수 있어, 그런 경우 「없는 프로그램 N개」를
+        함께 적습니다. 프로그램·차시별 내역은 주차를 눌러 확인하십시오. {ASSET_ACCESS_NOTE}
       </p>
 
       {!assetRollup.ok ? (
@@ -124,9 +131,9 @@ export default async function AdminWeekReviewPage() {
               )
               .map(({ summary, coverage }) => {
                 const blockers = publishBlockers(summary.status);
-                const assetCells = assetRollup.rollup.byWeek.get(summary.weekNo);
-                const lessonCount =
-                  assetRollup.rollup.lessonCountByWeek.get(summary.weekNo) ?? 0;
+                const weekRollup = assetRollup.byWeek.get(summary.weekNo);
+                const lessonCount = weekRollup?.lessonCount ?? 0;
+                const programCount = weekRollup?.programCount ?? 0;
 
                 return (
                   <li
@@ -164,31 +171,42 @@ export default async function AdminWeekReviewPage() {
                       <span className="tabular-nums">장면 {coverage?.sceneCount ?? 0}개</span>
                       <span>성장키워드 {summary.growthKeyword}</span>
                       <span className="tabular-nums">
-                        {lessonCount > 0 ? `차시 ${lessonCount}개 연결` : "차시 미연결"}
+                        {lessonCount > 0
+                          ? `차시 ${lessonCount}개 · 프로그램 ${programCount}개`
+                          : "차시 미연결"}
                       </span>
                     </div>
 
                     {/* ── 자료 5종 ── */}
                     <ul className="mt-2.5 flex flex-wrap gap-1.5">
                       {REVIEWED_ASSET_TYPES.map((assetType) => {
-                        const cell = assetCells?.get(assetType);
+                        const cell = weekRollup?.byType.get(assetType);
                         const label = REVIEWED_ASSET_LABEL[assetType];
 
-                        // ★ 셋을 구분한다: 확인 불가 / 미등록 / 등록(파일 유무)
+                        // ★ 네 가지를 구분한다:
+                        //   확인 불가 / 차시 미연결 / 미등록 / 등록(경로 유무)
                         const text = !assetRollup.ok
                           ? "확인 불가"
                           : lessonCount === 0
                             ? "차시 미연결"
                             : !cell || cell.rowCount === 0
                               ? "미등록"
-                              : cell.withSourceCount === 0
-                                ? `${cell.rowCount}건 · 파일 없음`
-                                : `${cell.withSourceCount}/${cell.rowCount}건`;
+                              : cell.withPathCount === 0
+                                ? `${cell.rowCount}건 · 경로 없음`
+                                : `경로 ${cell.withPathCount}/${cell.rowCount}건`;
+
+                        // ★ 합계가 가리는 누락을 드러낸다.
+                        const missingNote =
+                          assetRollup.ok && cell && cell.programsWithout > 0
+                            ? ` · 없는 프로그램 ${cell.programsWithout}개`
+                            : "";
 
                         const tone =
-                          assetRollup.ok && cell && cell.withSourceCount > 0
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                            : "border-navy/15 bg-navy/5 text-navy/55";
+                          assetRollup.ok && cell && cell.programsWithout > 0
+                            ? "border-amber-300 bg-amber-50 text-amber-900"
+                            : assetRollup.ok && cell && cell.withPathCount > 0
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : "border-navy/15 bg-navy/5 text-navy/55";
 
                         return (
                           <li
@@ -196,6 +214,7 @@ export default async function AdminWeekReviewPage() {
                             className={`rounded border px-2 py-0.5 text-[12px] ${tone}`}
                           >
                             {label} · {text}
+                            {missingNote}
                           </li>
                         );
                       })}

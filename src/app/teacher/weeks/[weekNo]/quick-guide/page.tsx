@@ -69,6 +69,17 @@ export default async function TeacherQuickGuidePage({
   const orgQuery = `org=${encodeURIComponent(membership.organizationId)}`;
   const backHref = `/teacher/weeks/${weekNo}?${orgQuery}`;
 
+  /*
+    ★ 준비물·안전을 덜어낼지 교사가 고른다.
+      내용이 긴 주차는 두 장이 된다. 한 장으로 줄이려고 글자를 작게 하거나
+      원문을 지우는 대신, **덜어낼 면을 교사가 고르게** 한다. 기본값은 포함이다
+      — 준비물과 안전을 모르고 들어가는 쪽이 더 위험하다.
+  */
+  const materialsParam = Array.isArray(query.materials)
+    ? query.materials[0]
+    : query.materials;
+  const includeMaterials = materialsParam !== "off";
+
   return (
     <main className="min-h-screen bg-paper py-6 print:bg-white print:py-0">
       <div className="print:hidden mx-auto mb-4 flex w-full max-w-[186mm] flex-wrap items-center justify-between gap-3 px-6">
@@ -78,8 +89,27 @@ export default async function TeacherQuickGuidePage({
         >
           ← {weekNo}주차 수업으로
         </Link>
-        {result.bodyVisible ? <PrintButton label="A4 한 장 인쇄" /> : null}
+        {result.bodyVisible ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/teacher/weeks/${weekNo}/quick-guide?${orgQuery}${
+                includeMaterials ? "&materials=off" : ""
+              }`}
+              className="inline-flex min-h-11 items-center rounded-[10px] border border-rule px-4 text-[14px] font-semibold text-forest"
+            >
+              {includeMaterials ? "준비물 면 덜어내기" : "준비물 면 넣기"}
+            </Link>
+            <PrintButton label="인쇄하기" />
+          </div>
+        ) : null}
       </div>
+
+      {result.bodyVisible ? (
+        <p className="print:hidden mx-auto mb-3 w-full max-w-[186mm] px-6 text-[13px] leading-relaxed text-muted-ink">
+          A4 기준으로 짜였습니다. 내용이 많은 주차는 두 장이 됩니다 — 한 장에 맞추려고 원문을
+          줄이지 않습니다. 진행 표만 들고 들어가시려면 위에서 준비물 면을 덜어내십시오.
+        </p>
+      ) : null}
 
       {!result.bodyVisible ? (
         <section
@@ -98,7 +128,7 @@ export default async function TeacherQuickGuidePage({
           </p>
         </section>
       ) : (
-        <QuickGuideSheet content={result.content} />
+        <QuickGuideSheet content={result.content} includeMaterials={includeMaterials} />
       )}
     </main>
   );

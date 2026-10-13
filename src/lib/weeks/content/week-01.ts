@@ -503,88 +503,140 @@ export const WEEK_01_BLOCKS: WeekBlocks = {
  * ★ 교사 노트는 같은 TV 에 열리므로 공통 진행 안내만 담는다.
  *   원아 이름·관찰은 이 화면에 오지 않는다.
  */
+/**
+ * 교실 화면 장면 — 1주차.
+ *
+ * ── 원문 대조 결과 반영본 (2026-10-13) ──────────────────────────
+ *
+ * 아이 화면 문장(`kidText`)과 교사 노트(`teacherNote`)는 **원문 문장을 그대로**
+ * 쓴다. 줄여 쓰거나 합치지 않는다. 첫 전사에서 다음을 줄여 적었고 원문으로
+ * 되돌렸다.
+ *
+ *   · 탐험 약속 4개를 한 줄로 합치며 「친구와 이동할 때」를 빼고
+ *     「궁금한 것이 있으면」을 「궁금하면」으로 줄였다 → 네 개를 그대로 적는다.
+ *   · 탐험 장소 4곳(교실·놀이실·화장실·놀이터)을 2개 장면으로 합쳐 각 장소의
+ *     진행 방법이 엉켰다 → 원문 표의 네 줄을 네 장면으로 나눈다.
+ *   · 워크북·미술의 기준 문장을 줄여 적었다 → 전문으로 되돌린다.
+ *   · 가정연계 장면의 교사 노트가 원문이 아닌 제품 설명이었다 → 원문 설명문으로
+ *     바꾼다. 교실 TV 에 제품 사정을 띄우지 않는다.
+ *   · 도입·그림책 교사 노트를 다시 쓴 문장이었다 → 원문 문장으로 바꾼다.
+ *
+ * ── 장면 순서는 원문 순서다 ─────────────────────────────────────
+ *
+ * ★ 원문은 8. 워크북 → 9. 미술활동 순이다. 첫 전사에서 미술을 먼저 두었던 것을
+ *   원문 순서로 되돌렸다.
+ *
+ * ── 출처는 페이지까지 적는다 ────────────────────────────────────
+ *
+ * ★ `sourceRef` 에 원문 페이지를 함께 적는다. 검수자가 PDF 를 열어 그 쪽을
+ *   바로 펼칠 수 있어야 한다. 페이지는 `guide-sources.ts` 가 기록한 그 파일
+ *   기준이다.
+ */
 export const WEEK_01_SCENES: WeekScene[] = [
   {
     sceneNo: 1,
     sceneType: "intro",
     kidText: "오늘 여기 오면서 어떤 게 제일 먼저 보였어?",
-    stageLabel: "도입",
-    teacherNote: "첫날의 현재 기분과 궁금한 것을 편안하게 듣습니다. 감정을 평가하지 않습니다.",
-    sourceRef: "가이드 6. STEP 1",
+    stageLabel: "STEP 1. 도입 · 오늘 처음 만난 것은 무엇일까?",
+    teacherNote: "아이의 첫날 감정을 평가하지 않고 현재 느끼는 그대로 받아줍니다.",
+    sourceRef: "가이드 p.4 · 6. STEP 1. 도입",
     baseSeconds: 300,
   },
   {
     sceneNo: 2,
     sceneType: "story",
-    kidText: "《유치원 가는 날》",
-    stageLabel: "그림책",
+    kidText: "처음 가는 곳에 가면 어떤 마음이 들까?",
+    stageLabel: "STEP 2. 그림책 · 《유치원 가는 날》",
     teacherNote:
-      "장면에서 멈추고 아이가 먼저 말할 시간을 줍니다. 감정을 특정 방향으로 유도하지 않습니다.",
-    sourceRef: "가이드 6. STEP 2",
+      "아이 자신의 첫날과 자연스럽게 연결하되 감정을 특정 방향으로 유도하지 않습니다.",
+    sourceRef: "가이드 p.4 · 6. STEP 2. 그림책",
     baseSeconds: 600,
   },
   {
     sceneNo: 3,
     sceneType: "promise",
     kidText: "선생님이 멈추면 함께 멈추기",
-    stageLabel: "탐험 약속 · 우리 반 탐험대 출발!",
-    teacherNote: "복도에서는 천천히 걷기 · 밀거나 당기지 않기 · 궁금하면 손이나 말로 알려주기",
-    sourceRef: "가이드 6. STEP 3",
+    // ★ 원문 약속 네 개를 그대로 적는다. 아이들도 함께 보는 화면이다.
+    teacherNote:
+      "복도에서는 천천히 걷기 / 친구와 이동할 때 밀거나 당기지 않기 / 궁금한 것이 있으면 손이나 말로 알려주기",
+    stageLabel: "STEP 3. 탐험 약속 · 우리 반 탐험대 출발!",
+    sourceRef: "가이드 p.4 · 6. STEP 3. 탐험 약속",
     baseSeconds: 150,
   },
   {
     sceneNo: 4,
     sceneType: "play",
-    kidText: "우리 반에는 무엇이 있는지 찾아볼까?",
-    stageLabel: "탐험 1 · 교실",
+    kidText: "네 이름은 어디에 있을까? 네가 앉을 자리를 찾아볼까?",
+    stageLabel: "탐험 · 교실",
     teacherNote: "내 자리·사물함·놀이영역을 찾아봅니다.",
-    sourceRef: "가이드 7. 핵심활동",
+    sourceRef: "가이드 p.5 · 7. 핵심활동 (탐험 장소: 교실)",
     baseSeconds: 900,
   },
   {
     sceneNo: 5,
     sceneType: "play",
     kidText: "여기서는 어떤 놀이를 해보고 싶어?",
-    stageLabel: "탐험 2 · 놀이실·화장실·놀이터",
-    teacherNote: "위치와 기본 사용 방법을 확인하고, 안전한 이동 경로를 함께 살펴봅니다.",
-    sourceRef: "가이드 7. 핵심활동",
+    stageLabel: "탐험 · 놀이실",
+    teacherNote: "좋아하는 놀이를 하나 찾아봅니다.",
+    sourceRef: "가이드 p.5 · 7. 핵심활동 (탐험 장소: 놀이실)",
     baseSeconds: null,
   },
   {
     sceneNo: 6,
-    sceneType: "create",
-    kidText: "네 이름표에는 어떤 색을 넣고 싶어?",
-    stageLabel: "미술 · 나만의 이름표 만들기",
-    teacherNote: "예쁘게 꾸미기보다 자신의 이름을 발견하고 ‘내 것’을 만드는 경험이 중요합니다.",
-    sourceRef: "가이드 9. 미술활동",
-    baseSeconds: 600,
+    sceneType: "play",
+    kidText: "화장실이 필요하면 여기로 오면 돼. 선생님에게 말해도 좋아.",
+    stageLabel: "탐험 · 화장실",
+    teacherNote: "위치와 기본 사용 방법을 확인합니다.",
+    sourceRef: "가이드 p.5 · 7. 핵심활동 (탐험 장소: 화장실)",
+    baseSeconds: null,
   },
   {
     sceneNo: 7,
-    sceneType: "workbook",
-    kidText: "아까 우리가 본 곳을 기억해볼까?",
-    stageLabel: "워크북",
-    teacherNote: "맞고 틀림을 확인하기보다 회상하고 표현하게 합니다.",
-    sourceRef: "가이드 8. 워크북 운영 가이드",
-    baseSeconds: 600,
+    sceneType: "play",
+    kidText: "밖에서 놀 때 우리가 기억할 약속은 무엇일까?",
+    stageLabel: "탐험 · 놀이터",
+    teacherNote: "안전한 이동 경로와 놀이기구를 살펴봅니다.",
+    sourceRef: "가이드 p.5 · 7. 핵심활동 (탐험 장소: 놀이터)",
+    baseSeconds: null,
   },
   {
     sceneNo: 8,
-    sceneType: "share",
-    kidText: "오늘 처음 알게 된 곳은 어디였어?",
-    stageLabel: "마무리",
+    sceneType: "workbook",
+    kidText: "아까 우리도 이걸 본 곳이 있었지?",
+    stageLabel: "워크북",
     teacherNote:
-      "“오늘 우리는 유치원을 한 번에 다 알아야 하는 게 아니야. 하나씩 둘러보고, 하나씩 만나면서 우리 반을 알아가면 돼.”",
-    sourceRef: "가이드 11. 마무리 대화",
-    baseSeconds: 300,
+      "맞고 틀림을 빠르게 확인하기보다 ‘아까 우리가 본 곳’을 회상하고 자신의 물건과 마음을 표현하게 합니다.",
+    sourceRef: "가이드 p.6 · 8. 워크북 운영 가이드",
+    baseSeconds: 600,
   },
   {
     sceneNo: 9,
+    sceneType: "create",
+    kidText: "네 이름표에는 어떤 색을 넣고 싶어?",
+    stageLabel: "미술활동 · 나만의 이름표 만들기",
+    teacherNote:
+      "예쁘게 꾸미기보다 아이가 자신의 이름을 발견하고, 선택한 장식으로 ‘내 것’을 만들며 새로운 공간 안에서 자기 자리를 느끼는 경험이 중요합니다.",
+    sourceRef: "가이드 p.6 · 9. 미술활동",
+    baseSeconds: 600,
+  },
+  {
+    sceneNo: 10,
+    sceneType: "share",
+    kidText: "오늘 처음 알게 된 곳은 어디였어?",
+    stageLabel: "마무리 대화 · 오늘 내가 발견한 유치원",
+    teacherNote:
+      "“오늘 우리는 유치원을 한 번에 다 알아야 하는 게 아니야. 하나씩 둘러보고, 하나씩 만나면서 우리 반을 알아가면 돼.”",
+    sourceRef: "가이드 p.7 · 11. 마무리 대화",
+    baseSeconds: 300,
+  },
+  {
+    sceneNo: 11,
     sceneType: "home",
-    kidText: "집에서는 입학 기념 액자 만들기!",
+    kidText: "입학 기념 액자 만들기",
     stageLabel: "가정연계",
-    teacherNote: "안내 문구는 결과 보고에서 보호자에게 전달됩니다.",
-    sourceRef: "가이드 13. 가정연계",
+    teacherNote:
+      "첫 등원 날의 사진을 액자에 담아 부모님과 함께 꾸미고, 아이에게 ‘처음 유치원 가는 날’의 기억을 선물합니다.",
+    sourceRef: "가이드 p.7 · 13. 가정연계",
     baseSeconds: 120,
   },
 ];

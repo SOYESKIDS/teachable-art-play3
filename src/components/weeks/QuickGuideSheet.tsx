@@ -24,6 +24,17 @@ import type { WeekContent } from "@/lib/weeks/week-types";
  *
  * ★ 15번 섹션에 적힌 것만 옮긴다. 여기서 발문을 보태거나 시간을 바꾸지
  *   않는다. 원문에 없으면 그 칸을 비우고 「가이드 미기재」라고 적는다.
+ *
+ * ── 한 장에 억지로 맞추지 않는다 ─────────────────────────────────
+ *
+ * 주차에 따라 진행 표가 길고 준비물이 많다. 그럴 때 **글자를 줄이거나 원문을
+ * 지우지 않는다.** 빠진 한 줄이 사고로 이어질 수 있다.
+ *
+ * ★ 내용이 넘치면 둘째 장으로 넘긴다. 각 섹션은 `break-inside-avoid` 로 묶어
+ *   도중에 잘리지 않게 한다.
+ * ★ 진행 표만 한 장으로 들고 싶은 교사를 위해 `includeMaterials` 로 준비물·안전
+ *   면을 덜어내고 인쇄할 수 있게 한다. 덜어내는 선택은 교사가 화면에서 하고,
+ *   글자를 줄이는 일은 하지 않는다.
  */
 
 /**
@@ -41,9 +52,12 @@ export function QuickGuideSheet({
   content,
   /** 내부 검수본임을 종이에도 남긴다 */
   internalReview = false,
+  /** 준비물·안전 면을 함께 인쇄할지. 끄면 15번 섹션만 나온다 */
+  includeMaterials = true,
 }: {
   content: WeekContent;
   internalReview?: boolean;
+  includeMaterials?: boolean;
 }) {
   const { summary, blocks } = content;
   const guide = blocks.quickGuide;
@@ -128,7 +142,7 @@ export function QuickGuideSheet({
         )}
 
         {/* ── 준비물 · 안전 (원문 4번 섹션) ── */}
-        {blocks.preparation ? (
+        {includeMaterials && blocks.preparation ? (
           <section className="mt-3 break-inside-avoid">
             <h2 className="text-[11pt] font-bold">준비물 · 안전</h2>
             <ul className="mt-0.5 flex flex-col gap-0.5 text-[10pt] leading-snug">
@@ -149,6 +163,11 @@ export function QuickGuideSheet({
             SOYE KIDS TeachAble Art Play · 공식 교사용 수업가이드{" "}
             {content.sourceFile ? `(${content.sourceFile})` : ""} 15번 섹션에서 옮겼습니다.
           </p>
+          {!includeMaterials && blocks.preparation ? (
+            <p className="mt-0.5">
+              준비물 · 안전 면은 이 인쇄본에서 덜어냈습니다. 원문 4번 섹션에서 확인해 주세요.
+            </p>
+          ) : null}
           {internalReview ? (
             <p className="mt-0.5 font-bold">
               본사 내부 검수본 — 검수 전 내용입니다. 기관에 배포하지 마십시오.
