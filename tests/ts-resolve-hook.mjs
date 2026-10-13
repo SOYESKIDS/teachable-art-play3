@@ -16,13 +16,37 @@
  *
  * 상대 경로에 확장자가 없을 때만 `.ts` → `.tsx` → `/index.ts` 순으로 시도하고,
  * 모두 실패하면 원래 지정자로 넘긴다 (원래 오류를 그대로 보여 주기 위해).
+ * `@/` 별칭은 tsconfig 와 같은 규칙으로 `src/` 로 바꾼다.
  * node_modules 패키지 이름은 건드리지 않는다.
  */
 
 const HAS_EXTENSION = /\.[A-Za-z0-9]+$/;
 const CANDIDATES = [".ts", ".tsx", "/index.ts", "/index.tsx"];
 
+/**
+ * `@/` 경로 별칭.
+ *
+ * tsconfig 의 `paths` 가 `@/*` → `src/*` 로 두고 있고, Next 가 그것을 해석한다.
+ * Node 는 모른다. 그래서 테스트에서만 같은 규칙으로 바꿔 준다.
+ */
+const ALIAS = "@/";
+const SRC_URL = new URL("../src/", import.meta.url);
+
 export async function resolve(specifier, context, nextResolve) {
+  if (specifier.startsWith(ALIAS)) {
+    const target = new URL(specifier.slice(ALIAS.length), SRC_URL).href;
+    if (!HAS_EXTENSION.test(target)) {
+      for (const suffix of CANDIDATES) {
+        try {
+          return await nextResolve(target + suffix, context);
+        } catch {
+          // 다음 후보를 시도한다.
+        }
+      }
+    }
+    return nextResolve(target, context);
+  }
+
   const relative = specifier.startsWith("./") || specifier.startsWith("../");
 
   if (relative && !HAS_EXTENSION.test(specifier)) {

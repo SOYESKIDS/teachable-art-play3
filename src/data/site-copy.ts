@@ -62,18 +62,25 @@ export const ctaLabels = {
 export const navigation = [
   { label: "프로그램", href: "#journey" },
   { label: "수업 방식", href: "#program" },
+  // 24주 소개와 샘플 수업은 독립 페이지다. 홈 앵커가 아니라 경로로 둔다.
+  { label: "24주 수업", href: "/curriculum" },
+  { label: "샘플 수업", href: "/sample" },
   { label: "성장기록", href: "#growth-record" },
-  { label: "상품", href: "#pricing" },
+  { label: "상품", href: "/pricing" },
   { label: "도입 안내", href: "#adoption" },
-  { label: "제공 현황", href: "/roadmap" },
   { label: "문의", href: "#contact" },
 ];
 
 /**
  * 안내 페이지 목록. Footer 가 쓴다.
- * 헤더는 폭 제약이 있어 "제공 현황" 하나만 올린다.
+ *
+ * 헤더에는 폭 제약이 있어 24주 수업 · 샘플 수업 · 상품만 올리고, 나머지
+ * 안내 페이지는 Footer 에서 모아 보여 준다.
  */
 export const infoLinks: { label: string; href: string }[] = [
+  { label: "24주 수업 소개", href: "/curriculum" },
+  { label: "상품 안내", href: "/pricing" },
+  { label: "샘플 수업", href: "/sample" },
   { label: "자주 묻는 질문", href: "/faq" },
   { label: "교사용 안내", href: "/guide/teacher" },
   { label: "제공 현황", href: "/roadmap" },
