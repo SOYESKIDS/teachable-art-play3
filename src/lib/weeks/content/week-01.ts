@@ -1,4 +1,4 @@
-import type { WeekBlocks, WeekScene } from "../week-types";
+import type { TranscriptionNote, WeekBlocks, WeekScene } from "../week-types";
 
 /**
  * 1주차 《유치원 가는 날》 — 공식 교사용 수업가이드 전사.
@@ -638,6 +638,32 @@ export const WEEK_01_SCENES: WeekScene[] = [
       "첫 등원 날의 사진을 액자에 담아 부모님과 함께 꾸미고, 아이에게 ‘처음 유치원 가는 날’의 기억을 선물합니다.",
     sourceRef: "가이드 p.7 · 13. 가정연계",
     baseSeconds: 120,
+  },
+];
+
+/**
+ * 전사 중 분명하지 않았던 곳 — 본사 검수 화면에서만 보인다.
+ *
+ * ★ 2026-10-13 원문 9쪽 전문을 다시 추출해 대조한 결과다.
+ */
+export const WEEK_01_NOTES: TranscriptionNote[] = [
+  {
+    section: "7. 핵심활동 · 탐험 장소 표",
+    page: 5,
+    issue:
+      "PDF 추출에서 가운뎃점(·)이 사라진다 (예: 「내 자리사물함놀이영역」). 원문 표기가 「내 자리·사물함·놀이영역」이라 보고 가운뎃점을 넣어 적었다. 항목이 정말 세 개인지 원문에서 확인이 필요하다.",
+  },
+  {
+    section: "6. STEP 2 · 교사 주의",
+    page: 4,
+    issue:
+      "「교사 주의」 라벨이 표 셀에 따로 있어 추출본에서는 본문 뒤에 나온다. 본문 앞에 「교사 주의 — 」를 붙여 적었다. 문장 자체는 원문 그대로다.",
+  },
+  {
+    section: "13. 가정연계",
+    page: 7,
+    issue:
+      "안내 문구가 7쪽에서 8쪽으로 넘어가 추출본에서는 바닥글이 사이에 끼어 끊긴다 (「…성장에 큰」 + 8쪽 「힘이 됩니다.」). 한 문장으로 이어 적었다.",
   },
 ];
 

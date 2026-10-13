@@ -258,6 +258,47 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
           「비어 있음」은 옮기지 않은 칸과 원문에 없는 칸을 구분하지 못합니다. 원문을 보고
           판단해 주십시오.
         </p>
+
+        {/*
+          ★ 전사하면서 분명하지 않았던 곳을 그대로 보여 준다.
+            PDF 에서 표를 글자로 뽑으면 어느 칸이 어느 행인지 흐려지는 자리가
+            생긴다. 가장 그럴듯한 해석으로 채우되 **그 사실을 숨기지 않는다.**
+            이 목록이 검수자가 먼저 펴 봐야 하는 쪽이다.
+        */}
+        <div className="mt-4 border-t border-navy/10 pt-3">
+          <h3 className="text-[14px] font-bold text-navy">
+            전사 중 분명하지 않았던 곳{" "}
+            <span className="text-[12px] font-normal tabular-nums text-navy/55">
+              {content.transcriptionNotes.length}건
+            </span>
+          </h3>
+          {content.transcriptionNotes.length === 0 ? (
+            <p className="mt-1 text-[12px] leading-relaxed text-navy/55">
+              {transcribed
+                ? "적어 둔 것이 없습니다. 「주의할 것이 없다」는 뜻이 아니라 「아직 정리하지 않았다」일 수도 있으니 원문과 대조해 주십시오."
+                : "전사 전이라 기록이 없습니다."}
+            </p>
+          ) : (
+            <ul className="mt-1.5 flex flex-col gap-1.5">
+              {content.transcriptionNotes.map((note, index) => (
+                <li
+                  key={`${note.section}-${index}`}
+                  className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
+                >
+                  <p className="text-[13px] font-semibold text-amber-900">
+                    {note.section}
+                    <span className="ml-2 text-[12px] font-normal tabular-nums">
+                      원문 p.{note.page}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 text-[12px] leading-relaxed text-amber-900">
+                    {note.issue}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </section>
 
       {/* ── 3. 장면 ── */}

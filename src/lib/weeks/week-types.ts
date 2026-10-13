@@ -273,12 +273,41 @@ export interface WeekSummary {
   status: ContentStatus;
 }
 
+/**
+ * 전사 중 남긴 대조 주의 — 내부 검수 정보.
+ *
+ * ── 어떤 것을 여기 적는가 ─────────────────────────
+ *
+ * PDF 에서 글자를 끀내면 표가 열로 쉽게 나눠지지 않는다. 어떤 칸이
+ * 어떤 행에 속하는지가 분명하지 않은 경우가 생긴다. 그럴 때 **조용히
+ * 골라 넣고 끝내지 않는다.** 가장 그럴듯한 해석을 옮기고, 분명하지
+ * 않았다는 사실을 여기 남긴다. 사람이 그 축을 펴서 확인해야 한다.
+ *
+ * ★ 이 기록은 **본사 검수 화면에서만** 보인다. 교사·원장은 전사
+ *   사정을 보지 않는다.
+ */
+export interface TranscriptionNote {
+  /** 원문 섹션 (예: "5. 권장 시간표") */
+  section: string;
+  /** 원문 포이지 */
+  page: number;
+  /** 무엇이 분명하지 않은가 */
+  issue: string;
+}
+
 export interface WeekContent {
   summary: WeekSummary;
   blocks: WeekBlocks;
   scenes: WeekScene[];
   /** 원문 파일명 — 대조 검수에 쓴다 */
   sourceFile: string | null;
+  /**
+   * 전사 중 분명하지 않았던 곳.
+   *
+   * ★ 빈 배역은 「주의할 것이 없다」가 아니라 「아직 정리하지
+   *   않았다」일 수도 있다. 화면은 전사 상황과 함께 읽는다.
+   */
+  transcriptionNotes: TranscriptionNote[];
 }
 
 /* ══════════════════════════════════════════ 파트 */

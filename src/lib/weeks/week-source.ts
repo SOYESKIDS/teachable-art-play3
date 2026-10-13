@@ -1,5 +1,16 @@
 import { WEEK_INDEX, weekSummary } from "./week-index";
-import { WEEK_01_BLOCKS, WEEK_01_SCENES, WEEK_01_SOURCE_FILE } from "./content/week-01";
+import {
+  WEEK_01_BLOCKS,
+  WEEK_01_NOTES,
+  WEEK_01_SCENES,
+  WEEK_01_SOURCE_FILE,
+} from "./content/week-01";
+import {
+  WEEK_02_BLOCKS,
+  WEEK_02_NOTES,
+  WEEK_02_SCENES,
+  WEEK_02_SOURCE_FILE,
+} from "./content/week-02";
 import {
   hiddenReason,
   isVisibleTo,
@@ -7,7 +18,14 @@ import {
   type ContentOrigin,
   type HiddenReason,
 } from "./content-state";
-import { EMPTY_BLOCKS, type WeekContent, type WeekScene, type WeekSummary } from "./week-types";
+import {
+  EMPTY_BLOCKS,
+  type TranscriptionNote,
+  type WeekBlocks,
+  type WeekContent,
+  type WeekScene,
+  type WeekSummary,
+} from "./week-types";
 
 /**
  * 주차 콘텐츠 읽기 계층 — B단계.
@@ -50,11 +68,27 @@ export interface WeekListResult {
 }
 
 /** 저장소에 전사된 주차의 블록·장면 */
-const FIXTURES: Record<
-  number,
-  { blocks: typeof WEEK_01_BLOCKS; scenes: WeekScene[]; sourceFile: string }
-> = {
-  1: { blocks: WEEK_01_BLOCKS, scenes: WEEK_01_SCENES, sourceFile: WEEK_01_SOURCE_FILE },
+interface WeekFixture {
+  blocks: WeekBlocks;
+  scenes: WeekScene[];
+  sourceFile: string;
+  /** 전사 중 분명하지 않았던 곳 — 내부 검수용 */
+  notes: TranscriptionNote[];
+}
+
+const FIXTURES: Record<number, WeekFixture> = {
+  1: {
+    blocks: WEEK_01_BLOCKS,
+    scenes: WEEK_01_SCENES,
+    sourceFile: WEEK_01_SOURCE_FILE,
+    notes: WEEK_01_NOTES,
+  },
+  2: {
+    blocks: WEEK_02_BLOCKS,
+    scenes: WEEK_02_SCENES,
+    sourceFile: WEEK_02_SOURCE_FILE,
+    notes: WEEK_02_NOTES,
+  },
 };
 
 /** 24주 지도. 메타는 경로와 무관하게 모두 보여 준다 (본문이 아니다) */
@@ -89,6 +123,8 @@ export function getWeekContent(
       blocks: visible ? (fixture?.blocks ?? EMPTY_BLOCKS) : EMPTY_BLOCKS,
       scenes: visible ? (fixture?.scenes ?? []) : [],
       sourceFile: fixture?.sourceFile ?? null,
+      // ★ 대조 주의는 본문이 아니라 검수 정보다. 내부 경로에서만 나간다.
+      transcriptionNotes: audience === "internal_review" ? (fixture?.notes ?? []) : [],
     },
   };
 }

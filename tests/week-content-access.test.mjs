@@ -70,10 +70,42 @@ test("audience 를 빠뜨리면 좁은 쪽(정식 서비스)으로 동작한다"
 });
 
 test("전사하지 않은 주차는 두 경로 모두 본문이 없다", () => {
+  // ★ 주차 번호를 박아 두지 않는다. 전사가 진행되면서 그 번호가 전사 완료로
+  //   바뀌면 이 테스트는 규칙이 아니라 진행 상황을 재는 것이 된다.
+  const pending = WEEK_INDEX.find((w) => w.status.transcription === "pending");
+  assert.ok(pending, "전사 전 주차가 하나도 없다 — 이 테스트의 전제가 바뀌었다");
+
   for (const audience of ["service", "internal_review"]) {
-    const r = getWeekContent(2, audience);
+    const r = getWeekContent(pending.weekNo, audience);
     assert.equal(r.bodyVisible, false);
     assert.equal(r.content.scenes.length, 0);
+  }
+});
+
+test("전사된 주차는 모두 내부 검수 경로에서 본문·장면·출처가 들어온다", () => {
+  const done = WEEK_INDEX.filter((w) => w.status.transcription === "done");
+  assert.ok(done.length > 0, "전사된 주차가 없다");
+
+  for (const week of done) {
+    const r = getWeekContent(week.weekNo, "internal_review");
+    assert.equal(r.bodyVisible, true, `${week.weekNo}주차 본문이 열리지 않았다`);
+    assert.ok(r.content.scenes.length > 0, `${week.weekNo}주차 장면이 없다`);
+    assert.equal(
+      typeof r.content.sourceFile,
+      "string",
+      `${week.weekNo}주차 출처 파일명이 없다`,
+    );
+  }
+});
+
+test("대조 주의 기록은 정식 서비스 경로로 새어 나가지 않는다", () => {
+  for (const week of WEEK_INDEX) {
+    const service = getWeekContent(week.weekNo, "service");
+    assert.deepEqual(
+      service.content.transcriptionNotes,
+      [],
+      `${week.weekNo}주차 전사 주의가 정식 경로에 나왔다`,
+    );
   }
 });
 

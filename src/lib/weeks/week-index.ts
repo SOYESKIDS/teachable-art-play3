@@ -43,6 +43,7 @@ import { partOf, type WeekSummary } from "./week-types";
  */
 const STATUS: Record<number, ContentStatus> = {
   1: { transcription: "done", publication: "draft" },
+  2: { transcription: "done", publication: "draft" },
 };
 
 const NOT_TRANSCRIBED: ContentStatus = {
