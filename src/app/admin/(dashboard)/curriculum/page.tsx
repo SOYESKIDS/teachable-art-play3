@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
   buildProgramListItems,
@@ -52,11 +53,20 @@ export default async function AdminCurriculumPage() {
           </p>
         </div>
 
-        {programs.length > 0 ? (
-          <div className="shrink-0">
-            <ProgramFormDialog />
-          </div>
-        ) : null}
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {/*
+            ★ 프로그램(새시 레코드) 관리와 주차 콘텐츠 검수는 다른 일이다.
+              프로그램은 어느 기관에 몇 차시를 배정하는가, 검수는 공식 가이드
+              원문이 서버스에 제대로 들어왔는가. 그래서 화면을 나눔다.
+          */}
+          <Link
+            href="/admin/curriculum/weeks"
+            className="inline-flex min-h-11 items-center rounded-lg border border-navy/15 px-4 text-[13px] font-semibold text-navy"
+          >
+            주차 콘텐츠 검수
+          </Link>
+          {programs.length > 0 ? <ProgramFormDialog /> : null}
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-5">

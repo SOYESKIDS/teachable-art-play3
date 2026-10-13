@@ -10,6 +10,8 @@ import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/que
  */
 const OPERATION_NAV = [
   { href: "/director/sessions", label: "수업 운영" },
+  // 반 단위 결과보고와 원아별 리포트를 메뉴에서부터 나눠 둔다.
+  { href: "/director/reports", label: "결과보고" },
   { href: "/director/sessions/history", label: "수업 이력" },
   { href: "/director/growth-reports", label: "리포트" },
   { href: "/director/portal", label: "학부모 공유" },

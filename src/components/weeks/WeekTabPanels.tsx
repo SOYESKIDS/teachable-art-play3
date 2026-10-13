@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { WeekContent } from "@/lib/weeks/week-types";
 import { SCENE_TYPE_LABEL } from "@/lib/weeks/week-types";
+import {
+  SESSION_STATUS_LABEL,
+  formatSessionDate,
+  type WeekSessionItem,
+} from "@/lib/weeks/week-session-queries";
 
 /**
  * 주차 수업 페이지의 탭 본문 — 원문을 나누어 배치한다.
@@ -48,6 +53,55 @@ function NotWritten({ what }: { what: string }) {
 }
 
 const bullet = "flex gap-2 text-[15px] leading-relaxed text-forest/90";
+
+/**
+ * 회차가 있어야 하는 작업의 안내.
+ *
+ * ★ 회차를 고르게 한다. 「오늘의 수업으로 가세요」라고만 적으면 교사가 다시
+ *   자기 반을 찾아야 한다. 여기서 반·날짜별로 바로 들어갈 수 있게 한다.
+ * ★ 회차가 없으면 무엇이 없는지 적는다. 버튼을 만들어 두지 않는다.
+ */
+function SessionRequired({
+  what,
+  why,
+  sessions,
+  orgQuery,
+  hrefFor,
+}: {
+  what: string;
+  why: string;
+  sessions: WeekSessionItem[];
+  orgQuery: string;
+  hrefFor: (sessionId: string) => string;
+}) {
+  return (
+    <section className="rounded-[10px] bg-sky-pale px-4 py-3">
+      <h3 className="text-[15px] font-bold text-sky-deep">{what}</h3>
+      <p className="mt-1 text-[14px] leading-relaxed text-sky-deep">{why}</p>
+
+      {sessions.length === 0 ? (
+        <p className="mt-2 text-[13px] leading-relaxed text-sky-deep">
+          이 주차에 잡힌 수업 회차가 아직 없습니다. 원장님이 반에 프로그램을 배정하고 일정을
+          잡으면 여기에서 바로 들어갈 수 있습니다.
+        </p>
+      ) : (
+        <ul className="mt-3 flex flex-col gap-1.5">
+          {sessions.map((s) => (
+            <li key={s.sessionId}>
+              <Link
+                href={`${hrefFor(s.sessionId)}?${orgQuery}`}
+                className="inline-flex min-h-11 items-center text-[14px] font-semibold text-sky-deep underline"
+              >
+                {s.className ?? "반 이름 없음"} · {formatSessionDate(s.scheduledDate)} ·{" "}
+                {SESSION_STATUS_LABEL[s.status]}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
 
 /* ════════════════════════════════════════════════ ① 준비 */
 
@@ -559,7 +613,15 @@ export function ClassPanel({ content }: { content: WeekContent }) {
 
 /* ════════════════════════════════════════════════ ④ 관찰 · ⑤ 결과 보고 */
 
-export function ObservePanel({ content, orgQuery }: { content: WeekContent; orgQuery: string }) {
+export function ObservePanel({
+  content,
+  orgQuery,
+  sessions,
+}: {
+  content: WeekContent;
+  orgQuery: string;
+  sessions: WeekSessionItem[];
+}) {
   const guide = content.blocks.observationGuide;
 
   return (
@@ -619,24 +681,26 @@ export function ObservePanel({ content, orgQuery }: { content: WeekContent; orgQ
         <NotWritten what="관찰 및 기록 가이드" />
       )}
 
-      <section className="rounded-[10px] bg-sky-pale px-4 py-3">
-        <p className="text-[14px] leading-relaxed text-sky-deep">
-          실제 관찰 입력은 <strong>수업 회차</strong>에서 합니다. 아이 선택 · 사진 · 아이의 말이
-          회차와 원아에 묶여 저장되기 때문입니다. 지금 운영 중인 관찰 화면은 아래에서 바로 열 수
-          있습니다.
-        </p>
-        <Link
-          href={`/teacher?${orgQuery}`}
-          className="mt-2 inline-flex min-h-11 items-center text-[14px] font-semibold text-sky-deep underline"
-        >
-          오늘의 수업에서 회차 열기
-        </Link>
-      </section>
+      <SessionRequired
+        what="관찰 입력은 회차에서 합니다"
+        why="아이 선택 · 사진 · 아이의 말이 회차와 원아에 묶여 저장됩니다. 주차 번호만으로는 어느 반 누구의 기록인지 정해지지 않습니다."
+        sessions={sessions}
+        orgQuery={orgQuery}
+        hrefFor={(id) => `/teacher/sessions/${id}/observations`}
+      />
     </div>
   );
 }
 
-export function ReportPanel({ content, orgQuery }: { content: WeekContent; orgQuery: string }) {
+export function ReportPanel({
+  content,
+  orgQuery,
+  sessions,
+}: {
+  content: WeekContent;
+  orgQuery: string;
+  sessions: WeekSessionItem[];
+}) {
   const home = content.blocks.homeConnection;
 
   return (
@@ -695,6 +759,14 @@ export function ReportPanel({ content, orgQuery }: { content: WeekContent; orgQu
           리포트 화면 열기
         </Link>
       </section>
+
+      <SessionRequired
+        what="결과 보고는 회차 단위로 제출합니다"
+        why="진행한 활동과 실제 시간은 회차의 진행 기록에서 채워지고, 출결·관찰은 이미 저장된 값을 가져옵니다."
+        sessions={sessions}
+        orgQuery={orgQuery}
+        hrefFor={(id) => `/teacher/sessions/${id}/report`}
+      />
     </div>
   );
 }

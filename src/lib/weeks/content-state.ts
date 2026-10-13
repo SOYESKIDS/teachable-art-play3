@@ -111,3 +111,44 @@ export const HIDDEN_REASON_NOTE: Record<HiddenReason, string> = {
 export function showsDevelopmentMarkers(): boolean {
   return process.env.VERCEL_ENV !== "production";
 }
+
+/* ══════════════════════════════════════════ 발행 조건 */
+
+/** 발행을 막는 이유 */
+export type PublishBlocker = "not_transcribed" | "already_published";
+
+export const PUBLISH_BLOCKER_NOTE: Record<PublishBlocker, string> = {
+  not_transcribed:
+    "원문을 아직 옮기지 않았습니다. 전사하지 않은 주차는 발행할 수 없습니다.",
+  already_published: "이미 발행된 주차입니다.",
+};
+
+/**
+ * 지금 발행해도 되는가.
+ *
+ * ★ **전사가 끝나야 발행할 수 있다.** 옮기지 않은 원문을 발행 상태로 만들면
+ *   교사 화면에는 빈 수업이 열린다. 그래서 순서를 코드가 강제한다 — 화면에서
+ *   버튼을 숨기는 것으로 끝내지 않는다.
+ *
+ * ★ 이 함수는 "해도 되는가"만 답한다. 실제로 올리는 일은 사람이 검수한 뒤에
+ *   한다. 코드가 저절로 발행하지 않는다.
+ */
+export function publishBlockers(status: ContentStatus): PublishBlocker[] {
+  const blockers: PublishBlocker[] = [];
+  if (status.transcription !== "done") blockers.push("not_transcribed");
+  if (status.publication === "published") blockers.push("already_published");
+  return blockers;
+}
+
+export function canPublish(status: ContentStatus): boolean {
+  return publishBlockers(status).length === 0;
+}
+
+/**
+ * 검수를 시작해도 되는가 (draft → in_review).
+ *
+ * 전사가 끝나야 대조할 원문이 있다.
+ */
+export function canStartReview(status: ContentStatus): boolean {
+  return status.transcription === "done" && status.publication === "draft";
+}

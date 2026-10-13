@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireTeacher } from "@/lib/auth/organization";
+import { fetchWeekSessions } from "@/lib/weeks/week-session-queries";
+import { WeekSessionBand } from "@/components/weeks/WeekSessionBand";
 import { resolveMembership } from "@/lib/staff/membership";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
@@ -62,7 +64,7 @@ function first(value: string | string[] | undefined): string | undefined {
  * 잠긴 것처럼 꾸며 두지 않는다.
  */
 export default async function TeacherWeekPage({ params, searchParams }: WeekPageProps) {
-  const { email, memberships } = await requireTeacher();
+  const { supabase, email, memberships } = await requireTeacher();
   const { weekNo: weekNoRaw } = await params;
   const query = await searchParams;
 
@@ -91,6 +93,19 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
 
   const tabParam = first(query.tab);
   const tab: WeekTabKey = isWeekTab(tabParam) ? tabParam : "prep";
+
+  // ★ 회차는 반·날짜마다 따로다. 하나로 합친 진행률을 만들지 않는다.
+  const selectedClassId = first(query.class);
+  const weekSessions = await fetchWeekSessions(
+    supabase,
+    membership.organizationId,
+    weekNo,
+  );
+
+  // 반을 고른 상태는 탭 이동에도 유지한다.
+  const tabQuery = selectedClassId
+    ? `${orgQuery}&class=${encodeURIComponent(selectedClassId)}`
+    : orgQuery;
 
   return (
     <StaffShell
@@ -137,6 +152,20 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
         </div>
       </header>
 
+      {/*
+        ★ 향 장 들고 들어가는 택상은 다른 것이 따로 있다.
+          가이드 탭 여러 장을 빼지 않고, 원문 15번 섹션만 담은 A4
+          한 장을 인쇄하는 전용 경로로 보낸다. 발행된 주차만 열린다.
+      */}
+      {bodyVisible ? (
+        <Link
+          href={`/teacher/weeks/${weekNo}/quick-guide?${orgQuery}`}
+          className="mt-4 inline-flex min-h-11 items-center rounded-[10px] border border-rule px-4 text-[14px] font-semibold text-forest"
+        >
+          퀃 가이드 A4 한 장 인쇄
+        </Link>
+      ) : null}
+
       <div className="mt-4 flex flex-col gap-2">
         <ContentStatusBadges status={summary.status} />
         <PublicationNotice status={summary.status} />
@@ -146,15 +175,29 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
         ) : null}
       </div>
 
+      <div className="mt-6">
+        <WeekSessionBand
+          sessions={weekSessions.sessions}
+          ok={weekSessions.ok}
+          orgQuery={orgQuery}
+          weekNo={weekNo}
+          selectedClassId={selectedClassId}
+        />
+      </div>
+
       {bodyVisible ? (
         <>
-          <WeekTabs weekNo={weekNo} active={tab} orgQuery={orgQuery} />
+          <WeekTabs weekNo={weekNo} active={tab} orgQuery={tabQuery} />
 
           {tab === "prep" ? <PrepPanel content={content} /> : null}
           {tab === "guide" ? <GuidePanel content={content} /> : null}
           {tab === "class" ? <ClassPanel content={content} /> : null}
-          {tab === "observe" ? <ObservePanel content={content} orgQuery={orgQuery} /> : null}
-          {tab === "report" ? <ReportPanel content={content} orgQuery={orgQuery} /> : null}
+          {tab === "observe" ? (
+            <ObservePanel content={content} orgQuery={orgQuery} sessions={weekSessions.sessions} />
+          ) : null}
+          {tab === "report" ? (
+            <ReportPanel content={content} orgQuery={orgQuery} sessions={weekSessions.sessions} />
+          ) : null}
         </>
       ) : (
         <div className="mt-6">
