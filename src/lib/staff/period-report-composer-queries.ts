@@ -120,11 +120,8 @@ export async function fetchPeriodComposer(
 
   const { data: reportRow, error: reportError } = await supabase
     .from("reports")
-    .select(
-      "id, organization_id, class_id, child_id, class_program_assignment_id, " +
-        "report_type, block_no, reporting_term_key, hidden_at, hidden_reason, " +
-        "latest_completed_revision_id",
-    )
+    // ★ 한 줄 리터럴. 문자열을 이어 붙이면 select 파서가 열을 읽지 못한다.
+    .select("id, organization_id, class_id, child_id, class_program_assignment_id, report_type, block_no, reporting_term_key, hidden_at, hidden_reason, latest_completed_revision_id")
     .eq("id", reportId)
     .maybeSingle();
 
@@ -395,10 +392,7 @@ export async function fetchPeriodQueue(
 
   let query = supabase
     .from("reports")
-    .select(
-      "id, child_id, hidden_at, latest_completed_revision_id, " +
-        "report_revisions!report_revisions_report_fk(id, status)",
-    )
+    .select("id, child_id, hidden_at, latest_completed_revision_id, report_revisions!report_revisions_report_fk(id, status)")
     .eq("class_program_assignment_id", assignmentId)
     .eq("report_type", kind)
     .limit(120);

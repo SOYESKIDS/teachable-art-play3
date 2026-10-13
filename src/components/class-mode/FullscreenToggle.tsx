@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * 전체화면 전환 — 사용자 지시 항목 1.
@@ -13,6 +13,11 @@ import { useCallback, useEffect, useState } from "react";
  *   상태를 직접 들고 있지 않고 `fullscreenchange` 로 실제 상태를 읽는다.
  *
  * ★ 전체화면 요청은 사용자 동작 안에서만 가능하다. 자동으로 들어가지 않는다.
+ *
+ * ★ 브라우저 상태를 `useState` + `useEffect` 로 복사하지 않는다.
+ *   effect 안에서 곧바로 setState 하면 렌더가 한 번 더 돌고, 그 사이 한 프레임
+ *   동안 잘못된 상태가 보인다. `useSyncExternalStore` 는 서버 렌더에서는
+ *   `false`, 하이드레이션 뒤에는 실제 값을 쓰므로 그 중간 상태가 없다.
  */
 
 function fullscreenSupported(): boolean {
@@ -23,18 +28,37 @@ function fullscreenSupported(): boolean {
   );
 }
 
+/** `fullscreenchange` 구독. 모듈 스코프에 둬서 참조가 매 렌더마다 바뀌지 않게 한다 */
+function subscribeFullscreen(onChange: () => void): () => void {
+  document.addEventListener("fullscreenchange", onChange);
+  return () => document.removeEventListener("fullscreenchange", onChange);
+}
+
+/** 지원 여부는 바뀌지 않는다. 구독할 외부 변화가 없다 */
+function subscribeNothing(): () => void {
+  return () => {};
+}
+
+function readFullscreenActive(): boolean {
+  return typeof document !== "undefined" && document.fullscreenElement !== null;
+}
+
+/** 서버 렌더에서는 둘 다 false 다 (document 가 없다) */
+function readFalse(): boolean {
+  return false;
+}
+
 export function FullscreenToggle({ targetId }: { targetId?: string }) {
-  const [supported, setSupported] = useState(false);
-  const [active, setActive] = useState(false);
-
-  useEffect(() => {
-    setSupported(fullscreenSupported());
-
-    const sync = () => setActive(document.fullscreenElement !== null);
-    sync();
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
+  const supported = useSyncExternalStore(
+    subscribeNothing,
+    fullscreenSupported,
+    readFalse,
+  );
+  const active = useSyncExternalStore(
+    subscribeFullscreen,
+    readFullscreenActive,
+    readFalse,
+  );
 
   const toggle = useCallback(async () => {
     try {

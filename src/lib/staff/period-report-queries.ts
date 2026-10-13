@@ -167,10 +167,11 @@ export async function fetchPeriodReport(
 
   const weekly = await supabase
     .from("reports")
-    .select(
-      "id, week_no, hidden_at, latest_completed_revision_id, " +
-        "report_revisions!report_revisions_report_fk(id, revision_no, status, completed_at)",
-    )
+    // ★ 한 줄 문자열 리터럴로 둔다.
+    //   `"a, " + "b"` 로 쓰면 타입이 string 으로 넓어져 PostgREST 의 select 파서가
+    //   열을 읽지 못하고 GenericStringError 를 돌려준다. 그러면 아래 행 접근이
+    //   전부 타입 오류가 된다.
+    .select("id, week_no, hidden_at, latest_completed_revision_id, report_revisions!report_revisions_report_fk(id, revision_no, status, completed_at)")
     .eq("child_id", childId)
     .eq("class_program_assignment_id", assignmentId)
     .eq("report_type", "weekly")

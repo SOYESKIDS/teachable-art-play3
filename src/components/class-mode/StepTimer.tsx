@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * 단계 타이머 — 실행 묶음 B1.
@@ -12,7 +12,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   interval 은 화면을 다시 그리게 하는 역할만 한다.
  *
  * ★ 단계를 옮기면 초기화한다.
- *   `stepKey` 가 바뀌면 멈추고 0 으로 돌아간다. 이전 단계 시간이 이어지지 않는다.
+ *   호출부가 `key` 를 단계마다 다르게 주어 React 가 이 컴포넌트를 다시 만든다.
+ *   effect 로 상태를 되돌리지 않는다 — 그러면 단계를 옮긴 직후 한 프레임 동안
+ *   이전 단계의 시간이 보인다.
+ *
+ * ★ 렌더 중에 `Date.now()` 를 읽지 않는다.
+ *   렌더는 같은 입력에 같은 결과여야 한다. 현재 시각은 interval 콜백과 버튼
+ *   핸들러에서만 읽어 상태에 넣고, 렌더는 그 값만 쓴다.
  *
  * ★ 권장 시간을 넘겨도 멈추지 않는다.
  *   현장에서 늘려 쓰는 경우가 정상이다. 넘긴 사실만 표시하고 경고하지 않는다.
@@ -49,47 +55,34 @@ function clockLabel(ms: number): string {
 }
 
 export function StepTimer({
-  stepKey,
   recommendedMinutes,
 }: {
-  /** 단계가 바뀌면 이 값이 바뀌어야 한다 */
-  stepKey: string;
   /** 권장 시간. 없는 단계도 있다 */
   recommendedMinutes: number | null;
 }) {
   const [state, setState] = useState<TimerState>(INITIAL);
-  // 표시 갱신용. 값 계산에는 쓰지 않는다.
-  const [, setTick] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  /**
+   * 표시용 현재 시각.
+   *
+   * ★ 렌더에서 `Date.now()` 를 부르지 않기 위해 둔다. 멈춰 있을 때는 쓰이지
+   *   않으므로(경과 시간이 누적값으로 고정된다) 초기값은 0 이어도 된다.
+   */
+  const [now, setNow] = useState(0);
 
-  // 단계가 바뀌면 초기화한다.
   useEffect(() => {
-    setState(INITIAL);
-  }, [stepKey]);
-
-  useEffect(() => {
-    if (state.status !== "running") {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
-
-    intervalRef.current = setInterval(() => setTick((n) => n + 1), 1000);
-    return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
+    if (state.status !== "running") return;
+    // interval 콜백 안에서만 시각을 읽는다. effect 본문에서 setState 하지 않는다.
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
   }, [state.status]);
 
   const start = useCallback(() => {
+    const at = Date.now();
+    setNow(at);
     setState((prev) =>
       prev.status === "running"
         ? prev
-        : { status: "running", startedAt: Date.now(), accumulatedMs: prev.accumulatedMs },
+        : { status: "running", startedAt: at, accumulatedMs: prev.accumulatedMs },
     );
   }, []);
 
@@ -106,7 +99,6 @@ export function StepTimer({
 
   const reset = useCallback(() => setState(INITIAL), []);
 
-  const now = Date.now();
   const elapsed = elapsedMs(state, now);
   const recommendedMs =
     recommendedMinutes !== null ? recommendedMinutes * 60_000 : null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import {
   ASSET_SAVE_FAILURE_LABEL,
   ASSET_CACHE_TTL_MS,
@@ -50,6 +50,21 @@ import { DOWNLOAD_POLICY_PENDING_NOTICE } from "@/lib/curriculum/lesson-asset-do
 
 type Notice = { kind: "info" | "error"; text: string } | null;
 
+/**
+ * 브라우저 지원 여부.
+ *
+ * ★ effect 에서 setState 로 복사하지 않는다. 그러면 렌더가 한 번 더 돌고 그
+ *   사이 "쓸 수 없습니다" 안내가 잠깐 보인다. 서버 렌더에서는 false 로 두고,
+ *   하이드레이션 뒤에 실제 값을 읽는다.
+ */
+function subscribeNothing(): () => void {
+  return () => {};
+}
+
+function readFalse(): boolean {
+  return false;
+}
+
 export function LessonAssetDownloadPanel({
   classId,
   assets,
@@ -58,7 +73,11 @@ export function LessonAssetDownloadPanel({
   /** 이 차시의 자산 목록 (list_lesson_assets_for_class 결과) */
   assets: LessonAsset[];
 }) {
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const supported = useSyncExternalStore(
+    subscribeNothing,
+    isAssetCacheSupported,
+    readFalse,
+  );
   const [cached, setCached] = useState<CachedAssetMeta[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
@@ -73,9 +92,7 @@ export function LessonAssetDownloadPanel({
   }, [classId]);
 
   useEffect(() => {
-    const supportedNow = isAssetCacheSupported();
-    setSupported(supportedNow);
-    if (!supportedNow) return;
+    if (!supported) return;
 
     let cancelled = false;
 
@@ -113,7 +130,7 @@ export function LessonAssetDownloadPanel({
     return () => {
       cancelled = true;
     };
-  }, [classId, reload]);
+  }, [classId, reload, supported]);
 
   const download = useCallback(
     async (asset: LessonAsset) => {
@@ -178,19 +195,19 @@ export function LessonAssetDownloadPanel({
         <p className="text-caption text-ink-muted">기기 보관 {ttlDays}일 · 로그아웃 시 삭제</p>
       </div>
 
-      {supported === false ? (
+      {!supported ? (
         <p className="mt-2 text-caption leading-relaxed text-warning-text">
           이 브라우저에서는 미리 받기를 쓸 수 없습니다. 수업 중에는 재생으로 사용해 주세요.
         </p>
       ) : null}
 
-      {supported !== false && downloadable.length === 0 ? (
+      {supported && downloadable.length === 0 ? (
         <p className="mt-2 text-caption leading-relaxed text-ink-muted">
           미리 받을 수 있는 자료가 없습니다. {DOWNLOAD_POLICY_PENDING_NOTICE}
         </p>
       ) : null}
 
-      {supported !== false && downloadable.length > 0 ? (
+      {supported && downloadable.length > 0 ? (
         <ul className="mt-3 flex flex-col gap-2">
           {downloadable.map((asset) => {
             const saved = cached.find((row) => row.assetId === asset.assetId) ?? null;

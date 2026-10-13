@@ -24,6 +24,7 @@ import {
  */
 export function LegalDocumentView({
   document,
+  documentId,
   officer,
   company,
 }: {

@@ -79,10 +79,10 @@ export function DuringView({
       {/*
         실행 묶음 B1 — 단계 타이머와 단축 운영 안내.
         타이머는 기준 시각으로 계산해 탭 비활성·재렌더와 무관하게 흐른다.
-        단계를 옮기면 stepKey 가 바뀌어 초기화된다.
+        단계를 옮기면 key 가 바뀌어 타이머가 새로 만들어진다 (초기화된다).
       */}
       <StepTimer
-        stepKey={`${sessionId}:${step.sequenceNo}`}
+        key={`${sessionId}:${step.sequenceNo}`}
         recommendedMinutes={step.durationMinutes}
       />
 

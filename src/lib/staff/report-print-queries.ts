@@ -139,10 +139,8 @@ export async function fetchClassPrintBundle(
 
   let query = supabase
     .from("reports")
-    .select(
-      "id, child_id, report_type, week_no, block_no, reporting_term_key, " +
-        "hidden_at, latest_completed_revision_id",
-    )
+    // ★ 한 줄 리터럴. 문자열을 이어 붙이면 select 파서가 열을 읽지 못한다.
+    .select("id, child_id, report_type, week_no, block_no, reporting_term_key, hidden_at, latest_completed_revision_id")
     .eq("class_program_assignment_id", assignmentId)
     .eq("report_type", selector.kind)
     .limit(120);

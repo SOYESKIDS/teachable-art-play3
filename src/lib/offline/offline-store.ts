@@ -58,7 +58,14 @@ interface StoredDraft {
   idempotencyKey: string;
   /** AES-GCM 암호문 */
   cipher: ArrayBuffer;
-  iv: Uint8Array;
+  /**
+   * ★ `Uint8Array` 를 그대로 쓰지 않는다.
+   *   TypeScript 5.7 부터 `Uint8Array` 는 버퍼 종류를 매개변수로 갖는다
+   *   (`Uint8Array<ArrayBufferLike>`). `ArrayBufferLike` 에는
+   *   `SharedArrayBuffer` 가 포함되는데 Web Crypto 의 `BufferSource` 는
+   *   `ArrayBuffer` 만 받는다. 그래서 버퍼 종류를 좁혀 둔다.
+   */
+  iv: Uint8Array<ArrayBuffer>;
   createdAt: number;
   expiresAt: number;
   /** 서버에서 읽은 시점의 동시성 토큰. 동기화 때 비교한다 */
@@ -183,7 +190,11 @@ async function encrypt(key: CryptoKey, value: unknown) {
   return { cipher, iv };
 }
 
-async function decrypt<T>(key: CryptoKey, cipher: ArrayBuffer, iv: Uint8Array): Promise<T> {
+async function decrypt<T>(
+  key: CryptoKey,
+  cipher: ArrayBuffer,
+  iv: Uint8Array<ArrayBuffer>,
+): Promise<T> {
   const plain = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, cipher);
   return JSON.parse(new TextDecoder().decode(plain)) as T;
 }
