@@ -24,6 +24,7 @@ const fieldClasses = fieldAuth;
 const labelClasses = fieldLabel;
 
 interface StaffLoginFormProps {
+  entry?: "learning";
   /** 서버에서 전달된 초기 안내 메시지 */
   initialError?: string | null;
   /** 같은 화면에 폼이 둘 이상 놓일 때 id 충돌을 막는다 */
@@ -31,6 +32,7 @@ interface StaffLoginFormProps {
 }
 
 export function StaffLoginForm({
+  entry,
   initialError = null,
   idPrefix = "staff-login",
 }: StaffLoginFormProps) {
@@ -46,6 +48,7 @@ export function StaffLoginForm({
 
   return (
     <form action={formAction} className="mt-7 flex flex-col gap-5" noValidate>
+      {entry === "learning" ? <input type="hidden" name="entry" value="learning" /> : null}
       <div className="flex flex-col gap-2">
         <label className={labelClasses} htmlFor={emailId}>
           이메일

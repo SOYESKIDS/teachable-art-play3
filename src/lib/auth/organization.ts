@@ -89,6 +89,7 @@ export interface OrganizationSession {
  */
 export async function requireOrganizationRole(
   roles: readonly OrganizationRole[],
+  loginEntry?: "learning",
 ): Promise<OrganizationSession> {
   const supabase = await createClient();
 
@@ -96,7 +97,7 @@ export async function requireOrganizationRole(
   const claims = data?.claims;
 
   if (!claims || typeof claims.sub !== "string") {
-    redirect("/login");
+    redirect(loginEntry === "learning" ? "/login?entry=learning" : "/login");
   }
 
   const memberships = await fetchActiveMemberships(supabase, claims.sub, roles);

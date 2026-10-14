@@ -52,22 +52,37 @@ const EMPTY: WeekSessionResult = { ok: false, sessions: [] };
 /**
  * 한 기관의 특정 주차 회차 목록.
  *
- * 반 이름이 필요하므로 두 번 질의한다 (회차 → 반). 회차 수가 적어 N+1 문제가
+ * 교안 차시 → 회차 → 반 순으로 조회한다. 정확한 lessonId가 있으면 차시 조회를 생략한다. 회차 수가 적어 N+1 문제가
  * 되지 않는다.
  */
 export async function fetchWeekSessions(
   supabase: SupabaseClient,
   organizationId: string,
   weekNo: number,
+  lessonId?: string,
 ): Promise<WeekSessionResult> {
   if (!UUID_PATTERN.test(organizationId)) return EMPTY;
   if (!Number.isInteger(weekNo) || weekNo < 1 || weekNo > 52) return EMPTY;
+
+  if (lessonId !== undefined && !UUID_PATTERN.test(lessonId)) return EMPTY;
+  let lessonIds: string[];
+  if (lessonId) {
+    // DB 콘텐츠가 밝힌 정확한 교안 차시만 잇는다. 다른 버전의 같은 주차를 섞지 않는다.
+    lessonIds = [lessonId];
+  } else {
+    // class_sessions에는 week_no가 없다. 차시 메타를 거쳐 회차를 찾는다.
+    const lessons = await supabase.from("curriculum_lessons")
+      .select("id").eq("week_no", weekNo).limit(120);
+    if (lessons.error) { log("lessons", lessons.error.code); return EMPTY; }
+    lessonIds = (lessons.data ?? []).map((row: { id: string }) => row.id);
+    if (lessonIds.length === 0) return { ok: true, sessions: [] };
+  }
 
   const { data, error } = await supabase
     .from("class_sessions")
     .select("id, class_id, scheduled_date, status")
     .eq("organization_id", organizationId)
-    .eq("week_no", weekNo)
+    .in("lesson_id", lessonIds)
     .order("scheduled_date", { ascending: true })
     .limit(60);
 
@@ -128,15 +143,15 @@ export const SESSION_STATUS_LABEL: Record<ClassSessionStatus, string> = {
  * ★ 이 값은 **회차 상태만** 보고 정한다. 준비 체크나 결과 보고 제출 여부는
  *   아직 저장되지 않으므로 반영하지 않는다. 모르는 것을 아는 척하지 않는다.
  */
-export function nextActionFor(status: ClassSessionStatus): {
+export function nextActionFor(status: ClassSessionStatus, actorRole: "teacher" | "director" = "teacher"): {
   label: string;
   href: (sessionId: string, orgQuery: string) => string;
 } | null {
   switch (status) {
     case "scheduled":
       return {
-        label: "수업 준비 이어하기",
-        href: (id, org) => `/teacher/sessions/${id}/before?${org}`,
+        label: actorRole === "director" ? "회차 운영 확인" : "수업 준비 이어하기",
+        href: (id, org) => actorRole === "director" ? `/director/sessions/history?${org}` : `/teacher/sessions/${id}/before?${org}`,
       };
     case "in_progress":
       return {
@@ -146,7 +161,7 @@ export function nextActionFor(status: ClassSessionStatus): {
     case "completed":
       return {
         label: "관찰 기록 보기",
-        href: (id, org) => `/teacher/sessions/${id}/observations?${org}`,
+        href: (id, org) => `/${actorRole}/sessions/${id}/observations?${org}`,
       };
     case "cancelled":
       return null;

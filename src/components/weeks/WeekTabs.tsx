@@ -34,6 +34,7 @@ export function WeekTabs({
   active,
   orgQuery,
   status,
+  pageHref,
 }: {
   weekNo: number;
   active: WeekTabKey;
@@ -41,6 +42,7 @@ export function WeekTabs({
   orgQuery: string;
   /** 탭 옆에 붙는 짧은 상태 문구 */
   status?: Partial<Record<WeekTabKey, string>>;
+  pageHref?: string;
 }) {
   return (
     <nav aria-label="주차 수업 단계" className="mt-5 border-b border-rule">
@@ -50,7 +52,7 @@ export function WeekTabs({
           return (
             <li key={tab.key}>
               <Link
-                href={`/teacher/weeks/${weekNo}?${orgQuery}&tab=${tab.key}`}
+                href={`${pageHref ?? `/teacher/weeks/${weekNo}`}?${orgQuery}&tab=${tab.key}`}
                 aria-current={current ? "page" : undefined}
                 className={`inline-flex min-h-12 items-center gap-1.5 border-b-2 px-3 text-[15px] ${
                   current

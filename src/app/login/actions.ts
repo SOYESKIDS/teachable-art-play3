@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchActiveMemberships } from "@/lib/auth/organization";
 import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/queries";
 import type { OrganizationLoginState } from "./form-state";
+import { isLearningEntry, organizationLoginDestination } from "@/lib/learning/program-entry";
 
 /**
  * 이 파일의 런타임 export는 async Server Action 함수뿐이어야 한다.
@@ -24,6 +25,7 @@ export async function organizationSignInAction(
 ): Promise<OrganizationLoginState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const learningEntry = isLearningEntry(formData.get("entry"));
 
   if (!email || !password) {
     return { error: MESSAGES.invalidInput };
@@ -55,16 +57,16 @@ export async function organizationSignInAction(
       // (원장이면서 특정 반 담임을 겸하는 경우도 원장 화면에서 전부 보인다.)
       // ★ DEC-044 · DEC-097: 대시보드 기능이 없는 상품(STARTER)은 수업 운영으로 착지한다.
       //   여러 기관 소속이면 기관 선택이 먼저이므로 수업 운영에서 고르게 한다.
-      destination = "/director/sessions";
+      destination = organizationLoginDestination(formData.get("entry"), ["director"])!;
 
-      if (directorMemberships.length === 1) {
+      if (!learningEntry && directorMemberships.length === 1) {
         const entitlements = await fetchOrganizationEntitlements(
           supabase,
           directorMemberships[0].organizationId,
         );
 
         if (hasFeature(entitlements, "director_dashboard")) {
-          destination = "/director";
+          destination = organizationLoginDestination(formData.get("entry"), ["director"], true)!;
         }
       }
     } else {
@@ -73,7 +75,7 @@ export async function organizationSignInAction(
       ]);
 
       if (teacherMemberships.length > 0) {
-        destination = "/teacher";
+        destination = organizationLoginDestination(formData.get("entry"), ["teacher"])!;
       } else {
         // 권한 없는 세션을 기관 영역에 남기지 않는다.
         await supabase.auth.signOut();

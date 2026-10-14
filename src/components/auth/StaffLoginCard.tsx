@@ -11,12 +11,14 @@ import { StaffLoginForm } from "./StaffLoginForm";
  * 안에 있는 폼과 인증 경로는 완전히 같다.
  */
 export function StaffLoginCard({
+  entry,
   title,
   description,
   initialError = null,
   idPrefix,
   footnote,
 }: {
+  entry?: "learning";
   title: string;
   description: string;
   initialError?: string | null;
@@ -32,7 +34,7 @@ export function StaffLoginCard({
         {description}
       </p>
 
-      <StaffLoginForm initialError={initialError} idPrefix={idPrefix} />
+      <StaffLoginForm initialError={initialError} idPrefix={idPrefix} entry={entry} />
 
       <p className="mt-5 text-center text-[13px] text-navy/50">
         <Link

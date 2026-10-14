@@ -693,10 +693,12 @@ export function ObservePanel({
   content,
   orgQuery,
   sessions,
+  actorRole = "teacher",
 }: {
   content: WeekContent;
   orgQuery: string;
   sessions: WeekSessionItem[];
+  actorRole?: "teacher" | "director";
 }) {
   const guide = content.blocks.observationGuide;
 
@@ -753,7 +755,7 @@ export function ObservePanel({
         why="아이 선택 · 사진 · 아이의 말이 회차와 원아에 묶여 저장됩니다. 주차 번호만으로는 어느 반 누구의 기록인지 정해지지 않습니다."
         sessions={sessions}
         orgQuery={orgQuery}
-        hrefFor={(id) => `/teacher/sessions/${id}/observations`}
+        hrefFor={(id) => `/${actorRole}/sessions/${id}/observations`}
       />
     </div>
   );
@@ -763,10 +765,12 @@ export function ReportPanel({
   content,
   orgQuery,
   sessions,
+  actorRole = "teacher",
 }: {
   content: WeekContent;
   orgQuery: string;
   sessions: WeekSessionItem[];
+  actorRole?: "teacher" | "director";
 }) {
   const home = content.blocks.homeConnection;
 
@@ -847,20 +851,22 @@ export function ReportPanel({
           성장 이야기는 교사가 확인하고 완료한 것만 공유 대상이 됩니다.
         </p>
         <Link
-          href={`/teacher/growth-reports?${orgQuery}`}
+          href={`/${actorRole}/growth-reports?${orgQuery}`}
           className="mt-2 inline-flex min-h-11 items-center text-[14px] font-semibold text-sky-deep underline"
         >
           리포트 화면 열기
         </Link>
       </section>
 
-      <SessionRequired
+      {actorRole === "director" ? (
+        <Link href={`/director/reports?${orgQuery}`} className="inline-flex min-h-12 items-center rounded-xl bg-forest px-4 text-[14px] font-semibold text-white">기관 결과보고 확인</Link>
+      ) : <SessionRequired
         what="결과 보고는 회차 단위로 제출합니다"
         why="진행한 활동과 실제 시간은 회차의 진행 기록에서 채워지고, 출결·관찰은 이미 저장된 값을 가져옵니다."
         sessions={sessions}
         orgQuery={orgQuery}
         hrefFor={(id) => `/teacher/sessions/${id}/report`}
-      />
+      />}
     </div>
   );
 }

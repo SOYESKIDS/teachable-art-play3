@@ -18,6 +18,7 @@ function isPublicPath(pathname: string) {
  * (/admin → /admin/login, /director·/teacher → /login)
  */
 function loginPathFor(pathname: string): string {
+  if (pathname === "/learning" || pathname.startsWith("/learning/")) return "/login?entry=learning";
   return pathname.startsWith("/director") || pathname.startsWith("/teacher")
     ? "/login"
     : "/admin/login";
@@ -65,8 +66,9 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   // (이것은 UX용 1차 게이트일 뿐이고, 최종 권한 판정은 각 페이지의 서버 검사 + DB RLS가 담당한다.)
   if (!claims && !isPublicPath(pathname)) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = loginPathFor(pathname);
-    loginUrl.search = "";
+    const destination = new URL(loginPathFor(pathname), request.url);
+    loginUrl.pathname = destination.pathname;
+    loginUrl.search = destination.search;
 
     const redirectResponse = NextResponse.redirect(loginUrl);
     response.cookies.getAll().forEach((cookie) => {

@@ -3,6 +3,7 @@
  * 계약 · 상품 메뉴 없음.
  */
 export const TEACHER_NAV = [
+  { href: "/learning", label: "수업하기" },
   { href: "/teacher", label: "오늘의 수업" },
   { href: "/teacher/weeks", label: "수업 지도" },
   { href: "/teacher/history", label: "수업 이력" },

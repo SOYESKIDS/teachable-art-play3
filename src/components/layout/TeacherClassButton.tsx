@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cx } from "@/components/ui/cx";
 
-/** 교사는 오늘의 수업으로, 비로그인 사용자는 기존 기관 로그인 흐름으로 들어간다. */
+/** 교직원은 프로그램 선택으로, 비로그인 사용자는 수업 입구를 기억한 기관 로그인으로 들어간다. */
 export function TeacherClassButton({
   onClick,
   className,
@@ -11,11 +11,11 @@ export function TeacherClassButton({
 }) {
   return (
     <Link
-      href="/teacher"
+      href="/learning"
       prefetch={false}
       onClick={onClick}
-      title="교사 전용 · 오늘의 수업"
-      aria-label="수업하기 · 교사 전용"
+      title="교사·기관 관리자 · 수업 프로그램 선택"
+      aria-label="수업하기 · 프로그램 선택"
       className={cx(
         "inline-flex min-h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary-strong bg-secondary-soft px-3 text-label font-bold text-secondary-strong transition-colors duration-200 hover:bg-secondary-strong hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-strong sm:px-4",
         className,

@@ -66,24 +66,30 @@ function asNumber(value: unknown): number | null {
   return typeof value === "number" ? value : null;
 }
 
-export async function fetchOrganizationEntitlements(
+export type OrganizationEntitlementResult =
+  | { ok: true; entitlements: OrganizationEntitlements }
+  | { ok: false; reason: "query_failed" | "invalid_response" };
+
+/** 새 수업 입구는 조회 실패를 계약 없음으로 표시하지 않는다. */
+export async function queryOrganizationEntitlements(
   supabase: SupabaseClient,
   organizationId: string,
-): Promise<OrganizationEntitlements> {
+): Promise<OrganizationEntitlementResult> {
   const { data, error } = await supabase.rpc("organization_entitlements", {
     p_organization_id: organizationId,
   });
 
   if (error || !data || typeof data !== "object") {
     if (error) console.error(`[entitlement] organization failed: code=${error.code ?? "unknown"}`);
-    return CLOSED_ORG;
+    return { ok: false, reason: error ? "query_failed" : "invalid_response" };
   }
 
   const row = data as Record<string, unknown>;
   const offer = asString(row.offer_type);
+  if (!isServiceMode(row.service_mode)) return { ok: false, reason: "invalid_response" };
 
-  return {
-    serviceMode: isServiceMode(row.service_mode) ? row.service_mode : "no_contract",
+  return { ok: true, entitlements: {
+    serviceMode: row.service_mode,
     productCode: asString(row.product_code),
     offerType: offer === "regular" || offer === "pilot" ? offer : null,
     contractStartDate: asString(row.contract_start_date),
@@ -92,7 +98,16 @@ export async function fetchOrganizationEntitlements(
     weekTo: asNumber(row.week_to),
     childrenPerClass: asNumber(row.children_per_class),
     features: Array.isArray(row.features) ? (row.features.filter((f) => typeof f === "string") as FeatureCode[]) : [],
-  };
+  } };
+}
+
+/** 기존 업무 화면은 이전과 같이 실패 시 닫힌 권한을 받는다. */
+export async function fetchOrganizationEntitlements(
+  supabase: SupabaseClient,
+  organizationId: string,
+): Promise<OrganizationEntitlements> {
+  const result = await queryOrganizationEntitlements(supabase, organizationId);
+  return result.ok ? result.entitlements : CLOSED_ORG;
 }
 
 export async function fetchClassEntitlements(supabase: SupabaseClient, classId: string): Promise<ClassEntitlements> {

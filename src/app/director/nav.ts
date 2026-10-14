@@ -9,6 +9,7 @@ import { fetchOrganizationEntitlements, hasFeature } from "@/lib/entitlement/que
  * 메뉴는 안내일 뿐이고 대시보드 집계는 서버가 기능 권한을 다시 확인한다.
  */
 const OPERATION_NAV = [
+  { href: "/learning", label: "수업하기" },
   { href: "/director/sessions", label: "수업 운영" },
   // 반 단위 결과보고와 원아별 리포트를 메뉴에서부터 나눠 둔다.
   { href: "/director/reports", label: "결과보고" },

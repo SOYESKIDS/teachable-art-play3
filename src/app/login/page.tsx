@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { OfflinePurgeOnSignOut } from "@/components/offline/OfflinePurgeOnSignOut";
 import { StaffLoginCard } from "@/components/auth/StaffLoginCard";
 import { resolveLoginNotice } from "./form-state";
+import { isLearningEntry } from "@/lib/learning/program-entry";
 
 export const metadata: Metadata = {
   title: "로그인 | TeachAble Art Play",
@@ -27,6 +28,7 @@ interface LoginPageProps {
  */
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
+  const entry = isLearningEntry(params.entry) ? "learning" : undefined;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-ivory px-5 py-16">
@@ -34,8 +36,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <OfflinePurgeOnSignOut />
       <div className="w-full max-w-[440px]">
         <StaffLoginCard
-          title="기관 로그인"
-          description="원장님과 선생님을 위한 기관 운영 공간입니다."
+          title={entry ? "수업하기 로그인" : "기관 로그인"}
+          description={entry ? "로그인 후 8주·16주·24주 프로그램을 선택합니다. 등록된 기관 권한으로 이용합니다." : "원장님과 선생님을 위한 기관 운영 공간입니다."}
+          entry={entry}
           initialError={resolveLoginNotice(params.error)}
           idPrefix="login"
           footnote="계정은 SOYESKIDS 담당자의 초대로 발급됩니다."

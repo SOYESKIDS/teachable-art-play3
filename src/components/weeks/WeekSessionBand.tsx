@@ -31,6 +31,8 @@ export function WeekSessionBand({
   orgQuery,
   weekNo,
   selectedClassId,
+  actorRole = "teacher",
+  weekPath,
 }: {
   sessions: WeekSessionItem[];
   ok: boolean;
@@ -38,6 +40,8 @@ export function WeekSessionBand({
   orgQuery: string;
   weekNo: number;
   selectedClassId?: string;
+  actorRole?: "teacher" | "director";
+  weekPath?: string;
 }) {
   if (!ok) {
     return (
@@ -82,7 +86,7 @@ export function WeekSessionBand({
 
       <ul className="flex flex-col">
         {ordered.map((session) => {
-          const action = nextActionFor(session.status);
+          const action = nextActionFor(session.status, actorRole);
           const isSelected = selectedClassId === session.classId;
 
           return (
@@ -119,7 +123,7 @@ export function WeekSessionBand({
                   </span>
                 )}
                 <Link
-                  href={`/teacher/weeks/${weekNo}?${orgQuery}&class=${session.classId}&tab=prep`}
+                  href={`${weekPath ?? `/teacher/weeks/${weekNo}`}?${orgQuery}&class=${session.classId}&tab=prep`}
                   className="inline-flex min-h-11 items-center rounded-[10px] border border-rule px-4 text-[14px] font-semibold text-forest"
                 >
                   이 반으로 보기

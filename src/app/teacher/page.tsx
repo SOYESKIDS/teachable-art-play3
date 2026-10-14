@@ -9,6 +9,7 @@ import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { TodaySessionBoardView } from "@/components/staff/TodaySessionBoard";
 import { TEACHER_NAV } from "./nav";
+import { ProgramEntryBanner } from "@/components/learning/ProgramEntryBanner";
 
 export const metadata: Metadata = {
   title: "오늘의 수업 | TeachAble Art Play",
@@ -100,6 +101,7 @@ export default async function TeacherTodayPage({
         </p>
       </div>
 
+      <ProgramEntryBanner organizationId={membership.organizationId} />
       <div className="mt-5">
         <TodaySessionBoardView
           board={board}
