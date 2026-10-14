@@ -12,10 +12,15 @@ on:
       - "content/**"
       - ".github/workflows/db-validation.yml"
   push:
-    branches: [main]
+    # 개발 브랜치에서도 돌려야 한다. main 에서만 돌면 병합 뒤에야 결과를 본다.
+    branches: [main, feat/platform-finish-20261012]
     paths:
       - "supabase/**"
       - "content/**"
+      # ★ 워크플로 자신이 바뀌어도 돌아야 한다. 빼면 CI 수정이 검증되지 않는다.
+      - ".github/workflows/db-validation.yml"
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 permissions:
