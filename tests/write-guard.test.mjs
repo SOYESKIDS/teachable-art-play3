@@ -9,6 +9,8 @@ import {
 } from "../src/lib/env/deployment-guard.ts";
 import { guardWrite, tryGuardWrite } from "../src/lib/env/write-guard.ts";
 import { submitLeadAction } from "../src/lib/public/lead-submit-actions.ts";
+import { publishLessonAction } from "../src/lib/weeks/lesson-publish-actions.ts";
+import { prepareObservationMediaUpload } from "../src/lib/staff/observation-media-actions.ts";
 import { registerPortalAccess } from "../src/lib/share/portal-throttle.ts";
 import { contentSourceMode } from "../src/lib/weeks/week-content-source.ts";
 
@@ -224,7 +226,11 @@ test("운영자 요약은 값이 아니라 판정만 담는다", () => {
   );
 });
 
-/* ═══════════════════════════════════ 2. 막히면 호출하지 않는다 */
+/* ═══════════════════════════════════ 2. 가드 자체 — 막히면 호출하지 않는다
+ *
+ * 여기서는 가드 호출 **예제**를 쓴다 (가짜 클라이언트 + 직접 호출).
+ * 실제 업무 함수 검증은 3절이다.
+ */
 
 const blockedEnv = {
   ...connected(PROD_REF),
@@ -322,7 +328,129 @@ test("보호자 공유 제한 기록 — 통과하면 RPC 를 보낸다 (막기�
   assert.equal(verdict.allowed, true);
 });
 
-/* ═══════════════════════════════════ 3. CONTENT_SOURCE 의 적용 범위 */
+/* ═══════════════════════════════════ 3. 실제 업무 함수 (가드 예제가 아니다)
+ *
+ * 위 2절의 `guardWrite`·`tryGuardWrite` 검사는 **가드 자체**가 도는지 본다.
+ * 여기서는 **실제 업무 Server Action 을 그대로 불러** 막히는지 본다.
+ * 둘은 다른 것을 지킨다 — 가드가 맞게 동작해도 업무 함수가 그것을 부르지
+ * 않으면 아무 소용이 없다. 실제로 세 군데가 그렇게 새고 있었다.
+ *
+ * ★ Supabase 클라이언트에 닿았는지는 `next/headers` 스텁이 알려 준다.
+ *   `@/lib/supabase/server` 의 `createClient()` 는 `cookies()` 를 부르고,
+ *   테스트 스텁의 `cookies()` 는 **던진다**. 그러므로 「스텁이 던진 오류」가
+ *   나오면 가드를 지나쳐 클라이언트를 만들었다는 뜻이다.
+ */
+
+/** 스텁이 던진 오류인가 = Supabase 클라이언트를 만들려 했는가 */
+const reachedSupabase = (e) => String(e?.message ?? "").includes("next/headers");
+
+const LESSON_ID = "11111111-2222-3333-4444-555555555555";
+const CHECKSUM = "a".repeat(64);
+
+test("publishLessonAction — 막히면 던지고 발행 RPC 로 가지 않는다", async () => {
+  await withEnv(blockedEnv, async () => {
+    let caught = null;
+    try {
+      await publishLessonAction(LESSON_ID, CHECKSUM);
+    } catch (e) {
+      caught = e;
+    }
+    assert.ok(caught, "막힌 상태에서는 던져야 한다");
+    assert.equal(caught.name, "NonProductionWriteBlockedError");
+    assert.equal(caught.verdict, "block_non_production_on_production");
+    assert.equal(caught.surface, "weeks/lesson:publish");
+    assert.ok(
+      !reachedSupabase(caught),
+      "Supabase 클라이언트를 만들기 전에 막혔어야 한다",
+    );
+  });
+});
+
+test("publishLessonAction — 가드가 입력 검증보다 **먼저** 선다", async () => {
+  await withEnv(blockedEnv, async () => {
+    // 형식이 틀린 입력이어도 가드가 먼저다. 그래야 어떤 입력으로도 새지 않는다.
+    await assert.rejects(
+      () => publishLessonAction("not-a-uuid", "nope"),
+      (e) => e.name === "NonProductionWriteBlockedError",
+    );
+  });
+});
+
+test("publishLessonAction — 통과 환경에서는 가드를 넘어 인증 단계까지 간다", async () => {
+  await withEnv({ ...connected(STAGING_REF), VERCEL_ENV: "preview" }, async () => {
+    let caught = null;
+    try {
+      await publishLessonAction(LESSON_ID, CHECKSUM);
+    } catch (e) {
+      caught = e;
+    }
+    // 가드가 막지 않았다는 것을 **도달 지점**으로 확인한다.
+    // (스텁이 던진다 = createClient 까지 갔다 = 가드를 통과했다)
+    assert.ok(caught, "테스트 환경에서는 Supabase 단계에서 멈춘다");
+    assert.notEqual(caught.name, "NonProductionWriteBlockedError");
+    assert.ok(reachedSupabase(caught), `예상 밖 오류: ${caught.message}`);
+  });
+});
+
+test("prepareObservationMediaUpload — 막히면 저장 경로를 발급하지 않는다", async () => {
+  await withEnv(blockedEnv, async () => {
+    const state = await prepareObservationMediaUpload({
+      sessionId: "66666666-6666-6666-6666-666666666666",
+      childId: "33333333-3333-3333-3333-333333333333",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    });
+    assert.equal(state.ok, false);
+    assert.ok(state.message.length > 0, "사용자 안내 문구가 있어야 한다");
+    assert.ok(!("storagePath" in state), "막혔는데 저장 경로가 발급됐다");
+  });
+});
+
+test("prepareObservationMediaUpload — 막히면 Supabase 클라이언트를 만들지 않는다", async () => {
+  await withEnv(blockedEnv, async () => {
+    // 스텁이 던지면 테스트가 깨진다 = 클라이언트를 만들었다는 뜻이다.
+    const state = await prepareObservationMediaUpload({
+      sessionId: "66666666-6666-6666-6666-666666666666",
+      childId: "33333333-3333-3333-3333-333333333333",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    });
+    assert.equal(state.ok, false);
+  });
+});
+
+test("prepareObservationMediaUpload — 가드가 입력 검증보다 먼저 선다", async () => {
+  await withEnv(blockedEnv, async () => {
+    const bad = await prepareObservationMediaUpload({
+      sessionId: "nope",
+      childId: "nope",
+      mimeType: "application/pdf",
+      byteSize: -1,
+    });
+    assert.equal(bad.ok, false);
+    // 입력 오류 문구가 아니라 **차단 문구**가 나와야 한다.
+    assert.match(bad.message, /환경/, `실제 문구: ${bad.message}`);
+  });
+});
+
+test("prepareObservationMediaUpload — 통과 환경에서는 가드를 넘어간다", async () => {
+  await withEnv({ ...connected(STAGING_REF), VERCEL_ENV: "preview" }, async () => {
+    let caught = null;
+    try {
+      await prepareObservationMediaUpload({
+        sessionId: "66666666-6666-6666-6666-666666666666",
+        childId: "33333333-3333-3333-3333-333333333333",
+        mimeType: "image/jpeg",
+        byteSize: 1024,
+      });
+    } catch (e) {
+      caught = e;
+    }
+    assert.ok(caught && reachedSupabase(caught), "가드를 통과해 인증 단계까지 가야 한다");
+  });
+});
+
+/* ═══════════════════════════════════ 4. CONTENT_SOURCE 의 적용 범위 */
 
 test("CONTENT_SOURCE 는 배포 전체에 하나로 적용된다 (요청·역할별로 나뉘지 않는다)", () => {
   withEnv({ CONTENT_SOURCE: "database" }, () => {

@@ -43,6 +43,7 @@ const SRC_URL = new URL("../src/", import.meta.url);
  */
 const RUNTIME_STUBS = new Map([
   ["next/headers", new URL("./stubs/next-headers.mjs", import.meta.url).href],
+  ["next/navigation", new URL("./stubs/next-navigation.mjs", import.meta.url).href],
 ]);
 
 export async function resolve(specifier, context, nextResolve) {
