@@ -17,11 +17,14 @@ export function BrandMark({
   tone = "default",
   layout = "auto",
   priority = false,
+  compactOnMobile = false,
   className = "",
 }: {
   tone?: "default" | "inverse";
   layout?: "auto" | "stacked";
   priority?: boolean;
+  /** 좁은 공개 헤더에서는 워드마크만 보여 교사용 버튼의 공간을 확보한다. */
+  compactOnMobile?: boolean;
   className?: string;
 }) {
   const inverse = tone === "inverse";
@@ -51,6 +54,7 @@ export function BrandMark({
           aria-hidden="true"
           className={cx(
             "block h-3.5 w-px sm:h-4",
+            compactOnMobile && "max-sm:hidden",
             inverse ? "bg-white/25" : "bg-line-strong",
           )}
         />
@@ -58,6 +62,7 @@ export function BrandMark({
       <span
         className={cx(
           "whitespace-nowrap font-bold tracking-[-0.025em]",
+          compactOnMobile && "max-sm:hidden",
           stacked ? "text-body-lg lg:text-lg" : "text-body-sm sm:text-body-lg lg:text-lg",
           inverse ? "text-white" : "text-navy",
         )}

@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/Container";
 import { cx } from "@/components/ui/cx";
 import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
 import { BrandMark } from "@/components/layout/BrandMark";
+import { TeacherClassButton } from "@/components/layout/TeacherClassButton";
 import { toHomeAnchor } from "@/components/layout/home-anchor";
 import { ctaLabels, navigation } from "@/data/site-copy";
 
@@ -26,12 +27,15 @@ import { ctaLabels, navigation } from "@/data/site-copy";
  * ★ 스크롤하면 바탕이 불투명해지고 선이 진해진다 — 본문 위에 떠 있다는 신호를
  *   그림자 대신 면의 밀도로 준다.
  *
- * ★ nav 를 xl 부터 펼친다. 메뉴 7개 + CTA 2개는 1024px 폭을 넘는다.
+ * ★ nav 를 2xl 부터 펼친다. 교사용 수업 버튼까지 보이도록 중간 폭은 접는다.
  *   그보다 좁으면 메뉴 버튼 안으로 접고, 접힌 메뉴에는 CTA 도 함께 들어간다.
  *
  * ★ 헤더 버튼은 `hidden sm:inline-flex` 가 아니라 `max-sm:hidden` 을 쓴다.
  *   Button 의 base 에 inline-flex 가 있어, variant 없는 hidden 은 CSS 순서에 따라 진다.
  */
+
+// 수업 진입은 오른쪽 전용 버튼으로 분리한다. 푸터의 교육과정 소개는 유지한다.
+const headerNavigation = navigation.filter((item) => item.href !== "/curriculum");
 
 const KINDERGARTEN_LOGIN_LABEL = "유치원 로그인";
 const KINDERGARTEN_LOGIN_HREF = "/kindergarten";
@@ -58,7 +62,7 @@ export function Header() {
         toggleRef.current?.focus();
       }
     };
-    const wide = window.matchMedia("(min-width: 1280px)");
+    const wide = window.matchMedia("(min-width: 1536px)");
     const onWide = () => wide.matches && setIsMenuOpen(false);
     document.addEventListener("keydown", onKey);
     wide.addEventListener("change", onWide);
@@ -83,7 +87,7 @@ export function Header() {
 
       <Container
         className={cx(
-          "flex items-center justify-between gap-4 transition-[height] duration-200",
+          "flex items-center justify-between gap-2 transition-[height] duration-200 sm:gap-4",
           isScrolled ? "h-[60px] lg:h-16" : "h-[68px] lg:h-[76px]",
         )}
       >
@@ -93,18 +97,18 @@ export function Header() {
           className="flex min-h-11 shrink-0 items-center rounded-lg"
           onClick={closeMenu}
         >
-          <BrandMark priority />
+          <BrandMark priority compactOnMobile />
         </Link>
 
         <nav
           aria-label="주요 메뉴"
-          className="hidden items-center text-body-sm font-medium text-ink-muted xl:flex"
+          className="hidden items-center whitespace-nowrap text-body-sm font-medium text-ink-muted 2xl:flex"
         >
-          {navigation.map((item) => (
+          {headerNavigation.map((item) => (
             <Link
               key={item.href}
               href={toHomeAnchor(item.href)}
-              className="relative inline-flex min-h-11 items-center rounded-lg px-3 transition-colors duration-[var(--motion-fast)] after:absolute after:inset-x-3 after:bottom-2 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:text-navy hover:after:scale-x-100"
+              className="relative inline-flex min-h-11 items-center rounded-lg px-2.5 transition-colors duration-[var(--motion-fast)] after:absolute after:inset-x-2.5 after:bottom-2 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:text-navy hover:after:scale-x-100"
             >
               {item.label}
             </Link>
@@ -112,10 +116,12 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+          <TeacherClassButton onClick={closeMenu} />
+
           <ButtonLink
             href={KINDERGARTEN_LOGIN_HREF}
             variant="tertiary"
-            className="min-h-11 whitespace-nowrap px-4 text-label max-md:hidden"
+            className="min-h-11 whitespace-nowrap px-4 text-label max-lg:hidden"
           >
             {KINDERGARTEN_LOGIN_LABEL}
           </ButtonLink>
@@ -135,7 +141,7 @@ export function Header() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-nav"
             onClick={() => setIsMenuOpen((open) => !open)}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-navy/5 xl:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-navy/5 2xl:hidden"
           >
             <span className="sr-only">{isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}</span>
             <svg
@@ -162,11 +168,11 @@ export function Header() {
         <nav
           id="mobile-nav"
           aria-label="주요 메뉴"
-          className="max-h-[calc(100dvh-68px)] animate-fade-in overflow-y-auto border-t border-line bg-ivory xl:hidden"
+          className="max-h-[calc(100dvh-68px)] animate-fade-in overflow-y-auto border-t border-line bg-ivory 2xl:hidden"
         >
           <Container className="py-4">
             <ul className="grid gap-1 sm:grid-cols-2">
-              {navigation.map((item) => (
+              {headerNavigation.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={toHomeAnchor(item.href)}
@@ -187,6 +193,10 @@ export function Header() {
                 로그인 입구 · 상담 버튼이 사라지는 구간이 없다.
             */}
             <div className="mt-4 grid gap-2 border-t border-line pt-4 sm:grid-cols-2">
+              <TeacherClassButton
+                onClick={closeMenu}
+                className="w-full sm:col-span-2"
+              />
               <ButtonLink
                 href={KINDERGARTEN_LOGIN_HREF}
                 variant="tertiary"
