@@ -323,5 +323,22 @@ RPC 는 교실 화면에 필요한 것만 돌려주므로 **원문 출처(`sourc
   검증 스크립트는 `DATABASE_URL` 이 Supabase 호스트면 시작하지 않는다
 - 단계: 적재 SQL 드리프트 확인 → `verify:db` → `verify:db:upgrade`
 
+### 실제 실행 기록
+
+| 커밋 | 결과 | 로그 |
+|---|---|---|
+| `aa4b96f` (CI 설정 변경) | success | https://github.com/SOYESKIDS/teachable-art-play3/actions/runs/38497643444 |
+| `76ca4e3` (이번 보완분) | **success** | https://github.com/SOYESKIDS/teachable-art-play3/actions/runs/38500486313 |
+
+`76ca4e3` 실행 로그에서 확인한 것 (GitHub 러너의 `postgres:17-alpine`):
+
+```
+7_E단계 SQL 실행 검증     PASS  migration 49건 적용 … 결과: 57/57 통과
+8_기존 DB 업그레이드 검증  PASS  선행 migration 21건 적용
+                          PASS  적용 전 교사가 자기 기관 데이터를 본다 (기준선)
+                          PASS  후속 migration 28건이 데이터가 있는 DB 에 적용된다
+                          결과: 61/61 통과
+```
+
 > **Vercel 배포 성공을 DB CI 성공으로 쓰지 않는다.** 둘은 다른 것을 본다.
 > Vercel 은 빌드가 되는지 보고, DB CI 는 migration 과 권한이 실제로 도는지 본다.
