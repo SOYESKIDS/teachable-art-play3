@@ -2,6 +2,7 @@ import Image from "next/image";
 import { cx } from "@/components/ui/cx";
 import { HomeHeading, HomeSection } from "./HomeSection";
 import { sessionNarrative as copy } from "@/data/home-narrative";
+import { homeImages } from "@/data/home-images";
 
 /**
  * 05 ONE SESSION — 한 번의 수업을 장면으로.
@@ -18,16 +19,16 @@ export function SessionSection() {
       <div className="grid items-end gap-10 lg:grid-cols-2 lg:gap-16">
         <HomeHeading id="program-title" eyebrow={copy.eyebrow} headline={copy.headline} subCopy={copy.subCopy} />
         <figure>
-          <div className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-line bg-surface-soft">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-line bg-surface-soft">
             <Image
-              src="/images/site/classroom/classroom-teacher-activity.webp"
-              alt="담임교사 한 명이 교실 앞에서 동작을 시범 보이고 아이들이 뒤에서 따라 하는 실제 수업 장면"
+              src={homeImages.music.src}
+              alt={homeImages.music.alt}
               fill
               sizes="(min-width: 1024px) 560px, 100vw"
               className="object-cover"
             />
           </div>
-          <figcaption className="mt-2.5 text-caption text-ink-muted">실제 수업 현장 — 담임교사 한 명이 운영합니다</figcaption>
+          <figcaption className="mt-2.5 text-caption text-ink-muted">씨앗 마라카스 활동 예시 · 만든 것을 음악과 놀이로 이어 갑니다.</figcaption>
         </figure>
       </div>
 

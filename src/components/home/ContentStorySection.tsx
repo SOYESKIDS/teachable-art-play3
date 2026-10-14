@@ -2,6 +2,7 @@ import Image from "next/image";
 import { HomeHeading, HomeSection } from "./HomeSection";
 import { contentNarrative as copy } from "@/data/home-narrative";
 import { STARTER_WEEKS, type StarterWeek } from "@/lib/content/starter-journey";
+import { homeImages } from "@/data/home-images";
 
 /** 예시 값은 canonical 주차 데이터에서 그대로 읽는다 — 지어내지 않는다 */
 function exampleOf(week: StarterWeek, key: string): string {
@@ -83,23 +84,38 @@ export function ContentStorySection() {
           </ol>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 self-start">
-          <figure className="relative col-span-2 aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-            <Image
-              src="/images/site/classroom/classroom-workbook-play.webp"
-              alt="아이가 워크북 활동지에 그림을 그리는 수업 장면"
-              fill
-              sizes="(min-width: 1024px) 480px, 100vw"
-              className="object-cover"
-            />
-          </figure>
-          <figure className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-            <Image src="/images/site/content/vod-bukgeuki-ballet.webp" alt="수업에 쓰는 VOD 영상 장면" fill sizes="240px" className="object-cover" />
-          </figure>
-          <figure className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-            <Image src="/images/site/classroom/classroom-vod-learning.webp" alt="아이들이 화면 속 영상을 보며 함께 움직이는 장면" fill sizes="240px" className="object-cover" />
-          </figure>
-          <ul className="col-span-2 mt-1 flex flex-col gap-1.5 text-caption text-ink-muted">
+        <div className="self-start">
+          <p className="mb-3 text-caption font-semibold text-ink-muted">그림책부터 활동 키트까지 · 구성 예시</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {homeImages.materials.map((material) => (
+              <figure key={material.src} className="overflow-hidden rounded-2xl border border-line bg-white">
+                <a
+                  href={material.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${material.title} 이미지 크게 보기 (새 탭)`}
+                  className="relative block aspect-[16/9] bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-strong"
+                >
+                  <Image
+                    src={material.src}
+                    alt={material.alt}
+                    fill
+                    sizes="(min-width: 1024px) 240px, (min-width: 640px) 45vw, 100vw"
+                    className="object-contain"
+                  />
+                </a>
+                <figcaption className="border-t border-line px-4 py-3">
+                  <p className="text-body-sm font-bold text-navy">{material.title}</p>
+                  <p className="mt-1 text-caption leading-relaxed text-ink-muted">{material.description}</p>
+                  <p className="mt-2 text-caption font-semibold text-secondary-strong">이미지를 눌러 크게 보기 ↗</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-3 text-caption leading-relaxed text-ink-muted">
+            이미지는 콘텐츠 구성 예시입니다. 주차별 제목·음원·키트는 공식 수업가이드와 계약 구성을 기준으로 안내합니다.
+          </p>
+          <ul className="mt-4 flex flex-col gap-1.5 text-caption text-ink-muted">
             <li>· {copy.mediaNote}</li>
             <li>· {copy.kitNote}</li>
           </ul>

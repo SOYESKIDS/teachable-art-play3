@@ -6,6 +6,7 @@ import { LeadCtaButton } from "@/components/forms/LeadCtaButton";
 import { ctaLabels } from "@/data/site-copy";
 import { heroNarrative as copy } from "@/data/home-narrative";
 import { STARTER_WEEKS } from "@/lib/content/starter-journey";
+import { homeImages } from "@/data/home-images";
 
 /**
  * 01 HERO — 3초 안에: 누구를 위한 것인지 · 무엇을 해결하는지 · 무엇이 다른지.
@@ -99,12 +100,12 @@ export function HeroSection() {
           </ul>
         </div>
 
-        {/* 실제 수업 현장 사진 + STARTER 1주차 수업안 카드 */}
-        <div className="relative mb-16 lg:mb-0">
-          <div className="relative aspect-[3/2] w-full overflow-hidden rounded-3xl border border-white/60 bg-navy shadow-[var(--shadow-elevated)] ring-1 ring-line">
+        {/* 제공 이미지와 수업안을 함께 보여 주는 첫 화면 */}
+        <div className="relative">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-white/60 bg-navy shadow-[var(--shadow-elevated)] ring-1 ring-line">
             <Image
-              src="/images/site/hero/hero-class-movement.webp"
-              alt="유치원 교실에서 아이들이 화면 속 TeachAble Art Play 영상을 보며 교사와 함께 두 팔을 벌리는 실제 수업 장면"
+              src={homeImages.artPlay.src}
+              alt={homeImages.artPlay.alt}
               fill
               priority
               sizes="(min-width: 1024px) 55vw, 100vw"
@@ -112,12 +113,13 @@ export function HeroSection() {
             />
             <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/75 px-3 py-1.5 text-micro font-medium text-white backdrop-blur-sm sm:right-5 sm:top-5">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-              실제 수업 현장
+              수업 장면 예시
             </div>
           </div>
 
-          {week1 ? (
-            <div className="absolute -bottom-12 left-5 right-5 rounded-2xl border border-line bg-white/95 p-5 shadow-[var(--shadow-elevated)] backdrop-blur-sm sm:left-6 sm:right-auto sm:w-[22rem]">
+          <div className="relative -mt-9 mx-4 grid items-stretch gap-3 sm:mx-5 sm:grid-cols-[1.3fr_1fr]">
+            {week1 ? (
+            <div className="relative rounded-2xl border border-line bg-white p-5 shadow-[var(--shadow-elevated)]">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-caption font-bold text-ink-muted">STARTER {week1.week}주차 수업안</p>
                 <span className="shrink-0 rounded-full bg-secondary-soft px-2.5 py-0.5 text-micro font-bold text-secondary-strong">
@@ -140,7 +142,20 @@ export function HeroSection() {
                 </div>
               </dl>
             </div>
-          ) : null}
+            ) : null}
+            <figure className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white bg-white shadow-[var(--shadow-elevated)] sm:aspect-auto sm:min-h-48">
+              <Image
+                src={homeImages.classroom.src}
+                alt={homeImages.classroom.alt}
+                fill
+                sizes="(min-width: 1024px) 240px, (min-width: 640px) 40vw, 100vw"
+                className="object-cover"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-white/95 px-3 py-2 text-caption font-semibold text-ink">
+                교실을 알아가며 시작하는 수업
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </Container>
     </section>
