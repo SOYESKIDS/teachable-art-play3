@@ -321,6 +321,38 @@ Vercel 환경변수는 보통 **Preview 환경 단위**로 설정한다. saas-v2
    (코드 변경 · 리뷰 대상) Deployment Protection Exception 을 연 뒤 돌린다
 ```
 
+### ⚠️ 그 과정에서 찾은 것 — 로컬 개발 환경이 **운영**을 본다
+
+작업 폴더 `D:\소예키즈	eachable-art-play3` 의 `.env.local` 을 확인했다.
+**값은 읽지 않고 변수 이름과 공개 URL 의 ref 조각만** 봤다.
+
+| 항목 | 상태 |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` 의 ref | **`vpppxuhodwauaclhybtg` = 운영** |
+| `SUPABASE_SECRET_KEY` | 설정됨 (운영 Auth Admin 키) |
+| `SUPABASE_PRODUCTION_PROJECT_REF` | **없음** |
+| `SUPABASE_SECRET_KEY_PROJECT_REF` | **없음** |
+| `BLOCK_WRITES_ON_PRODUCTION_DATA` | **없음** |
+
+즉 이 PC 에서 `npm run dev` 를 띄우면 **운영 데이터베이스에 그대로 붙고,
+배포 가드는 하나도 켜져 있지 않다.** 가드는 이미 구현돼 있는데
+(`src/lib/env/deployment-guard.ts`) 값이 비어 있어 아무 판정도 하지 않는다.
+
+권하는 조치 (값은 어디에도 적지 않는다):
+
+```
+.env.local 에 세 줄을 더한다
+  SUPABASE_PRODUCTION_PROJECT_REF=vpppxuhodwauaclhybtg
+  SUPABASE_SECRET_KEY_PROJECT_REF=<그 키가 속한 프로젝트 ref>
+  BLOCK_WRITES_ON_PRODUCTION_DATA=1
+→ 비운영 실행이 운영에 쓰는 것을 서버 쓰기 경로에서 막는다.
+  로컬에서 업무 화면을 시험하려면 URL·키를 스테이징 것으로 바꾼다.
+```
+
+> 이번 화면 검증은 worktree `tap3-integration-20261012` 에서 돌렸고
+> 그 폴더에는 `.env.local` 이 **없다.** Supabase 자격 증명 없이 공개 홈페이지만
+> 띄웠으므로 운영 데이터에 닿은 적은 없다.
+
 ### 그때까지의 규칙
 
 > **확인 전에는 Preview 를 통한 시험 데이터 쓰기를 하지 않는다.**
@@ -382,4 +414,5 @@ DB 적재(`tap24_2026_1_load.sql`)는 **전부 draft 로 넣는다. 자동 발�
 | Preview 가 보는 Supabase 프로젝트 | Preview 가 SSO 뒤에 있고 저장소에 설정이 없다 (6절) |
 | `/teacher` 홈·출결 화면이 각 환경에서 실제로 뜨는지 | 주요 질의만 읽어 본 추정 |
 | 네 단계를 사람이 눌러 보는 시험 | 환경이 없다 |
+| 로컬 `.env.local` 의 키 값 자체 | 읽지 않았다 — 변수 이름과 공개 URL 의 ref 조각만 봤다 |
 | `PORTAL_THROTTLE_SALT` 가 `/admin/readiness` 에 표시되는지 | **표시되지 않는다.** `portal-throttle.ts` 주석은 「운영자는 로그와 /admin/readiness 로 원인을 본다」고 적었지만, 그 화면은 환경변수를 검사하지 않는다 — 주석이 앞서 나간 것으로 보인다 (코드는 고치지 않았다) |
