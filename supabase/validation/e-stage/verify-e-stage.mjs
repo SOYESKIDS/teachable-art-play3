@@ -52,6 +52,35 @@ async function expectError(client, label, sql, matcher, params = []) {
   }
 }
 
+/**
+ * 「막혀서 아무것도 못 가져온다」를 판정한다.
+ *
+ * ★ `catch(() => 0)` 으로 뭉뚱그리지 않는다. 그렇게 쓰면 표가 없거나 SQL 이
+ *   틀려도 **0행 성공**으로 읽혀 통과한다 — 검증이 아무것도 보지 않게 된다.
+ *
+ * 통과: 조회가 되고 0행  ·  권한 오류(42501 · RLS)로 거부
+ * 실패: 1행이라도 나옴  ·  그 밖의 오류(표 없음 · 문법 오류 · 함수 없음)
+ */
+const DENIAL_CODES = new Set(["42501"]);
+
+async function expectNoRows(client, label, sql, params = []) {
+  try {
+    const r = await client.query(sql, params);
+    const n = r.rows.length;
+    check(label, n === 0, n === 0 ? "조회 가능 · 0행" : `${n}행이 새어 나왔다`);
+  } catch (e) {
+    const denied =
+      DENIAL_CODES.has(e.code) || /row-level security|permission denied/i.test(String(e.message));
+    check(
+      label,
+      denied,
+      denied
+        ? `거부됨 (${e.code})`
+        : `예상 밖 오류 [${e.code}] ${String(e.message).split("\n")[0]}`,
+    );
+  }
+}
+
 const one = async (client, sql, params = []) => (await client.query(sql, params)).rows[0];
 const count = async (client, sql, params = []) => Number((await one(client, sql, params)).c);
 
@@ -375,21 +404,30 @@ async function main() {
     /row-level security|permission denied|violates|거부/i,
     [w1],
   );
-  check(
+  await expectNoRows(
+    plainClient,
     "본사가 아닌 사용자에게 검수 기록이 0행이다",
-    (await count(plainClient, "select count(*) c from public.lesson_review_notes").catch(() => 0)) === 0,
+    "select id from public.lesson_review_notes limit 5",
   );
-  check(
+  await expectNoRows(
+    plainClient,
     "본사가 아닌 사용자에게 본사 결정이 0행이다",
-    (await count(plainClient, "select count(*) c from public.lesson_hq_decisions").catch(() => 0)) === 0,
+    "select id from public.lesson_hq_decisions limit 5",
   );
-  check(
+  await expectNoRows(
+    plainClient,
     "본사가 아닌 사용자에게 원문 출처가 0행이다",
-    (await count(plainClient, "select count(*) c from public.lesson_source_documents").catch(() => 0)) === 0,
+    "select id from public.lesson_source_documents limit 5",
   );
-  check(
+  await expectNoRows(
+    plainClient,
     "본사가 아닌 사용자에게 장면 직접 조회가 0행이다 (RPC 로만 읽는다)",
-    (await count(plainClient, "select count(*) c from public.lesson_scenes").catch(() => 0)) === 0,
+    "select id from public.lesson_scenes limit 5",
+  );
+  await expectNoRows(
+    plainClient,
+    "소속 없는 사용자는 수업 본문(body·body_json)도 0행이다",
+    "select body, body_json from public.lesson_sections limit 5",
   );
   await expectError(
     plainClient,
@@ -476,9 +514,68 @@ async function main() {
   ).rows.length;
   check("상품 범위 밖(24주차)은 발행돼도 8주 계약 교사에게 0행", seenW24 === 0, `${seenW24}개 장면`);
 
+  await expectNoRows(
+    teacherClient,
+    "범위 밖 주차는 장면 직접 조회로도 0행이다",
+    "select id from public.lesson_scenes where lesson_id = $1",
+    [w24],
+  );
+
+  // ── 본문 직접 조회 (E4) ──
+  // ★ 장면보다 본문이 담는 내용이 많다. E3 는 장면만 막았고 본문은 「활성
+  //   기관 구성원 ∧ 게시됨」 이면 **어느 주차든** 읽혔다 — 더 큰 구멍이었다.
+  await expectNoRows(
+    teacherClient,
+    "8주 계약 교사는 24주 본문(body·body_json)을 읽지 못한다",
+    "select body, body_json from public.lesson_sections where lesson_id = $1",
+    [w24],
+  );
+
+  // 수업 활동도 같은 내용을 담는 다른 문이다. 고정자료가 없으면 검사가
+  // 공허하게 통과하므로 양쪽 주차에 실제 행을 심어 두고 본다.
+  await admin.query(
+    `insert into public.lesson_activities (lesson_id, sequence_no, title, activity_type)
+     values ($1, 1, '검증용 활동 1주', 'activity'), ($2, 1, '검증용 활동 24주', 'activity')
+     on conflict (lesson_id, sequence_no) do nothing`,
+    [w1, w24],
+  );
+  await expectNoRows(
+    teacherClient,
+    "8주 계약 교사는 24주 수업 활동도 읽지 못한다",
+    "select id from public.lesson_activities where lesson_id = $1",
+    [w24],
+  );
+
+  // 반대쪽도 본다. 전부 막아 놓고 통과시키면 검증이 아니다.
+  const w1Body = (
+    await teacherClient.query("select body, body_json from public.lesson_sections where lesson_id = $1", [w1])
+  ).rows.length;
+  check("계약 범위 안 주차의 본문은 담당 교사에게 읽힌다", w1Body === 17, `${w1Body}개 섹션`);
+  const w1Act = (
+    await teacherClient.query("select id from public.lesson_activities where lesson_id = $1", [w1])
+  ).rows.length;
+  check("계약 범위 안 주차의 수업 활동은 담당 교사에게 읽힌다", w1Act === 1, `${w1Act}행`);
+
+  // ── 교안 버전 일치 ──
+  // 교사 화면은 **계약 → 상품 버전 → 프로그램** 으로 교안을 찾고, 교실 화면은
+  // **회차 → 배정 → 프로그램** 으로 찾는다. 두 경로가 다른 교안을 가리키면
+  // 교사는 화면과 교실 화면이 다른데도 알 수 없다.
+  const sameProgram = await one(
+    admin,
+    `select
+       (select pvp.program_id
+          from public.contracts c
+          join public.product_version_programs pvp on pvp.product_version_id = c.product_version_id
+         where c.organization_id = $1 and c.status = 'active' limit 1) as by_contract,
+       (select cpa.program_id
+          from public.class_program_assignments cpa
+         where cpa.class_id = $2 and cpa.status = 'active' limit 1) as by_assignment`,
+    [fx.org_id, fx.class_id],
+  );
   check(
-    "범위 밖 주차는 표 직접 조회로도 0행이다",
-    (await count(teacherClient, "select count(*) c from public.lesson_scenes where lesson_id = $1", [w24]).catch(() => 0)) === 0,
+    "계약이 가리키는 교안과 반 배정 교안이 같다 (화면·인쇄물·교실 화면이 같은 버전)",
+    sameProgram.by_contract !== null && sameProgram.by_contract === sameProgram.by_assignment,
+    `계약 ${sameProgram.by_contract} · 배정 ${sameProgram.by_assignment}`,
   );
 
   // 다른 기관 교사
@@ -500,11 +597,77 @@ async function main() {
     /이 반의 콘텐츠를 볼 수 없습니다/,
     [fx.class_id, w1],
   );
-  check(
+  await expectNoRows(
+    otherClient,
     "다른 기관 교사에게 장면 직접 조회는 0행이다",
-    (await count(otherClient, "select count(*) c from public.lesson_scenes").catch(() => 0)) === 0,
+    "select id from public.lesson_scenes limit 5",
+  );
+  await expectNoRows(
+    otherClient,
+    "다른 기관 교사는 1주차 본문도 읽지 못한다",
+    "select body, body_json from public.lesson_sections where lesson_id = $1",
+    [w1],
   );
 
+  // ── 담당 외 반 ──
+  // 같은 기관이지만 담당 반이 없는 구성원. 기관으로 묶여 있다는 것만으로
+  // 본문이 열리는지 본다.
+  const bystander = (
+    await one(admin, "insert into auth.users (email) values ('bystander@test.local') returning id")
+  ).id;
+  await admin.query(
+    "insert into public.organization_members (organization_id, user_id, role, status) values ($1, $2, 'teacher', 'active')",
+    [fx.org_id, bystander],
+  );
+  const bystanderClient = new pg.Client({ connectionString: url });
+  await bystanderClient.connect();
+  await bystanderClient.query("set role authenticated");
+  await asUser(bystanderClient, bystander);
+  await expectError(
+    bystanderClient,
+    "담당 외 반은 같은 기관 교사에게도 장면 RPC 가 거부된다",
+    "select * from public.list_lesson_scenes_for_class($1, $2)",
+    /이 반의 콘텐츠를 볼 수 없습니다/,
+    [fx.class_id, w1],
+  );
+  await expectNoRows(
+    bystanderClient,
+    "담당 외 반은 24주 본문도 0행이다",
+    "select body, body_json from public.lesson_sections where lesson_id = $1",
+    [w24],
+  );
+
+  // ── 만료 계약 ──
+  // 담당 교사여도 계약이 끝나면 닫혀야 한다. 기간이 지난 뒤에도 읽히면
+  // 해지한 기관이 교안을 계속 쓴다.
+  await admin.query("set session_replication_role = replica");
+  await admin.query(
+    "update public.contracts set start_date = current_date - 400, end_date = current_date - 1 where organization_id = $1",
+    [fx.org_id],
+  );
+  await admin.query("set session_replication_role = origin");
+
+  await expectNoRows(
+    teacherClient,
+    "만료된 계약에서는 1주차 본문이 읽히지 않는다",
+    "select body, body_json from public.lesson_sections where lesson_id = $1",
+    [w1],
+  );
+  await expectNoRows(
+    teacherClient,
+    "만료된 계약에서는 1주차 수업 활동도 읽히지 않는다",
+    "select id from public.lesson_activities where lesson_id = $1",
+    [w1],
+  );
+  await expectError(
+    teacherClient,
+    "만료된 계약에서는 장면 RPC 가 거부한다",
+    "select * from public.list_lesson_scenes_for_class($1, $2)",
+    /이 반의 콘텐츠를 볼 수 없습니다/,
+    [fx.class_id, w1],
+  );
+
+  await bystanderClient.end();
   await teacherClient.end();
   await otherClient.end();
   await hqClient.end();

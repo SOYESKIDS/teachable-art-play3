@@ -37,8 +37,23 @@ export type WeekDbFailure =
   | "query_failed"
   | "section_decode_failed";
 
+/**
+ * 이 콘텐츠가 **어느 교안 버전의 어느 차시인가.**
+ *
+ * ★ 교사 화면·인쇄물·교실 화면이 같은 버전을 쓰는지 확인하려면 각 경로가
+ *   무엇을 읽었는지 말할 수 있어야 한다. 「24주차」만으로는 같은지 다른지
+ *   알 수 없다 — 같은 주차를 담은 프로그램이 여럿일 수 있다.
+ */
+export interface WeekVersionRef {
+  programId: string;
+  programCode: string;
+  lessonId: string;
+  weekNo: number;
+  sessionNo: number;
+}
+
 export type WeekDbResult =
-  | { ok: true; result: WeekContentResult }
+  | { ok: true; result: WeekContentResult; version: WeekVersionRef }
   | { ok: false; reason: WeekDbFailure; detail: string };
 
 /** 블록 키 ↔ 섹션 코드는 주차마다 다르다 (8·9번이 뒤바뀐다) → body_json 이 스스로 밝힌다 */
@@ -225,6 +240,18 @@ export async function getWeekContentFromDb(
 
   const lessonId = lessonQuery.data.id as string;
   const lessonStatus = lessonQuery.data.status as string;
+  const programRow = lessonQuery.data.curriculum_programs as
+    | { id: string; code: string }
+    | { id: string; code: string }[]
+    | null;
+  const programMeta = Array.isArray(programRow) ? programRow[0] : programRow;
+  if (!programMeta) {
+    return {
+      ok: false,
+      reason: "program_not_found",
+      detail: `차시 ${lessonId} 의 프로그램을 읽지 못했다`,
+    };
+  }
 
   // ★ 발행 여부는 **DB 가 들고 있는 값**이다. 저장소 지도(WEEK_INDEX)의
   //   publication 을 믿지 않는다 — 그것은 전사 작업용 표시다.
@@ -298,7 +325,180 @@ export async function getWeekContentFromDb(
       hidden: visible ? null : hiddenReason(dbStatus),
       content,
     },
+    version: {
+      programId: programMeta.id,
+      programCode: programMeta.code,
+      lessonId,
+      weekNo,
+      sessionNo,
+    },
   };
+}
+
+
+/**
+ * 프로그램 코드로 교안 버전을 찾는다 — **본사 검수 경로용.**
+ *
+ * ★ 본사 검수는 계약을 거치지 않는다. 그래서 어떤 프로그램을 보는지
+ *   화면이 **명시**해야 한다. 「아무 프로그램이나 첫 번째」로 고르면
+ *   검수자는 자기가 무엇을 승인했는지 모르게 된다.
+ */
+export async function resolveProgramByCode(
+  client: SupabaseClient,
+  code: string,
+): Promise<{ ok: true; programId: string } | { ok: false; reason: WeekDbFailure; detail: string }> {
+  const query = await client
+    .from("curriculum_programs")
+    .select("id")
+    .eq("code", code)
+    .maybeSingle();
+
+  if (query.error) {
+    return { ok: false, reason: "query_failed", detail: query.error.message };
+  }
+  if (!query.data) {
+    return {
+      ok: false,
+      reason: "program_not_found",
+      detail: `교안 프로그램 ${code} 가 데이터베이스에 없습니다. 적재가 끝나지 않았습니다.`,
+    };
+  }
+  return { ok: true, programId: query.data.id as string };
+}
+
+
+export interface ProgramWeekRow {
+  weekNo: number;
+  sessionNo: number;
+  version: WeekVersionRef;
+  result: WeekContentResult;
+}
+
+/**
+ * 한 프로그램의 **모든 주차**를 한 번에 읽는다 (본사 24주 목록용).
+ *
+ * ★ 주차마다 따로 조회하면 24번 × 네 질의가 된다. 목록 하나에 백 번 가까이
+ *   왕복하면 화면이 느려지고, 느린 화면은 사람이 건너뛴다.
+ *   그래서 네 질의로 끝내고 묶는 일은 여기서 한다.
+ * ★ 실패는 숨기지 않는다. 디코드가 깨진 주차는 그 주차만 이유와 함께 돌려준다.
+ */
+export async function getProgramWeeksFromDb(
+  client: SupabaseClient,
+  programId: string,
+  audience: ContentAudience = "internal_review",
+): Promise<
+  | { ok: true; weeks: ProgramWeekRow[]; broken: { weekNo: number; detail: string }[] }
+  | { ok: false; reason: WeekDbFailure; detail: string }
+> {
+  const lessonsQuery = await client
+    .from("curriculum_lessons")
+    .select("id, week_no, session_no, status, curriculum_programs!inner(id, code)")
+    .eq("program_id", programId)
+    .order("week_no", { ascending: true });
+
+  if (lessonsQuery.error) {
+    return { ok: false, reason: "query_failed", detail: lessonsQuery.error.message };
+  }
+  const lessons = lessonsQuery.data ?? [];
+  if (lessons.length === 0) {
+    return { ok: false, reason: "lesson_not_found", detail: `프로그램 ${programId} 에 차시가 없다` };
+  }
+
+  const lessonIds = lessons.map((l) => l.id as string);
+
+  const [sectionsQuery, scenesQuery, sourcesQuery, notesQuery] = await Promise.all([
+    client
+      .from("lesson_sections")
+      .select("lesson_id, section_code, body, body_json, source_ref")
+      .in("lesson_id", lessonIds)
+      .order("section_code", { ascending: true }),
+    client
+      .from("lesson_scenes")
+      .select("lesson_id, scene_no, scene_type, kid_text, stage_label, teacher_note, source_ref, base_seconds")
+      .in("lesson_id", lessonIds)
+      .order("scene_no", { ascending: true }),
+    client.from("lesson_source_documents").select("lesson_id, file_name").in("lesson_id", lessonIds),
+    // 검수 기록은 본사 경로에서만 읽는다. 기관 경로는 조회조차 하지 않는다.
+    audience === "internal_review"
+      ? client
+          .from("lesson_review_notes")
+          .select("lesson_id, section_label, page_no, issue, category, status, evidence")
+          .in("lesson_id", lessonIds)
+          .order("page_no", { ascending: true })
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  for (const q of [sectionsQuery, scenesQuery, sourcesQuery, notesQuery]) {
+    if (q.error) return { ok: false, reason: "query_failed", detail: q.error.message };
+  }
+
+  const groupBy = <T extends { lesson_id: string }>(rows: T[] | null) => {
+    const map = new Map<string, T[]>();
+    for (const r of rows ?? []) {
+      const list = map.get(r.lesson_id);
+      if (list) list.push(r);
+      else map.set(r.lesson_id, [r]);
+    }
+    return map;
+  };
+
+  const sectionsByLesson = groupBy(sectionsQuery.data as (SectionRow & { lesson_id: string })[] | null);
+  const scenesByLesson = groupBy(scenesQuery.data as (SceneRow & { lesson_id: string })[] | null);
+  const sourcesByLesson = groupBy(sourcesQuery.data as { lesson_id: string; file_name: string }[] | null);
+  const notesByLesson = groupBy(notesQuery.data as (NoteRow & { lesson_id: string })[] | null);
+
+  const weeks: ProgramWeekRow[] = [];
+  const broken: { weekNo: number; detail: string }[] = [];
+
+  for (const lesson of lessons) {
+    const lessonId = lesson.id as string;
+    const weekNo = lesson.week_no as number;
+    const sessionNo = lesson.session_no as number;
+    const summary = weekSummary(weekNo);
+    if (!summary) {
+      broken.push({ weekNo, detail: `${weekNo}주차는 24주 지도에 없다` });
+      continue;
+    }
+
+    const decoded = decodeSections(sectionsByLesson.get(lessonId) ?? []);
+    if (!decoded.ok) {
+      broken.push({ weekNo, detail: decoded.detail });
+      continue;
+    }
+
+    const publication = (lesson.status as string) === "published" ? "published" : "draft";
+    const dbStatus = { ...summary.status, publication } as typeof summary.status;
+    const visible = isVisibleTo(dbStatus, audience);
+    const programRow = lesson.curriculum_programs as
+      | { id: string; code: string }
+      | { id: string; code: string }[]
+      | null;
+    const programMeta = Array.isArray(programRow) ? programRow[0] : programRow;
+    if (!programMeta) {
+      broken.push({ weekNo, detail: "프로그램 메타를 읽지 못했다" });
+      continue;
+    }
+
+    weeks.push({
+      weekNo,
+      sessionNo,
+      version: { programId: programMeta.id, programCode: programMeta.code, lessonId, weekNo, sessionNo },
+      result: {
+        origin: "database",
+        bodyVisible: visible,
+        hidden: visible ? null : hiddenReason(dbStatus),
+        content: {
+          summary: { ...summary, status: dbStatus },
+          blocks: visible ? decoded.blocks : EMPTY_BLOCKS,
+          scenes: visible ? decodeScenes(scenesByLesson.get(lessonId) ?? []) : [],
+          sourceFile: sourcesByLesson.get(lessonId)?.[0]?.file_name ?? null,
+          transcriptionNotes: decodeNotes(notesByLesson.get(lessonId) ?? []),
+        },
+      },
+    });
+  }
+
+  return { ok: true, weeks, broken };
 }
 
 /**

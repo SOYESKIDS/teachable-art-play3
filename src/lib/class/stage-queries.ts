@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { loadClassScenes, loadWeekContent } from "@/lib/weeks/week-content-source";
 import type { WeekScene } from "@/lib/weeks/week-types";
 
 /**
@@ -34,6 +34,13 @@ function log(scope: string, code: string | undefined) {
 export interface StageData {
   sessionId: string;
   weekNo: number;
+  /**
+   * 어느 교안 버전의 어느 차시를 띄웠나. fixture 모드에서는 null.
+   *
+   * ★ 교사 화면·인쇄물과 **같은 버전**인지 확인하는 데 쓴다. 세 화면이 각자
+   *   「3주차」를 읽었다는 것만으로는 같은 내용을 봤다고 말할 수 없다.
+   */
+  lessonId: string | null;
   /** 수업명 (그림책 제목). 원아 정보가 아니다 */
   lessonTitle: string;
   /** 주차 테마색 — 책갈피에 쓴다 */
@@ -45,7 +52,12 @@ export interface StageData {
 
 export type StageResult =
   | { ok: true; data: StageData }
-  | { ok: false; reason: "invalid_id" | "not_found" | "load_failed" | "no_week" };
+  | {
+      ok: false;
+      reason: "invalid_id" | "not_found" | "load_failed" | "no_week" | "content_failed";
+      /** `content_failed` 일 때 왜 못 열었는지 (조용히 대체하지 않으므로 적어야 한다) */
+      detail?: string;
+    };
 
 export async function fetchStageData(
   supabase: SupabaseClient,
@@ -56,10 +68,11 @@ export async function fetchStageData(
     return { ok: false, reason: "invalid_id" };
   }
 
-  // ★ 이 select 에는 원아·교사 관련 열이 없다.
+  // ★ 이 select 에는 원아·교사 관련 열이 없다. 반·차시 id 는 **장면 권한
+  //   RPC 에 넘기기 위해** 읽는다 — 화면에 그리지 않는다.
   const { data, error } = await supabase
     .from("class_sessions")
-    .select("id, week_no")
+    .select("id, week_no, class_id, lesson_id, program_id")
     .eq("id", sessionId)
     .eq("organization_id", organizationId)
     .maybeSingle();
@@ -70,22 +83,66 @@ export async function fetchStageData(
   }
   if (!data) return { ok: false, reason: "not_found" };
 
-  const weekNo = (data as { week_no: number | null }).week_no;
+  const row = data as {
+    week_no: number | null;
+    class_id: string;
+    lesson_id: string;
+    program_id: string;
+  };
+  const weekNo = row.week_no;
   if (typeof weekNo !== "number") return { ok: false, reason: "no_week" };
 
-  // ★ 교실 화면은 정식 서비스 경로다. 발행된 주차의 장면만 내려온다.
-  const content = getWeekContent(weekNo, "service");
-  if (!content) return { ok: false, reason: "no_week" };
+  // ★ 교실 화면은 정식 서비스 경로다. 발행된 주차의 본문만 내려온다.
+  // ★ 출처는 CONTENT_SOURCE 게이트가 정한다. **프로그램을 회차 행에서** 가져온다 —
+  //   주차 번호로 교안을 고르지 않는다. 같은 3주차를 담은 교안이 여럿일 수 있다.
+  const loaded = await loadWeekContent(supabase, {
+    weekNo,
+    audience: "service",
+    organizationId,
+    programId: loadedProgramId(row.program_id),
+  });
+
+  if (!loaded.ok) {
+    // ★ fixture 로 조용히 대체하지 않는다. 아이들 앞에 띄우는 화면이 저장된
+    //   것과 다르면 교사는 그 사실을 알 수 없다.
+    log("content", loaded.reason);
+    return { ok: false, reason: "content_failed", detail: loaded.detail };
+  }
+
+  // ── 장면 ──
+  // fixture 모드면 읽어 온 content 의 장면을 그대로 쓴다.
+  // database 모드면 **권한 RPC** 로 읽는다. 장면 표 직접 조회는 본사만 된다.
+  let scenes = loaded.result.content.scenes;
+  if (loaded.version !== null) {
+    const viaRpc = await loadClassScenes(supabase, row.class_id, loaded.version.lessonId);
+    if (!viaRpc.ok) {
+      log("scenes", undefined);
+      return { ok: false, reason: "content_failed", detail: viaRpc.detail };
+    }
+    scenes = viaRpc.scenes;
+  }
 
   return {
     ok: true,
     data: {
       sessionId,
       weekNo,
-      lessonTitle: content.content.summary.title,
-      themeColor: content.content.summary.themeColor,
-      scenes: content.content.scenes,
-      contentUnavailable: !content.bodyVisible || content.content.scenes.length === 0,
+      lessonId: loaded.version?.lessonId ?? null,
+      lessonTitle: loaded.result.content.summary.title,
+      themeColor: loaded.result.content.summary.themeColor,
+      scenes,
+      contentUnavailable: !loaded.result.bodyVisible || scenes.length === 0,
     },
   };
+}
+
+/**
+ * 회차 행의 프로그램 id.
+ *
+ * fixture 모드에서는 쓰이지 않지만(주차 번호로 지도를 읽는다), database 모드
+ * 에서는 **이 값이 교안 버전을 정한다.** 계약을 다시 뒤지지 않는 이유는,
+ * 회차가 이미 「어느 교안의 어느 차시」인지 들고 있기 때문이다.
+ */
+function loadedProgramId(programId: string | null | undefined): string | undefined {
+  return typeof programId === "string" && programId.length > 0 ? programId : undefined;
 }

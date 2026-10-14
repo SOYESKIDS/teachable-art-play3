@@ -495,7 +495,9 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
                   {scene.stageLabel ? (
                     <span className="text-navy/70">{scene.stageLabel}</span>
                   ) : null}
-                  <span className="text-[12px] text-navy/45">출처 {scene.sourceRef}</span>
+                  {scene.sourceRef ? (
+                    <span className="text-[12px] text-navy/45">출처 {scene.sourceRef}</span>
+                  ) : null}
                   {scene.baseSeconds !== null ? (
                     <span className="text-[12px] tabular-nums text-navy/45">
                       권장 {Math.round(scene.baseSeconds / 60)}분

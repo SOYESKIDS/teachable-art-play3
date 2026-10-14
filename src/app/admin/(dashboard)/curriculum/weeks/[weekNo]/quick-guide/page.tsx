@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { TAP24_PROGRAM_CODE } from "@/lib/weeks/week-program";
+import { loadWeekContentForReview } from "@/lib/weeks/week-content-source";
 import { QuickGuideSheet } from "@/components/weeks/QuickGuideSheet";
 import { PrintButton } from "@/components/weeks/PrintButton";
 
@@ -26,14 +27,38 @@ interface AdminQuickGuidePageProps {
  *   그 제한을 여기서 우회하는 것이 아니라, 받는 사람이 달라 다른 경로다.
  */
 export default async function AdminQuickGuidePage({ params }: AdminQuickGuidePageProps) {
-  await requireAdmin();
+  const { supabase } = await requireAdmin();
   const { weekNo: raw } = await params;
 
   const weekNo = Number(raw);
   if (!Number.isInteger(weekNo) || weekNo < 1 || weekNo > 24) notFound();
 
-  const result = getWeekContent(weekNo, "internal_review");
-  if (!result) notFound();
+  // ★ 검수 대상 교안을 코드로 못 박는다 (본사 경로는 계약을 거치지 않는다).
+  const loaded = await loadWeekContentForReview(supabase, weekNo);
+
+  if (!loaded.ok) {
+    return (
+      <main className="min-h-screen bg-navy/5 py-10">
+        <section className="mx-auto w-full max-w-[186mm] rounded-xl border border-amber-300 bg-amber-50 px-6 py-8">
+          <h1 className="text-[18px] font-bold text-amber-900">
+            {weekNo}주차 퀵 가이드를 열지 못했습니다
+          </h1>
+          <p className="mt-2 text-[14px] leading-relaxed text-amber-900">{loaded.detail}</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-amber-900">
+            검수 대상 교안: {TAP24_PROGRAM_CODE} · {weekNo}주차
+          </p>
+          <Link
+            href={`/admin/curriculum/weeks/${weekNo}`}
+            className="mt-4 inline-flex min-h-11 items-center text-[14px] font-semibold text-navy underline"
+          >
+            {weekNo}주차 원문 대조로 돌아가기
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const result = loaded.result;
 
   return (
     <main className="min-h-screen bg-navy/5 py-6 print:bg-white print:py-0">

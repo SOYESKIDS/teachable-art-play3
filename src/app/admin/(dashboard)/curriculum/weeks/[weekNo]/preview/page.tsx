@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { TAP24_PROGRAM_CODE } from "@/lib/weeks/week-program";
+import { loadWeekContentForReview } from "@/lib/weeks/week-content-source";
 import { ClassStage } from "@/components/class/ClassStage";
 
 export const metadata: Metadata = {
@@ -34,18 +35,42 @@ interface PreviewPageProps {
  * 본사 직원만 들어오는 내부 화면이고, 공개 샘플의 재료가 아니다.
  */
 export default async function WeekStagePreviewPage({ params }: PreviewPageProps) {
-  await requireAdmin();
+  const { supabase } = await requireAdmin();
   const { weekNo: raw } = await params;
 
   const weekNo = Number(raw);
   if (!Number.isInteger(weekNo) || weekNo < 1 || weekNo > 24) notFound();
 
-  // ★ 내부 검수 경로 — 전사된 장면까지 본다.
-  const result = getWeekContent(weekNo, "internal_review");
-  if (!result) notFound();
-
-  const { content, bodyVisible } = result;
   const backHref = "/admin/curriculum";
+
+  // ★ 내부 검수 경로 — 전사된 장면까지 본다.
+  // ★ 어느 교안 버전을 검수하는지 **명시**한다. 주차 번호로 찾다가 다른
+  //   버전을 승인하는 길을 두지 않는다.
+  const loaded = await loadWeekContentForReview(supabase, weekNo);
+
+  if (!loaded.ok) {
+    // ★ fixture 로 대체하지 않는다. 검수자가 저장된 것과 다른 것을 승인하면
+    //   발행된 내용과 검수한 내용이 어긋난다.
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-stage p-12 text-center">
+        <h1 className="font-serif text-[28px] font-bold text-forest">
+          {weekNo}주차 장면을 열지 못했습니다
+        </h1>
+        <p className="max-w-[52ch] text-[16px] leading-relaxed text-muted-ink">{loaded.detail}</p>
+        <p className="max-w-[52ch] text-[14px] leading-relaxed text-muted-ink">
+          검수 대상 교안: {TAP24_PROGRAM_CODE} · {weekNo}주차
+        </p>
+        <Link
+          href={backHref}
+          className="inline-flex min-h-12 items-center rounded-[10px] border border-rule px-5 text-[16px] font-semibold text-forest"
+        >
+          교육과정으로 돌아가기
+        </Link>
+      </main>
+    );
+  }
+
+  const { content, bodyVisible } = loaded.result;
 
   if (!bodyVisible || content.scenes.length === 0) {
     return (

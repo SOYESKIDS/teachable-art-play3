@@ -8,7 +8,7 @@ import {
   publishBlockers,
   PUBLISH_BLOCKER_NOTE,
 } from "@/lib/weeks/content-state";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { loadWeekRollupForReview } from "@/lib/weeks/week-content-source";
 import { SECTION_TOTAL, weekCoverage } from "@/lib/weeks/week-coverage";
 import {
   ASSET_ACCESS_NOTE,
@@ -17,6 +17,7 @@ import {
   fetchWeekAssetRollup,
 } from "@/lib/weeks/week-asset-queries";
 import { WEEK_INDEX } from "@/lib/weeks/week-index";
+import { TAP24_PROGRAM_CODE } from "@/lib/weeks/week-program";
 import { PARTS, unresolvedNotes } from "@/lib/weeks/week-types";
 
 export const metadata: Metadata = {
@@ -46,12 +47,38 @@ export default async function AdminWeekReviewPage() {
 
   const assetRollup = await fetchWeekAssetRollup(supabase);
 
+  // ★ 내부 검수 경로 — 전사된 본문까지 읽는다.
+  // ★ 출처는 CONTENT_SOURCE 게이트가 정한다. database 모드에서 실패하면
+  //   fixture 로 메우지 않는다 — 목록이 정상처럼 보이면 적재가 안 된 것을
+  //   아무도 모른다.
+  const rollup = await loadWeekRollupForReview(supabase);
+
+  if (!rollup.ok) {
+    return (
+      <div className="mx-auto w-full max-w-[900px] px-5 py-10">
+        <h1 className="text-[22px] font-bold text-navy">주차 콘텐츠를 열지 못했습니다</h1>
+        <p className="mt-2 text-[15px] leading-relaxed text-navy/80">{rollup.detail}</p>
+        <p className="mt-3 text-[14px] leading-relaxed text-navy/55">
+          저장소 fixture 로 대신 보여드리지 않습니다. 검수자가 저장된 것과 다른 내용을
+          승인하면 발행본과 검수본이 어긋납니다.
+        </p>
+      </div>
+    );
+  }
+
+  const byWeek = new Map(rollup.weeks.map((w) => [w.weekNo, w]));
+
   const rows = WEEK_INDEX.map((summary) => {
-    // ★ 내부 검수 경로 — 전사된 본문까지 읽는다.
-    const result = getWeekContent(summary.weekNo, "internal_review");
-    const coverage = result ? weekCoverage(result.content) : null;
-    const notes = result?.content.transcriptionNotes ?? [];
-    return { summary, coverage, openNotes: unresolvedNotes(notes).length };
+    const loaded = byWeek.get(summary.weekNo);
+    const coverage = loaded ? weekCoverage(loaded.result.content) : null;
+    const notes = loaded?.result.content.transcriptionNotes ?? [];
+    return {
+      // ★ database 모드에서는 발행 상태가 DB 값이다. 저장소 지도의 표시를
+      //   덮어쓴다 — 지도 쪽은 전사 작업용 메모다.
+      summary: loaded ? loaded.result.content.summary : summary,
+      coverage,
+      openNotes: unresolvedNotes(notes).length,
+    };
   });
 
   const transcribedCount = rows.filter(
@@ -66,7 +93,40 @@ export default async function AdminWeekReviewPage() {
         <p className="text-[14px] text-navy/55">
           공식 교사용 수업가이드 원문과 서비스에 들어온 전사본을 주차별로 대조합니다.
         </p>
+        {/*
+          ★ 지금 보고 있는 것이 **저장소 fixture 인지 DB 적재본인지** 적는다.
+            적지 않으면 검수자는 자기가 무엇을 승인하는지 모른다.
+        */}
+        <p className="mt-1 text-[13px] text-navy/55">
+          콘텐츠 출처:{" "}
+          <span className="font-semibold text-navy">
+            {rollup.mode === "database" ? "데이터베이스 적재본" : "저장소 fixture (DB 미연결)"}
+          </span>
+          {rollup.mode === "database" ? ` · 교안 ${TAP24_PROGRAM_CODE}` : ""}
+        </p>
       </div>
+
+      {rollup.broken.length > 0 ? (
+        /* 디코드가 깨진 주차는 숨기지 않는다. 비어 보이는 것과 깨진 것은 다르다. */
+        <section
+          role="alert"
+          className="mt-4 rounded-xl border border-red-300 bg-red-50 px-5 py-4"
+        >
+          <h2 className="text-[15px] font-bold text-red-900">
+            저장된 내용을 읽지 못한 주차 {rollup.broken.length}건
+          </h2>
+          <ul className="mt-2 flex flex-col gap-1">
+            {rollup.broken.map((b) => (
+              <li key={b.weekNo} className="text-[13px] leading-relaxed text-red-900">
+                {b.weekNo}주차 — {b.detail}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[13px] leading-relaxed text-red-900">
+            이 주차는 아래 표에서 전사 전과 같아 보입니다. 적재를 다시 확인해 주세요.
+          </p>
+        </section>
+      ) : null}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-navy/10 bg-white px-5 py-4">

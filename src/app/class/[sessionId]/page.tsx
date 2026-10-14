@@ -39,6 +39,36 @@ export default async function ClassStagePage({ params, searchParams }: ClassPage
 
   if (!result.ok) {
     if (result.reason === "load_failed") throw new Error("class stage load failed");
+    if (result.reason === "content_failed") {
+      /*
+        ★ 「장면이 없다」와 「못 읽었다」를 구분해 적는다. 아이들 앞에서 화면이
+          안 열렸을 때 교사가 무엇을 해야 하는지 달라진다 — 전자는 인쇄물로
+          진행하면 되고, 후자는 담당자에게 알려야 한다.
+        ★ 이전 내용을 대신 띄우지 않는다.
+      */
+      return (
+        <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-stage p-12 text-center">
+          <h1 className="font-serif text-[30px] font-bold text-forest">
+            교실 화면을 열지 못했습니다
+          </h1>
+          <p className="max-w-[48ch] text-[17px] leading-relaxed text-muted-ink">
+            {result.detail ?? "수업 내용을 읽지 못했습니다."}
+          </p>
+          <p className="max-w-[48ch] text-[15px] leading-relaxed text-muted-ink">
+            저장된 내용과 다를 수 있어 이전 내용을 대신 띄우지 않습니다. 수업은 인쇄된
+            가이드로 진행해 주시고, 기관 담당자에게 알려 주세요.
+          </p>
+          <Link
+            href={`/teacher/sessions/${sessionId}/during?org=${encodeURIComponent(
+              membership.organizationId,
+            )}`}
+            className="inline-flex min-h-12 items-center rounded-[10px] border border-rule px-5 text-[16px] font-semibold text-forest"
+          >
+            수업 화면으로 돌아가기
+          </Link>
+        </main>
+      );
+    }
     notFound();
   }
 

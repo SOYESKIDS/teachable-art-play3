@@ -5,7 +5,7 @@ import { requireTeacher } from "@/lib/auth/organization";
 import { resolveMembership } from "@/lib/staff/membership";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { HIDDEN_REASON_NOTE } from "@/lib/weeks/content-state";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { loadWeekContent } from "@/lib/weeks/week-content-source";
 import { QuickGuideSheet } from "@/components/weeks/QuickGuideSheet";
 import { PrintButton } from "@/components/weeks/PrintButton";
 
@@ -44,7 +44,7 @@ export default async function TeacherQuickGuidePage({
   params,
   searchParams,
 }: QuickGuidePageProps) {
-  const { memberships } = await requireTeacher();
+  const { memberships, supabase } = await requireTeacher();
   const { weekNo: raw } = await params;
   const query = await searchParams;
 
@@ -63,8 +63,39 @@ export default async function TeacherQuickGuidePage({
   }
 
   // ★ 정식 경로 — 발행된 것만 본문이 들어온다.
-  const result = getWeekContent(weekNo, "service");
-  if (!result) notFound();
+  // ★ 출처는 CONTENT_SOURCE 게이트가 정한다. 교사 주차 화면과 **같은 경로로**
+  //   같은 계약·같은 교안 버전을 읽는다 — 화면과 인쇄물이 다른 내용이면
+  //   교사는 둘 중 어느 것을 들고 들어가야 할지 알 수 없다.
+  const loaded = await loadWeekContent(supabase, {
+    weekNo,
+    audience: "service",
+    organizationId: membership.organizationId,
+  });
+
+  if (!loaded.ok) {
+    // ★ fixture 로 조용히 대체하지 않는다. 종이로 나간 뒤에는 회수할 수 없다.
+    return (
+      <main className="min-h-screen bg-paper py-10">
+        <section className="mx-auto w-full max-w-[186mm] rounded-[10px] border border-warning-border bg-warning-soft px-6 py-8">
+          <h1 className="text-[18px] font-bold text-warning-text">
+            {weekNo}주차 퀵 가이드를 열지 못했습니다
+          </h1>
+          <p className="mt-2 text-[15px] leading-relaxed text-warning-text">{loaded.detail}</p>
+          <p className="mt-2 text-[14px] leading-relaxed text-warning-text">
+            이전 내용을 대신 인쇄하지 않습니다. 저장된 내용과 다를 수 있습니다.
+          </p>
+          <Link
+            href={`/teacher/weeks/${weekNo}?org=${encodeURIComponent(membership.organizationId)}`}
+            className="mt-4 inline-flex min-h-11 items-center text-[14px] font-semibold text-forest underline"
+          >
+            {weekNo}주차 수업으로 돌아가기
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const result = loaded.result;
 
   const orgQuery = `org=${encodeURIComponent(membership.organizationId)}`;
   const backHref = `/teacher/weeks/${weekNo}?${orgQuery}`;

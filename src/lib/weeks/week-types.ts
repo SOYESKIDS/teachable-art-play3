@@ -362,8 +362,15 @@ export interface WeekScene {
    *   원아별 관찰·개인정보는 업무 화면에서 다룬다.
    */
   teacherNote: string | null;
-  /** 원문 출처 (예: "가이드 6. STEP 2") */
-  sourceRef: string;
+  /**
+   * 원문 출처 (예: "가이드 6. STEP 2").
+   *
+   * ★ null 일 수 있다. 교직원은 장면을 권한 RPC(`list_lesson_scenes_for_class`)
+   *   로 읽고, 그 RPC 는 교실 화면에 필요한 것만 돌려준다 — 출처는 빼고 준다.
+   *   본사 경로는 표를 직접 읽으므로 출처가 들어온다.
+   *   화면은 **있을 때만** 적는다. 없는 것을 「없다」로 지어내지 않는다.
+   */
+  sourceRef: string | null;
   /** 원안 권장 시간(초). 없으면 null */
   baseSeconds: number | null;
 }

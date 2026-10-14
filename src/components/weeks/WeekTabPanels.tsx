@@ -674,7 +674,7 @@ export function ClassPanel({ content }: { content: WeekContent }) {
                 교사 노트 · {scene.teacherNote}
               </p>
             ) : null}
-            <SourceRef>{scene.sourceRef}</SourceRef>
+            {scene.sourceRef ? <SourceRef>{scene.sourceRef}</SourceRef> : null}
           </li>
         ))}
       </ol>

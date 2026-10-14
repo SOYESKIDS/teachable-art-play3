@@ -22,7 +22,7 @@ import {
   PrepPanel,
   ReportPanel,
 } from "@/components/weeks/WeekTabPanels";
-import { loadWeekContent } from "@/lib/weeks/week-content-source";
+import { loadStaffScenes, loadWeekContent } from "@/lib/weeks/week-content-source";
 import { showsDevelopmentMarkers } from "@/lib/weeks/content-state";
 import { partOf } from "@/lib/weeks/week-types";
 import { isIntegrationWeek } from "@/lib/weeks/week-index";
@@ -118,7 +118,24 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
   const result = loaded.result;
   if (!result) notFound();
 
-  const { origin, content, bodyVisible, hidden } = result;
+  // ★ 교실 화면 장면은 **권한 RPC** 로 읽는다. E3 이후 `lesson_scenes` 직접
+  //   조회는 본사만 된다 — 교사 경로에서 직접 읽으면 0행이 돌아오고, 화면은
+  //   그것을 「아직 안 옮겼다」로 잘못 적는다. 못 읽는 것과 없는 것은 다르다.
+  const staffScenes =
+    loaded.version === null
+      ? null
+      : await loadStaffScenes(supabase, {
+          organizationId: membership.organizationId,
+          programId: loaded.version.programId,
+          lessonId: loaded.version.lessonId,
+        });
+
+  const { origin, bodyVisible, hidden } = result;
+  const content =
+    staffScenes && staffScenes.ok && staffScenes.scenes !== null
+      ? { ...result.content, scenes: staffScenes.scenes }
+      : result.content;
+  const sceneLoadFailure = staffScenes && !staffScenes.ok ? staffScenes : null;
   const { summary } = content;
   const part = partOf(weekNo);
   const orgQuery = `org=${encodeURIComponent(membership.organizationId)}`;
@@ -223,7 +240,27 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
 
           {tab === "prep" ? <PrepPanel content={content} /> : null}
           {tab === "guide" ? <GuidePanel content={content} /> : null}
-          {tab === "class" ? <ClassPanel content={content} /> : null}
+          {tab === "class" ? (
+            sceneLoadFailure ? (
+              /*
+                ★ 장면을 못 읽은 것을 「장면이 없다」로 적지 않는다. 교사는
+                  둘을 구분할 수 없고, 담당 반 배정 문제를 전사 문제로 오해한다.
+              */
+              <div
+                role="note"
+                className="my-6 rounded-[10px] border border-warning-border bg-warning-soft px-5 py-4"
+              >
+                <h3 className="text-[16px] font-bold text-warning-text">
+                  교실 화면 장면을 열지 못했습니다
+                </h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-warning-text">
+                  {sceneLoadFailure.detail}
+                </p>
+              </div>
+            ) : (
+              <ClassPanel content={content} />
+            )
+          ) : null}
           {tab === "observe" ? (
             <ObservePanel content={content} orgQuery={orgQuery} sessions={weekSessions.sessions} />
           ) : null}
