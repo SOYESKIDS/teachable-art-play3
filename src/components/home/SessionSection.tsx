@@ -16,21 +16,45 @@ import { homeImages } from "@/data/home-images";
 export function SessionSection() {
   return (
     <HomeSection id="program" tone="white" labelledBy="program-title">
-      <div className="grid items-end gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
         <HomeHeading id="program-title" eyebrow={copy.eyebrow} headline={copy.headline} subCopy={copy.subCopy} />
-        <figure>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-line bg-surface-soft">
-            <Image
-              src={homeImages.music.src}
-              alt={homeImages.music.alt}
-              fill
-              sizes="(min-width: 1024px) 560px, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <figcaption className="mt-2.5 text-caption text-ink-muted">씨앗 마라카스 활동 예시 · 만든 것을 음악과 놀이로 이어 갑니다.</figcaption>
-        </figure>
+        {/*
+          단계와 장면을 짝지어 **세로로 쌓는다.**
+          ★ 세 장은 비율이 서로 다르다 (16:9 교실 화면 · 4:3 마라카스 · 9:16 물감 놀이).
+            가로로 나란히 두면 높이가 들쭉날쭉해 보이고, 한 비율로 맞추려면 잘라내야 한다.
+            아이의 얼굴이나 활동의 핵심이 잘리면 보여 주려던 것이 사라지므로,
+            너비만 고정하고 높이는 각자 실제 비율에 맡긴 뒤 세로로 쌓는다.
+        */}
+        <ul className="flex flex-col gap-3">
+          {homeImages.sessionScenes.map((scene) => (
+            <li
+              key={scene.src}
+              className="flex items-center gap-4 rounded-2xl border border-line bg-surface-soft p-3"
+            >
+              <div
+                className="relative w-28 shrink-0 overflow-hidden rounded-xl bg-white"
+                style={{ aspectRatio: `${scene.width} / ${scene.height}` }}
+              >
+                <Image
+                  src={scene.src}
+                  alt={scene.alt}
+                  fill
+                  sizes="112px"
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-label font-bold text-navy">{scene.step}</p>
+                <p className="mt-1 text-caption leading-relaxed text-ink-muted">{scene.caption}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      <p className="mt-3 text-caption leading-relaxed text-ink-muted">
+        수업 장면 예시입니다. 주차별 활동과 자료 구성은 공식 수업가이드와 계약 구성을 기준으로 안내합니다.
+      </p>
 
       <div className="mt-14 rounded-3xl border border-line bg-ivory p-5 sm:p-8">
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

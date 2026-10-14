@@ -1,4 +1,6 @@
+import Image from "next/image";
 import { AvailabilityTag, HomeHeading, HomeSection } from "./HomeSection";
+import { homeImages } from "@/data/home-images";
 import { growthNarrative as copy } from "@/data/home-narrative";
 import { GROWTH_STAGE_OPTIONS } from "@/components/home/growth-stages";
 
@@ -112,6 +114,47 @@ export function GrowthRecordSection() {
             <p className="mt-3 text-label text-ink">{copy.ai.body}</p>
           </div>
         </div>
+      </div>
+
+      {/*
+        기록이 보호자에게 어떤 모습으로 가는지 한 장으로 보여 준다.
+        ★ 세로로 긴 화면이고 안에 글자가 많다. 잘라내지 않고 실제 비율로 두고,
+          작게 보이는 글자는 원본을 새 탭으로 열어 읽게 한다.
+        ★ 제공 상태 · 계약 범위는 여기서 말하지 않는다 — 위 영역의 기존
+          AvailabilityTag 가 단일 출처다.
+      */}
+      <div className="mt-12 grid items-start gap-6 rounded-3xl border border-line bg-white p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div>
+          <h3 className="text-title-sm font-bold text-navy">기록은 이런 모습으로 전해집니다</h3>
+          <p className="mt-3 text-label leading-relaxed text-ink">
+            한 주의 관찰이 주제 · 아이의 말 · 활동 결과물 · 선생님 관찰 기록으로 묶입니다.
+            점수나 등급으로 줄 세우지 않습니다.
+          </p>
+          <p className="mt-3 text-caption leading-relaxed text-ink-muted">
+            콘텐츠 구성 예시입니다. 주차별 주제 · 제목은 공식 수업가이드와 계약 구성을 기준으로 안내합니다.
+          </p>
+        </div>
+        <figure className="mx-auto w-full max-w-[320px]">
+          <a
+            href={homeImages.growthReport.src}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="주간 성장 이야기 화면 예시 크게 보기 (새 탭)"
+            className="relative block overflow-hidden rounded-2xl border border-line bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-strong"
+            style={{ aspectRatio: `${homeImages.growthReport.width} / ${homeImages.growthReport.height}` }}
+          >
+            <Image
+              src={homeImages.growthReport.src}
+              alt={homeImages.growthReport.alt}
+              fill
+              sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 100vw"
+              className="object-contain"
+            />
+          </a>
+          <figcaption className="mt-2 text-caption font-semibold text-secondary-strong">
+            이미지를 눌러 크게 보기 ↗
+          </figcaption>
+        </figure>
       </div>
     </HomeSection>
   );
