@@ -139,13 +139,26 @@ export function isNonProductionWriteGuardEnabled(): boolean {
 }
 
 export class NonProductionWriteBlockedError extends Error {
+  /** 어떤 쓰기 경로였나 */
+  readonly surface: string;
+  /** 왜 막혔는가. 사용자 화면에 그대로 쓰지 않는다 */
+  readonly verdict: Exclude<WriteGuardVerdict, "allow">;
+
+  /*
+    ★ 생성자 매개변수 property(`constructor(readonly surface: string)`)를 쓰지
+      않는다. 그 문법은 타입을 지우는 것만으로는 실행 코드가 되지 않아
+      (값이 생기는 문법이다) Node 의 strip-only 모드가 거부한다 —
+      이 저장소의 테스트가 그 방식으로 TS 를 읽는다. 필드를 따로 적으면
+      테스트에서 이 파일을 그대로 불러올 수 있다.
+  */
   constructor(
-    readonly surface: string,
-    /** 왜 막혔는가. 사용자 화면에 그대로 쓰지 않는다 */
-    readonly verdict: Exclude<WriteGuardVerdict, "allow"> = "block_non_production_on_production",
+    surface: string,
+    verdict: Exclude<WriteGuardVerdict, "allow"> = "block_non_production_on_production",
   ) {
     super(`Write blocked (${verdict}): ${surface}`);
     this.name = "NonProductionWriteBlockedError";
+    this.surface = surface;
+    this.verdict = verdict;
   }
 }
 
@@ -158,7 +171,15 @@ export type WriteGuardVerdict =
   /** URL 또는 공개키가 없다 */
   | "block_env_incomplete"
   /** 비운영 배포가 운영 데이터에 쓰려 한다 */
-  | "block_non_production_on_production";
+  | "block_non_production_on_production"
+  /**
+   * 비운영 배포인데 **어디에 쓰는지 판정할 수 없다.**
+   *
+   * 차단 설정이 켜져 있는데 `SUPABASE_PRODUCTION_PROJECT_REF` 가 없거나
+   * 현재 URL 에서 ref 를 읽지 못하는 상태다. 「운영이 아니라고 확인된 것」이
+   * 아니라 「확인하지 못한 것」이므로 막는다.
+   */
+  | "block_target_unverified";
 
 /**
  * 쓰기를 허용할지 판정한다.
@@ -175,10 +196,25 @@ export type WriteGuardVerdict =
  * 때만 나온다. 선언이 없으면 `evaluateEnvSet()` 이 `consistent` 를 돌려주므로
  * 기존 운영 상담은 정상 연결 조건에서 그대로 통과한다.
  *
- * ── 비운영 쓰기 차단은 옵트인이다 ──────────────────────────────────
+ * ── 비운영 쓰기 차단은 옵트인이지만, 켜면 **확인될 때만** 통과한다 ──
  *
- * `BLOCK_WRITES_ON_PRODUCTION_DATA` 가 "1" 일 때만 적용되고, 판정 근거
- * (`SUPABASE_PRODUCTION_PROJECT_REF`)가 없으면 추측하지 않는다.
+ * `BLOCK_WRITES_ON_PRODUCTION_DATA` 가 "1" 일 때만 적용된다. 켜지 않으면
+ * 아무것도 바뀌지 않는다.
+ *
+ * ★ 켠 뒤의 기본값이 바뀌었다. 이전 구현은 판정 근거가 없으면 **통과**시켰다
+ *   (`nonProductionOnProductionData !== true` → allow). 그러면
+ *   `SUPABASE_PRODUCTION_PROJECT_REF` 를 빠뜨린 환경에서 차단 설정만 켜 두고
+ *   「막혀 있다」고 믿게 된다 — 실제로는 운영에 그대로 쓴다. 보호 장치가
+ *   꺼져 있는 것보다 **켜져 있다고 착각하는 쪽**이 더 나쁘다.
+ *
+ *   이제 켠 상태에서 비운영 배포는 세 갈래다.
+ *
+ *     운영이라고 확인됨      → 막는다 (block_non_production_on_production)
+ *     운영이 아니라고 확인됨 → 통과 (정상 스테이징 쓰기)
+ *     확인하지 못함          → **막는다** (block_target_unverified)
+ *
+ * ★ 운영 배포(`VERCEL_ENV=production`)는 이 분기를 타지 않는다. 세트 검사만
+ *   지나면 통과한다 — 실제 운영 상담 접수를 막지 않기 위해서다.
  */
 export function evaluateWriteGuard(): WriteGuardVerdict {
   assertServerRuntime("evaluateWriteGuard");
@@ -193,9 +229,12 @@ export function evaluateWriteGuard(): WriteGuardVerdict {
 
   const { isNonProduction, nonProductionOnProductionData } = getDeploymentContext();
   if (!isNonProduction) return "allow";
-  if (nonProductionOnProductionData !== true) return "allow";
 
-  return "block_non_production_on_production";
+  if (nonProductionOnProductionData === true) return "block_non_production_on_production";
+  if (nonProductionOnProductionData === null) return "block_target_unverified";
+
+  // false = 운영이 아닌 것이 **확인**됐다 (예: 스테이징) → 평소대로 쓴다.
+  return "allow";
 }
 
 /**
@@ -234,6 +273,8 @@ export function summarizeDeploymentGuard(): DeploymentGuardSummary {
   const missing: string[] = [];
 
   if (!process.env.SUPABASE_PRODUCTION_PROJECT_REF) {
+    // ★ 차단 설정을 켠 비운영 배포에서는 이것이 없으면 쓰기가 전부 막힌다.
+    //   「빠뜨렸는데 통과」보다 「빠뜨려서 막힘」이 낫다.
     missing.push("SUPABASE_PRODUCTION_PROJECT_REF");
   }
   if (process.env.SUPABASE_SECRET_KEY && !process.env.SUPABASE_SECRET_KEY_PROJECT_REF) {

@@ -32,7 +32,23 @@ const CANDIDATES = [".ts", ".tsx", "/index.ts", "/index.tsx"];
 const ALIAS = "@/";
 const SRC_URL = new URL("../src/", import.meta.url);
 
+/**
+ * Next 런타임 전용 모듈의 테스트 스텁.
+ *
+ * `next/headers` 는 요청 컨텍스트가 있어야 하고, `node --test` 는 ESM 으로
+ * 해석하지도 못한다. 가드 테스트는 그 모듈에 닿기 **전에** 막히는 것을 보는
+ * 것이므로, 불리면 던지는 스텁으로 바꿔 둔다 (tests/stubs/next-headers.mjs).
+ *
+ * ★ 제품 코드는 건드리지 않는다. 바꿔치기는 테스트 해석기 안에서만 일어난다.
+ */
+const RUNTIME_STUBS = new Map([
+  ["next/headers", new URL("./stubs/next-headers.mjs", import.meta.url).href],
+]);
+
 export async function resolve(specifier, context, nextResolve) {
+  const stub = RUNTIME_STUBS.get(specifier);
+  if (stub) return { url: stub, shortCircuit: true };
+
   if (specifier.startsWith(ALIAS)) {
     const target = new URL(specifier.slice(ALIAS.length), SRC_URL).href;
     if (!HAS_EXTENSION.test(target)) {

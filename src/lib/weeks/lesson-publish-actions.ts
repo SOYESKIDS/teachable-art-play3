@@ -1,6 +1,7 @@
 "use server";
 
 import { requireHqStaff } from "@/lib/auth/admin";
+import { guardWrite } from "@/lib/env/write-guard";
 import { UUID_PATTERN } from "@/lib/errors/rpc-errors";
 
 /**
@@ -41,6 +42,10 @@ export async function publishLessonAction(
   lessonId: string,
   reviewedChecksum: string,
 ): Promise<PublishLessonState> {
+  // ★ 배포 환경 가드. 발행은 교사·교실 화면에 내용을 내보내는 쓰기다 —
+  //   비운영 배포가 운영 DB 에 붙어 있을 때 여기서 멈춘다.
+  guardWrite("weeks/lesson:publish");
+
   if (!UUID_PATTERN.test(lessonId)) {
     return { ok: false, reason: "invalid_input", detail: "차시 id 형식이 아닙니다." };
   }

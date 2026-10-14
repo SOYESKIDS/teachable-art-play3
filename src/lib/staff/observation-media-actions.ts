@@ -1,6 +1,6 @@
 "use server";
 
-import { guardWrite } from "@/lib/env/write-guard";
+import { guardWrite, tryGuardWrite } from "@/lib/env/write-guard";
 
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -89,6 +89,8 @@ const MESSAGES = {
     "현재 이 수업의 반에 소속된 원아만 활동 사진을 추가할 수 있습니다.",
   notAllowed:
     "이 수업에 활동 사진을 추가할 권한이 없습니다. 화면을 새로고침한 뒤 다시 확인해주세요.",
+  writeBlocked:
+    "현재 환경에서는 활동 사진을 올릴 수 없습니다. 관리자에게 문의해 주세요.",
   missingObject:
     "업로드된 사진을 확인할 수 없습니다. 사진을 다시 선택해 업로드해주세요.",
   failure: "활동 사진을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.",
@@ -270,6 +272,18 @@ export async function prepareObservationMediaUpload(input: {
   mimeType: string;
   byteSize: number;
 }): Promise<ObservationMediaPrepareState> {
+  /*
+    ★ **준비 단계에서 막는다.** 파일은 브라우저가 Storage 로 직접 올리므로
+      서버 가드를 지나지 않는다. finalize 만 막으면 DB 행은 안 생겨도
+      **사진 파일은 이미 버킷에 들어간 뒤**다 — 비운영 배포가 운영 버킷을
+      보고 있으면 아동 사진이 운영 저장소에 남는다.
+
+      여기서 막으면 저장 경로 자체가 발급되지 않아 업로드가 시작되지 않는다.
+  */
+  if (!tryGuardWrite("lib/staff/observation-media-actions:prepare").allowed) {
+    return prepareError(MESSAGES.writeBlocked);
+  }
+
   const sessionId = String(input?.sessionId ?? "");
   const childId = String(input?.childId ?? "");
   const mimeType = String(input?.mimeType ?? "");

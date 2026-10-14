@@ -28,6 +28,8 @@ const WRITE_VERDICT_LABEL: Record<DeploymentGuardSummary["writeVerdict"], string
   block_env_mismatch: "차단 — 서버키와 URL 이 다른 프로젝트를 가리킵니다",
   block_env_incomplete: "차단 — URL 또는 공개키가 없습니다",
   block_non_production_on_production: "차단 — 비운영 배포가 운영 데이터를 사용합니다",
+  block_target_unverified:
+    "차단 — 비운영 배포인데 어느 프로젝트에 쓰는지 확인할 수 없습니다 (운영 ref 설정 없음)",
 };
 
 const ENV_SET_TONE: Record<DeploymentGuardSummary["envSet"], string> = {

@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+
+import { tryGuardWrite } from "@/lib/env/write-guard";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -37,7 +39,9 @@ export interface ThrottleVerdict {
     | "limited"
     | "salt_missing"
     | "rpc_missing"
-    | "rpc_failed";
+    | "rpc_failed"
+    /** 배포 환경 가드가 쓰기를 막았다 (비운영 배포가 운영 DB 를 볼 때 등) */
+    | "write_blocked";
 }
 
 /** PostgREST 가 "함수가 없다"고 알려 주는 코드 */
@@ -87,6 +91,18 @@ export async function registerPortalAccess(
   request: Request,
   scope: string,
 ): Promise<ThrottleVerdict> {
+  /*
+    ★ 이 함수는 조회 횟수를 **기록한다** — 읽기처럼 보이지만 쓰기다.
+      비운영 배포가 운영 DB 에 붙어 있으면 운영의 제한 기록이 더럽혀지고,
+      그 기록은 실제 보호자 조회를 막는 데 쓰인다.
+
+      막히면 조회도 제공하지 않는다. 제한을 걸 수 없는 상태에서 아동 기록을
+      내보내지 않는다는 기존 원칙(fail-closed)과 같다.
+  */
+  if (!tryGuardWrite("share/portal:throttle").allowed) {
+    return { allowed: false, degraded: true, reason: "write_blocked" };
+  }
+
   const key = bucketKey(request, scope);
 
   if (key === null) {
