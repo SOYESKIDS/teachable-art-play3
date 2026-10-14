@@ -230,7 +230,7 @@ lesson_id · section_code (s1~s15) · body text (≤10000) · source_ref
 
 | 필요한 것 | 지금 | 비고 |
 |---|---|---|
-| 교실 화면 장면 | **표 없음** | 24주 236개 장면. `sceneNo` · `sceneType` · `kidText` · `stageLabel` · `teacherNote` · `sourceRef` · `baseSeconds` |
+| 교실 화면 장면 | **표 없음** | 24주 **240개** 장면. `sceneNo` · `sceneType` · `kidText` · `stageLabel` · `teacherNote` · `sourceRef` · `baseSeconds` |
 | 전사 주의 기록 | **표 없음** | 168건. `section` · `page` · `issue` · `category` · `status` · `evidence` |
 | 본사 결정 | **표 없음** | 3건. 결정 이력(누가·언제·무엇으로)이 남아야 한다 |
 | 원문 출처(해시) | `source_ref text` 만 | 지금은 `guide-sources.ts` 가 파일명·SHA-256·쪽수를 들고 있다 |
@@ -283,3 +283,24 @@ main 병합 · Production 반영.
 
 전사 완료를 검수 완료·발행 완료·출시 완료로 올려 적지 않는다.
 검수 전에는 `draft` 를 유지하고, 서비스 경로에서 본문을 내보내지 않는다.
+
+
+---
+
+## 9. 정정 — 장면 수 (2026-10-14)
+
+7-2 절에 「236개」라고 적었던 것은 **틀렸다.** 실제 배열에서 집계한 값은
+**240개**이고, 1절 주차별 표의 합계와 같다. 문서 안에서 두 숫자가 달랐던 것은
+7-2 절을 손으로 적었기 때문이다.
+
+이후 집계는 실제 배열에서 센다 — 적재 스크립트와 pgTAP 검사가 240 을 기준으로
+삼는다 (`supabase/tests/p0_phase_e_lesson_content.test.sql`).
+
+| 항목 | 값 | 어디서 셌나 |
+|---|---:|---|
+| 차시 | 24 | `WEEK_INDEX` |
+| 섹션 (DB) | 408 | 24 × 17 (원문 4번을 A·B·C 로 나눔) |
+| 섹션 (블록) | 360 | 24 × 15 |
+| 교실 화면 장면 | **240** | `content.scenes` 합 |
+| 전사 검수 기록 | 168 | `content.transcriptionNotes` 합 |
+| 본사 결정 | 3 | `HQ_DECISIONS` |

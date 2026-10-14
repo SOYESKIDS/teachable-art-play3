@@ -28,6 +28,8 @@ import {
   unresolvedNotes,
 } from "@/lib/weeks/week-types";
 import { affectedByOtherDecisions, hqDecisionsOf } from "@/lib/weeks/hq-decisions";
+import { getWeekContentFromDb, resolveProgramForProductVersion } from "@/lib/weeks/week-db-source";
+import { TAP24_PROGRAM_CODE } from "@/lib/weeks/week-program";
 import { guideSourceOf, shortHash } from "@/lib/weeks/guide-sources";
 
 export const metadata: Metadata = {
@@ -110,6 +112,13 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
 
   const transcribed = summary.status.transcription === "done";
 
+  // ── 적재 상태 ────────────────────────────────────────────────────
+  //
+  // ★ DB 조회가 실패해도 **fixture 로 조용히 넘어가지 않는다.** 화면이 정상으로
+  //   보이면 아무도 적재가 안 된 것을 모르고, 그 상태로 발행하면 교사는 DB 에
+  //   없는 내용을 보게 된다. 아래 배너가 「지금 보는 것이 무엇인지」를 밝힌다.
+  const dbState = await loadDbState(supabase, weekNo);
+
   return (
     <div className="mx-auto w-full max-w-[1100px] px-5 py-8 lg:px-8">
       <Link
@@ -169,6 +178,27 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
           기능은 데이터베이스 연결 단계에서 만듭니다. 그때 서버는 저장된 데이터에서 상태와
           미해결 건수를 직접 읽어 같은 판정을 다시 합니다.
         </p>
+      </section>
+
+      {/* ── 적재 상태 (지금 보는 것이 무엇인가) ── */}
+      <section
+        className={
+          dbState.kind === "loaded"
+            ? "mt-5 rounded-xl border border-emerald-300 bg-emerald-50 px-5 py-4"
+            : "mt-5 rounded-xl border-2 border-amber-400 bg-amber-50 px-5 py-4"
+        }
+      >
+        <h2 className="text-[15px] font-bold text-navy">
+          {dbState.kind === "loaded" ? "데이터베이스 적재본" : "데이터베이스에서 읽지 못했습니다"}
+        </h2>
+        <p className="mt-1 text-[13px] leading-relaxed text-navy/80">{dbState.detail}</p>
+        {dbState.kind !== "loaded" ? (
+          <p className="mt-1.5 text-[13px] leading-relaxed text-navy/80">
+            <strong className="font-bold">아래 본문은 저장소 전사본(fixture)입니다.</strong> 대조
+            기준으로는 쓸 수 있지만 <strong className="font-bold">발행 근거가 아닙니다.</strong>{" "}
+            발행은 데이터베이스에 적재된 내용으로만 판정합니다.
+          </p>
+        ) : null}
       </section>
 
       {/*
@@ -699,3 +729,60 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
     </div>
   );
 }
+
+/* ───────────────────────────── 적재 상태 */
+
+type DbState =
+  | { kind: "loaded"; detail: string }
+  | { kind: "not_loaded"; detail: string }
+  | { kind: "failed"; detail: string };
+
+/**
+ * DB 에 이 주차가 적재돼 있는지 확인한다.
+ *
+ * ★ 실패를 성공처럼 돌려주지 않는다. 「아직 적재 전」과 「조회가 실패했다」도
+ *   구분한다 — 전자는 기다리면 되고 후자는 사람이 봐야 한다.
+ */
+async function loadDbState(
+  supabase: Awaited<ReturnType<typeof requireAdmin>>["supabase"],
+  weekNo: number,
+): Promise<DbState> {
+  const program = await supabase
+    .from("curriculum_programs")
+    .select("id")
+    .eq("code", TAP24_PROGRAM_CODE)
+    .maybeSingle();
+
+  if (program.error) {
+    return { kind: "failed", detail: `프로그램 조회 실패: ${program.error.message}` };
+  }
+  if (!program.data) {
+    return {
+      kind: "not_loaded",
+      detail: `교안 프로그램 ${TAP24_PROGRAM_CODE} 이 아직 적재되지 않았습니다 (supabase/content/tap24_2026_1_load.sql).`,
+    };
+  }
+
+  const loaded = await getWeekContentFromDb(supabase, {
+    programId: program.data.id as string,
+    weekNo,
+    audience: "internal_review",
+  });
+
+  if (loaded.ok) {
+    const blocks = Object.values(loaded.result.content.blocks).filter((v) => v !== null).length;
+    return {
+      kind: "loaded",
+      detail: `섹션 ${blocks}/15 · 장면 ${loaded.result.content.scenes.length} · 검수 기록 ${loaded.result.content.transcriptionNotes.length}건이 데이터베이스에 있습니다.`,
+    };
+  }
+
+  if (loaded.reason === "lesson_not_found") {
+    return { kind: "not_loaded", detail: `${weekNo}주차가 아직 적재되지 않았습니다.` };
+  }
+  return { kind: "failed", detail: `${loaded.reason}: ${loaded.detail}` };
+}
+
+// resolveProgramForProductVersion 은 계약 경로에서 쓴다. 여기서는 본사 검수라
+// 상품 버전을 거치지 않고 프로그램 코드로 직접 찾는다.
+void resolveProgramForProductVersion;
