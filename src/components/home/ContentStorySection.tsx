@@ -86,7 +86,7 @@ export function ContentStorySection() {
 
         <div className="self-start">
           <p className="mb-3 text-caption font-semibold text-ink-muted">그림책부터 활동 키트까지 · 구성 예시</p>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-start gap-4 sm:grid-cols-2">
             {homeImages.materials.map((material) => (
               <figure key={material.src} className="overflow-hidden rounded-2xl border border-line bg-white">
                 <a
@@ -94,7 +94,15 @@ export function ContentStorySection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${material.title} 이미지 크게 보기 (새 탭)`}
-                  className="relative block aspect-[16/9] bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-strong"
+                  /*
+                    ★ 칸의 비율을 **이미지 실제 비율**로 맞춘다. 네 장이 모두
+                      16:9 는 아니다 — 키트 사진만 4:3 이라, 16:9 칸에 담으면
+                      object-contain 이 좌우에 흰 띠를 남겨 혼자 작게 보인다.
+                      (자르지는 않지만 어긋나 보인다.)
+                      Tailwind 임의값은 런타임 값을 못 받으므로 style 로 준다.
+                  */
+                  style={{ aspectRatio: `${material.width} / ${material.height}` }}
+                  className="relative block bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-strong"
                 >
                   <Image
                     src={material.src}
