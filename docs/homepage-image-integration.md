@@ -28,5 +28,51 @@ WebP quality 82로 변환했다. 전체 픽셀 크기를 유지하며 자료 이
 
 ## 검증
 
-빌드·타입·린트·기존 테스트와 정적 홈페이지 HTML의 이미지 참조를 확인한다.
-브라우저에서의 모바일 배치·실제 이미지 로딩은 Preview에서 추가 확인 대상이다.
+적용 커밋 `574594e` 기준.
+
+| 검사 | 결과 |
+|---|---|
+| `npx tsc --noEmit` | 통과 |
+| `npm run lint` | 통과 (오류·경고 0) |
+| `npm test` | 90/90 통과 |
+| `npm run build` | 통과 (정적 50쪽 생성) |
+| SHA256SUMS.json 대조 | 12개 파일 불일치 0 |
+| WebP 7장 디코딩 | 7/7 (1448×1086 4장 · 1672×941 3장) |
+
+### 실제 HTTP 응답으로 확인한 것
+
+`next start` 로 **배포와 같은 프로덕션 빌드**를 띄우고 응답을 받아 확인했다.
+HTML 안의 `sizes` 를 뷰포트별로 평가해 브라우저가 고를 `srcset` 후보를 계산한
+뒤, 그 URL 을 실제로 받아 디코딩했다 (DPR 1 기준).
+
+| 뷰포트 | 이미지 7장 | 전송량 합계 |
+|---|---|---|
+| 375px | 전부 200 · 디코딩 성공 | 약 177 KB |
+| 768px | 전부 200 · 디코딩 성공 | 약 250 KB |
+| 1440px | 전부 200 · 디코딩 성공 | 약 217 KB |
+
+- `Accept: image/webp` 로 요청하면 `image/webp` 로 내려온다 (828px 기준 약 60 KB)
+- 첫 화면 이미지는 `<link rel="preload" as="image">` 가 머리말에 들어간다 — `priority` 가 동작한다
+- 나머지 6장은 `loading="lazy"`
+- 교실 장면 3장은 `object-cover`, 글자가 들어 있는 자료 4장은 `object-contain`
+- 자료 4장의 크게 보기 링크는 `target="_blank"` · `rel="noopener noreferrer"` ·
+  `aria-label="… 이미지 크게 보기 (새 탭)"` · `focus-visible` 윤곽선을 갖는다
+- 원본 4장을 링크 주소로 직접 받아 디코딩했다 (1672×941 · 1448×1086)
+- `/` · `/curriculum` · `/pricing` · `/sample` 200
+- 홈 HTML 에 「실제 수업 현장」 문구가 남아 있지 않다 (「수업 장면 예시」 2회,
+  「콘텐츠 구성 예시」 6회)
+
+### 미검증
+
+| 항목 | 이유 |
+|---|---|
+| **Vercel Preview 브라우저 화면 확인** | Preview 배포가 Vercel Authentication(SSO) 뒤에 있어 로그인 없이 열 수 없다. 로그인한 브라우저로 직접 확인해야 한다 |
+| 실제 기기에서의 눈으로 보는 배치·여백 | 위 검사는 HTTP 응답과 마크업까지만 본다. 레이아웃이 보기 좋은지는 사람이 본다 |
+| 이미지 내용이 공식 24주 교안과 맞는지 | 제공 이미지의 일부 책 제목·음원명이 공식 교안과 다르다. 그래서 「구성 예시」로 표시했고, 확정은 본사 판단이다 |
+
+### 남겨 둔 것
+
+이전에 쓰던 이미지 5장(`hero-class-movement` · `classroom-workbook-play` ·
+`vod-bukgeuki-ballet` · `classroom-vod-learning` · `classroom-teacher-activity`)은
+이제 코드에서 참조되지 않지만 파일은 그대로 뒀다. 되돌릴 수 있게 남긴 것이고,
+지우는 것은 이번 작업 범위가 아니다.
