@@ -74,6 +74,24 @@ on conflict (code) do nothing;
 -- 2. outbox
 -- ---------------------------------------------------------------------
 
+-- CHECK 제약은 서브쿼리를 담을 수 없다. payload 의 허용 키 검사를 함수로 뺀다.
+-- 허용 키: submission_type · package_code · received_at · admin_path
+create or replace function private.lead_outbox_payload_keys_allowed(p_payload jsonb)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $fn$
+  select not exists (
+    select 1
+    from pg_catalog.jsonb_object_keys(p_payload) as k(key)
+    where k.key not in ('submission_type', 'package_code', 'received_at', 'admin_path')
+  );
+$fn$;
+
+revoke execute on function private.lead_outbox_payload_keys_allowed(jsonb) from public;
+grant execute on function private.lead_outbox_payload_keys_allowed(jsonb) to authenticated;
+
 create table if not exists public.lead_notification_outbox (
 
   id uuid primary key default gen_random_uuid(),
@@ -117,16 +135,14 @@ create table if not exists public.lead_notification_outbox (
    *   관리자는 이 메타데이터로 "무엇이 들어왔는지"만 알고, 상세는 로그인 후 본다.
    *   허용 키: submission_type · package_code · received_at · admin_path
    */
+  -- ★ CHECK 제약 안에는 서브쿼리를 쓸 수 없다 (PostgreSQL 이 거부한다).
+  --   허용 키 검사를 immutable 함수로 빼낸다 — 함수 안에서는 쓸 수 있다.
   payload jsonb not null default '{}'::jsonb
     constraint lead_notification_outbox_payload_check
     check (
       jsonb_typeof(payload) = 'object'
       and pg_column_size(payload) <= 2048
-      and (
-        select count(*) = 0
-        from jsonb_object_keys(payload) as k(key)
-        where k.key not in ('submission_type', 'package_code', 'received_at', 'admin_path')
-      )
+      and private.lead_outbox_payload_keys_allowed(payload)
     ),
 
   created_at timestamptz not null default pg_catalog.clock_timestamp(),

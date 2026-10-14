@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register-hooks.mjs --test \"tests/**/*.test.mjs\""
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register-hooks.mjs --test \"tests/**/*.test.mjs\"",
+    "verify:db": "node supabase/validation/e-stage/verify-e-stage.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "pg": "^8.23.1",
     "supabase": "^2.113.0",
     "tailwindcss": "^4",
     "typescript": "^5"

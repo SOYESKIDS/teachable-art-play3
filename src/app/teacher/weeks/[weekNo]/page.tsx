@@ -22,7 +22,7 @@ import {
   PrepPanel,
   ReportPanel,
 } from "@/components/weeks/WeekTabPanels";
-import { getWeekContent } from "@/lib/weeks/week-source";
+import { loadWeekContent } from "@/lib/weeks/week-content-source";
 import { showsDevelopmentMarkers } from "@/lib/weeks/content-state";
 import { partOf } from "@/lib/weeks/week-types";
 import { isIntegrationWeek } from "@/lib/weeks/week-index";
@@ -83,7 +83,39 @@ export default async function TeacherWeekPage({ params, searchParams }: WeekPage
   }
 
   // ★ 정식 서비스 경로다. 발행된 주차의 본문만 내려온다.
-  const result = getWeekContent(weekNo, "service");
+  // ★ 콘텐츠 출처는 CONTENT_SOURCE 가 정한다 (기본 fixture · E1~E3 적용 뒤
+  //   database). database 모드에서 조회가 실패하면 **fixture 로 넘어가지
+  //   않는다** — 조용히 대체하면 교사가 DB 에 없는 내용을 보게 된다.
+  const loaded = await loadWeekContent(supabase, {
+    weekNo,
+    audience: "service",
+    organizationId: membership.organizationId,
+  });
+
+  if (!loaded.ok) {
+    return (
+      <StaffShell
+        email={email}
+        roleLabel="교사"
+        organizationName={membership.organizationName}
+        navItems={TEACHER_NAV}
+        currentHref="/teacher/weeks"
+      >
+        <div className="mx-auto w-full max-w-[900px] px-5 py-10">
+          <h1 className="text-[20px] font-bold text-forest">수업 내용을 열지 못했습니다</h1>
+          <p className="mt-2 text-[15px] leading-relaxed text-forest/85">
+            {loaded.detail}
+          </p>
+          <p className="mt-3 text-[14px] leading-relaxed text-muted-ink">
+            이전 내용을 대신 보여드리지 않습니다. 저장된 내용과 다를 수 있기 때문입니다.
+            기관 담당자에게 문의해 주세요.
+          </p>
+        </div>
+      </StaffShell>
+    );
+  }
+
+  const result = loaded.result;
   if (!result) notFound();
 
   const { origin, content, bodyVisible, hidden } = result;

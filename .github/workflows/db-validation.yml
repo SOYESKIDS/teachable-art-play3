@@ -1,0 +1,67 @@
+name: DB validation
+
+# 격리된 Postgres 에서 migration · 적재 · 발행 게이트 · 권한을 실제로 돌린다.
+#
+# ★ 운영 DB 를 쓰지 않는다. 서비스 컨테이너를 띄워 거기에만 쓴다.
+#   검증 스크립트도 DATABASE_URL 이 Supabase 호스트면 시작하지 않는다.
+
+on:
+  pull_request:
+    paths:
+      - "supabase/**"
+      - "content/**"
+      - ".github/workflows/db-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - "content/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+
+      # 적재 SQL 이 지금 fixture 에서 생성된 것과 같은지 먼저 본다.
+      # 다르면 DB 검증을 통과해도 화면과 DB 가 어긋난다.
+      - name: 적재 SQL 드리프트 확인
+        run: node --import ./tests/register-hooks.mjs content/tap24/2026.1/build-sql.mjs --check
+
+      - name: E단계 SQL 실행 검증
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: npm run verify:db
