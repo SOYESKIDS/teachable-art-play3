@@ -19,7 +19,7 @@ ChatGPT 가 읽기 전용으로 확인한 현재 원격 상태:
 | 적용 migration | **21건** |
 | 없는 것 | `lesson_sections` · `lesson_assets` · `product_versions` · `contracts` 등 |
 
-저장소에는 **49건**이 있다 (E1~E4 포함). 없는 표가 전부
+저장소에는 **50건**이 있다 (E1~E4 + `uat_db_guard` 포함). 없는 표가 전부
 `m1_commerce_entitlement_foundation` 이후에 생기므로, 원격은
 **#1~#21 (2026-09-04 `harden_admin_access_execute` 까지)** 이다.
 
@@ -35,7 +35,25 @@ check constraint`). 원격에 적용된 적이 없어 드러나지 않았다.
 
 ---
 
-## 2. 원격 적용 계획
+## 2. 원격 적용 계획 — **운영(Production) 기준**
+
+> ## ⚠️ 이 절은 운영 기준이다. 스테이징에 쓰지 않는다
+>
+> 2026-10-14 조회로 확정된 값:
+>
+> | 환경 | ref | migration |
+> |---|---|---|
+> | Production | `vpppxuhodwauaclhybtg` | **21건** |
+> | Staging | `itcddooiuqsqingfhxkk` | **39건** (`…p10c_release_controls` + `uat_db_guard`) |
+>
+> 아래 `#22~#49` 는 **운영의 21건 위에** 올리는 계획이다. 스테이징은 이미
+> 훨씬 앞서 있어 올릴 것이 **11건뿐**이고, 그 목록은
+> [staging-flow-readiness.md §3](./staging-flow-readiness.md) 에 version 으로 적었다.
+>
+> 또한 원격에는 저장소 번호로 세던 것과 다른 version 이 하나 더 있다 —
+> `20261002110000_uat_db_guard` (이번에 저장소로 가져왔다). **번호가 아니라
+> version 으로 대조한다.**
+
 
 ### 2-1. 최소 의존 목록 (E1~E4 가 **직접** 필요로 하는 것)
 
@@ -48,7 +66,7 @@ E 단계 콘텐츠 구조만 놓고 보면 아래 네 건이 선행 조건이다
 | 24 | `20261001092000_m1_class_operation_foundation.sql` | `contract_classes` (E3·E4 의 범위 판정) |
 | 26 | `20261001100000_m2_fact_backfill_reference_seed.sql` | starter · standard · premium 2026.1 상품 버전 seed (적재의 상품 연결) |
 
-### 2-2. 실제 적용 목록 (28건, 이 순서로)
+### 2-2. 운영 실제 적용 목록 (28건 + uat_db_guard, 이 순서로)
 
 **최소 의존 목록만 골라 적용할 수는 없다.** migration 은 이력 순서대로
 올라가고, 중간을 건너뛰면 이후 파일이 없는 객체를 참조한다. 그래서 실제로
@@ -74,6 +92,7 @@ E 단계 콘텐츠 구조만 놓고 보면 아래 네 건이 선행 조건이다
 | 15 | `20261002094000_p08_contract_capacity.sql` | 계약 정원 |
 | 16 | `20261002095000_p08_legacy_share_safety.sql` | 기존 공유 링크 안전장치 |
 | 17 | `20261002100000_p10c_release_controls.sql` | 기능 출시 스위치 |
+| 17-a | `20261002110000_uat_db_guard.sql` | 미래 회차 쓰기 금지(SS009) · 학부모 공유 신규 발급 잠금(PT004). **스테이징에는 이미 적용돼 있다** |
 | 18 | `20261012090000_d3_lead_notification_outbox.sql` | **위 결함 수정본.** 상담 알림 대기열 |
 | 19 | `20261012091000_c3_portal_expiry_rate_limit.sql` | 포털 만료·빈도 제한 |
 | 20 | `20261012092000_b2_lesson_assets.sql` | 수업 자료 표 |

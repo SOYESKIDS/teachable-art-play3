@@ -78,3 +78,12 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
         run: npm run verify:db:upgrade
+
+      # ★ 스테이징은 위 두 가지 어느 쪽도 아니다. 2026-10-14 읽기 전용 점검으로
+      #   확인된 실제 이력은 「…p10c_release_controls + uat_db_guard」이고,
+      #   그 위에 11건만 올린다. 합성 UAT 자료와 미래 회차 가드가 그대로
+      #   살아남는지가 핵심이다 — 적용이 성공해도 트리거가 사라질 수 있다.
+      - name: 스테이징 기준 업그레이드 검증 (실제 이력 + 합성 UAT → 11건 적용)
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: npm run verify:db:staging

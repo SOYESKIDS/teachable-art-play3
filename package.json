@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register-hooks.mjs --test \"tests/**/*.test.mjs\"",
     "verify:db": "node supabase/validation/e-stage/verify-e-stage.mjs",
-    "verify:db:upgrade": "node supabase/validation/e-stage/verify-upgrade.mjs"
+    "verify:db:upgrade": "node supabase/validation/e-stage/verify-upgrade.mjs",
+    "verify:db:staging": "node supabase/validation/e-stage/verify-staging-upgrade.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

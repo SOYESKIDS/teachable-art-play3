@@ -1,418 +1,335 @@
-# 스테이징 수업 흐름 검증 — 준비 현황과 연결 필요 항목
+# 스테이징 수업 흐름 검증 — 확정 기준과 남은 작업
 
 대상 흐름: **수업 준비 → 교실 화면 → 관찰 기록 → 결과보고**
-작성: 2026-10-14 · 갱신: 2026-10-14 (Supabase 실제 조회 반영) · 기준 커밋 `473b49a`
-
-> ## ⛔ 지금은 스테이징에서 아무것도 시험할 수 없다
->
-> 스테이징 프로젝트가 **INACTIVE**(일시정지) 상태다. 먼저 재개해야 한다.
-> 재개는 **사람이 결정하고 사람이 실행한다** — 이 문서는 절차만 적는다.
+작성 2026-10-14 · 갱신 2026-10-14 (스테이징 재개 후 읽기 전용 점검 반영)
+기준 커밋 `482f30f` + 이번 보완분
 
 ---
 
-## 0. 실제 조회 결과 (2026-10-14)
+## 0. 확정된 사실 (2026-10-14 읽기 전용 점검)
 
-| 대상 | 결과 | 뜻 |
+| 대상 | 상태 | 비고 |
 |---|---|---|
-| Staging `itcddooiuqsqingfhxkk` | **INACTIVE** | 일시정지. 앱도 CLI 도 붙지 못한다 |
-| Staging migration 이력 조회 | **연결 시간 초과** | 정지 상태라 응답이 없다 — 「이력이 없다」가 아니다 |
-| Production `vpppxuhodwauaclhybtg` | **ACTIVE_HEALTHY · migration 21건** | 운영은 #1~#21 에 머물러 있다 |
-| 문서 커밋 `473b49a` | Vercel 검사 **success** | 앱 빌드는 이상 없다 |
+| Staging `itcddooiuqsqingfhxkk` | **ACTIVE_HEALTHY** (restore 후) | 조직 plan=pro |
+| Staging migration 이력 | **39건** | `…p10c_release_controls` + `uat_db_guard` |
+| Production `vpppxuhodwauaclhybtg` | ACTIVE_HEALTHY · **21건** | 변경 없음 |
 
-### 이것이 바꾸는 것
+> 이전 문서가 「스테이징 38건」이라고 적었던 것은 **39건**으로 정정한다.
+> 39번째는 저장소 문서에서 세던 번호의 #39(`d3_lead_notification_outbox`)가
+> **아니라** `20261002110000_uat_db_guard` 다. 번호로 세면 어긋나므로
+> 이 문서는 이제 **version·파일명**으로만 적는다.
 
-- **1~5절의 「스테이징 = #38」은 확인되지 않은 문서 기준 가정으로 남는다.**
-  정지된 프로젝트에서는 `migration list` 가 돌지 않으므로 확인할 길이 없었다.
-  재개한 뒤 5절 순서대로 읽어 확인한다.
-- 그때까지 네 단계의 「열린다 / 안 열린다」 판정도 **가정**이다. 표에 그대로 둔
-  이유는, 재개 뒤 실제 값과 대조할 기준이 있어야 하기 때문이다 —
-  **맞다고 보고하기 위한 것이 아니다.**
-- **운영(#21)에서는 네 단계 중 1·2·3 이 모두 열리지 않는다.** 수업 준비·관찰·
-  주간 리포트가 쓰는 것들(`class_sessions.week_no`·Growth5·`reports`·업무 RPC)이
-  전부 #23 이후에 생기기 때문이다. 이것은 **조회로 확인된 migration 번호**에서
-  나오는 판정이므로 가정이 아니다 — 그리고 운영에서 이 흐름을 시험할 일은 없다.
+### 점검이 말하지 않는 것
+
+- SQL 조회는 **관리 연결의 읽기 확인**이다. 사용자 역할의 RLS 실검증이나
+  브라우저 UAT 완료를 뜻하지 않는다.
+- 표·함수가 **존재한다**는 것은 사용자 계정으로 **실행에 성공한다**는 뜻이 아니다.
+- 출시 스위치가 모두 false 라는 것만으로 모든 업무가 닫힌다고 단정하지 않는다 (4절).
 
 ---
 
-## 1. 스테이징과 운영은 다른 프로젝트다
+## 1. 스테이징에 남아 있는 것
 
-| 환경 | Supabase 프로젝트 | ref | migration | 상태 |
-|---|---|---|---|---|
-| **Staging** | `teachable-art-play3-staging` | `itcddooiuqsqingfhxkk` | **38건 (문서 기준 · 미확인)** | **INACTIVE** |
-| **Production** | SOYESKIDS's Project | `vpppxuhodwauaclhybtg` | **21건 (조회 확인)** | ACTIVE_HEALTHY |
+| 항목 | 값 |
+|---|---|
+| 활성 UAT 기관 / 반 | 1 / 1 |
+| 담임 배정 / 활성 teacher 구성원 | 1 / 1 |
+| 합성 원아 | 3 |
+| 계약 | active · 2026-08-29~2026-11-27 · 확인일 기준 유효 |
+| 상품 버전 | starter 2026.1 · published · 1~8주 |
+| 상품 기능 | class_mode · parent_portal · weekly_report |
+| 현재 배정 | SOYE-STARTER-2026.1 · active |
+| STARTER 발행 차시 / 섹션 | 8 / 136 (주차마다 17, 필수 11/11) |
+| UAT 회차 | W1~W8 전부 `scheduled` |
+| 해당 반 관찰 / reports | 0 / 0 |
+| 다른 프로그램 STAGING-P8 | published 8차시 · 88섹션 |
 
-ChatGPT 가 읽기 전용으로 확인했던 **「21건」은 Production** 이다.
-스테이징이 그보다 앞서 있다는 것은 아래 문서들의 기록이고, **조회로 확인한 적은
-없다**:
-[phase-10c2-staging-rehearsal.md](11-production-readiness/phase-10c2-staging-rehearsal.md)
-(적용 후 `migration list --linked` = 38 = 38 · 마지막 `20261002100000`),
-[g1-rehearsal-plan.md](09-staging-validation/g1-rehearsal-plan.md) (두 ref 구분).
+회차 날짜: W1 10-01 · W2 10-05 · W3 10-12 · W4 10-19 · W5 10-26 ·
+W6 11-02 · W7 11-09 · W8 11-16 → 확인일 기준 **과거·현재 3건 · 미래 5건**.
 
-### migration 번호
+### 미래 회차·학부모 공유 가드 (`uat_db_guard`)
 
-이 문서의 `#n` 은 `supabase/migrations` 를 파일명 정렬한 순서다 (#1 =
-`20260812_create_lead_submissions.sql`, #49 = `20261014093000_e4_lesson_section_scope.sql`).
+- 미래 회차에는 시작·완료·준비 확인·출결·관찰·Growth5·메모·사진 metadata·
+  AI 초안 쓰기를 거부한다 (**SS009**). 트리거 10개 활성.
+- Storage 업로드 helper 에도 같은 조건이 있다.
+- 학부모 공유 **신규 발급**은 `parent_portal` 출시 전까지 거부한다 (**PT004**).
+
+> ★ 미래 회차를 열려고 날짜를 바꾸거나 트리거를 끄지 않는다.
+>   시험하려면 **지난 회차**를 쓴다.
 
 ---
 
-## 2. 단계별 준비 현황 (스테이징 #38 **가정** · 미확인)
+## 2. 저장소와 원격의 차이 — `uat_db_guard`
 
-### 2-1. 수업 준비 — `/teacher/sessions/[sessionId]/before`
+원격에 적용된 `20261002110000_uat_db_guard` 가 **이 개발 브랜치에 없었다.**
 
-| | |
+- 저장소 전체를 찾아보니 `origin/design-final-polish` 의 커밋 `a8f0250`
+  (2026-10-06) 에 있었다. 그 커밋 메시지는 「NOT applied to Staging or
+  Production」이지만, 이후 스테이징에 적용된 것으로 보인다.
+- **이력을 지우거나 `migration repair` 로 감추지 않았다.** 대신 그 version 의
+  파일을 이 브랜치로 가져와 저장소와 원격이 version 기준으로 맞게 했다.
+
+가져온 것 (`a8f0250` 내용 그대로):
+
+```
+supabase/migrations/20261002110000_uat_db_guard.sql
+supabase/rollback/20261002110000_uat_db_guard_rollback.sql
+supabase/tests/p0_uat_db_guard.test.sql
+supabase/validation/staging_e2e/sql/uat_db_guard_post_apply_verify.sql
+docs/11-production-readiness/uat-db-guard.md
+```
+
+가져오지 **않은** 것과 이유:
+
+| 파일 | 왜 |
 |---|---|
-| 판정 | ✅ **열린다** |
-| 필요한 것 | `class_sessions.week_no` + 채움 트리거(#24) · `session_before_confirmations`(#24) · `quick_memos`(#24) · `child_media_consents`(#24) · `lesson_sections`(#23) · `confirm_session_before`·`start_class_session`(#29) · 시작 권한 트리거(#34) · `class_entitlements`(#30) |
-| 스테이징 | 전부 ≤#38 → 있음 |
-| 빠지는 것 | **수업 자료 패널**(`list_lesson_assets_for_class` #41, `lesson_asset_download_status` #45) → 「미적용」으로 비어 보인다. 화면 전체는 실패하지 않는다 |
-| 계약 조건 | feature `class_mode` · 활성 계약 1건 · `contract_classes` 에 그 반 · 주차가 `product_versions.week_from..week_to` 안 |
+| `src/lib/staff/session-write-guard.ts` | 이 브랜치에 **원래 없던 앱 코드**다. `design-final-polish` 쪽 작업 줄기에서 왔다. 적용된 migration 을 반영하는 일과 다른 브랜치의 앱 기능을 들여오는 일은 다르다 |
+| `docs/11-production-readiness/uat-stabilization.md` | 같은 이유 |
+| `p0_hardening` · `p0_phase08_security` · `M5_post_cutover` 수정분 | 위 앱 코드와 묶여 있어 떼어내면 기대값이 어긋난다. pgTAP 은 이 환경에서 실행하지 않으므로 **미반영으로 남기고 여기 적는다** |
 
-`start_class_session` 이 DB 에서 재판정하는 것: 로그인 · 회차 `scheduled` ·
-담당 교사(`class_teachers`) · BEFORE 확인 선행 · `class_write_allowed` ·
-주차 이용권 · **Required Content Set**(`required_lesson_sections()` 의 모든
-섹션이 `lesson_sections` 에 있어야 함 — 없으면 `SS008`).
+### 남은 대조
 
-> ★ 회차(`class_sessions` 행)는 **교사가 만들 수 없다.** 본사 운영자가
-> 반 배정 → 회차 예정 순으로 만든다. 스테이징에는 합성 UAT 반에 W1~W8
-> 8건이 이미 들어가 있다
-> ([phase-10g](11-production-readiness/phase-10g-final-employee-uat.md) ·
-> `supabase/content/starter_2026_1_staging_uat_sessions.sql`).
+`20261002110000` 외의 remote-only version 이 더 있는지는 **확인하지 못했다**
+(원격 이력 39건의 전체 version 목록을 받지 못했다). 받는 즉시
+`supabase migration list --linked` 의 remote 열과 저장소 파일명을 version 으로
+대조한다. 건수·순번으로 맞추지 않는다.
 
-### 2-2. 교실 화면 — `/class/[sessionId]`
+---
 
-| | |
+## 3. 스테이징에 올릴 목록 (version 기준)
+
+기준선 = `20261002110000_uat_db_guard` 까지. 그 위에 **11건**.
+
+```
+20261012090000_d3_lead_notification_outbox.sql      CHECK 서브쿼리 결함 수정본
+20261012091000_c3_portal_expiry_rate_limit.sql      보호자 포털 만료·빈도 제한
+20261012092000_b2_lesson_assets.sql                 수업 자료
+20261012093000_c3b_portal_access_policy.sql         포털 접근 정책
+20261012094000_d3b_lead_notification_delivery.sql   알림 발송 기록
+20261012095000_c2b_period_report_compose.sql        월간·학기 리포트
+20261012096000_b2b_lesson_asset_predownload.sql     자료 사전 내려받기
+20261014090000_e1_lesson_content_structure.sql      body_json + 콘텐츠 6표
+20261014091000_e2_lesson_publish_gate.sql           체크섬·발행 게이트
+20261014092000_e3_publish_lock_and_scope.sql        쓰기 잠금·장면 범위
+20261014093000_e4_lesson_section_scope.sql          본문·활동 읽기 범위
+```
+
+`supabase/content/tap24_2026_1_load.sql` 는 **migration 이 아니다.**
+적재는 전부 draft 로 들어가고 자동 발행하지 않는다.
+
+> ⚠️ `docs/e-stage-db-connection.md` 의 `#22~#49` 목록은 **운영(21건) 기준
+> 계획**이다. 스테이징에는 쓰지 않는다 — 스테이징은 위 11건뿐이다.
+
+### 검증 (실행함)
+
+`npm run verify:db:staging` → **41/41 통과** (격리 Postgres · 원격 접속 없음).
+
+- 기준선 39건이 올라가고, 그 시점에 신규 구조가 **없다**는 것까지 확인
+  (점검 문서의 「아직 없는 신규 구조」와 같은 상태)
+- 저장소의 「기준선 뒤 migration」이 위 11건과 **정확히 일치**
+- 합성 UAT 모양(기관·반·담임·원아 3·계약·배정·회차 8·발행 8차시·136섹션·
+  주차마다 필수 11)을 만든 뒤 11건 적용
+- 적용 뒤 **전부 보존** · 회차 `updated_at` 불변 · 기존 평문 `body` 그대로 ·
+  새로 생긴 `body_json` 은 기존 섹션에서 null
+- **가드가 살아 있다**: 트리거 11→11, 미래 회차 준비 확인·출결이 SS009 로
+  거부, 학부모 공유 신규 발급이 PT004 로 거부
+- **과잉 차단하지 않는다**: 지난 회차에는 여전히 쓸 수 있다
+- 업그레이드가 기능을 임의로 출시하지 않는다 (출시된 기능 0)
+- TAP24 교안은 여전히 없다 (적재는 migration 이 아니므로 정상)
+
+가드 검사는 **담당 교사로 가장한 세션**으로 한다. 관리 연결로 쓰면
+`auth.uid()` 가 null 이라 기존 권한 검사(SS002)가 먼저 거부해 가드까지 닿지
+못한다 — `trg_zz_*` 는 이름 순서상 맨 마지막에 돈다. 학부모 공유만은
+`child_portals` 에 authenticated grant 가 없어(쓰기는 RPC 로만 한다) 관리
+연결로 확인하되 `auth.uid()` 를 원장으로 둔다.
+
+---
+
+## 4. 기능 출시 스위치 — false 를 과대 해석하지 않는다
+
+`platform_capabilities` 10개 전부 `is_released=false`
+(`ai_assist`=AR-8 · `branding`=CO-8 · `parent_portal`=CO-12 · 나머지는 `blocked_by` 비어 있음).
+
+그렇다고 모든 업무가 닫히는 것은 **아니다.**
+
+| 판정 함수 | `capability_released` 를 보나 |
 |---|---|
-| 판정 | 🟡 **fixture 로는 열린다 · DB 교안으로는 안 열린다** |
-| 지금 동작 | `CONTENT_SOURCE` 기본값이 `fixture` 이므로 저장소 fixture 의 장면이 뜬다 |
-| DB 경로에 필요한 것 | `lesson_scenes`·`product_version_programs`(#46) · `list_lesson_scenes_for_class`(#48) · `member_lesson_entitled`(#49) · 적재 `tap24_2026_1_load.sql` · `CONTENT_SOURCE=database` |
-| 스테이징 | #46~#49 **미적용** |
-| 권한 | RPC 가 담당 교사/원장 → 계약 범위 → 배정·발행·주차 이용권 순으로 판정. 못 보면 **0행**(있는지 없는지 알려주지 않는다) |
+| `private.class_write_allowed` | **아니다** — 반 이용권과 기관 서비스 상태를 본다 |
+| `private.class_has_feature` | **아니다** — 계약의 `product_version_features` 를 본다 |
+| 학부모 공유 신규 발급 트리거 | **본다** (PT004) |
+| 월간·학기 리포트 | **본다** (`c2b` 적용 후) |
+| AI 보조 · 일괄 인쇄 | **본다** |
 
-진입 경로: `/teacher/weeks/[weekNo]` 의 회차 띠에서 상태가 `in_progress` 일 때
-「교실 화면 열기」가 나온다. `/teacher/sessions/[id]/during` 에는 링크가 없다.
+→ 각 화면·Server Action 의 실제 게이트를 코드에서 대조해 판정한다.
+   이번 점검에서 스위치는 **바꾸지 않았다.**
 
-### 2-3. 관찰 기록 — `/teacher/sessions/[sessionId]/observations`
+---
 
-| | |
-|---|---|
-| 판정 | ✅ **열린다** |
-| 필요한 것 | `class_session_observations.taxonomy`·`growth_metrics`·`observation_growth_selections`(#24) · `save_class_observation`(#29) · 쓰기 게이트 트리거(#35) · Storage 버킷 `observation-media`(#16) |
-| 스테이징 | 전부 ≤#38 → 있음 |
-| 조건 | 회차가 `in_progress` 또는 `completed` · feature `class_mode` · Growth5 선택 최대 5개 · `complete` 에는 교사 관찰이나 아이의 말 중 하나 이상 |
-| AI 정리 | feature `ai_assist` ∧ `capability_released('ai_assist')` ∧ `OPENAI_API_KEY` — 셋 중 하나라도 없으면 버튼이 닫힌다 (설계대로) |
+## 5. 네 단계 현재 판정 (스테이징 39건 기준)
 
-### 2-4. 결과보고
-
-| 갈래 | 판정 | 필요한 것 | 스테이징 |
-|---|---|---|---|
-| **주간 리포트** | ✅ 열린다 | `reports`·`report_revisions`·`report_revision_evidence`(#25) · `create_weekly_report_draft`·`save_report_draft`·`complete_report_revision`(#31) · feature `weekly_report` | 있음 |
-| **월간·학기 리포트** | ❌ 안 열린다 | `report_period_sources`·`create_period_report_draft`·`set_period_report_sources`(**#44**) + `capability_released('monthly_report'/'semester_report')` | **#44 미적용** |
-| 일괄 인쇄 | 🟡 스위치 문제 | feature `bulk_print` ∧ `capability_released('bulk_print')` | 표는 있음 · 출시 스위치 확인 필요 |
-| **보호자 포털 공개 조회** | ❌ 안 열린다 | `child_portals`(#25) · `issue_child_portal`(#31) 은 있으나 `portal_access_throttle`(**#40**) · `read_child_portal_guarded`(**#42**) 가 없고, 라우트가 `register_portal_access_attempt` 실패를 **fail-closed** 로 처리 | **#40·#42 미적용** |
-| 구 형식 성장 리포트 읽기 | ✅ | `child_growth_reports`(#18) 계열 | 있음 |
-
-> `create_or_refresh_child_growth_report`(#18) 는 **앱에서 더 이상 호출하지 않는다**
-> (`grep -rn "create_or_refresh" src` 0건). 교사 결과보고의 정식 경로는
-> `reports`/`report_revisions` 기반 주간·기간 리포트다.
-
-### 한눈에
-
-| 단계 | 스테이징 #38 에서 | 막는 것 |
+| 단계 | 판정 | 근거 · 막는 것 |
 |---|---|---|
-| 1 수업 준비 | ✅ | — (자료 패널만 비어 보임 #41·#45) |
-| 2 교실 화면 | 🟡 fixture 만 | #46~#49 + 적재 + `CONTENT_SOURCE` |
-| 3 관찰 기록 | ✅ | — |
-| 4 결과보고 (주간) | ✅ | — |
-| 4 결과보고 (월간·학기·포털) | ❌ | #40 · #42 · #44 |
+| 수업 준비 | 🟡 **지난 회차만** | 필요한 표·RPC 는 모두 있다. 미래 회차 5건은 SS009 로 막힌다 — 설계대로다. 수업 자료 패널은 `b2_lesson_assets` 미적용이라 비어 보인다 |
+| 교실 화면 | 🟡 **fixture 로만** | `CONTENT_SOURCE` 기본값이 fixture. DB 장면은 `lesson_scenes`·`e3`·`e4` 가 없어 불가 |
+| 관찰 기록 | 🟡 **지난 회차만** | 표·RPC 있음. 미래 회차는 SS009. AI 정리는 `ai_assist` 미출시로 닫힘 |
+| 결과보고 (주간) | ✅ 구조상 가능 | `reports`·`report_revisions`·RPC 존재. **실행 성공은 미검증** |
+| 결과보고 (월간·학기) | ❌ | `c2b_period_report_compose` 미적용 + 출시 스위치 false |
+| 보호자 포털 | ❌ | `c3`·`c3b` 미적용 + PT004 + CO-12 |
+
+> 「구조상 가능」은 표와 함수가 있다는 뜻이다. 사용자 계정 로그인·RLS·실제 수업
+> 흐름은 아직 아무도 눌러 보지 않았다 (9절).
 
 ---
 
-## 3. 연결 필요 항목
-
-### A. 먼저 할 것 — 사실 확인 (쓰기 없음)
-
-**A0 이 끝나기 전에는 A1·A3·A4 를 시도할 수 없다** (정지된 프로젝트는 응답하지 않는다).
-
-| # | 항목 | 상태 | 왜 |
-|---|---|---|---|
-| A0 | 스테이징 프로젝트 재개 | **대기** — 사람이 결정 | 아래 5절 |
-| A1 | 스테이징 `migration list --linked` 실제 번호 | **미실행** (연결 시간 초과) | 이 문서 전체가 「#38」 가정 위에 있다 |
-| A2 | 개발 브랜치 Preview 가 **어느 Supabase** 를 보는지 | **미확인** — 아래 6절 | 스테이징을 보지 않으면 흐름을 시험할 수 없고, 운영을 보면 **쓰면 안 된다** |
-| A3 | 스테이징 `platform_capabilities` 의 `is_released`·`blocked_by` | 미실행 | 월간·학기·일괄 인쇄·AI 가 여기서 닫힌다 |
-| A4 | 합성 UAT 회차 8건 상태와 계약 기간 | 미실행 | 계약 기간이 2026-11-27 까지로 적혀 있다. 지났으면 주차 이용권 판정이 전부 막힌다 |
-
-### B. 적용이 필요한 migration (스테이징 기준 · 아직 하지 않음)
-
-| 순서 | 파일 | 이 흐름에서 푸는 것 |
-|---:|---|---|
-| #39 | `d3_lead_notification_outbox` | (흐름과 무관하나 순서상 선행) **CHECK 서브쿼리 결함 수정본이어야 적용된다** |
-| #40 | `c3_portal_expiry_rate_limit` | 보호자 포털 공개 조회 |
-| #41 | `b2_lesson_assets` | 수업 준비 화면의 자료 패널 |
-| #42 | `c3b_portal_access_policy` | 보호자 포털 공개 조회 |
-| #43 | `d3b_lead_notification_delivery` | (순서) |
-| #44 | `c2b_period_report_compose` | **월간·학기 리포트** |
-| #45 | `b2b_lesson_asset_predownload` | 자료 사전 내려받기 |
-| #46~#49 | `e1`~`e4` | 교실 화면 DB 교안·장면 + 발행 게이트 + 읽기 범위 |
-| — | `supabase/content/tap24_2026_1_load.sql` | 24주 교안 적재 (migration 아님) |
-
-적용 절차·백업·복구는 [e-stage-db-connection.md §2](./e-stage-db-connection.md) 에 있다.
-스테이징 쓰기 경로는 `supabase/content/apply_staging_content.mjs` 처럼
-**대상 ref 를 명시 확인하는 길**만 쓴다.
-
-### C. 환경변수
-
-| 변수 | 상태 | 필요한 곳 |
-|---|---|---|
-| `CONTENT_SOURCE` | ✅ `.env.example` 에 추가함 (기본 `fixture` · 허용값 `fixture`·`database`) | 교실 화면·교사 화면의 DB 교안 |
-| `PORTAL_THROTTLE_SALT` | 16자 이상 필수 · 없거나 짧으면 공유 조회를 **아예 열지 않는다** (코드 조건 확인함) | 보호자 포털 · 구 형식 공유 링크 |
-| `OPENAI_API_KEY` · `OPENAI_OBSERVATION_MODEL` | 선택 | 관찰 AI 정리 |
-| `SUPABASE_SECRET_KEY` | 선택 | 원장 초대(Auth Admin) |
-
-`.env.example` 의 `SOYE_SAAS_V2_APP_CUTOVER` 는 `src/` 에서 더 이상 읽지 않는다.
-
-### D. 접근 — 지금 막혀 있는 것
-
-| 항목 | 상태 |
-|---|---|
-| Vercel Preview 보호 | 모든 Preview 가 Vercel Authentication(SSO) 뒤에 있다. 로그인한 사람만 연다 — 자동 검증도 직원 UAT 도 여기서 멈춘다 |
-| 합성 계정 비밀번호 | 저장소에 없다 (설계대로). 별도 전달 |
-| **P09D-C2 — 스테이징 키 회전** | **열려 있다.** [phase-10h](11-production-readiness/phase-10h-employee-uat-handoff.md) 가 「닫히기 전에는 직원에게 URL·계정을 보내지 않는다」고 적어 둔 상태다 |
-
-### E. 기능 출시 스위치 (`platform_capabilities`)
-
-`monthly_report` · `semester_report` · `bulk_print` · `ai_assist` · `parent_portal`
-은 표가 있어도 `capability_released()` 가 false 면 닫힌다. 변경 RPC 는
-`set_capability_release`(#38). 어떤 것을 켤지는 본사 결정이다.
-
----
-
-## 4. 권하는 순서
-
-```
-0) 스테이징 재개 여부 결정 + 재개      ← 사람. 5-1 의 세 가지를 먼저 정한다
-1) A1 확인 (migration 실제 번호)       ← 여기서 2절 전체가 달라질 수 있다
-2) A2 확인 (Preview 가 보는 Supabase)  ← 확인 전에는 Preview 로 쓰지 않는다
-3) A3·A4 확인 (기능 스위치 · 회차 · 계약)
-4) #39~#45 스테이징 적용 + 검증        ← 월간·학기·포털·자료가 열린다
-5) 네 단계 흐름을 사람이 실행          ← CONTENT_SOURCE=fixture 유지
-6) #46~#49 적용 + 24주 적재 (draft)
-7) 본사 검수 경로에서 24주 대조         ← 정식 경로는 아직 fixture 다
-8) 검수가 끝난 주차만 본사가 발행
-9) CONTENT_SOURCE=database 로 정식 경로 재확인
-```
-
-5)와 6) 사이를 갈라 두는 이유는 7절에 적었다 — 한꺼번에 올리면 교사 화면이
-비었을 때 **업무 흐름이 깨진 것인지 · 적재가 안 된 것인지 · 검수 전이라 막힌
-것인지** 구분할 수 없다.
-
----
-
-## 5. 스테이징 재개 절차 (준비만 · 실행하지 않음)
-
-> 재개 · migration 적용 · 키 회전은 **이번 작업에서 하지 않는다.**
-> 아래는 사람이 실행할 순서다.
-
-### 5-1. 재개 전에 정하고 갈 것
-
-| 항목 | 왜 지금 정해야 하나 |
-|---|---|
-| **P09D-C2 키 회전** | [phase-10h](11-production-readiness/phase-10h-employee-uat-handoff.md) 가 「닫히기 전에는 직원에게 URL·계정을 보내지 않는다」로 묶어 둔 항목이다. 재개하면 옛 키로 접근 가능한 상태가 그대로 살아난다 — 회전을 먼저 할지, 내부 검증만 하고 배포는 미룰지 정한다 |
-| 일시정지 사유 | 비용 절감인지 사고 대응인지에 따라 재개 뒤 할 일이 다르다 |
-| 데이터 보존 여부 | Supabase 무료 플랜의 장기 정지는 백업만 남기고 복원이 필요할 수 있다. 합성 UAT 기관·반·계약·회차·관찰이 남아 있는지가 7절 검증의 전제다 |
-
-### 5-2. 재개 (사람이 실행)
-
-```
-1) Supabase 대시보드 → 프로젝트 teachable-art-play3-staging (itcddooiuqsqingfhxkk)
-   → Restore / Resume.  ★ 운영(vpppxuhodwauaclhybtg) 화면이 아닌지 ref 로 확인한다.
-2) 상태가 ACTIVE_HEALTHY 가 될 때까지 기다린다 (재개는 수 분 걸린다).
-3) 대시보드가 「restore from backup」을 요구하면, 어느 시점 백업인지 적어 둔다.
-   그 시점 이후의 합성 데이터는 사라진 상태로 돌아온다.
-```
-
-### 5-3. 재개 직후 — 읽기 전용 확인 순서
-
-**순서가 중요하다.** 앞 단계가 틀리면 뒤 결과를 믿을 수 없다.
-
-```
-0) 대상 확인      supabase/.temp/project-ref 와 linked-project.json 이
-                 itcddooiuqsqingfhxkk 인지 눈으로 본다.
-                 vpppxuhodwauaclhybtg 가 보이면 즉시 멈춘다.
-1) migration 이력  supabase migration list --linked
-                 → local 49 · remote ? · 마지막 remote 파일명을 적는다.
-                 이것이 1절 표의 「38건 가정」을 대체한다.
-2) 기능 출시 스위치 select code, is_released, blocked_by
-                   from public.platform_capabilities order by code;
-                 → monthly_report · semester_report · bulk_print · ai_assist ·
-                   parent_portal · class_mode · weekly_report
-3) 상품 ↔ 프로그램  select pv.id, p.code, pv.version_label, pv.week_from, pv.week_to,
-                          pvp.program_id, cp.code
-                     from public.product_versions pv
-                     join public.products p on p.id = pv.product_id
-                     left join public.product_version_programs pvp
-                            on pvp.product_version_id = pv.id
-                     left join public.curriculum_programs cp on cp.id = pvp.program_id
-                    order by p.code, pv.version_label;
-                 ★ product_version_programs 는 E1(#46) 에서 생긴다.
-                   remote 가 #46 미만이면 이 조인은 「표 없음」으로 실패한다 —
-                   그것이 정상이며, 실패 자체가 답이다.
-4) 계약           select c.id, c.status, c.start_date, c.end_date, pv.version_label
-                     from public.contracts c
-                     join public.product_versions pv on pv.id = c.product_version_id;
-                 → 오늘이 start_date..end_date 안인지. 지났으면 주차 이용권이 전부 막힌다.
-5) UAT 회차        select s.id, s.status, s.week_no, s.scheduled_date, l.title
-                     from public.class_sessions s
-                     join public.curriculum_lessons l on l.id = s.lesson_id
-                    order by s.scheduled_date;
-                 → 8건(W1~W8)이 있는지 · 상태가 무엇인지.
-6) 반 배정 · 담임   select cpa.class_id, cpa.program_id, cpa.status,
-                          (select count(*) from public.class_teachers ct
-                            where ct.class_id = cpa.class_id) as teachers
-                     from public.class_program_assignments cpa;
-                 → 담임이 0이면 교실 화면 RPC 가 거부한다 (화면 문제가 아니다).
-7) 콘텐츠 상태     select p.code, count(*) filter (where l.status='published') as published,
-                          count(*) as lessons
-                     from public.curriculum_lessons l
-                     join public.curriculum_programs p on p.id = l.program_id
-                    group by p.code;
-```
-
-읽기 전용 수단: `supabase db query --linked --file <tmp.sql>` (저장소의
-`supabase/validation/staging_e2e/guards.mjs` 가 쓰는 방식) 또는 대시보드 SQL
-편집기. **SELECT 만 보낸다.**
-
-### 5-4. 확인 뒤에 판단할 것
-
-| 읽은 값 | 다음 행동 |
-|---|---|
-| remote 가 #38 이면 | 3절 B 표의 #39~#45 적용 검토 → 월간·학기·포털·자료가 열린다 |
-| remote 가 #38 미만이면 | 1~5절 판정을 그 번호 기준으로 **다시 쓴다** |
-| 합성 데이터가 사라졌으면 | `supabase/content/apply_staging_content.mjs` 의 `uat-switch`·`uat-sessions` 로 다시 만든다 (대상 ref 확인 필수) |
-| 계약 기간이 지났으면 | 계약 기간 연장은 본사 결정이다. 임의로 늘리지 않는다 |
-
----
-
-## 6. 개발 브랜치 Preview 는 어느 Supabase 를 보는가 — **확인 못 함**
-
-### 시도한 것과 결과
+## 6. Preview 가 보는 Supabase — **여전히 미확인**
 
 | 방법 | 결과 |
 |---|---|
-| Preview URL 로 HTML·정적 자산·이미지 요청 | **전부 302 → vercel.com SSO.** 번들을 읽을 수 없다 |
-| 저장소에서 Preview 환경변수 찾기 | 없다 (`.env*` 는 커밋하지 않는다 · `vercel.json` 에도 없다) |
-| `supabase/validation/staging_e2e/preview_probe.mjs` | 이 도구가 바로 「번들에서 Supabase ref 찾기」를 한다. 다만 `guards.mjs` 의 `PREVIEW_ALIAS` 가 **saas-v2 Preview 하나로 고정**되어 있어 이 브랜치 Preview 를 넣으면 거부한다. 그 가드는 도구가 엉뚱한 데를 보지 못하게 하려고 둔 것이므로 **임의로 넓히지 않았다** |
+| Preview URL (HTML·정적 자산·이미지) | **전부 302 → vercel.com SSO** |
+| 저장소의 Vercel 설정 | `vercel.json`·`.vercel` 없음 |
+| Vercel CLI | 미설치 |
+| `preview_probe.mjs` | 허용 alias 가 saas-v2 하나로 고정. 그 가드를 임의로 넓히지 않았다 |
 
-### 추측 (확인 아님)
+> ★ **로컬 `.env.local` 로 추정하지 않는다.** 로컬이 운영을 본다는 사실은
+>   Preview 가 무엇을 보는지와 별개다.
+>   확인 전에는 Preview 로 **시험 데이터를 쓰지 않는다.**
 
-Vercel 환경변수는 보통 **Preview 환경 단위**로 설정한다. saas-v2 Preview 가
-스테이징을 봤다는 기록이 있으므로, 같은 Preview 환경을 쓰는 이 브랜치도
-스테이징을 볼 **가능성이 높다**. 그렇다면 스테이징이 INACTIVE 인 지금,
-이 Preview 의 로그인·업무 화면은 **DB 에 닿지 못해 오류**가 난다.
-공개 홈페이지처럼 DB 를 쓰지 않는 화면만 정상으로 보인다.
-
-이것은 추측이다. 아래 중 하나로 확인한다.
+확인하는 길:
 
 ```
-① Vercel 대시보드 → 프로젝트 → Settings → Environment Variables
-   → Preview 범위의 NEXT_PUBLIC_SUPABASE_URL 의 <ref> 를 본다 (값 전체를 옮겨 적지 않는다)
-② 로그인한 브라우저로 Preview 를 열고 개발자도구 Network 에서
-   *.supabase.co 요청의 호스트 <ref> 를 본다
-③ 이 브랜치 Preview alias 를 preview_probe 의 허용 목록에 **의도적으로** 추가하고
-   (코드 변경 · 리뷰 대상) Deployment Protection Exception 을 연 뒤 돌린다
+① Vercel → Settings → Environment Variables → Preview 범위의
+   NEXT_PUBLIC_SUPABASE_URL 의 <ref> 와, 아래 셋의 설정 여부를 본다
+     SUPABASE_PRODUCTION_PROJECT_REF · SUPABASE_SECRET_KEY_PROJECT_REF ·
+     BLOCK_WRITES_ON_PRODUCTION_DATA
+② 로그인한 브라우저로 Preview 를 열고 Network 에서 *.supabase.co 호스트를 본다
+③ 이 브랜치 alias 를 preview_probe 허용 목록에 **의도적으로** 추가해 돌린다 (코드 변경)
 ```
 
-### ⚠️ 그 과정에서 찾은 것 — 로컬 개발 환경이 **운영**을 본다
+P09D-C2(스테이징 키 회전)는 **별개로 열려 있다.** 닫히기 전에는 직원에게
+URL·계정을 배포하지 않는다.
 
-작업 폴더 `D:\소예키즈	eachable-art-play3` 의 `.env.local` 을 확인했다.
-**값은 읽지 않고 변수 이름과 공개 URL 의 ref 조각만** 봤다.
+---
+
+## 7. 콘텐츠 출처를 배포로 가른다
+
+`CONTENT_SOURCE` 는 **배포 하나에 값 하나**다. 한 배포에서 역할별로 나눌 수 없다.
+
+| 배포 | 값 | 용도 |
+|---|---|---|
+| 업무 흐름 검증 (기존 Preview) | `fixture` (미설정 = 기본) | 수업 준비 → 교실 → 관찰 → 결과보고 |
+| 본사 콘텐츠 검수 (분리된 브랜치) | `database` | 24주 적재본 대조 |
+
+절차는 [write-guard-coverage.md §4](./write-guard-coverage.md) 에 있다
+(Vercel **Branch 범위** 환경변수 또는 프로젝트 분리).
+
+> ★ **지금 database 로 바꾸지 않는다.** `e1`~`e4` 가 스테이징에 없다.
+> ★ TAP24 는 저장소 전사본이고 적재되면 전부 **draft** 다.
+>   스테이징에 이미 **published** 로 있는 STARTER 와 혼동하지 않는다 —
+>   업무 흐름 검증이 쓰는 것은 후자다.
+> ★ 적재 뒤 draft 가 정식 교사·교실 경로에서 안 보이는 것은 **정상**이다.
+>   화면을 열려고 임의 발행하거나 발행 게이트를 우회하지 않는다.
+>   검수는 본사 경로(`/admin/curriculum/weeks/...`)에서 한다.
+
+---
+
+## 8. 적용 전 상태 대조표와 백업
+
+### 8-1. 적용 직전에 기록할 값 (읽기 전용)
+
+적용 뒤 같은 질의를 다시 돌려 **같은 값**인지 본다.
+
+| # | 항목 | 2026-10-14 값 |
+|---|---|---|
+| 1 | migration 이력 건수 · 마지막 version | 39 · `20261002110000_uat_db_guard` |
+| 2 | 활성 UAT 기관 / 반 / 담임 / 원아 | 1 / 1 / 1 / 3 |
+| 3 | 계약 (상태 · 기간) | active · 2026-08-29~11-27 |
+| 4 | 계약↔반 / 활성 배정 | 1 / 1 |
+| 5 | STARTER 발행 차시 / 섹션 | 8 / 136 |
+| 6 | 주차별 필수 섹션 | 11/11 (전체 17) |
+| 7 | UAT 회차 상태 | W1~W8 전부 `scheduled` |
+| 8 | 관찰 / reports | 0 / 0 |
+| 9 | `is_released=true` 기능 수 | 0 |
+| 10 | `trg_zz_*` 가드 트리거 수 | 11 |
+| 11 | STAGING-P8 차시 / 섹션 | 8 / 88 |
+
+### 8-2. 백업 — **아직 확정된 것이 없다**
 
 | 항목 | 상태 |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` 의 ref | **`vpppxuhodwauaclhybtg` = 운영** |
-| `SUPABASE_SECRET_KEY` | 설정됨 (운영 Auth Admin 키) |
-| `SUPABASE_PRODUCTION_PROJECT_REF` | **없음** |
-| `SUPABASE_SECRET_KEY_PROJECT_REF` | **없음** |
-| `BLOCK_WRITES_ON_PRODUCTION_DATA` | **없음** |
+| 조직 plan | pro (조회 확인) |
+| 특정 백업 시점 | **미확인** |
+| PITR 제공 여부 | **미확인** — Pro 전환만으로 확정됐다고 쓰지 않는다 |
+| 논리 백업(`pg_dump`) 보유 | **없음** |
 
-즉 이 PC 에서 `npm run dev` 를 띄우면 **운영 데이터베이스에 그대로 붙고,
-배포 가드는 하나도 켜져 있지 않다.** 가드는 이미 구현돼 있는데
-(`src/lib/env/deployment-guard.ts`) 값이 비어 있어 아무 판정도 하지 않는다.
+> ★ 유료 부가 기능(PITR 등)을 **사용자 승인 없이 켜지 않는다.**
 
-권하는 조치 (값은 어디에도 적지 않는다):
+적용 전에 사람이 확인·결정할 것:
 
 ```
-.env.local 에 세 줄을 더한다
-  SUPABASE_PRODUCTION_PROJECT_REF=vpppxuhodwauaclhybtg
-  SUPABASE_SECRET_KEY_PROJECT_REF=<그 키가 속한 프로젝트 ref>
-  BLOCK_WRITES_ON_PRODUCTION_DATA=1
-→ 비운영 실행이 운영에 쓰는 것을 서버 쓰기 경로에서 막는다.
-  로컬에서 업무 화면을 시험하려면 URL·키를 스테이징 것으로 바꾼다.
+1) Supabase → Database → Backups 에서 **실제 백업 목록과 시점**을 본다
+   (목록이 비어 있으면 복원 지점이 없다는 뜻이다)
+2) PITR 이 필요한지, 비용을 쓸지 결정한다 — 켜는 것은 사용자 승인 사항
+3) 논리 백업을 뜬다
+     pg_dump --no-owner --no-privileges -Fc > staging_pre_upgrade.dump
+   ★ 합성 자료뿐이라도 암호화된 보관소에만 둔다. 저장소·대화·로그에 올리지 않는다
+4) 8-1 표의 11개 값을 적어 둔다
 ```
 
-> 이번 화면 검증은 worktree `tap3-integration-20261012` 에서 돌렸고
-> 그 폴더에는 `.env.local` 이 **없다.** Supabase 자격 증명 없이 공개 홈페이지만
-> 띄웠으므로 운영 데이터에 닿은 적은 없다.
+### 8-3. 읽기 전용 확인 질의
 
-### 그때까지의 규칙
-
-> **확인 전에는 Preview 를 통한 시험 데이터 쓰기를 하지 않는다.**
-> 운영을 보고 있을 가능성을 배제하지 못한 상태에서 쓰면 운영 데이터가 더럽혀진다.
-> 읽기(화면 열기)도 운영을 본다면 운영 데이터를 보는 것이므로, 확인이 먼저다.
-
-보조 안전장치는 이미 있다 — `SUPABASE_PRODUCTION_PROJECT_REF` 와
-`BLOCK_WRITES_ON_PRODUCTION_DATA=1` 을 Preview 환경에 설정해 두면 비운영 배포가
-운영 프로젝트에 쓰는 것을 서버 쓰기 경로에서 막는다
-(`src/lib/env/deployment-guard.ts`). **설정 여부도 ①에서 함께 본다.**
-
----
-
-## 7. 적재 뒤 draft 는 막히는 것이 정상이다 — 두 경로를 구분한다
-
-DB 적재(`tap24_2026_1_load.sql`)는 **전부 draft 로 넣는다. 자동 발행하지 않는다.**
-그래서 적재 직후 정식 교사·교실 경로에서는 24주 교안이 **열리지 않는다.**
-이것은 고장이 아니라 설계다.
-
-> ★ 화면을 열려고 **임의로 발행하거나 발행 게이트를 우회하지 않는다.**
->   `publish_lesson()` 은 미해결 검수 기록 · 본사 결정 · 검수 시점 체크섬을
->   확인하고, `status` 직접 UPDATE 로 발행하는 길은 트리거가 막는다(E3).
->   그 둘을 피해 발행하면 **검수하지 않은 내용이 아이들 화면에 뜬다.**
-
-### 두 경로
-
-| | 기존 발행본 업무 흐름 검증 | 본사 콘텐츠 검수 |
-|---|---|---|
-| 무엇을 보나 | 수업 준비 → 교실 화면 → 관찰 → 결과보고가 **동작하는가** | 24주 전사본이 **원문과 맞는가** |
-| 콘텐츠 | 이미 발행된 STARTER W1~W8 (스테이징에 published) | 새로 적재한 TAP24 2026.1 (draft) |
-| `CONTENT_SOURCE` | `fixture` 로 둔다 — 업무 흐름 검증에 교안 출처를 섞지 않는다 | `database` |
-| 누가 | 교사·원장 계정 | 본사(HQ Admin) 계정 |
-| 경로 | `/teacher/...` · `/class/[sessionId]` | `/admin/curriculum/weeks` · `/admin/curriculum/weeks/[주차]` · `.../preview` · `.../quick-guide` |
-| draft 가 보이나 | **아니다** (정식 경로는 발행본만) | **그렇다** (`internal_review` 경로라 검수 전 원문도 본다) |
-| 발행 | 하지 않는다 | 검수가 끝난 뒤 **본사가** `publish_lesson()` 으로 한다 |
-
-### 그래서 순서는
-
-```
-1) CONTENT_SOURCE=fixture 인 채로 네 단계 업무 흐름을 시험한다
-   → 여기서 나는 문제는 전부 업무 흐름 문제다 (교안 연결과 무관)
-2) E1~E4 적용 + 적재 (draft)
-3) 본사 검수 경로에서 24주를 대조한다. 정식 경로는 아직 그대로 fixture 다
-4) 검수가 끝난 주차만 본사가 발행한다
-5) 그 뒤에 CONTENT_SOURCE=database 로 바꿔 정식 경로를 다시 본다
+```sql
+-- 1 이력
+select version from supabase_migrations.schema_migrations order by version;
+-- 2~4 기관·반·담임·원아·계약·배정
+select (select count(*) from public.organizations where status='active') orgs,
+       (select count(*) from public.classes where status='active') classes,
+       (select count(*) from public.class_teachers) teachers,
+       (select count(*) from public.children where status='active') children,
+       (select count(*) from public.contracts where status='active') contracts,
+       (select count(*) from public.class_program_assignments where status='active') assignments;
+-- 5~6 발행 차시·섹션
+select p.code, count(distinct l.id) lessons, count(s.id) sections
+  from public.curriculum_programs p
+  join public.curriculum_lessons l on l.program_id = p.id and l.status='published'
+  left join public.lesson_sections s on s.lesson_id = l.id
+ group by p.code;
+-- 7 회차
+select status, count(*) from public.class_sessions group by status;
+-- 9 출시 스위치
+select code, is_released, blocked_by from public.platform_capabilities order by code;
+-- 10 가드 트리거
+select tgname from pg_trigger where not tgisinternal and tgname like 'trg_zz_%' order by 1;
 ```
 
-1)과 2)를 한꺼번에 하면, 교사 화면이 비었을 때 **업무 흐름이 깨진 것인지
-적재가 안 된 것인지 검수 전이라 막힌 것인지** 구분할 수 없다.
+### 8-4. 복구
 
----
-
-## 8. 이 문서에서 확인하지 않은 것
-
-| 항목 | 왜 |
+| 어디까지 갔나 | 복구 |
 |---|---|
-| 스테이징 migration 번호 · 기능 스위치 · 회차 · 계약 | 프로젝트 INACTIVE · 연결 시간 초과 |
-| 스테이징 합성 데이터 생존 여부 | 같음 |
-| Preview 가 보는 Supabase 프로젝트 | Preview 가 SSO 뒤에 있고 저장소에 설정이 없다 (6절) |
-| `/teacher` 홈·출결 화면이 각 환경에서 실제로 뜨는지 | 주요 질의만 읽어 본 추정 |
-| 네 단계를 사람이 눌러 보는 시험 | 환경이 없다 |
-| 로컬 `.env.local` 의 키 값 자체 | 읽지 않았다 — 변수 이름과 공개 URL 의 ref 조각만 봤다 |
-| `PORTAL_THROTTLE_SALT` 가 `/admin/readiness` 에 표시되는지 | **표시되지 않는다.** `portal-throttle.ts` 주석은 「운영자는 로그와 /admin/readiness 로 원인을 본다」고 적었지만, 그 화면은 환경변수를 검사하지 않는다 — 주석이 앞서 나간 것으로 보인다 (코드는 고치지 않았다) |
+| `e1`~`e4` 만 | `supabase/cutover/E4…` → `E3…` → `E2…` → `E1…` rollback |
+| `uat_db_guard` 만 | `supabase/rollback/20261002110000_uat_db_guard_rollback.sql` |
+| `c3` · `b2` · `c2b` 등 | **rollback 스크립트가 없다.** 백업 복원뿐 |
+| 적재만 | 프로그램 `SOYE-TAP24-2026.1` 차시 삭제 (발행본은 먼저 draft 로) |
+
+---
+
+## 9. 이번에 실행한 검사 / 실행하지 않은 검사
+
+### 실행함
+
+| 검사 | 결과 |
+|---|---|
+| `npm run verify:db` (빈 DB 전체 적용) | 57/57 |
+| `npm run verify:db:upgrade` (#1~#21 + 업무 데이터) | 61/61 |
+| **`npm run verify:db:staging`** (스테이징 실제 기준 + 합성 UAT) | **41/41** |
+
+### 실행하지 않음
+
+| 항목 | 이유 |
+|---|---|
+| 원격 migration 적용 · 키 회전 · 기능 출시 · 계약 변경 · 발행 | 범위 밖 |
+| pgTAP (`p0_uat_db_guard` 포함) | Supabase CLI·Docker 없음 |
+| 원격 이력 39건의 **전체 version 목록** 대조 | 목록을 받지 못했다 (2절) |
+| Preview 환경변수 확인 | SSO (6절) |
+| 사용자 계정 로그인·RLS·실제 수업 흐름·자료 접근·사진 업로드 | 환경·계정 없음 |
+| 백업 시점·PITR 확인 | 대시보드 접근 필요 (8-2) |
+| P09D-C2 키 회전 종료 여부 | 사용자 결정 |
