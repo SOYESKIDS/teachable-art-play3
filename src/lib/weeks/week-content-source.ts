@@ -10,6 +10,7 @@ import {
   type ProgramWeekRow,
   type WeekDbFailure,
   type WeekVersionRef,
+  type PublishedLegacyLesson,
 } from "./week-db-source";
 import { TAP24_PROGRAM_CODE } from "./week-program";
 import { WEEK_INDEX } from "./week-index";
@@ -61,6 +62,7 @@ export type WeekContentLoad =
       /** 화면이 「왜 안 보이는지」를 적는 데 쓴다 */
       reason: WeekDbFailure | "no_contract";
       detail: string;
+      legacy?: PublishedLegacyLesson;
     };
 
 export interface WeekContentQuery {
@@ -157,7 +159,7 @@ export async function loadWeekContent(
   });
 
   if (!loaded.ok) {
-    return { ok: false, reason: loaded.reason, detail: loaded.detail };
+    return { ok: false, reason: loaded.reason, detail: loaded.detail, legacy: loaded.legacy };
   }
   return { ok: true, result: loaded.result, version: loaded.version };
 }

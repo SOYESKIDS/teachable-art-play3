@@ -54,7 +54,14 @@ export interface WeekVersionRef {
 
 export type WeekDbResult =
   | { ok: true; result: WeekContentResult; version: WeekVersionRef }
-  | { ok: false; reason: WeekDbFailure; detail: string };
+  | { ok: false; reason: WeekDbFailure; detail: string; legacy?: PublishedLegacyLesson };
+
+/** Published STARTER text is displayed verbatim, never converted into TAP24 blocks. */
+export interface PublishedLegacyLesson {
+  version: WeekVersionRef;
+  title: string;
+  sections: { code: string; body: string }[];
+}
 
 /** 블록 키 ↔ 섹션 코드는 주차마다 다르다 (8·9번이 뒤바뀐다) → body_json 이 스스로 밝힌다 */
 export interface SectionRow {
@@ -309,7 +316,22 @@ export async function getWeekContentFromDb(
     return { ok: false, reason: "query_failed", detail: sourceQuery.error.message };
   }
 
-  const decoded = decodeSections((sectionsQuery.data ?? []) as SectionRow[]);
+  const sectionRows = (sectionsQuery.data ?? []) as SectionRow[];
+  if (audience === "service" && lessonStatus === "published" &&
+      programMeta.code === "SOYE-STARTER-2026.1" && sectionRows.length > 0 &&
+      sectionRows.every((row) => row.body_json === null && typeof row.body === "string")) {
+    return {
+      ok: false,
+      reason: "section_decode_failed",
+      detail: "기존 발행 교안은 원문 보기에서 확인할 수 있습니다.",
+      legacy: {
+        version: { programId: programMeta.id, programCode: programMeta.code, lessonId, weekNo, sessionNo },
+        title: lessonQuery.data.title as string,
+        sections: sectionRows.map((row) => ({ code: row.section_code, body: row.body })),
+      },
+    };
+  }
+  const decoded = decodeSections(sectionRows);
   if (!decoded.ok) {
     return { ok: false, reason: "section_decode_failed", detail: decoded.detail };
   }

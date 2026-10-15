@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { decodeSections, getWeekContentFromDb } from "../src/lib/weeks/week-db-source.ts";
 import { loadWeekContent } from "../src/lib/weeks/week-content-source.ts";
 
-function clientWithLesson(lesson) {
+function clientWithLesson(lesson, sections = []) {
   const calls = [];
   return {
     calls,
@@ -12,7 +12,7 @@ function clientWithLesson(lesson) {
       const q = {
         select() { return q; }, eq() { return q; }, order() { return q; }, limit() { return q; },
         maybeSingle: async () => ({ data: lesson, error: null }),
-        then(resolve) { return Promise.resolve({ data: [], error: null }).then(resolve); },
+        then(resolve) { return Promise.resolve({ data: table === "lesson_sections" ? sections : [], error: null }).then(resolve); },
       };
       return q;
     },
@@ -50,6 +50,39 @@ test("RLS가 숨긴 차시를 DB에서 삭제됐다고 단정하지 않는다", 
   assert.equal(result.ok, false);
   assert.match(result.detail, /아직 발행되지 않았거나/);
   assert.doesNotMatch(result.detail, /program-1/);
+});
+
+const legacyLesson = { ...lesson, status: "published", curriculum_programs: { id: "program-1", code: "SOYE-STARTER-2026.1", status: "published" } };
+const legacySections = [{ section_code: "s1", body: "발행된 원문\n둘째 줄", body_json: null, source_ref: "private-source" }];
+test("발행된 STARTER 평문은 원문과 정확한 버전만 별도로 전달한다", async () => {
+  const result = await getWeekContentFromDb(clientWithLesson(legacyLesson, legacySections), query);
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.legacy.sections, [{ code: "s1", body: "발행된 원문\n둘째 줄" }]);
+  assert.equal(result.legacy.version.programCode, "SOYE-STARTER-2026.1");
+  assert.equal(result.legacy.version.lessonId, legacyLesson.id);
+  assert.doesNotMatch(JSON.stringify(result.legacy), /private-source/);
+});
+test("draft STARTER는 평문 보기로도 열리지 않는다", async () => {
+  const client = clientWithLesson({ ...legacyLesson, status: "draft" }, legacySections);
+  const result = await getWeekContentFromDb(client, query);
+  assert.equal(result.result.bodyVisible, false);
+  assert.equal(result.legacy, undefined);
+  assert.deepEqual(client.calls, ["curriculum_lessons"]);
+});
+test("STARTER 본문 0행은 평문 교안 성공으로 바뀌지 않는다", async () => {
+  const result = await getWeekContentFromDb(clientWithLesson(legacyLesson), query);
+  assert.equal(result.ok, false);
+  assert.equal(result.legacy, undefined);
+});
+test("TAP24의 구조 누락은 STARTER 평문으로 대신하지 않는다", async () => {
+  const result = await getWeekContentFromDb(clientWithLesson({ ...lesson, status: "published" }, legacySections), query);
+  assert.equal(result.ok, false);
+  assert.equal(result.legacy, undefined);
+});
+test("구조와 평문이 섞인 STARTER는 평문 화면으로 숨기지 않는다", async () => {
+  const result = await getWeekContentFromDb(clientWithLesson(legacyLesson, [...legacySections, { section_code: "s2", body: "", body_json: {}, source_ref: null }]), query);
+  assert.equal(result.ok, false);
+  assert.equal(result.legacy, undefined);
 });
 
 async function loadViaRpc(reply) {

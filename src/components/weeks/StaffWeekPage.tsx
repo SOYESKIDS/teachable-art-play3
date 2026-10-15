@@ -29,6 +29,7 @@ import { showsDevelopmentMarkers } from "@/lib/weeks/content-state";
 import { partOf } from "@/lib/weeks/week-types";
 import { isIntegrationWeek } from "@/lib/weeks/week-index";
 import { TEACHER_NAV } from "@/app/teacher/nav";
+import { LegacyWeekPanels } from "@/components/weeks/LegacyWeekPanels";
 
 interface WeekPageProps {
   context?: { session: OrganizationSession; program: string; maxWeek: number };
@@ -107,6 +108,18 @@ export async function StaffWeekPage({ params, searchParams, context }: WeekPageP
   });
 
   if (!loaded.ok) {
+    if (loaded.legacy) {
+      const legacy = loaded.legacy;
+      const sessions = await fetchWeekSessions(supabase, membership.organizationId, weekNo, legacy.version.lessonId);
+      return (
+        <StaffShell email={email} roleLabel={roleLabel} organizationName={membership.organizationName}
+          navItems={navItems} currentHref={navCurrent}>
+          <LegacyWeekPanels lesson={legacy} sessions={sessions} role={membership.role}
+            organizationId={membership.organizationId} weekPath={weekPath} backPath={backPath}
+            active={isWeekTab(first(query.tab)) ? first(query.tab) as WeekTabKey : "prep"} />
+        </StaffShell>
+      );
+    }
     return (
       <StaffShell
         email={email}
