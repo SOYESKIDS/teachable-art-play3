@@ -175,6 +175,9 @@ function stubClient() {
     from: (table) => builder(table),
     rpc: (name, args) => {
       calls.push({ rpc: name, args });
+      if (name === "resolve_organization_content_program") {
+        return Promise.resolve({ data: { ok: true, program_id: PROGRAM }, error: null });
+      }
       return Promise.resolve({
         data: [
           {
@@ -277,10 +280,11 @@ test("계약이 가리키는 교안을 읽는다 — 주차 번호로 고르지 
     assert.equal(loaded.version.programId, PROGRAM);
     assert.notEqual(loaded.version.lessonId, OTHER_LESSON);
 
-    // 계약 → 상품 버전 → 프로그램 순서를 실제로 거쳤는지 본다.
+    // 계약표 RLS를 넓히지 않고 RPC가 계약 → 상품 버전 → 프로그램을 해석한다.
     const visited = client.calls.map((c) => c.table).filter(Boolean);
-    assert.ok(visited.includes("contracts"), "계약을 읽어야 한다");
-    assert.ok(visited.includes("product_version_programs"), "상품 버전 연결을 읽어야 한다");
+    assert.ok(!visited.includes("contracts"), "교사에게 계약표 열람을 요구하면 안 된다");
+    assert.ok(!visited.includes("product_version_programs"));
+    assert.deepEqual(client.calls.find(c => c.rpc === "resolve_organization_content_program").args, { p_organization_id: ORG });
   });
 });
 

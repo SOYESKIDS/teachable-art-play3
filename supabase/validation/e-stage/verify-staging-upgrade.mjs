@@ -10,7 +10,7 @@
  * 그런데 **스테이징은 둘 다 아니다.** 2026-10-14 읽기 전용 점검으로 확인된
  * 스테이징의 실제 이력은 `20261002100000_p10c_release_controls` 까지에
  * `20261002110000_uat_db_guard` 가 더해진 상태다. 그 위에 올릴 것은 아래
- * 11개뿐이다 (저장소 문서의 「#39부터」같은 번호가 아니라 version 으로 적는다).
+ * 기존 11개와 교사 교안 조회 RPC 1개다 (저장소 문서의 「#39부터」같은 번호가 아니라 version 으로 적는다).
  *
  *   20261012090000_d3_lead_notification_outbox
  *   20261012091000_c3_portal_expiry_rate_limit
@@ -23,6 +23,7 @@
  *   20261014091000_e2_lesson_publish_gate
  *   20261014092000_e3_publish_lock_and_scope
  *   20261014093000_e4_lesson_section_scope
+ *   20261015020314_staff_content_program_lookup (교사 계약표 비공개 유지)
  *
  * ── 무엇을 지키는지 본다 ──────────────────────────────────────────
  *
@@ -65,6 +66,7 @@ const PENDING = [
   "20261014091000_e2_lesson_publish_gate.sql",
   "20261014092000_e3_publish_lock_and_scope.sql",
   "20261014093000_e4_lesson_section_scope.sql",
+  "20261015020314_staff_content_program_lookup.sql",
 ];
 
 const url = process.env.DATABASE_URL;
@@ -549,6 +551,27 @@ async function main() {
     "TAP24 교안은 아직 없다 (적재는 migration 이 아니다)",
     (await count(admin, "select count(*) c from public.curriculum_programs where code = 'SOYE-TAP24-2026.1'")) === 0,
   );
+
+  console.log("\n── 교사 계약표 비공개 · 교안 ID 조회 RPC");
+  check("교사는 여전히 contracts 표를 직접 볼 수 없다",
+    (await count(teacherClient, "select count(*) c from public.contracts")) === 0);
+  let lookup = (await one(teacherClient,
+    "select public.resolve_organization_content_program($1) r", [ORG])).r;
+  check("교안 연결이 없으면 미연결을 알린다", lookup.ok === false && lookup.reason === "program_not_found");
+  await admin.query("insert into public.product_version_programs(product_version_id,program_id) values($1,$2)", [pv.id, PROGRAM]);
+  lookup = (await one(teacherClient, "select public.resolve_organization_content_program($1) r", [ORG])).r;
+  check("교사는 기관의 연결된 교안 ID만 받는다", lookup.ok === true && lookup.program_id === PROGRAM && Object.keys(lookup).length === 2);
+  const directorClient = await asTeacher(workUrl, DIRECTOR);
+  lookup = (await one(directorClient, "select public.resolve_organization_content_program($1) r", [ORG])).r;
+  check("원장도 같은 교안 ID를 받는다", lookup.ok === true && lookup.program_id === PROGRAM);
+  await directorClient.end();
+  let denied = false;
+  try {
+    await teacherClient.query("select public.resolve_organization_content_program('ffffffff-ffff-4fff-8fff-ffffffffffff')");
+  } catch (error) { denied = error.code === "42501"; }
+  check("다른 기관의 교안 연결 조회는 42501로 거부한다", denied);
+  check("anon은 교안 연결 RPC 실행 권한이 없다", !(await one(admin,
+    "select has_function_privilege('anon','public.resolve_organization_content_program(uuid)','EXECUTE') allowed")).allowed);
 
   await teacherClient.end();
   await admin.end();

@@ -6,8 +6,9 @@
 
 ## 실제 완료
 
-- 원격 이력 39건을 대조하고 검증된 후속 11건을 순서대로 적용했다. 현재 50건.
-  마지막 version은 `20261014093000_e4_lesson_section_scope`.
+- 원격 이력 39건을 대조하고 검증된 후속 11건을 순서대로 적용했다. 여기까지 50건.
+  이후 실제 교사 로그인에서 찾은 교안 조회 결함을 고친 읽기 RPC migration 1건을 추가해 **현재 51건**이다.
+  마지막 version은 `20261015020314_staff_content_program_lookup`.
 - MCP가 생성하는 적용 시각 version을 각 파일의 canonical version에 맞췄다.
   기존 39건은 바꾸지 않았다. 새 migration 이름과 SQL은 저장소 파일을 그대로 사용했다.
 - 적용 전 public/private 데이터, 함수, 정책, 트리거와 migration 이력을 논리 스냅샷으로
@@ -87,9 +88,35 @@ Supabase HTTP API를 호출했다. service_role이나 SQL 소유자 권한으로
 - RLS가 숨긴 차시를 삭제된 차시로 단정하지 않도록 안내를 바꿨다.
 - 교사 주차 route가 내부 `context` prop을 받는 공유 컴포넌트를 직접 export해
   Next 페이지 타입 검사에서 실패하던 것을 route wrapper로 고쳤다.
-- 코드 검사: **테스트 136/136**, TypeScript/ESLint 오류 0,
+- 코드 검사: **테스트 141/141**, TypeScript/ESLint 오류 0,
   `npm run build -- --webpack` 성공. 기본 Turbopack은 이 작업 환경의
   외부 node_modules symlink를 거부해 webpack으로 검증했다.
+
+## 실제 로그인 HTTP 검증에서 추가로 찾고 고친 결함
+
+`organization_entitlements`는 교사의 이용권을 정상 반환하지만 교안 로더가
+교사에게 읽기 정책이 없는 `contracts`를 직접 SELECT해 0행을 받고
+「유효한 계약이 없어 교안을 열 수 없습니다」라고 잘못 안내했다.
+
+계약표 읽기 정책은 유지하고, `resolve_organization_content_program(uuid)`를 추가했다.
+기관의 활성 교사/원장인지 먼저 확인하고 유효 계약에 연결된 **교안 ID만** 반환한다.
+본문·재무 정보·다른 기관의 계약은 반환하지 않는다. 앱 로더는 이 RPC를 쓴다.
+
+실제 스테이징에서 BEGIN/ROLLBACK으로 다음 **7개 SQL 검증**을 먼저 통과시켰다:
+교사 계약표 0행 유지, 교사 조회 성공, 원장 조회 성공, 계약 없음 구분,
+다른 기관 거부, 소속 없는 사용자 거부, anon EXECUTE 금지.
+임시 검증 기관과 함수가 ROLLBACK으로 사라진 것도 확인한 뒤 migration으로 적용했다.
+그 다음 **실제 로그인 JWT HTTP 요청**에서도 원장/교사가 같은 교안 ID를 받는 것을 확인했다.
+
+CI의 스테이징 업그레이드 목록과 추가 검증도 함께 보완했다.
+이 신규 CI 버전은 원격 push가 막혀 **GitHub 러너에서는 아직 실행하지 못했다**.
+앞서 보고된 CI 통과 기록을 이번 추가 RPC의 CI 결과로 쓰지 않는다.
+
+로컬 프로덕션 빌드 + 실제 스테이징을 연결한 HTTP 검증에서 원장/교사 모두
+로그인 Server Action을 거쳐 `/learning`으로 이동했고, 원장 수업 목록·교사 준비·
+완료 주간 리포트 HTML이 200으로 반환됐다. 8주 계약의 24주 직접 URL 차단도 확인했다.
+이는 **실제 브라우저 렌더링/클릭 검증이 아니다**. 이 환경에서는 Chrome 설치 파일
+다운로드가 실패해 화면·키보드·터치 검증을 하지 못했다.
 
 ## 해결하지 않은 것 — DB 콘텐츠 모드를 아직 배포하면 안 되는 이유
 
@@ -142,4 +169,13 @@ Supabase HTTP API를 호출했다. service_role이나 SQL 소유자 권한으로
 최종 URL 하나를 전달한다. 기존 Production 보호 설정을 일괄 해제하지 않는다.
 `CONTENT_SOURCE=database`는 본사 승인/상품·반 교안 일치 확인 뒤에만 배포한다.
 
-pgTAP, 실제 기기 터치/화면·인쇄, 외부 파일 재생, PITR 시점 검증은 이번 완료 항목이 아니다.
+## 코드 전달 상태
+
+로컬 전용 브랜치 `feat/staging-classroom-20261015`에 보완을 커밋했다.
+Git push는 사용 가능한 GitHub 인증이 없어 실패했고, 연결 앱의 branch 생성도
+`Resource not accessible by integration` **403**으로 거부됐다. 원격에 올라간 것으로
+보고하지 않는다. 첨부한 패치는 `e8d39f8` 기준이며 Claude Code의 인증된 작업 환경에서
+적용·검사·push할 수 있다. 진행 중 변경은 먼저 보존하고 같은 파일 수정이 있으면
+3-way 결과를 검토한다. main 병합이나 Production 배포는 포함하지 않는다.
+
+pgTAP, 실제 브라우저 화면/단축키·터치/인쇄, 외부 파일 재생, PITR 시점 검증은 이번 완료 항목이 아니다.

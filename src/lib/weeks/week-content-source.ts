@@ -7,7 +7,6 @@ import {
   getProgramWeeksFromDb,
   getWeekContentFromDb,
   resolveProgramByCode,
-  resolveProgramForProductVersion,
   type ProgramWeekRow,
   type WeekDbFailure,
   type WeekVersionRef,
@@ -119,20 +118,20 @@ export async function loadWeekContent(
     }
 
     // ★ 주차 번호로 찾지 않는다. 계약 → 상품 버전 → 프로그램 순으로 찾는다.
-    const contract = await client
-      .from("contracts")
-      .select("product_version_id, status, start_date, end_date")
-      .eq("organization_id", organizationId)
-      .in("status", ["active", "suspended"])
-      .lte("start_date", new Date().toISOString().slice(0, 10))
-      .gte("end_date", new Date().toISOString().slice(0, 10))
-      .limit(1)
-      .maybeSingle();
-
-    if (contract.error) {
-      return { ok: false, reason: "query_failed", detail: contract.error.message };
+    // Teachers cannot SELECT contracts. Keep that RLS rule and ask a scoped,
+    // read-only RPC for the single mapped program ID instead.
+    const lookup = await client.rpc("resolve_organization_content_program", {
+      p_organization_id: organizationId,
+    });
+    if (lookup.error) {
+      return { ok: false, reason: "query_failed", detail: "기관의 교안 연결을 확인하지 못했습니다. 관리자에게 문의해 주세요." };
     }
-    if (!contract.data) {
+    const payload: unknown = lookup.data;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      return { ok: false, reason: "query_failed", detail: "교안 연결 응답을 확인하지 못했습니다." };
+    }
+    const row = payload as { ok?: unknown; reason?: unknown; program_id?: unknown };
+    if (row.ok === false && row.reason === "no_contract") {
       return {
         ok: false,
         reason: "no_contract",
@@ -140,14 +139,14 @@ export async function loadWeekContent(
       };
     }
 
-    const program = await resolveProgramForProductVersion(
-      client,
-      contract.data.product_version_id as string,
-    );
-    if (!program.ok) {
-      return { ok: false, reason: program.reason, detail: program.detail };
+    if (row.ok === false && row.reason === "program_not_found") {
+      return { ok: false, reason: "program_not_found", detail: "이용권에 연결된 교안이 없습니다. 기관 관리자에게 문의해 주세요." };
     }
-    resolvedProgramId = program.programId;
+    if (row.ok !== true || typeof row.program_id !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(row.program_id)) {
+      return { ok: false, reason: "query_failed", detail: "교안 연결 응답을 확인하지 못했습니다." };
+    }
+    resolvedProgramId = row.program_id;
   }
 
   const loaded = await getWeekContentFromDb(client, {
