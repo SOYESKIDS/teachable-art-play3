@@ -110,6 +110,9 @@ const BLOCK_KEYS = new Set<keyof WeekBlocks>([
  * ★ 4번(준비물)은 A·B·C 세 행으로 나뉘어 저장된다. part 를 보고 합친다.
  */
 export function decodeSections(rows: SectionRow[]): { ok: true; blocks: WeekBlocks } | { ok: false; detail: string } {
+  if (rows.length === 0) {
+    return { ok: false, detail: "본문 섹션을 읽지 못했습니다. 적재 상태와 열람 권한을 확인해 주세요." };
+  }
   const blocks: WeekBlocks = { ...EMPTY_BLOCKS };
   const preparationParts: Record<string, unknown> = {};
 
@@ -234,7 +237,8 @@ export async function getWeekContentFromDb(
     return {
       ok: false,
       reason: "lesson_not_found",
-      detail: `프로그램 ${programId} 에 ${weekNo}주차 ${sessionNo}차시가 없다`,
+      // RLS also hides unpublished lessons. Zero rows do not prove missing data.
+      detail: `${weekNo}주차 수업이 아직 발행되지 않았거나 현재 기관에서 열람할 수 없습니다. 기관 관리자에게 발행·프로그램 연결 상태를 확인해 주세요.`,
     };
   }
 
@@ -258,6 +262,22 @@ export async function getWeekContentFromDb(
   const publication = lessonStatus === "published" ? "published" : "draft";
   const dbStatus = { ...summary.status, publication } as typeof summary.status;
   const visible = isVisibleTo(dbStatus, audience);
+
+  // Draft service requests must not fetch protected content and then discard it.
+  // Review requests continue below and validate the actual stored sections.
+  if (!visible) {
+    return {
+      ok: true,
+      result: {
+        origin: "database", bodyVisible: false, hidden: hiddenReason(dbStatus),
+        content: {
+          summary: { ...summary, status: dbStatus }, blocks: EMPTY_BLOCKS,
+          scenes: [], sourceFile: null, transcriptionNotes: [],
+        },
+      },
+      version: { programId: programMeta.id, programCode: programMeta.code, lessonId, weekNo, sessionNo },
+    };
+  }
 
   const [sectionsQuery, scenesQuery, sourceQuery] = await Promise.all([
     client
