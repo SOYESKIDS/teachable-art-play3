@@ -67,6 +67,7 @@ const PENDING = [
   "20261014092000_e3_publish_lock_and_scope.sql",
   "20261014093000_e4_lesson_section_scope.sql",
   "20261015020314_staff_content_program_lookup.sql",
+  "20261015065710_staff_asset_list_source_check.sql",
 ];
 
 const url = process.env.DATABASE_URL;
@@ -518,6 +519,29 @@ async function main() {
   }
   await teacherClient.query("rollback");
   check("지난 회차에는 여전히 쓸 수 있다 (가드가 과잉 차단하지 않는다)", pastOk, pastDetail);
+
+  // A column GRANT restriction must not break the invoker list RPC.
+  const assetId = "b0000000-0000-4000-8000-000000000061";
+  await admin.query(
+    `insert into public.lesson_assets(id,lesson_id,asset_type,title,external_url,rights_note,
+      rights_status,approval_status,sort_order)
+     values($1,$2,'audio','Synthetic permission regression','https://example.invalid/private-source',
+      'private-regression-note','cleared','published',199)`, [assetId, lessonIds[0]],
+  );
+  const listed = (await teacherClient.query(
+    "select * from public.list_lesson_assets_for_class($1,$2) where asset_id=$3",
+    [CLASS, lessonIds[0], assetId],
+  )).rows;
+  check("교사 자료 목록은 경로 권한 없이 등록 여부를 읽는다", listed.length === 1 && listed[0].has_source === true);
+  check("자료 목록에 경로·권리 메모가 새지 않는다",
+    !JSON.stringify(listed).includes("private-source") && !JSON.stringify(listed).includes("private-regression-note"));
+  await teacherClient.query("begin");
+  await expectRejected(teacherClient, "자료 원본 경로 직접 조회는 계속 거부", "select storage_path from public.lesson_assets", [], "42501");
+  await teacherClient.query("rollback");
+  const other = await count(teacherClient,
+    "select count(*) c from private.lesson_asset_display_state($1,$2)",
+    [assetId, "c0000000-0000-4000-8000-000000000099"]);
+  check("다른 반으로 자료 등록 여부를 열거하지 못한다", other === 0);
 
   /* ── 8. 출시 스위치는 그대로인가 ── */
   console.log("\n── 기능 출시 스위치");
