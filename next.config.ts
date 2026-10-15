@@ -35,6 +35,15 @@ const nextConfig: NextConfig = {
   // 서버 스택 정보(X-Powered-By: Next.js) 노출 제거.
   poweredByHeader: false,
 
+  // Metadata images read these fonts with fs at runtime. Include them in each
+  // server bundle so dynamic pages do not fail after a successful build.
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/pretendard/dist/web/static/woff-subset/Pretendard-Bold.subset.woff",
+      "./node_modules/pretendard/dist/web/static/woff-subset/Pretendard-Regular.subset.woff",
+    ],
+  },
+
   async headers() {
     return [
       {
