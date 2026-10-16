@@ -2,7 +2,6 @@ import Image from "next/image";
 import { AvailabilityTag, HomeHeading, HomeSection } from "./HomeSection";
 import { homeImages } from "@/data/home-images";
 import { growthNarrative as copy } from "@/data/home-narrative";
-import { GROWTH_STAGE_OPTIONS } from "@/components/home/growth-stages";
 
 /**
  * 07 GROWTH RECORD — 관찰과 성장기록.
@@ -10,8 +9,8 @@ import { GROWTH_STAGE_OPTIONS } from "@/components/home/growth-stages";
  * ★ 예전 AI 원칙 · 성장 비교(BEFORE/AFTER) · 학부모 리포트 세 섹션을 하나로 합쳤다.
  * ★ 지금 제공하는 관찰 기록(관찰 영역 · 아이의 말 · 교사 관찰)과
  *   출시 준비 중인 성장 지표 · 관찰 단계를 나눠 그린다 — 없는 기능을 제공 중처럼 보이지 않게.
- * ★ 성장 지표는 점수 · 등급 · 발달 수준이 아니다 (DEC-065).
- *   단계 셋은 같은 크기 · 같은 색으로 그린다 — 높낮이 · 진행 막대 · 별점 금지.
+ * ★ 미확정 관찰 영역과 도움 단계를 공개 사이트에서 발달 척도처럼 소개하지 않는다.
+ *   입력 데이터와 과거 기록은 그대로 두고, 교육 정책은 본사 검수 후 별도로 전환한다.
  * ★ 기록 가이드 예시는 canonical 1주차 §12 의 실제 문장이다.
  */
 export function GrowthRecordSection() {
@@ -26,14 +25,7 @@ export function GrowthRecordSection() {
             <h3 className="text-title-sm font-bold text-navy">{copy.current.title}</h3>
             <AvailabilityTag value={copy.current.availability} />
           </div>
-          <p className="mt-3 text-caption font-semibold text-ink-muted">관찰 영역 5가지</p>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {copy.current.domains.map((domain) => (
-              <li key={domain} className="rounded-full border border-line bg-ivory px-3.5 py-1.5 text-label font-semibold text-navy">
-                {domain}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-3 text-body leading-relaxed text-ink">{copy.current.note}</p>
           <p className="mt-4 text-caption font-semibold text-ink-muted">교사가 남기는 것</p>
           <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
             {copy.current.fields.map((field) => (
@@ -51,28 +43,6 @@ export function GrowthRecordSection() {
               <AvailabilityTag value={copy.upcoming.availability} />
             </div>
             <p className="mt-2 text-label text-ink">{copy.upcoming.body}</p>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {copy.upcoming.metrics.map((metric) => (
-                <li key={metric} className="rounded-full border border-line px-3 py-1 text-caption font-semibold text-navy">
-                  {metric}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-caption text-ink-muted">{copy.upcoming.stageNote}</p>
-            {/* 단계 이름 · 설명은 개발 중인 교사 화면과 같은 원본(GROWTH_STAGE_OPTIONS)을 쓴다 */}
-            <dl className="mt-3 grid grid-cols-2 gap-2">
-              {/* 기록 없음 = 실패 · 비활성이 아니다 — 다른 단계와 같은 재질 · 같은 글자색 */}
-              <div className="rounded-2xl border border-line bg-ivory p-3">
-                <dt className="text-body font-bold text-navy">{copy.upcoming.noRecord.label}</dt>
-                <dd className="mt-1 text-caption text-ink-muted">{copy.upcoming.noRecord.help}</dd>
-              </div>
-              {GROWTH_STAGE_OPTIONS.map((stage) => (
-                <div key={stage.value} className="rounded-2xl border border-line p-3">
-                  <dt className="text-body font-bold text-navy">{stage.label}</dt>
-                  <dd className="mt-1 text-caption text-ink-muted">{stage.help}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
           <ul className="mt-6 flex flex-col gap-2 border-t border-line-soft pt-5">

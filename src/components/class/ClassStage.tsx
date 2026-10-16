@@ -104,19 +104,20 @@ export function ClassStage({
     (delta: number) => {
       setIndex((prev) => Math.min(total - 1, Math.max(0, prev + delta)));
       setResting(false);
+      setNoteOpen(false);
       setTimerStartedAt(null);
     },
     [total],
   );
 
-  const toggleFullscreen = useCallback(() => {
+  const toggleFullscreen = useCallback(async () => {
     try {
       if (document.fullscreenElement) {
-        void document.exitFullscreen();
+        await document.exitFullscreen();
         return;
       }
       const target = document.getElementById(STAGE_ID) ?? document.documentElement;
-      void target.requestFullscreen();
+      await target.requestFullscreen();
     } catch {
       // 브라우저가 거부하면 그대로 둔다. 상태는 fullscreenchange 가 맞춘다.
     }
@@ -238,7 +239,7 @@ export function ClassStage({
               {scene.stageLabel ?? SCENE_TYPE_LABEL[scene.sceneType]}
             </p>
             <p className="mt-6 text-[clamp(18px,2vw,28px)] text-muted-ink">
-              화면을 쉬는 중입니다. B 를 누르면 돌아옵니다.
+              준비되면 아래 ‘화면 돌아오기’를 눌러 주세요.
             </p>
           </>
         ) : (
@@ -247,28 +248,20 @@ export function ClassStage({
               {scene.kidText}
             </p>
 
-            {/* 그림책·영상·음원 자리 — 파일이 없으면 그 사실을 적는다 */}
-            {scene.sceneType === "story" || scene.sceneType === "workbook" ? (
-              <p className="mt-10 rounded-[18px] border-2 border-dashed border-rule-strong px-8 py-6 text-[clamp(16px,1.8vw,24px)] text-muted-ink">
-                자료 준비 중 — 그림책·워크북 파일이 아직 등록되지 않았습니다
-              </p>
-            ) : null}
           </>
         )}
       </main>
 
       {/* ── 교사 노트 (공통 진행 안내만) ── */}
-      {noteOpen && scene.teacherNote ? (
+      {noteOpen ? (
         <section
           aria-label="교사 노트"
           className="mb-6 rounded-[18px] border-2 border-rule bg-white px-8 py-6"
         >
-          <p className="text-[clamp(16px,1.6vw,22px)] leading-relaxed text-forest">
-            {scene.teacherNote}
-          </p>
-          <p className="mt-2 text-[14px] text-muted-ink">
-            이 노트는 교실 화면에 함께 보입니다. 원아별 내용은 업무 화면에서 다룹니다.
-          </p>
+          <p className="mb-3 text-[16px] font-bold text-forest">교사 안내 · 연결된 TV에도 보입니다</p>
+          {scene.teacherNote ? <p className="text-[clamp(16px,1.6vw,22px)] leading-relaxed text-forest">{scene.teacherNote}</p> : null}
+          {scene.sceneType === "story" || scene.sceneType === "workbook" ? <p className="mt-3 text-[16px] leading-relaxed text-muted-ink">이 화면에는 그림책·워크북 파일이 연결되어 있지 않습니다. 별도로 준비한 자료로 진행하고, 아이들이 활동할 때는 화면 쉬기를 사용하세요.</p> : null}
+          <p className="mt-3 text-[14px] text-muted-ink">아이들에게 보여주기 전에 안내를 닫아 주세요. 원아별 내용은 업무 화면에서 다룹니다.</p>
         </section>
       ) : null}
 
@@ -320,14 +313,14 @@ export function ClassStage({
           >
             {timerStartedAt !== null ? "타이머 멈춤 (T)" : "타이머 (T)"}
           </button>
-          {scene.teacherNote ? (
+          {scene.teacherNote || scene.sceneType === "story" || scene.sceneType === "workbook" ? (
             <button
               type="button"
               onClick={() => setNoteOpen((v) => !v)}
               aria-pressed={noteOpen}
               className="inline-flex min-h-12 items-center rounded-[10px] border border-rule px-4 text-[16px] font-semibold"
             >
-              {noteOpen ? "노트 닫기 (N)" : "교사 노트 (N)"}
+              {noteOpen ? "교사 안내 닫기 (N)" : "교사 안내 · TV에도 표시 (N)"}
             </button>
           ) : null}
           <a

@@ -1,6 +1,8 @@
 import { pricingPackages } from "@/data/packages";
 import type { OrganizationEntitlementResult } from "@/lib/entitlement/queries";
 import type { OrganizationRole } from "@/lib/auth/organization";
+import { TEACHER_NAV } from "@/app/teacher/nav";
+import { DIRECTOR_NAV } from "@/app/director/nav";
 
 export const LEARNING_NAV = [{ href: "/learning", label: "수업하기" }] as const;
 
@@ -16,7 +18,7 @@ export function organizationLoginDestination(
   directorDashboard = false,
 ): string | null {
   if (!roles.includes("director") && !roles.includes("teacher")) return null;
-  if (isLearningEntry(entry)) return "/learning";
+  if (isLearningEntry(entry)) return roles.includes("director") ? "/learning" : "/teacher";
   if (roles.includes("director")) return directorDashboard ? "/director" : "/director/sessions";
   return "/teacher";
 }
@@ -59,6 +61,24 @@ export function learningOperations(role: OrganizationRole, organizationId: strin
 }
 
 export function learningNav(role: OrganizationRole, organizationId: string) {
-  const operation = learningOperations(role, organizationId);
-  return [{ href: `/learning?org=${encodeURIComponent(organizationId)}`, label: "수업하기" }, { href: operation.href, label: operation.label }];
+  const nav = role === "director" ? DIRECTOR_NAV : TEACHER_NAV;
+  return nav.map(item => ({ ...item, href: `${item.href}?org=${encodeURIComponent(organizationId)}` }));
+}
+
+/** UI only: being in the contract range does not establish publication or file readiness. */
+export function programAccessSummary(result: OrganizationEntitlementResult, durationWeeks: number) {
+  const weeks = Array.from({ length: durationWeeks }, (_, index) => index + 1)
+    .filter(week => contractWeekAccess(result, week).allowed);
+  const state = weeks.length === durationWeeks ? "included" : weeks.length > 0 ? "partial" : "unavailable";
+  const readOnly = result.ok && result.entitlements.serviceMode === "read_only";
+  return {
+    state,
+    readOnly,
+    label: state === "included" ? (readOnly ? "기록 열람 과정" : "이용 범위 포함")
+      : state === "partial" ? "일부 주차 이용 가능" : "과정 구성 미리보기",
+    detail: weeks.length > 0
+      ? `${weeks[0]}~${weeks[weeks.length - 1]}주${readOnly ? " 기록을 열람할 수 있습니다." : "가 이용 범위에 포함됩니다. 준비된 수업은 주차 안에서 확인하세요."}`
+      : "주제와 활동 구성을 볼 수 있습니다. 수업 이용은 기관 담당자에게 확인해 주세요.",
+    action: state === "included" ? (readOnly ? "주차별 기록 보기" : "주차별 수업 보기") : "과정 구성 보기",
+  } as const;
 }

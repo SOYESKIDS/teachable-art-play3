@@ -7,8 +7,10 @@ const ORG='11111111-1111-1111-1111-111111111111';
 const LESSON='22222222-2222-2222-2222-222222222222';
 const CLASS='33333333-3333-3333-3333-333333333333';
 const active=(weekTo=8,serviceMode='active')=>({ok:true,entitlements:{serviceMode,weekFrom:1,weekTo}});
-test('수업 입구는 교사·원장 모두 프로그램 선택으로 보낸다',()=>{
- for(const role of ['teacher','director']) assert.equal(organizationLoginDestination('learning',[role],true),'/learning');
+test('수업 입구는 교사를 오늘의 수업으로, 원장을 프로그램 선택으로 보낸다',()=>{
+ assert.equal(organizationLoginDestination('learning',['teacher'],true),'/teacher');
+ assert.equal(organizationLoginDestination('learning',['director'],true),'/learning');
+ assert.equal(organizationLoginDestination('learning',['teacher','director'],true),'/learning');
 });
 test('입구 선택으로 소속 없는 계정에 권한을 만들지 않는다',()=>assert.equal(organizationLoginDestination('learning',[]),null));
 test('일반 기관 로그인은 기존 역할별 목적지를 유지한다',()=>{

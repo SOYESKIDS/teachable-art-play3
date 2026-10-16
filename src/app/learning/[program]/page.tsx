@@ -36,7 +36,7 @@ export default async function ProgramLearningPage({ params, searchParams }: {
     <h1 className="mt-2 text-[30px] font-bold text-navy">{program.durationWeeks}주 수업 프로그램</h1>
     <p className="mt-3 text-[15px] leading-relaxed text-ink-muted">{program.definition}</p>
     {!access.allowed ? <LearningAccessNotice label={access.label} detail={access.detail} /> : null}
-    <p className="mt-4 text-[13px] leading-relaxed text-ink-muted">주차 선택은 구성 확인입니다. 수업 본문은 이용권·발행 상태를 확인한 뒤 열리고, 교실 화면과 기록은 실제 반별 회차에 연결됩니다.</p>
+    <p className="mt-4 text-[16px] leading-relaxed text-ink-muted">주차를 눌러 교안과 준비물을 확인하세요. 수업 시작과 기록은 배정된 반의 일정에서 이어집니다. 이용 범위 밖의 주차는 구성만 볼 수 있습니다.</p>
     {PARTS.filter(part => part.weekFrom <= program.durationWeeks).map(part => <section key={part.partNo} className="mt-8" aria-labelledby={`part-${part.partNo}`}>
       <h2 id={`part-${part.partNo}`} className="text-[20px] font-bold text-navy">PART {part.partNo} · {part.weekFrom}~{part.weekTo}주</h2>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -48,7 +48,7 @@ export default async function ProgramLearningPage({ params, searchParams }: {
             <span className="min-w-0"><span className="block text-[17px] font-bold text-navy">{week.title}</span>
               <span className="mt-1 block text-[13px] text-ink-muted">성장키워드 · {week.growthKeyword}</span>
               <span className="mt-2 block text-[14px] leading-relaxed text-ink-muted">{week.activitySummary}</span>
-              <span className="mt-3 block text-[12px] font-semibold text-secondary-strong">{weekAccess.label} · {source === "fixture" ? (week.status.publication === "published" ? "발행됨" : "본문 검수 대기") : "발행 상태는 진입 시 확인"}</span>
+              <span className={`mt-3 block text-[14px] font-semibold ${weekAccess.allowed ? "text-secondary-strong" : "text-ink-muted"}`}>{!weekAccess.allowed ? weekAccess.label : source === "fixture" ? (week.status.publication === "published" ? "교안 보기" : "수업 내용 준비 중") : "교안과 준비 상태 확인"}</span>
             </span>
           </Link></li>;
         })}

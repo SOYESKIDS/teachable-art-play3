@@ -154,9 +154,14 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
         </span>
       </div>
 
-      {/* ── 발행 판정 ── */}
+      {weekNo === 9 ? <section className="mt-5 rounded-xl border-2 border-amber-400 bg-amber-50 px-5 py-4" aria-labelledby="w9-camera-review">
+        <h2 id="w9-camera-review" className="font-bold text-amber-950">추가 교육 검토 · 가정연계 촬영 안내</h2>
+        <p className="mt-2 text-[16px] leading-relaxed text-amber-950">2026-10-15 교사 관점 검토서에서, 아이가 모르게 촬영하도록 읽히는 안내와 촬영 원칙의 충돌을 지적했습니다. 공식 원문과 개정안을 대조하고 촬영 동의·보호자 안내를 확정하기 전에는 발행하지 마세요.</p>
+        <p className="mt-2 text-[14px] text-amber-950">아래는 원문 대조용 전사본입니다. 이 추가 검토는 기존 DB 본사 결정 3건과 별개이며, 아직 DB 발행 차단 항목으로 등록된 것은 아닙니다.</p>
+      </section> : null}
+      {/* 저장소 참고 판정과 실제 DB 발행 권한을 구분한다. */}
       <section className="mt-5 rounded-xl border border-navy/10 bg-white px-5 py-4">
-        <h2 className="text-[15px] font-bold text-navy">발행 판정</h2>
+        <h2 className="text-[15px] font-bold text-navy">저장소 전사본 참고 상태 · DB 발행 판정 아님</h2>
         {blockers.length > 0 ? (
           <ul className="mt-2 flex flex-col gap-1">
             {blockers.map((b) => (
@@ -167,16 +172,15 @@ export default async function AdminWeekDetailPage({ params }: WeekReviewPageProp
           </ul>
         ) : (
           <p className="mt-2 text-[13px] leading-relaxed text-emerald-700">
-            전사가 끝나 발행 조건을 만족합니다. 아래 대조를 마친 뒤 사람이 발행합니다.
+            전사와 추출 주의 항목에서 막히는 곳은 없습니다. 교육 내용·자료 권리·본사 검수의 완료를 뜻하지 않습니다.
           </p>
         )}
         <p className="mt-2 text-[12px] leading-relaxed text-navy/50">
           {canStartReview(summary.status)
             ? "검수 시작 가능 — 원문과 대조할 전사본이 들어와 있습니다."
             : "검수 상태는 코드가 자동으로 올리지 않습니다."}{" "}
-          발행 상태는 지금 저장소 값(<code>week-index.ts</code>)에 적혀 있고, 화면에서 바꾸는
-          기능은 데이터베이스 연결 단계에서 만듭니다. 그때 서버는 저장된 데이터에서 상태와
-          미해결 건수를 직접 읽어 같은 판정을 다시 합니다.
+          이 표시는 저장소 값(<code>week-index.ts</code>) 기준입니다. 실제 발행은 차시 관리 화면과 서버의
+          <code> publish_lesson</code>이 DB의 최신 권한·검수·체크섬을 확인합니다.
         </p>
       </section>
 

@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="w-full max-w-[440px]">
         <StaffLoginCard
           title={entry ? "수업하기 로그인" : "기관 로그인"}
-          description={entry ? "로그인 후 8주·16주·24주 프로그램을 선택합니다. 등록된 기관 권한으로 이용합니다." : "원장님과 선생님을 위한 기관 운영 공간입니다."}
+          description={entry ? "선생님은 로그인 후 오늘의 수업을 바로 확인합니다. 다른 주차는 수업하기 메뉴에서 볼 수 있습니다." : "원장님과 선생님을 위한 기관 운영 공간입니다."}
           entry={entry}
           initialError={resolveLoginNotice(params.error)}
           idPrefix="login"
