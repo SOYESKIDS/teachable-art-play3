@@ -5,6 +5,7 @@ import { InfoPageShell } from "@/components/public/InfoPageShell";
 import { priceDisclaimerLines, pricingPackages } from "@/data/packages";
 import { PackageAtAGlance } from "@/components/public/PackageAtAGlance";
 import { PackageComparison } from "@/components/public/PackageComparison";
+import { PackageScopeDiagram } from "@/components/public/PackageScopeDiagram";
 
 export const metadata: Metadata = {
   title: "상품 안내 | TeachAble Art Play",
@@ -51,6 +52,21 @@ export default function PricingPage() {
           <div className="mt-6">
             <PackageAtAGlance />
           </div>
+        </section>
+
+        {/*
+          ★ 표보다 그림이 먼저다. 「16주는 8주를 포함한다」를 글로만 적으면
+            값이 셋 나란히 있는 화면에서는 다른 상품 세 개로 읽힌다.
+        */}
+        <section aria-labelledby="scope-title" className="mt-14">
+          <h2 id="scope-title" className="text-title-lg font-bold text-navy">
+            주차 구성
+          </h2>
+          <p className="mt-2 text-body-sm leading-relaxed text-ink-muted">
+            긴 상품은 짧은 상품의 주차를 그대로 포함합니다. 지금 수업할 수 있는
+            주차와 준비 중인 주차를 함께 표시했습니다.
+          </p>
+          <PackageScopeDiagram className="mt-6" />
         </section>
 
         <section aria-labelledby="compare-title" className="mt-14">
