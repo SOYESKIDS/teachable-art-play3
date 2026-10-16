@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { StaffSessionItem, TodaySessionBoard } from "@/types/staff-session";
 import { SessionCard } from "./SessionCard";
+import { TeacherNextSession } from "./TeacherNextSession";
 import type { SessionActorRole } from "./SessionActions";
 
 interface TodaySessionBoardProps {
@@ -163,6 +164,7 @@ export function TodaySessionBoardView({
 
   return (
     <>
+      {actorRole === "teacher" && classModeBasePath ? <TeacherNextSession board={board} /> : null}
       <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
         <KpiItem label="오늘 예정" value={summary.scheduledToday} />
         <KpiItem label="진행 중" value={summary.inProgress} />

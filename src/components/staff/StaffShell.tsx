@@ -23,7 +23,7 @@ interface StaffShellProps {
  *
  * Admin Layout과 분리한 이유
  *   Admin은 여러 기관을 오가는 관리 도구라 상단에 기관 선택·문의·프로그램 메뉴가 필요하다.
- *   교직원 화면은 "내 기관, 오늘 할 일" 하나에 집중해야 해서 메뉴를 2개까지만 둔다.
+ *   교직원 화면은 "내 기관, 오늘 할 일"에 집중한다.
  *
  * 메뉴가 적어 모바일에서도 가로 스크롤 없이 한 줄에 들어간다
  * (Admin의 모바일 내비는 overflow-x-auto가 필요했다).
@@ -38,11 +38,13 @@ export function StaffShell({
 }: StaffShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-surface-soft">
+      <a href="#staff-content" className="skip-link">본문 바로가기</a>
       <header className="print:hidden sticky top-0 z-30 border-b border-line-soft bg-white">
         <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
           <div className="min-w-0 leading-tight">
             <p className="text-[10px] font-bold tracking-[0.16em] text-navy/45">
               TEACHABLE ART PLAY
+              {process.env.VERCEL_ENV === "preview" ? <span className="ml-2 rounded border border-secondary-strong/30 px-1.5 py-0.5 tracking-normal text-secondary-strong">개발 검토</span> : null}
             </p>
             <p className="truncate text-[14px] font-semibold text-navy">
               {organizationName}
@@ -105,7 +107,7 @@ export function StaffShell({
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-[1100px] flex-1 px-5 py-6 lg:px-8 lg:py-8">
+      <main id="staff-content" tabIndex={-1} className="scroll-mt-40 mx-auto w-full max-w-[1100px] flex-1 px-5 py-6 lg:px-8 lg:py-8">
         {children}
       </main>
     </div>

@@ -27,6 +27,7 @@ interface SessionHistoryBoardProps {
    *   08B에서는 교사 이력 화면만 넘긴다 — 원장 이력 화면(08C)은 그대로 둔다.
    */
   observationBasePath?: string;
+  teacherWorkflow?: boolean;
 }
 
 const controlClasses = fieldControl;
@@ -81,6 +82,7 @@ export function SessionHistoryBoard({
   hasError,
   attendanceBasePath,
   observationBasePath,
+  teacherWorkflow = false,
 }: SessionHistoryBoardProps) {
   const [statusFilter, setStatusFilter] = useState<ClassSessionStatus | "all">(
     "all",
@@ -196,6 +198,7 @@ export function SessionHistoryBoard({
               key={session.id}
               session={session}
               readOnly
+              teacherWorkflow={teacherWorkflow}
               attendanceHref={buildAttendanceHref(attendanceBasePath, session)}
               observationHref={buildObservationHref(
                 observationBasePath,

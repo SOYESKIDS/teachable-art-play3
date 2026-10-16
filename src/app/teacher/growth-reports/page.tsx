@@ -15,7 +15,7 @@ import {
   fetchPeriodQueue,
 } from "@/lib/staff/period-report-composer-queries";
 import { PERIOD_REPORT_LABEL } from "@/lib/staff/period-report-queries";
-import { TEACHER_NAV } from "../nav";
+import { learningNav } from "@/lib/learning/program-entry";
 
 export const metadata: Metadata = {
   title: "리포트 | TeachAble Art Play",
@@ -89,8 +89,8 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
       email={email}
       roleLabel="교사"
       organizationName={membership.organizationName}
-      navItems={TEACHER_NAV}
-      currentHref="/teacher/growth-reports"
+      navItems={learningNav("teacher", membership.organizationId)}
+      currentHref={`/teacher/growth-reports?${orgQuery}`}
     >
       <h1 className="text-[24px] font-bold text-ink">리포트</h1>
 
@@ -145,6 +145,25 @@ export default async function TeacherReportsPage({ searchParams }: TeacherReport
                 </Link>
               ))}
             </nav>
+            <section aria-labelledby="weekly-observation-heading" className="mt-4 rounded-xl border border-line bg-white p-5">
+              <h3 id="weekly-observation-heading" className="text-[16px] font-bold text-navy">
+                {selectedOption.className} · {selected.weekNo}주차 기록 확인
+              </h3>
+              {selectedOption.programTitle ? <p className="mt-1 text-[14px] text-ink-muted">{selectedOption.programTitle}</p> : null}
+              <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">
+                {queue.rows.some(row => row.status === "needs_observation")
+                  ? "관찰이 필요한 원아가 있습니다. 아래 수업에서 관찰을 저장하고 완료하면 주간 리포트를 작성할 수 있습니다."
+                  : "주간 리포트는 저장된 관찰을 바탕으로 작성합니다. 필요한 관찰은 아래 수업에서 확인하세요."}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {queue.observationSessionIds.map((id, index) => <Link key={id}
+                  href={`/teacher/sessions/${encodeURIComponent(id)}/observations?${orgQuery}`}
+                  className="inline-flex min-h-11 items-center rounded-lg border border-line-strong px-4 text-[14px] font-semibold text-navy">
+                  {queue.observationSessionIds.length > 1 ? `수업 ${index + 1} 관찰 확인·보충` : "이 수업 관찰 확인·보충"}
+                </Link>)}
+                <Link href={`/teacher/history?${orgQuery}`} className="inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-secondary-strong underline">수업 이력 보기</Link>
+              </div>
+            </section>
             {entitlements && !entitlements.weeklyReportWrite ? (
               <p className="mt-3 rounded-lg border border-warning-soft bg-warning-soft px-4 py-3 text-[14px] text-warning-text">
                 현재 읽기 전용 상태이거나 이용 상품에 포함되지 않아 새 리포트를 작성할 수 없습니다. 원장님께 문의해 주세요.

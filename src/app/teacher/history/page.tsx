@@ -9,7 +9,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { SessionHistoryBoard } from "@/components/staff/SessionHistoryBoard";
-import { TEACHER_NAV } from "../nav";
+import { learningNav } from "@/lib/learning/program-entry";
 
 export const metadata: Metadata = {
   title: "수업 이력 | TeachAble Art Play",
@@ -55,8 +55,8 @@ export default async function TeacherHistoryPage({
       email={email}
       roleLabel="교사"
       organizationName={membership.organizationName}
-      navItems={TEACHER_NAV}
-      currentHref="/teacher/history"
+      navItems={learningNav("teacher", membership.organizationId)}
+      currentHref={`/teacher/history?org=${encodeURIComponent(membership.organizationId)}`}
     >
       <h1 className="text-[22px] font-bold text-navy">수업 이력</h1>
       <p className="mt-1 text-[14px] text-navy/55">
@@ -71,6 +71,7 @@ export default async function TeacherHistoryPage({
           hasError={!result.ok}
           attendanceBasePath="/teacher/sessions"
           observationBasePath="/teacher/sessions"
+          teacherWorkflow
         />
       </div>
     </StaffShell>

@@ -8,7 +8,7 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { TodaySessionBoardView } from "@/components/staff/TodaySessionBoard";
-import { TEACHER_NAV } from "./nav";
+import { learningNav } from "@/lib/learning/program-entry";
 import { ProgramEntryBanner } from "@/components/learning/ProgramEntryBanner";
 
 export const metadata: Metadata = {
@@ -89,8 +89,8 @@ export default async function TeacherTodayPage({
       email={email}
       roleLabel="교사"
       organizationName={membership.organizationName}
-      navItems={TEACHER_NAV}
-      currentHref="/teacher"
+      navItems={learningNav("teacher", membership.organizationId)}
+      currentHref={`/teacher?org=${encodeURIComponent(membership.organizationId)}`}
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h1 className="text-[26px] font-bold tracking-[-0.02em] text-navy sm:text-[28px]">

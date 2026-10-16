@@ -46,6 +46,8 @@ export interface WeeklyQueue {
   classes: TeacherClassOption[];
   selected: { classId: string; assignmentId: string; weekNo: number } | null;
   rows: WeeklyQueueRow[];
+  /** Existing sessions of this exact assignment/week, for observation navigation only. */
+  observationSessionIds: string[];
 }
 
 function log(scope: string, code: string | undefined) {
@@ -90,7 +92,7 @@ export async function fetchTeacherWeeklyQueue(
   requested: { classId?: string; weekNo?: number },
 ): Promise<{ ok: true; queue: WeeklyQueue } | { ok: false }> {
   const classIds = await assignedClassIds(supabase, organizationId, userId);
-  if (classIds.length === 0) return { ok: true, queue: { classes: [], selected: null, rows: [] } };
+  if (classIds.length === 0) return { ok: true, queue: { classes: [], selected: null, rows: [], observationSessionIds: [] } };
 
   const [classResult, assignmentResult, sessionResult] = await Promise.all([
     supabase.from("classes").select("id, name, status").in("id", classIds).eq("status", "active"),
@@ -149,7 +151,7 @@ export async function fetchTeacherWeeklyQueue(
     classes.find((item) => item.weeks.length > 0) ??
     null;
 
-  if (!option) return { ok: true, queue: { classes, selected: null, rows: [] } };
+  if (!option) return { ok: true, queue: { classes, selected: null, rows: [], observationSessionIds: [] } };
 
   const weekNo =
     requested.weekNo && option.weeks.includes(requested.weekNo) ? requested.weekNo : option.weeks[option.weeks.length - 1];
@@ -259,7 +261,7 @@ export async function fetchTeacherWeeklyQueue(
 
   return {
     ok: true,
-    queue: { classes, selected: { classId: option.classId, assignmentId: option.assignmentId, weekNo }, rows },
+    queue: { classes, selected: { classId: option.classId, assignmentId: option.assignmentId, weekNo }, rows, observationSessionIds: sessionIds },
   };
 }
 

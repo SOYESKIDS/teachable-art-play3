@@ -7,6 +7,7 @@ import {
   isTerminalSessionStatus,
 } from "@/lib/admin/class-session";
 import type { StaffSessionItem } from "@/types/staff-session";
+import { teacherSessionLinks } from "@/lib/staff/session-navigation";
 import { SessionActions, type SessionActorRole } from "./SessionActions";
 
 interface SessionCardProps {
@@ -29,6 +30,8 @@ interface SessionCardProps {
   actorRole?: SessionActorRole;
   /** 교사 Class Mode 기준 경로 */
   classModeBasePath?: string;
+  /** Explicitly enabled by teacher history; never inferred for director cards. */
+  teacherWorkflow?: boolean;
 }
 
 /**
@@ -86,10 +89,12 @@ export function SessionCard({
   observationHref,
   actorRole = "teacher",
   classModeBasePath,
+  teacherWorkflow = false,
 }: SessionCardProps) {
   const isTerminal = isTerminalSessionStatus(session.status);
   const showActions = !readOnly && !isTerminal;
-  const hasDetailLinks = Boolean(attendanceHref || observationHref);
+  const workflow = teacherWorkflow ? teacherSessionLinks(session) : null;
+  const hasDetailLinks = Boolean(attendanceHref || observationHref || workflow?.preparation || workflow?.report);
 
   return (
     <li className="rounded-xl border border-navy/10 bg-white p-4 sm:p-5">
@@ -131,6 +136,16 @@ export function SessionCard({
       */}
       {hasDetailLinks ? (
         <div className="mt-4 flex flex-wrap gap-2 border-t border-navy/8 pt-4">
+          {workflow?.preparation ? <Link href={workflow.preparation.href}
+            aria-label={`${sessionAriaName(session)} ${workflow.preparation.label}`}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-navy px-4 text-[14px] font-bold text-white">
+            {workflow.preparation.label}
+          </Link> : null}
+          {workflow?.report ? <Link href={workflow.report}
+            aria-label={`${sessionAriaName(session)} 수업 결과 확인`}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-navy/20 px-4 text-[14px] font-bold text-navy">
+            수업 결과 확인
+          </Link> : null}
           {attendanceHref ? (
             <Link
               href={attendanceHref}
@@ -168,7 +183,7 @@ export function SessionCard({
         </div>
       ) : null}
 
-      {readOnly && !isTerminal ? (
+      {readOnly && !isTerminal && !workflow?.preparation ? (
         <p className="mt-3 border-t border-navy/8 pt-3 text-[12px] text-navy/45">
           상태 변경은 오늘의 수업 화면에서 할 수 있습니다.
         </p>
