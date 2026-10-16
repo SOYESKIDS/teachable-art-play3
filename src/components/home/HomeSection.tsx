@@ -42,7 +42,13 @@ export function HomeSection({
         className,
       )}
     >
-      <Container>{children}</Container>
+      {/*
+        ★ 등장 효과는 Container 에 건다 — section 에 걸면 배경색까지 함께
+          떠올라 면이 흔들린다. 안쪽 내용만 짧게 올라온다.
+        ★ 지원하지 않는 브라우저와 「동작 줄이기」 에서는 아무 일도 하지 않는다.
+          기본 상태가 보이는 것이므로 내용이 사라질 수 없다.
+      */}
+      <Container className="reveal-on-scroll">{children}</Container>
     </section>
   );
 }

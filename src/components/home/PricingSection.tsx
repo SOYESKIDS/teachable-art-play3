@@ -1,7 +1,8 @@
 import { Container } from "@/components/ui/Container";
 import { HomeHeading } from "./HomeSection";
 import { PricingCardGrid } from "./PricingCardGrid";
-import { comparisonRows, priceDisclaimerLines, pricingPackages } from "@/data/packages";
+import { priceDisclaimerLines, pricingPackages } from "@/data/packages";
+import { PackageComparison } from "@/components/public/PackageComparison";
 import { pricingNarrative } from "@/data/home-narrative";
 
 /**
@@ -63,60 +64,12 @@ export function PricingSection() {
           ))}
         </div>
 
-        {/* 비교표 — Desktop: Table / Mobile: Card */}
-        <div className="mt-16">
-          <div className="hidden overflow-x-auto sm:block">
-            <table className="w-full border-collapse overflow-hidden rounded-2xl border border-line text-sm">
-              <thead>
-                <tr className="bg-ivory text-navy">
-                  <th className="w-40 px-5 py-4 text-left font-semibold text-ink-muted" />
-                  {pricingPackages.map((pkg) => (
-                    <th key={pkg.id} className="px-5 py-4 text-left font-bold">
-                      {pkg.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row, rowIndex) => (
-                  <tr
-                    key={row.label}
-                    className={rowIndex % 2 === 1 ? "bg-ivory/50" : "bg-white"}
-                  >
-                    <th className="px-5 py-3.5 text-left font-semibold text-ink-muted">
-                      {row.label}
-                    </th>
-                    {row.values.map((value, index) => (
-                      <td key={index} className="px-5 py-3.5 text-navy/75">
-                        {value}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {/*
+          비교표는 공개 상품 안내(/pricing)와 **같은 컴포넌트**를 쓴다.
+          같은 표를 두 곳에서 따로 그리면 한쪽만 고쳐져 값이 갈라진다.
+        */}
+        <PackageComparison className="mt-16" />
 
-          <div className="flex flex-col gap-4 sm:hidden">
-            {pricingPackages.map((pkg, pkgIndex) => (
-              <div key={pkg.id} className="rounded-xl border border-line bg-white p-5">
-                <p className="text-sm font-bold text-navy">
-                  {pkg.name}
-                </p>
-                <dl className="mt-3 flex flex-col gap-2 text-caption">
-                  {comparisonRows.map((row) => (
-                    <div key={row.label} className="flex justify-between gap-3">
-                      <dt className="text-ink-muted">{row.label}</dt>
-                      <dd className="text-right font-medium text-navy/75">
-                        {row.values[pkgIndex]}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ))}
-          </div>
-        </div>
       </Container>
     </section>
   );
