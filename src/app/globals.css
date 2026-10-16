@@ -703,13 +703,41 @@ h4 {
  * ★ @utility 안에 조건을 넣는다. Tailwind v4 는 @utility 를 @media/@supports
  *   **안에** 두는 것을 거부한다 (`@utility cannot be nested`).
  */
+/*
+  스크롤에 맞춰 올라오는 등장 효과.
+
+  ★ 글자를 완전히 숨기지 않는다 (opacity 0 금지).
+    animation-range 밖에서는 `both` 가 시작 상태를 붙들고 있으므로, 시작이
+    opacity:0 이면 **화면 아래의 모든 섹션이 투명하게 멈춰 있다.** 스크롤로
+    내려가면 보이기는 하지만, 인쇄하거나 스크롤이 동작하지 않는 상황에서는
+    글이 통째로 사라진다. 원장이 상품 안내를 인쇄하는 것은 충분히 있을 일이다.
+    그래서 흐려지기만 하고 읽히는 선(0.55)에서 시작한다.
+
+  ★ 인쇄에서는 아예 끈다 — 종이에는 스크롤이 없다.
+*/
+@keyframes reveal-rise {
+  from {
+    opacity: 0.55;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @utility reveal-on-scroll {
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
-      animation: rise-in var(--motion-slow) var(--ease-out) both;
+      animation: reveal-rise var(--motion-slow) var(--ease-out) both;
       animation-timeline: view();
       animation-range: entry 0% entry 24%;
     }
+  }
+  @media print {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
