@@ -7,7 +7,8 @@ import { fetchSessionReport } from "@/lib/staff/session-report-queries";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
 import { SessionReportWizard } from "@/components/staff/SessionReportWizard";
-import { TEACHER_NAV } from "../../../nav";
+import { learningNav } from "@/lib/learning/program-entry";
+import { SessionPrivateMemo } from "@/components/staff/SessionPrivateMemo";
 
 export const metadata: Metadata = {
   title: "결과 보고 | TeachAble Art Play",
@@ -27,7 +28,7 @@ interface ReportPageProps {
  * ★ 권한은 RLS 가 판정한다. 담당이 아니면 회차 조회가 비어 404 가 된다.
  */
 export default async function SessionReportPage({ params, searchParams }: ReportPageProps) {
-  const { supabase, email, memberships } = await requireTeacher();
+  const { supabase, email, memberships, userId } = await requireTeacher();
   const { sessionId } = await params;
   const query = await searchParams;
 
@@ -57,8 +58,8 @@ export default async function SessionReportPage({ params, searchParams }: Report
       email={email}
       roleLabel="교사"
       organizationName={membership.organizationName}
-      navItems={TEACHER_NAV}
-      currentHref="/teacher"
+      navItems={learningNav("teacher", membership.organizationId)}
+      currentHref={`/teacher?${orgQuery}`}
     >
       <h1 className="text-[24px] font-bold text-forest">결과 보고</h1>
       <p className="mt-1 text-[15px] text-muted-ink">
@@ -77,7 +78,10 @@ export default async function SessionReportPage({ params, searchParams }: Report
       ) : null}
 
       <div className="mt-5">
-        <SessionReportWizard data={data} orgQuery={orgQuery} />
+        <SessionReportWizard data={data} orgQuery={orgQuery} privateMemo={
+          <SessionPrivateMemo supabase={supabase} sessionId={data.sessionId} classId={data.classId}
+            organizationId={membership.organizationId} userId={userId} status={data.status} />
+        } />
       </div>
     </StaffShell>
   );

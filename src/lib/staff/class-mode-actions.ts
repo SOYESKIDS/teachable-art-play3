@@ -4,6 +4,7 @@ import { guardWrite } from "@/lib/env/write-guard";
 
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth/organization";
+import { quickMemoSaveAcknowledgement } from "./quick-memo-save-queue";
 import { UUID_PATTERN, logRpcFailure, toUserFacingError } from "@/lib/errors/rpc-errors";
 
 /**
@@ -121,6 +122,5 @@ export async function saveQuickMemoAction(input: {
     return { ok: false, updatedAt: null, message: mapped.message, conflict: mapped.kind === "conflict" };
   }
 
-  const row = (data ?? {}) as { updated_at?: string | null };
-  return { ok: true, updatedAt: row.updated_at ?? null, message: null, conflict: false };
+  return quickMemoSaveAcknowledgement(data, input.body);
 }

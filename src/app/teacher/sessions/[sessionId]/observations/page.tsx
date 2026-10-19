@@ -6,7 +6,8 @@ import { resolveMembership } from "@/lib/staff/membership";
 import { ClassObservationWorkspace } from "@/components/staff/ClassObservationWorkspace";
 import { OrganizationPicker } from "@/components/staff/OrganizationPicker";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { TEACHER_NAV } from "../../../nav";
+import Link from "next/link";
+import { learningNav } from "@/lib/learning/program-entry";
 
 export const metadata: Metadata = {
   title: "관찰 기록 | TeachAble Art Play",
@@ -84,8 +85,8 @@ export default async function TeacherObservationPage({ params, searchParams }: T
       email={email}
       roleLabel="교사"
       organizationName={membership.organizationName}
-      navItems={TEACHER_NAV}
-      currentHref="/teacher"
+      navItems={learningNav("teacher", membership.organizationId)}
+      currentHref={`/teacher${orgQuery}`}
     >
       <h1 className="text-[24px] font-bold text-ink">관찰 기록</h1>
       {result.ok ? (
@@ -108,12 +109,16 @@ export default async function TeacherObservationPage({ params, searchParams }: T
             canWrite={canWrite}
             blockedReason={blockedReason}
             backHref={`/teacher${orgQuery}`}
-            weeklyQueueHref={`/teacher/growth-reports${orgQuery}${
+            weeklyQueueHref={`/teacher/growth-reports${orgQuery}&class=${encodeURIComponent(result.data.session.classId)}${
               result.data.session.weekNo ? `&week=${result.data.session.weekNo}` : ""
             }`}
           />
         )}
       </div>
+      {result.ok ? <div className="mt-6 flex flex-wrap gap-3">
+        <Link href={`/teacher/sessions/${sessionId}/report${orgQuery}`} className="inline-flex min-h-11 items-center rounded-lg border border-line-strong px-4 text-[15px] font-semibold text-navy">이 수업 결과 확인</Link>
+        <Link href={`/teacher/history${orgQuery}`} className="inline-flex min-h-11 items-center px-4 text-[15px] font-semibold text-secondary-strong underline">수업 이력 보기</Link>
+      </div> : null}
     </StaffShell>
   );
 }

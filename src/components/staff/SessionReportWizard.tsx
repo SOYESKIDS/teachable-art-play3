@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { SessionReportData } from "@/lib/staff/session-report-queries";
 import { SESSION_STATUS_LABEL, formatSessionDate } from "@/lib/weeks/week-session-queries";
 import type { ClassSessionStatus } from "@/types/class-session";
@@ -12,13 +13,8 @@ import type { ClassSessionStatus } from "@/types/class-session";
  * 불러와 **맞는지 확인**하고, 빠진 것이 있으면 그 화면으로 보낸다. 같은 값을
  * 두 번 입력하게 하지 않는다.
  *
- * ── 4단계는 아직 저장되지 않는다 ─────────────────────────────────
- *
- * ★ 수업 메모와 제출은 저장될 테이블이 아직 없다. 그래서 **입력란을 열어 두지
- *   않는다.** 글을 쓰게 해 놓고 저장하지 않으면 교사가 쓴 내용을 잃는다.
- *   무엇이 필요한지만 적는다.
- * ★ 「제출」 버튼을 만들어 두지 않는다. 눌러도 아무 일이 없는 버튼은 성공으로
- *   읽힌다.
+ * 4단계는 기존 작성자 전용 quick_memos다. 기관 제출·재제출 기능은 별개이며
+ * 개인 메모를 공유 보고서로 바꾸지 않는다.
  *
  * ── 모르는 값을 0 으로 쓰지 않는다 ───────────────────────────────
  *
@@ -35,10 +31,10 @@ function StepHeader({
 }: {
   no: number;
   title: string;
-  state: "done" | "todo" | "blocked";
+  state: "done" | "todo" | "blocked" | "optional" | "private";
 }) {
   const label =
-    state === "done" ? "확인됨" : state === "todo" ? "확인 필요" : "연결 대기";
+    state === "done" ? "확인됨" : state === "todo" ? "확인 필요" : state === "optional" ? "선택 기록" : state === "private" ? "나만 보기" : "연결 대기";
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2">
       <h3 className="text-[16px] font-bold text-forest">
@@ -62,15 +58,17 @@ function StepHeader({
 export function SessionReportWizard({
   data,
   orgQuery,
+  privateMemo,
 }: {
   data: SessionReportData;
   orgQuery: string;
+  privateMemo: ReactNode;
 }) {
   const attendance = data.attendance;
   const observation = data.observation;
 
   const progressDone = data.status === "completed";
-  const attendanceDone = attendance !== null && attendance.unrecordedCount === 0;
+  const attendanceDone = attendance !== null && attendance.rosterCount > 0 && attendance.unrecordedCount === 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -100,8 +98,7 @@ export function SessionReportWizard({
         </dl>
 
         <p className="mt-3 text-[13px] leading-relaxed text-muted-ink">
-          진행한 활동과 실제 시간은 교실 화면의 진행 기록에서 채워질 값입니다. 아직 그 기록이
-          서버에 저장되지 않아 이 자리에 쓸 수 없습니다.
+          회차의 수업 완료 여부를 확인합니다. 단계별 실제 소요 시간은 기록하지 않습니다.
         </p>
       </section>
 
@@ -110,6 +107,8 @@ export function SessionReportWizard({
         <StepHeader no={2} title="출석" state={attendanceDone ? "done" : "todo"} />
         {attendance === null ? (
           <p className="mt-2 text-[14px] text-muted-ink">출결을 불러오지 못했습니다.</p>
+        ) : attendance.rosterCount === 0 ? (
+          <p className="mt-2 text-[14px] text-muted-ink">현재 반 명단이 없습니다. 출결 완료로 표시하지 않습니다.</p>
         ) : !attendance.recorded ? (
           <p className="mt-2 text-[14px] leading-relaxed text-forest/90">
             아직 출결을 입력하지 않았습니다. 명단 {attendance.rosterCount}명 중 기록된 원아가
@@ -117,13 +116,19 @@ export function SessionReportWizard({
           </p>
         ) : (
           <p className="mt-2 text-[15px] tabular-nums text-forest">
-            명단 {attendance.rosterCount}명 · 참석 {attendance.presentCount}명 · 결석{" "}
+            현재 반 명단 {attendance.rosterCount}명 · 참여 {attendance.presentCount}명 · 결석{" "}
             {attendance.absentCount}명
             {attendance.unrecordedCount > 0 ? (
               <span className="text-warning-text"> · 미입력 {attendance.unrecordedCount}명</span>
             ) : null}
           </p>
         )}
+        {attendance && (attendance.lateCount > 0 || attendance.leftEarlyCount > 0) ? <p className="mt-1 text-[14px] text-muted-ink">
+          참여 인원에 지각 {attendance.lateCount}명 · 조퇴 {attendance.leftEarlyCount}명이 포함됩니다.
+        </p> : null}
+        {attendance && attendance.historicalRecordedCount > 0 ? <p className="mt-1 text-[14px] text-muted-ink">
+          현재 명단 밖의 기존 출결 {attendance.historicalRecordedCount}건은 출결 화면에서 별도로 확인하세요.
+        </p> : null}
         <Link
           href={`/teacher/sessions/${data.sessionId}/attendance?${orgQuery}`}
           className="mt-3 inline-flex min-h-11 items-center rounded-[10px] border border-rule px-4 text-[14px] font-semibold text-forest"
@@ -134,7 +139,7 @@ export function SessionReportWizard({
 
       {/* ── 3. 관찰 보충 ── */}
       <section className={`${stepBox} border-rule bg-white`}>
-        <StepHeader no={3} title="관찰 보충" state="todo" />
+        <StepHeader no={3} title="관찰 보충" state="optional" />
         {observation === null ? (
           <p className="mt-2 text-[14px] text-muted-ink">
             관찰 기록을 불러오지 못했습니다. 건수를 0으로 적지 않습니다.
@@ -142,13 +147,16 @@ export function SessionReportWizard({
         ) : (
           <>
             <p className="mt-2 text-[15px] tabular-nums text-forest">
-              명단 {observation.rosterCount}명 · 기록 {observation.recordedCount}명
+              현재 반 명단 {observation.rosterCount}명 · 작성 완료 {observation.completeCount}명
               {observation.draftCount > 0 ? ` · 작성 중 ${observation.draftCount}명` : ""}
             </p>
             <p className="mt-1.5 text-[13px] leading-relaxed text-muted-ink">
               관찰은 필수가 아닙니다. 미기록 {observation.unrecordedCount}명은 모자란 것이 아니라
               이번에 보지 못했다는 뜻입니다.
             </p>
+            {observation.historicalRecordedCount > 0 ? <p className="mt-1 text-[14px] text-muted-ink">
+              현재 명단 밖의 기존 관찰 {observation.historicalRecordedCount}건은 관찰 화면에서 확인할 수 있습니다.
+            </p> : null}
           </>
         )}
         <Link
@@ -159,26 +167,17 @@ export function SessionReportWizard({
         </Link>
       </section>
 
-      {/* ── 4. 수업 메모 ── */}
       <section className={`${stepBox} border-rule bg-paper`}>
-        <StepHeader no={4} title="수업 메모" state="blocked" />
-        <p className="mt-2 text-[14px] leading-relaxed text-forest/90">
-          수업 메모와 결과 보고 제출은 저장될 곳이 아직 없습니다. 입력란을 열어 두면 쓰신 내용이
-          사라지므로 열지 않았습니다.
-        </p>
-        <p className="mt-2 text-[13px] leading-relaxed text-muted-ink">
-          필요한 것: 회차별 결과 보고 테이블과 제출·재제출 이력. 데이터베이스 연결 단계에서
-          만들고 이 화면에 잇습니다.
-        </p>
+        <StepHeader no={4} title="나의 수업 메모" state="private" />
+        {privateMemo}
       </section>
 
       <p
         role="note"
         className="rounded-[10px] border border-warning-border bg-warning-soft px-4 py-3 text-[14px] leading-relaxed text-warning-text"
       >
-        이 화면은 아직 <strong>제출 기능이 없습니다</strong>. 위 1~3단계는 이미 저장된 값을 모아
-        보여 주는 것이고, 4단계와 제출은 연결되지 않았습니다. 원장님께 전달되는 결과보고서도 아직
-        생성되지 않습니다.
+        출결·관찰과 내 메모를 확인하는 화면입니다. <strong>원장에게 제출하는 별도 결과보고서는 아직 제공하지 않습니다.</strong>
+        내 메모는 원장·학부모에게 자동 전달되지 않습니다.
       </p>
     </div>
   );

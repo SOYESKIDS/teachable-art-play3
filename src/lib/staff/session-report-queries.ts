@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchStaffAttendance } from "@/lib/staff/attendance-queries";
 import { fetchStaffObservations } from "@/lib/staff/observation-queries";
-import { weekSummary } from "@/lib/weeks/week-index";
+import { summarizeReportAttendance, summarizeReportObservations } from "./session-report-summary";
 
 /**
  * 결과 보고 화면이 읽는 값 — B단계.
@@ -16,11 +16,8 @@ import { weekSummary } from "@/lib/weeks/week-index";
  *   비어 있으면 0 이 아니라 "아직 기록 없음"으로 구분해 돌려준다 — 0명 참석과
  *   출결 미입력은 다른 상태다.
  *
- * ── 아직 저장되지 않는 것 ────────────────────────────────────────
- *
- * ★ 4단계(수업 메모)와 제출 자체는 저장되는 테이블이 없다. 이 함수는 그 값을
- *   읽지 않고, 화면이 "저장됨"이라고 쓰지 않는다. E단계에서 테이블을 만든 뒤
- *   연결한다.
+ * 개인 quick_memos와 기관 제출 보고서는 다르다. 개인 메모는 별도 컴포넌트에서
+ * 작성자 권한으로 읽고, 이 집계에는 섞지 않는다.
  */
 
 const UUID_PATTERN =
@@ -33,6 +30,9 @@ export interface ReportAttendanceSummary {
   rosterCount: number;
   presentCount: number;
   absentCount: number;
+  lateCount: number;
+  leftEarlyCount: number;
+  historicalRecordedCount: number;
   /** 아직 입력하지 않은 원아 수 */
   unrecordedCount: number;
 }
@@ -43,6 +43,8 @@ export interface ReportObservationSummary {
   recordedCount: number;
   /** 작성 중(draft) 상태로 남은 원아 수 */
   draftCount: number;
+  completeCount: number;
+  historicalRecordedCount: number;
   unrecordedCount: number;
 }
 
@@ -53,7 +55,7 @@ export interface SessionReportData {
   scheduledDate: string | null;
   status: string;
   weekNo: number | null;
-  /** 주차 수업명 — 24주 지도에서 가져온다 */
+  /** 이 회차가 참조하는 실제 차시 제목. 저장소 주차 제목으로 대체하지 않는다. */
   weekTitle: string | null;
   attendance: ReportAttendanceSummary | null;
   observation: ReportObservationSummary | null;
@@ -79,38 +81,8 @@ export async function fetchSessionReport(
   const observations = await fetchStaffObservations(supabase, organizationId, sessionId);
 
   const session = attendance.data.session;
-  const roster = attendance.data.children.filter((c) => c.isCurrentClassMember);
-
-  const present = roster.filter((c) => c.attendanceStatus === "present").length;
-  const absent = roster.filter(
-    (c) => c.attendanceStatus !== null && c.attendanceStatus !== "present",
-  ).length;
-  const recordedAttendance = roster.filter((c) => c.attendanceStatus !== null).length;
-
-  const attendanceSummary: ReportAttendanceSummary = {
-    // ★ 한 건도 없으면 "미입력"이다. 0명 참석과 구분한다.
-    recorded: recordedAttendance > 0,
-    rosterCount: roster.length,
-    presentCount: present,
-    absentCount: absent,
-    unrecordedCount: Math.max(0, roster.length - recordedAttendance),
-  };
-
-  let observationSummary: ReportObservationSummary | null = null;
-  if (observations.ok) {
-    const obsRoster = observations.data.children.filter((c) => c.isCurrentClassMember);
-    const recorded = obsRoster.filter((c) => c.hasExistingObservation).length;
-    const draft = obsRoster.filter(
-      (c) => c.hasExistingObservation && c.recordStatus === "draft",
-    ).length;
-
-    observationSummary = {
-      rosterCount: obsRoster.length,
-      recordedCount: recorded,
-      draftCount: draft,
-      unrecordedCount: Math.max(0, obsRoster.length - recorded),
-    };
-  }
+  const attendanceSummary = summarizeReportAttendance(attendance.data.children);
+  const observationSummary = observations.ok ? summarizeReportObservations(observations.data.children) : null;
 
   const weekNo = typeof session.weekNo === "number" ? session.weekNo : null;
 
@@ -123,7 +95,7 @@ export async function fetchSessionReport(
       scheduledDate: session.scheduledDate ?? null,
       status: session.status,
       weekNo,
-      weekTitle: weekNo ? (weekSummary(weekNo)?.title ?? null) : null,
+      weekTitle: session.lessonTitle ?? null,
       attendance: attendanceSummary,
       // ★ 관찰 조회가 실패하면 null 이다. 0 으로 바꾸지 않는다.
       observation: observationSummary,

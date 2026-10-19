@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useCallback, useRef, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import {
   appButtonSecondary,
@@ -63,7 +63,17 @@ export function DuringView({
   const [shortMode, setShortMode] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [showMemo, setShowMemo] = useState(false);
-  const [state, formAction, pending] = useActionState(finishClassSessionAction, INITIAL);
+  const memoSaveRef = useRef<(() => Promise<boolean>) | null>(null);
+  const revealMemoFailure = useCallback(() => setShowMemo(true), []);
+  const registerMemoSave = useCallback((save: (() => Promise<boolean>) | null) => { memoSaveRef.current = save; }, []);
+  const [state, formAction, pending] = useActionState(async (previous: ClassModeActionState, formData: FormData): Promise<ClassModeActionState> => {
+    if (memoSaveRef.current && !(await memoSaveRef.current())) {
+      setShowMemo(true);
+      setConfirmOpen(false);
+      return { phase: "error", message: "빠른 메모를 저장하지 못해 수업을 마치지 않았습니다. 메모를 확인하고 다시 시도해 주세요." };
+    }
+    return finishClassSessionAction(previous, formData);
+  }, INITIAL);
 
   const step = effectiveSteps[index];
   const isLast = index === effectiveSteps.length - 1;
@@ -112,14 +122,17 @@ export function DuringView({
         </p>
       ) : (
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={() => setShowMemo((value) => !value)} className={classModeButtonSecondary}>
+          <button type="button" onClick={() => setShowMemo((value) => !value)} disabled={pending} aria-expanded={showMemo} aria-controls="during-quick-memo" className={classModeButtonSecondary}>
             {showMemo ? "빠른 메모 닫기" : "빠른 메모"}
           </button>
         </div>
       )}
 
-      {showMemo && !writeBlockedReason ? (
-        <QuickMemoPanel sessionId={sessionId} initialBody={memo?.body ?? ""} initialUpdatedAt={memo?.updatedAt ?? null} />
+      {!writeBlockedReason ? (
+        <div id="during-quick-memo" hidden={!showMemo}>
+          <QuickMemoPanel key={sessionId} sessionId={sessionId} initialBody={memo?.body ?? ""}
+            initialUpdatedAt={memo?.updatedAt ?? null} onSaveReady={registerMemoSave} onSaveFailure={revealMemoFailure} disabled={pending} />
+        </div>
       ) : null}
 
       {state.phase === "error" && state.message ? (
