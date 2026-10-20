@@ -57,9 +57,15 @@ export const MEDIA = {
   },
 } satisfies Record<string, ExperienceImage>;
 
-/** 주차 전용 이미지 — 확보된 주차만 */
+/**
+ * 사용권 미확인 캐릭터가 그려진 그림 — 캐릭터를 켜기 전(CHARACTERS_ENABLED=false)에는 공개 화면에 쓰지 않는다.
+ * seedKit: 키트 스티커 · 병에 동물 캐릭터 얼굴 / storybook: 그림책 · 전자책 표지의 보라 고양이 캐릭터.
+ * tests/experience-content.test.mjs 가 검사한다. (2026-10-20 이미지 점검)
+ */
+export const CHARACTER_BEARING_MEDIA = [MEDIA.seedKit.src, MEDIA.storybook.src] as const;
+
+/** 주차 전용 이미지 — 확보된 주차만 (4주차 키트 그림은 캐릭터 스티커가 있어 빼고 주제 그림으로 대신한다) */
 export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = {
   1: MEDIA.classroom,
-  4: MEDIA.seedKit,
   17: MEDIA.paintSplash,
 };

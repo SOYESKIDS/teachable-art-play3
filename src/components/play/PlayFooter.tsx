@@ -58,6 +58,8 @@ export function PlayFooter() {
                 </span>
               ))}
             </p>
+            {/* 생성 · 예시 이미지 표기 */}
+            <p className="mt-1">화면의 수업 장면 이미지는 이해를 돕기 위한 예시이며, 일부는 생성형 이미지 도구로 만든 그림입니다. 체험 화면의 원아 · 기록은 모두 가상입니다.</p>
             <p className="mt-1">{contactInfo.copyright}</p>
           </div>
           <div className="flex flex-wrap gap-x-5">

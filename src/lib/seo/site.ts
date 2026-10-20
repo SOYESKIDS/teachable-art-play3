@@ -60,17 +60,28 @@ export interface PublicRoute {
   priority: number;
 }
 
+/*
+ * 2026-10-20 정리 — 2026 공개 체험(새 디자인) 기준.
+ * ★ 예전 상품 · FAQ · 가이드 · 로드맵 페이지(/programs/* · /faq · /guide/teacher · /roadmap)는
+ *   가격 · 구성 표기가 2026 무료 체험 안내와 다르고 디자인도 예전 것이라 sitemap 에서 뺐다.
+ *   페이지와 주소는 그대로 남는다 (기존 링크가 깨지지 않게). 새 디자인으로 옮기면 다시 넣는다.
+ * ★ 교실 플레이어(/experience/classroom/*)는 주차 안내와 내용이 겹치는 조작 화면이라 넣지 않는다.
+ */
+const EXPERIENCE_WEEK_ROUTES: PublicRoute[] = Array.from({ length: 24 }, (_, i) => ({
+  path: `/experience/weeks/${i + 1}`,
+  changeFrequency: "monthly" as const,
+  priority: 0.6,
+}));
+
 export const publicRoutes: readonly PublicRoute[] = [
   { path: "/", changeFrequency: "monthly", priority: 1 },
-  { path: "/programs/starter", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/programs/standard", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/programs/premium", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/faq", changeFrequency: "monthly", priority: 0.6 },
-  { path: "/guide/teacher", changeFrequency: "monthly", priority: 0.5 },
-  { path: "/roadmap", changeFrequency: "weekly", priority: 0.5 },
+  { path: "/experience", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/experience/weeks", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/experience/report", changeFrequency: "monthly", priority: 0.7 },
+  ...EXPERIENCE_WEEK_ROUTES,
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
-] as const;
+];
 
 /**
  * 검색 결과에 노출하지 않을 관리/인증 경로.
