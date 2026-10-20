@@ -147,3 +147,12 @@ test("캐릭터가 꺼져 있으면 캐릭터가 그려진 그림도 공개 체�
     assert.doesNotMatch(src, /MEDIA\.(seedKit|storybook)\b|seed-creative-kit|seed-storybook-ebook/, f);
   }
 });
+
+test("성장 리포트 예시는 교정된 주차 활동과 맞는다 (지난 임시 활동 이름을 쓰지 않는다)", () => {
+  const text = JSON.stringify(DEMO_REPORT);
+  for (const old of ["콩주머니", "선 따라 걷기", "좁쌀"]) assert.ok(!text.includes(old), old);
+  for (const m of DEMO_REPORT.moments) {
+    // 긴 한 문장 대신 짧은 문장으로 — 모바일 카드에서 읽기 쉽게
+    for (const sentence of m.observed.split(/(?<=[.요])\s/)) assert.ok(sentence.length <= 60, `${m.week}주 ${sentence.length}자: ${sentence}`);
+  }
+});

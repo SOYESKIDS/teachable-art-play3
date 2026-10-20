@@ -492,8 +492,12 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
   return (
     <section aria-label="교사 화면" className="animate-stage-in rounded-[36px] bg-white p-6 shadow-pop-lg sm:p-7">
       <div className="flex items-center justify-between gap-3">
-        <p className={cx("font-display text-[22px]", STAGE_TONE[stage.key].text)}>{stage.title}</p>
-        <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
+        <p className={cx("flex flex-wrap items-center gap-2 font-display text-[22px]", STAGE_TONE[stage.key].text)}>
+          {/* 교사용 표시 — 전자칠판(교실 화면)에 띄우는 화면과 헷갈리지 않게 */}
+          <span className="rounded-full bg-pop-ink px-2.5 py-0.5 font-sans text-[12px] font-extrabold tracking-wide text-white">교사용</span>
+          {stage.title}
+        </p>
+        <span className="shrink-0 rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
       <p className="mt-4 text-[13px] font-bold text-pop-ink-muted">활동 안내</p>
       <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
