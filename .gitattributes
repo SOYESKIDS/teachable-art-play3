@@ -1,0 +1,4 @@
+# SQL 은 줄바꿈을 LF 로 고정한다.
+# Windows(core.autocrlf=true) 체크아웃에서 생성기(build-sql.mjs)의 LF 출력과
+# 작업 파일(CRLF)이 달라 week-db-roundtrip 테스트가 실패하던 문제를 막는다.
+*.sql text eol=lf
