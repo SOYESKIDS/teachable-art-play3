@@ -74,7 +74,7 @@ export function PlayHeader() {
       )}
     >
       <a href="#main" className="skip-link">본문 바로가기</a>
-      <div className="mx-auto flex h-[68px] max-w-[1320px] items-center justify-between gap-3 px-4 sm:px-6 lg:h-[76px]">
+      <div className="mx-auto flex h-[68px] max-w-[1320px] 2xl:max-w-[1520px] items-center justify-between gap-3 px-4 sm:px-6 lg:h-[76px]">
         <Link href="/" aria-label="TeachAble Art Play 홈" onClick={() => setOpen(false)} className="flex min-h-11 shrink-0 items-center rounded-lg">
           <BrandMark priority compactOnMobile />
         </Link>
@@ -120,7 +120,7 @@ export function PlayHeader() {
 
       {open ? (
         <nav id="play-mobile-nav" aria-label="주요 메뉴" className="max-h-[calc(100dvh-68px)] overflow-y-auto border-t border-pop-ink/10 bg-pop-cream lg:hidden">
-          <ul className="mx-auto grid max-w-[1320px] gap-2 px-4 py-4 sm:grid-cols-2 sm:px-6">
+          <ul className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] gap-2 px-4 py-4 sm:grid-cols-2 sm:px-6">
             {PLAY_NAV.map((item) => (
               <li key={item.href}>
                 <Link

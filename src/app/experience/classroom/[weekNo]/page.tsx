@@ -35,7 +35,7 @@ export default async function ExperienceClassroomPage({ params }: PageProps<"/ex
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 bg-pop-cream focus:outline-none">
-      <div className="mx-auto max-w-[1320px] px-4 pb-10 pt-5 sm:px-6">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 pb-10 pt-5 sm:px-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-[14px] font-semibold text-pop-ink-muted">
           <Link href={`/experience/weeks/${week.weekNo}`} className="inline-flex min-h-11 items-center gap-1 hover:text-pop-ink">
             ← {week.weekNo}주차 수업 안내

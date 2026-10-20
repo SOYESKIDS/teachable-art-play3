@@ -43,7 +43,7 @@ export function SectionHeading({
 export function AdventureMap() {
   return (
     <section id="journey" aria-labelledby="journey-title" className="relative scroll-mt-24 bg-pop-cream py-20 sm:py-28">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 sm:px-6">
         <SectionHeading
           id="journey-title"
           eyebrow="24주 탐험 지도"
@@ -135,7 +135,7 @@ function ObserveArt() {
 export function ClassFlow() {
   return (
     <section id="program" aria-labelledby="program-title" className="relative scroll-mt-24 overflow-hidden bg-white py-20 sm:py-28">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 sm:px-6">
         <SectionHeading
           id="program-title"
           eyebrow="한 번의 수업"
@@ -182,7 +182,7 @@ export function TryFeatured() {
   return (
     <section aria-labelledby="try-title" className="relative overflow-hidden bg-pop-mint py-20 sm:py-24">
       <div aria-hidden="true" className="dots absolute inset-0 opacity-40" />
-      <div className="relative mx-auto grid max-w-[1320px] items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
+      <div className="relative mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
         <div className="relative order-2 lg:order-1">
           <WeekArt week={week} size="hero" className="aspect-[4/3] w-full rounded-[40px] shadow-pop-lg ring-8 ring-white/80" />
           <Sticker kind="seed" color="#ff8a3d" float className="absolute -left-4 -top-6 h-14 w-14" />
@@ -219,7 +219,7 @@ export function PlayerPreview() {
   const stage = week.stages[1];
   return (
     <section aria-labelledby="player-title" className="relative overflow-hidden bg-pop-cream py-20 sm:py-28">
-      <div className="mx-auto grid max-w-[1320px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div>
           <SectionHeading
             align="left"

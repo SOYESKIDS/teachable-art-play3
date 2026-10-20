@@ -20,7 +20,7 @@ export default function ExperienceWeeksPage() {
           <Image src={MEDIA.classroom.src} alt={MEDIA.classroom.alt} fill preload fetchPriority="high" sizes="100vw" className="object-cover" />
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(27,37,71,0.78)_0%,rgba(27,37,71,0.35)_55%,rgba(27,37,71,0)_100%)]" />
           <div className="absolute inset-0">
-            <div className="mx-auto flex h-full max-w-[1320px] flex-col justify-center px-4 sm:px-6">
+            <div className="mx-auto flex h-full max-w-[1320px] 2xl:max-w-[1520px] flex-col justify-center px-4 sm:px-6">
               <DemoNotice tone="light" className="w-fit" />
               <h1 id="weeks-title" className="mt-5 font-display text-[40px] leading-tight text-white sm:text-[58px]">
                 24주, 아이들의
@@ -34,7 +34,7 @@ export default function ExperienceWeeksPage() {
           <Sticker kind="star" color="#ffc928" float className="absolute right-[28%] top-10 hidden h-12 w-12 md:block" />
         </div>
       </section>
-      <div className="mx-auto max-w-[1320px] px-4 pb-20 pt-6 sm:px-6">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 pb-20 pt-6 sm:px-6">
         <WeekExplorer parts={EXPERIENCE_PARTS} weeks={EXPERIENCE_WEEKS} />
       </div>
     </main>

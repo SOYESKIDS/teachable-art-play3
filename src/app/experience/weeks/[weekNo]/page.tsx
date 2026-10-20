@@ -53,7 +53,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
-      <div className="mx-auto max-w-[1320px] px-4 pt-6 sm:px-6">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 pt-6 sm:px-6">
         <nav aria-label="현재 위치" className="text-[14px] font-semibold text-pop-ink-muted">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li><Link href="/experience" className="inline-flex min-h-11 items-center hover:text-pop-ink">수업 체험</Link></li>
@@ -65,7 +65,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         </nav>
       </div>
 
-      <section aria-labelledby="week-title" className="mx-auto grid max-w-[1320px] items-center gap-8 px-4 pb-10 pt-6 sm:px-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:gap-12">
+      <section aria-labelledby="week-title" className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] items-center gap-8 px-4 pb-10 pt-6 sm:px-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:gap-12">
         <div className="relative">
           <WeekArt week={week} size="hero" priority className="aspect-[4/3] w-full rounded-[40px] shadow-pop-lg ring-8 ring-white" />
           <span className="absolute -left-2 -top-4 inline-flex h-16 min-w-16 items-center justify-center rounded-3xl px-3 font-display text-[30px] text-white sticker" style={{ backgroundColor: week.themeColor }}>
@@ -104,7 +104,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
       </section>
 
       <div className="bg-white py-12 sm:py-16">
-        <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-3 rounded-[28px] bg-pop-orange-soft px-5 py-4">
             <ContentStatusBadge status={b.status} className="bg-white" />
             <p className="text-[15px] font-semibold text-pop-ink">
@@ -206,7 +206,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         </div>
       </div>
 
-      <nav aria-label="다른 주차" className="mx-auto grid max-w-[1320px] gap-4 px-4 py-12 sm:grid-cols-2 sm:px-6">
+      <nav aria-label="다른 주차" className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] gap-4 px-4 py-12 sm:grid-cols-2 sm:px-6">
         {prev ? (
           <Link href={`/experience/weeks/${prev.weekNo}`} className="group flex min-h-20 items-center gap-4 rounded-[28px] bg-white p-5 shadow-pop">
             <span aria-hidden="true" className="text-[22px] text-pop-ink-muted transition-transform group-hover:-translate-x-1">←</span>

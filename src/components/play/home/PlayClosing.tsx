@@ -14,7 +14,7 @@ export function GrowthPreview() {
   const moments = DEMO_REPORT.moments.slice(1, 3);
   return (
     <section id="growth-record" aria-labelledby="growth-title" className="relative scroll-mt-24 overflow-hidden bg-pop-lilac-soft py-20 sm:py-28">
-      <div className="mx-auto grid max-w-[1320px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
+      <div className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
         <div>
           <SectionHeading
             align="left"

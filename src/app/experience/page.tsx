@@ -20,7 +20,7 @@ export default function ExperienceHome() {
     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
       <section aria-labelledby="exp-title" className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#d9f6f2_0%,#fffaf0_80%)]">
         <div aria-hidden="true" className="dots absolute inset-0 -z-10 opacity-50" />
-        <div className="mx-auto grid max-w-[1320px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:py-20">
+        <div className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:py-20">
           <div className="animate-rise">
             <DemoNotice />
             <h1 id="exp-title" className="mt-6 font-display text-[42px] leading-[1.15] text-pop-ink sm:text-[60px]">
@@ -49,7 +49,7 @@ export default function ExperienceHome() {
         </div>
       </section>
 
-      <section aria-labelledby="choose-title" className="mx-auto max-w-[1320px] px-4 py-16 sm:px-6 sm:py-20">
+      <section aria-labelledby="choose-title" className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 py-16 sm:px-6 sm:py-20">
         <h2 id="choose-title" className="text-center font-display text-[32px] text-pop-ink sm:text-[42px]">무엇부터 해 볼까요?</h2>
         <ul className="mt-10 grid gap-5 md:grid-cols-3">
           {[
@@ -74,7 +74,7 @@ export default function ExperienceHome() {
       </section>
 
       <section aria-labelledby="picks-title" className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 id="picks-title" className="font-display text-[30px] text-pop-ink sm:text-[38px]">바로 체험할 수 있는 수업</h2>
             <Link href="/experience/weeks" className="inline-flex min-h-11 items-center gap-1.5 text-[16px] font-bold text-pop-pink-deep">
