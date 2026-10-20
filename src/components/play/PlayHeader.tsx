@@ -61,10 +61,15 @@ export function PlayHeader() {
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
+  // ★ 교실 플레이어에서는 머리말을 고정하지 않는다 — 고정하면 진행 화면 윗부분을 가린다.
+  //   플레이어가 화면 높이에 맞춰지므로 머리말은 위로 함께 스크롤되어 사라진다.
+  const isPlayer = pathname.startsWith("/experience/classroom/");
+
   return (
     <header
       className={cx(
-        "sticky top-0 z-50 transition-[background-color,box-shadow] duration-200",
+        isPlayer ? "relative z-50" : "sticky top-0 z-50",
+        "transition-[background-color,box-shadow] duration-200",
         scrolled || open ? "bg-pop-cream/95 shadow-[0_1px_0_rgba(27,37,71,0.08)] backdrop-blur-md" : "bg-pop-cream/80 backdrop-blur-sm",
       )}
     >

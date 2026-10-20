@@ -6,6 +6,7 @@ import { cx } from "@/components/ui/cx";
 import type { ClassStage, ExperienceWeek, StageKey } from "@/data/experience/types";
 import { ContentStatusBadge, DemoNotice } from "../Badges";
 import { ArrowRight, PlayIcon, popButtonClass } from "../PopButton";
+import { ConsultButton } from "../ConsultButton";
 import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
@@ -152,9 +153,12 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
     (next: Phase) => {
       setPhase(next);
       setSheet(null);
-      // 단계가 바뀌면 플레이어 머리로 — 모바일에서 아래로 내려간 채 다음 장면이 시작되지 않게
+      // 단계가 바뀌면 플레이어 머리로 맞춘다 — 진행 화면은 화면 높이에 맞춰 있으므로
+      // 머리를 맞추면 그림 · 문장 · 아래 조작 막대가 한 화면에 모두 들어온다.
+      // (머리말은 플레이어에서 고정되지 않아 위로 사라진다 → 가리는 것이 없다)
       const top = rootRef.current?.getBoundingClientRect().top ?? 0;
-      if (top < 0 || top > window.innerHeight * 0.4) {
+      const align = next.kind === "stage" ? top < 0 || top > 24 : top < 0 || top > window.innerHeight * 0.4;
+      if (align && !document.fullscreenElement) {
         rootRef.current?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       }
       if (next.kind === "stage") setAnnounce(`${next.index + 1}단계 ${stages[next.index].title}`);
@@ -216,7 +220,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
   const showTeacher = effectiveView !== "classroom";
 
   return (
-    <div ref={rootRef} className={cx("classroom-player relative scroll-mt-[84px]", isFullscreen && "p-4 sm:p-6")}>
+    <div ref={rootRef} className={cx("classroom-player relative scroll-mt-3", isFullscreen && "p-4 sm:p-6")}>
       <p className="sr-only" aria-live="polite">{announce}</p>
 
       {/* ── 상단 도구 막대 ─────────────────────────────────────── */}
@@ -298,17 +302,18 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
               <section
                 key={`c-${phase.index}`}
                 aria-label="교실 화면"
-                className={cx("relative isolate flex animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg", STAGE_TONE[current.key].soft, isFullscreen ? "min-h-[calc(100dvh-220px)]" : "min-h-[420px] sm:min-h-[520px]")}
+                className={cx("relative isolate flex animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg", STAGE_TONE[current.key].soft, isFullscreen ? "min-h-[max(360px,calc(100dvh-var(--player-chrome-fs)))]" : "min-h-[max(240px,calc(100dvh-var(--player-chrome)))]")}
               >
                 <div aria-hidden="true" className="dots absolute inset-0 -z-10 opacity-50" />
-                <div className="flex items-center gap-3 p-6 sm:p-8">
+                {/* 낮은 화면(높이 700px 이하 — 작은 휴대폰 · 가로 태블릿)은 여백 · 글자를 줄여 조작 막대와 겹치지 않게 */}
+                <div className="flex items-center gap-3 p-6 sm:p-8 [@media(max-height:700px)]:p-4">
                   <StageIcon stage={current.key} className="h-14 w-14 sm:h-16 sm:w-16" />
                   <p className={cx("font-display text-[22px] sm:text-[26px]", STAGE_TONE[current.key].text)}>
                     {phase.index + 1}. {current.title}
                   </p>
                 </div>
-                <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10">
-                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px]")}>
+                <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
+                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
                     {current.childLine}
                   </p>
                 </div>
@@ -557,6 +562,11 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
             {nextWeekNo}주차 체험하기 <ArrowRight />
           </Link>
         ) : null}
+      </div>
+      {/* 다음 행동 — 다른 주차 둘러보기 · 도입 문의 (상담 폼은 기존 동의 · 검증 · 저장 경로 그대로) */}
+      <div className="mx-auto mt-6 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
+        <Link href="/experience/weeks" className={popButtonClass("ghost", "md")}>다른 주차 고르기</Link>
+        <ConsultButton tone="white" size="md">우리 유치원 도입 문의</ConsultButton>
       </div>
       <p className="mt-6 text-[14px] font-semibold text-pop-ink-muted">체험용 화면이라 수업 기록 · 관찰 · 출결은 저장되지 않았습니다.</p>
     </section>

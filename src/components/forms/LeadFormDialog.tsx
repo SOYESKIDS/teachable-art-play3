@@ -7,7 +7,11 @@ import { LeadForm } from "@/components/forms/LeadForm";
 const TITLE_ID = "lead-form-dialog-title";
 
 /** 라이브러리 없이 직접 구현한 접근성 Dialog: ESC/Backdrop 닫기, Focus Trap, 배경 스크롤 잠금 */
-export function LeadFormDialog() {
+/**
+ * @param previewNotice 검토용(Preview) 배포에서만 넘긴다 — 이 배포의 상담은 Staging(검토용 DB)에만 저장되어
+ *   실제 영업 문의로 접수되지 않는다는 안내. 운영 배포에서는 넘기지 않는다 (PlayShell).
+ */
+export function LeadFormDialog({ previewNotice = false }: { previewNotice?: boolean } = {}) {
   const { isOpen, formType, packageCode, closeLeadForm } = useLeadForm();
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
@@ -98,6 +102,12 @@ export function LeadFormDialog() {
           </svg>
         </button>
 
+        {previewNotice ? (
+          <p role="note" className="mb-5 mr-12 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-[14px] font-semibold leading-relaxed text-amber-900">
+            시연용 검토 화면입니다. 여기서 보낸 문의는 검토용 데이터베이스에만 저장되며 실제 상담으로 접수되지 않습니다.
+            실제 도입 문의는 운영 사이트나 담당자에게 연락해 주세요.
+          </p>
+        ) : null}
         <LeadForm
           key={`${formType}:${packageCode ?? "general"}`}
           type={formType}
