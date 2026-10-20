@@ -93,3 +93,22 @@
    `SUPABASE_PRODUCTION_PROJECT_REF=vpppxuhodwauaclhybtg` · `BLOCK_WRITES_ON_PRODUCTION_DATA=1` ·
    `PORTAL_THROTTLE_SALT`(새 값) · 상속 차단용 빈 값 `SUPABASE_SECRET_KEY` · `OPENAI_API_KEY`
 3. `vercel env pull --git-branch` 로 URL 이 Staging 인지 확인 → 배포를 켜는 커밋 push → Preview 번들의 Supabase ref 확인.
+
+## 로그인 없는 외부 공개 — 방식 비교 (2026-10-20 조사 · 아무것도 바꾸지 않음)
+
+현재: 프로젝트 Deployment Protection = Vercel Authentication (Standard). 팀 플랜 Hobby.
+Vercel 문서 기준 Hobby 에서도 쓸 수 있는 것: Shareable Links · Deployment Protection Exceptions · Protection Bypass for Automation.
+비밀번호 보호(Password Protection)는 Hobby 에서 쓸 수 없다.
+
+| | A-1. Shareable Link | A-2. Protection Exception (브랜치 주소 하나만 공개) | B. 공개 전용 정적 체험 프로젝트 | C. 기존 프로젝트 Production 에 체험 경로 공개 |
+|---|---|---|---|---|
+| 하는 일 | 이 브랜치 최신 배포를 비밀 쿼리가 붙은 링크로 공유 | `teachable-art-play3-git-feat-classroo-5416ed-…` 도메인만 보호 예외 | `/` + `/experience/*` 만 담은 별도 Vercel 프로젝트 (DB 환경변수 없음) | main 병합 → 운영 도메인에서 공개 (`/experience` 는 이미 로그인 불필요) |
+| 프로젝트 보호 설정 변경 | 없음 (링크 생성만) | 예외 목록에 도메인 1개 추가 | 새 프로젝트 생성 | 없음 (운영 도메인은 원래 공개) |
+| 노출 범위 | 링크를 받은 사람만 · 언제든 회수 | 그 주소 전체 (로그인 · 상담 폼 · 업무 경로 포함) | 체험 화면만 | 운영 사이트 전체 |
+| 연결 DB | Staging | Staging | 없음 | Production |
+| 보안 영향 | 낮음 — 링크 유출 시 회수 | 중간 — Staging 로그인 · 상담 폼이 외부에 열림 (상담이 Staging 에 저장되어 접수된 것처럼 보임) | 가장 낮음 — 서버 데이터 접근 코드 자체가 없음 | 높음 — 누락 migration 14개 · P0 공유 보안 · M3 가 먼저 해결돼야 함 |
+| 필요한 작업 | 대시보드에서 Share → 링크 생성 | 예외 추가 + (권장) 이 배포에서 상담 폼 · 로그인 경로를 운영 사이트 안내로 바꾸는 DEMO 모드 | 체험 전용 빌드(정적 export) 구성 · 새 프로젝트 · 도메인 · 상담은 운영 사이트로 연결 | Production cutover 계획 · 환경변수 · 마이그레이션 · P0 조치 · 운영 배포 승인 |
+| 기존 영업 사이트와 역할 | 겹치지 않음 (내부 · 지정 원장 검토용) | 겹치지 않음 (임시 공개용) | 「체험 전용」 — 상담 · 상품 · 로그인은 운영 사이트 한 곳에만 | 운영 사이트 = 최종 형태 |
+
+추천: 지금은 A-1 (지정한 원장님 · 선생님께만 공유, 회수 가능, 설정 변경 없음).
+불특정 다수 공개가 필요해지면 B (체험 화면만, DB 없음) — C 는 Production 보안 P0 · cutover 이후.
