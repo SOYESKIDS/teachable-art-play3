@@ -148,32 +148,61 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             ))}
           </ol>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            <Block title="준비물" tone="bg-pop-cream ring-1 ring-pop-ink/5">
-              <ul className="grid gap-2 text-[16px] text-pop-ink">{b.materials.map((m) => <li key={m}>· {m}</li>)}</ul>
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            <Block title="준비물" tone="bg-pop-yellow-soft">
+              <ul className="flex flex-wrap gap-2">
+                {b.materials.map((m) => <li key={m} className="rounded-full bg-white px-3.5 py-2 text-[15px] font-semibold text-pop-ink">{m}</li>)}
+              </ul>
             </Block>
-            <Block title="그림책 · 몸 · 소리" tone="bg-pop-cream ring-1 ring-pop-ink/5">
-              <dl className="grid gap-3 text-[15px] leading-relaxed text-pop-ink">
-                <div><dt className="font-bold text-pop-sky-deep">그림책 활동</dt><dd>{b.story}</dd></div>
-                <div><dt className="font-bold text-pop-pink-deep">신체표현</dt><dd>{b.movement}</dd></div>
-                <div><dt className="font-bold text-pop-lilac-deep">음악 · 리듬</dt><dd>{b.music}</dd></div>
-              </dl>
-            </Block>
-            <Block title="만들기 · 결과물" tone="bg-pop-cream ring-1 ring-pop-ink/5">
-              <p className="text-[15px] leading-relaxed text-pop-ink">{b.art}</p>
-              <p className="mt-3 text-[14px] font-bold text-pop-ink-muted">공식 결과물 · {week.outcome ?? "정리 중"}</p>
-            </Block>
-            <Block title="교사 발문" tone="bg-pop-sky-soft">
-              <ul className="grid gap-2 text-[16px] font-semibold leading-relaxed text-pop-ink">{[...b.teacherQuestions, b.closingQuestion].map((q) => <li key={q}>“{q}”</li>)}</ul>
-            </Block>
-            <Block title="관찰 포인트" tone="bg-pop-mint-soft">
-              <ul className="grid gap-2 text-[16px] leading-relaxed text-pop-ink">{b.observationPoints.map((o) => <li key={o}>· {o}</li>)}</ul>
-            </Block>
-            <Block title="가정연계 · 안전" tone="bg-pop-pink-soft">
-              <p className="text-[16px] leading-relaxed text-pop-ink">{b.homeConnection}</p>
-              <ul className="mt-3 grid gap-1.5 text-[15px] leading-relaxed text-pop-ink">{b.safety.map((s) => <li key={s}>· {s}</li>)}</ul>
+            <Block title="만들기 · 결과물" tone="bg-pop-mint-soft">
+              <p className="text-[16px] leading-relaxed text-pop-ink">{b.art}</p>
+              <p className="mt-3 inline-flex rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-pop-ink">공식 결과물 · {week.outcome ?? "정리 중"}</p>
             </Block>
           </div>
+
+          <section aria-labelledby="teacher-detail-title" className="mt-10">
+            <h2 id="teacher-detail-title" className="font-display text-[24px] text-pop-ink sm:text-[28px]">교사용 자세히 보기</h2>
+            <p className="mt-1 text-[15px] text-pop-ink-muted">필요한 항목만 펼쳐 보세요.</p>
+            <div className="mt-4 grid gap-3">
+              {[
+                {
+                  title: "그림책 · 몸 · 소리",
+                  body: (
+                    <dl className="grid gap-3 text-[16px] leading-relaxed text-pop-ink sm:grid-cols-3">
+                      <div><dt className="font-bold text-pop-sky-deep">그림책 활동</dt><dd className="mt-1">{b.story}</dd></div>
+                      <div><dt className="font-bold text-pop-pink-deep">신체표현</dt><dd className="mt-1">{b.movement}</dd></div>
+                      <div><dt className="font-bold text-pop-lilac-deep">음악 · 리듬</dt><dd className="mt-1">{b.music}</dd></div>
+                    </dl>
+                  ),
+                },
+                {
+                  title: `교사 발문 ${b.teacherQuestions.length + 1}개`,
+                  body: <ul className="grid gap-2 text-[17px] font-semibold leading-relaxed text-pop-ink">{[...b.teacherQuestions, b.closingQuestion].map((q) => <li key={q}>“{q}”</li>)}</ul>,
+                },
+                {
+                  title: "관찰 포인트",
+                  body: <ul className="grid gap-2 text-[16px] leading-relaxed text-pop-ink">{b.observationPoints.map((o) => <li key={o}>· {o}</li>)}</ul>,
+                },
+                {
+                  title: "가정연계 · 안전 안내",
+                  body: (
+                    <div className="grid gap-3 text-[16px] leading-relaxed text-pop-ink sm:grid-cols-2">
+                      <p>{b.homeConnection}</p>
+                      <ul className="grid gap-1.5 rounded-2xl bg-pop-pink-soft p-4 text-[15px]">{b.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
+                    </div>
+                  ),
+                },
+              ].map((d) => (
+                <details key={d.title} className="group rounded-[24px] bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white open:shadow-pop">
+                  <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-[17px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
+                    {d.title}
+                    <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="px-5 pb-5">{d.body}</div>
+                </details>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
 

@@ -1,11 +1,12 @@
 import Image from "next/image";
+import { Buddy } from "@/components/play/Doodles";
 import Link from "next/link";
 import { cx } from "@/components/ui/cx";
-import { characterImage } from "@/data/experience/characters";
 import { MEDIA } from "@/data/experience/media";
 import { EXPERIENCE_PARTS, experienceWeek, FEATURED_WEEK_NO, weeksInPart } from "@/data/experience/weeks";
 import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
 import { Sticker, type StickerKind } from "../Stickers";
+import type { ExperienceImage } from "@/data/experience/types";
 import { WeekArt } from "../WeekArt";
 
 const TONE = {
@@ -53,7 +54,6 @@ export function AdventureMap() {
           {EXPERIENCE_PARTS.map((part, i) => {
             const tone = TONE[part.tone];
             const weeks = weeksInPart(part.partNo);
-            const ch = characterImage(part.character);
             return (
               <li key={part.partNo} className={cx("group relative flex flex-col overflow-hidden rounded-[36px] shadow-pop", tone.bg)}>
                 <Link href={`/experience/weeks#part-${part.partNo}`} className="flex flex-1 flex-col focus-visible:outline-offset-[-6px] md:max-lg:flex-row">
@@ -62,9 +62,7 @@ export function AdventureMap() {
                     <span className={cx("absolute left-5 top-5 rounded-full px-4 py-1.5 font-display text-[18px] text-pop-ink sticker", "bg-pop-yellow")}>
                       PART {part.partNo}
                     </span>
-                    {ch ? (
-                      <Image src={ch.src} alt="" width={ch.width} height={ch.height} sizes="120px" className="absolute -bottom-2 right-3 w-[30%] max-w-[120px] drop-shadow-[0_10px_12px_rgba(27,37,71,0.3)]" />
-                    ) : null}
+                    <Buddy character={part.character} sizes="120px" className="absolute -bottom-2 right-3 w-[28%] max-w-[120px]" />
                   </div>
                   <div className="flex flex-1 flex-col p-6 sm:p-7">
                     <p className={cx("text-[14px] font-bold", tone.text)}>
@@ -99,21 +97,37 @@ export function AdventureMap() {
 
 /* ── 3. 수업은 이렇게 진행됩니다 ─────────────────────────────── */
 const FLOW = [
-  { title: "그림책", body: "이야기 속 주인공을 만나며 오늘의 질문을 품어요.", color: "#4da3ff", soft: "bg-pop-sky-soft", kind: "cloud" as StickerKind, icon: "book" },
-  { title: "움직임", body: "몸과 리듬으로 이야기를 표현하며 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", kind: "heart" as StickerKind, icon: "move" },
-  { title: "만들기", body: "재료를 탐색하고 나만의 작품으로 생각을 담아요.", color: "#ffc928", soft: "bg-pop-yellow-soft", kind: "crayon" as StickerKind, icon: "make" },
-  { title: "관찰", body: "선생님은 아이가 시도한 순간을 기록으로 남겨요.", color: "#22c3b5", soft: "bg-pop-mint-soft", kind: "sparkle" as StickerKind, icon: "eye" },
+  { title: "그림책", body: "이야기 속 주인공을 만나며 오늘의 질문을 품어요.", color: "#4da3ff", soft: "bg-pop-sky-soft", icon: "book", image: MEDIA.storybook as ExperienceImage | null },
+  { title: "움직임", body: "몸과 리듬으로 이야기를 표현하며 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", icon: "move", image: MEDIA.movementPhoto as ExperienceImage | null },
+  { title: "만들기", body: "재료를 탐색하고 나만의 작품으로 생각을 담아요.", color: "#ffc928", soft: "bg-pop-yellow-soft", icon: "make", image: MEDIA.artPlay as ExperienceImage | null },
+  { title: "관찰", body: "선생님은 아이가 시도한 순간을 기록으로 남겨요.", color: "#22c3b5", soft: "bg-pop-mint-soft", icon: "eye", image: null as ExperienceImage | null },
 ];
 
 function FlowIcon({ icon, color }: { icon: string; color: string }) {
   const common = { fill: "none", stroke: "#1b2547", strokeWidth: 3.2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   return (
-    <svg viewBox="0 0 64 64" aria-hidden="true" className="h-16 w-16">
+    <svg viewBox="0 0 64 64" aria-hidden="true" className="h-12 w-12 shrink-0">
       <circle cx="32" cy="32" r="28" fill={color} />
       {icon === "book" && <g {...common}><path d="M14 20c6-2 12-2 18 2v24c-6-4-12-4-18-2z" fill="#fff" /><path d="M50 20c-6-2-12-2-18 2v24c6-4 12-4 18-2z" fill="#fff" /></g>}
       {icon === "move" && <g {...common}><circle cx="32" cy="16" r="5" fill="#fff" /><path d="M32 22v14M20 26l12 4 12-4M24 50l8-14 8 14" /></g>}
       {icon === "make" && <g {...common}><path d="M18 46l20-26 8 6-20 26-10 2z" fill="#fff" /><path d="M42 16l8 6" /></g>}
       {icon === "eye" && <g {...common}><path d="M10 32s8-12 22-12 22 12 22 12-8 12-22 12S10 32 10 32z" fill="#fff" /><circle cx="32" cy="32" r="6" fill="#1b2547" /></g>}
+    </svg>
+  );
+}
+
+/** 관찰 단계 그림 — 관찰 메모 카드 (사진 대신 · 실제 기록 아님) */
+function ObserveArt() {
+  return (
+    <svg viewBox="0 0 220 150" className="h-[78%] w-auto drop-shadow-[0_8px_10px_rgba(27,37,71,0.14)]">
+      <rect x="30" y="18" width="150" height="116" rx="16" fill="#fff" />
+      <rect x="48" y="38" width="70" height="10" rx="5" fill="#22c3b5" />
+      <rect x="48" y="60" width="112" height="8" rx="4" fill="#d9f6f2" />
+      <rect x="48" y="76" width="96" height="8" rx="4" fill="#d9f6f2" />
+      <rect x="48" y="92" width="104" height="8" rx="4" fill="#d9f6f2" />
+      <circle cx="160" cy="44" r="12" fill="#ffc928" />
+      <path d="M154 44l4 4 8-8" fill="none" stroke="#1b2547" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M150 118l40-46 10 8-38 46-14 4z" fill="#ff8a3d" stroke="#fff" strokeWidth="4" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -130,26 +144,32 @@ export function ClassFlow() {
         />
         <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {FLOW.map((step, i) => (
-            <li key={step.title} className={cx("relative rounded-[32px] p-7 pt-8", step.soft)}>
-              <span className="absolute right-6 top-6 font-display text-[40px] leading-none text-pop-ink/10">{i + 1}</span>
-              <FlowIcon icon={step.icon} color={step.color} />
-              <h3 className="mt-5 font-display text-[28px] text-pop-ink">{step.title}</h3>
-              <p className="mt-2 text-[16px] leading-relaxed text-pop-ink-muted">{step.body}</p>
+            <li key={step.title} className={cx("relative flex flex-col overflow-hidden rounded-[32px]", step.soft)}>
+              <div className="relative aspect-[16/11] overflow-hidden">
+                {step.image ? (
+                  <Image src={step.image.src} alt={step.image.alt} fill sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 100vw" className="object-cover" />
+                ) : (
+                  <div aria-hidden="true" className="dots flex h-full items-center justify-center bg-pop-mint-soft">
+                    <ObserveArt />
+                  </div>
+                )}
+                <span className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white font-display text-[20px] text-pop-ink shadow-pop">{i + 1}</span>
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex items-center gap-3">
+                  <FlowIcon icon={step.icon} color={step.color} />
+                  <h3 className="font-display text-[26px] text-pop-ink">{step.title}</h3>
+                </div>
+                <p className="mt-3 text-[16px] leading-relaxed text-pop-ink-muted">{step.body}</p>
+              </div>
               {i < FLOW.length - 1 ? (
-                <span aria-hidden="true" className="absolute -right-4 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-pop-ink shadow-pop lg:flex">
+                <span aria-hidden="true" className="absolute -right-4 top-[32%] z-10 hidden h-9 w-9 items-center justify-center rounded-full bg-white text-pop-ink shadow-pop lg:flex">
                   <ArrowRight className="h-4 w-4" />
                 </span>
               ) : null}
             </li>
           ))}
         </ol>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {[MEDIA.storybook, MEDIA.movementPhoto, MEDIA.artPlay].map((img, i) => (
-            <div key={img.src} className={cx("relative aspect-[16/10] overflow-hidden rounded-[28px] shadow-pop ring-4 ring-white", i === 1 && "md:-translate-y-4")}>
-              <Image src={img.src} alt={img.alt} fill sizes="(min-width: 768px) 32vw, 100vw" className="object-cover" />
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -197,7 +217,6 @@ export function PlayerPreview() {
   const week = experienceWeek(FEATURED_WEEK_NO);
   if (!week) return null;
   const stage = week.stages[1];
-  const ch = characterImage(week.body.character);
   return (
     <section aria-labelledby="player-title" className="relative overflow-hidden bg-pop-cream py-20 sm:py-28">
       <div className="mx-auto grid max-w-[1320px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -232,7 +251,7 @@ export function PlayerPreview() {
               </div>
               <div className="h-2 bg-white"><div className="h-full w-2/5 rounded-r-full bg-pop-pink" /></div>
               <div className="relative grid min-h-[300px] place-items-center px-6 py-10 sm:min-h-[380px]" style={{ background: `radial-gradient(90% 80% at 50% 30%, ${week.themeColor}33, #fffaf0)` }}>
-                {ch ? <Image src={ch.src} alt="" width={ch.width} height={ch.height} sizes="160px" className="absolute bottom-0 left-6 w-[22%] max-w-[150px]" /> : null}
+                <Buddy character={week.body.character} sizes="160px" className="absolute bottom-2 left-6 w-[20%] max-w-[140px]" />
                 <p className="max-w-[16ch] text-center font-display text-[34px] leading-tight text-pop-ink sm:text-[46px]">{stage.childLine}</p>
               </div>
               <div className="flex items-center justify-between gap-3 bg-white px-5 py-4">

@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/components/ui/cx";
-import { characterImage } from "@/data/experience/characters";
 import type { ClassStage, ExperienceWeek, StageKey } from "@/data/experience/types";
 import { ContentStatusBadge, DemoNotice } from "../Badges";
 import { ArrowRight, PlayIcon, popButtonClass } from "../PopButton";
+import { Buddy } from "../Doodles";
+import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
 import { WeekArt } from "../WeekArt";
 
@@ -112,7 +112,6 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
   const [announce, setAnnounce] = useState("");
 
   const stages = week.stages;
-  const character = characterImage(week.body.character);
   const stageIndex = phase.kind === "stage" ? phase.index : phase.kind === "done" ? stages.length : -1;
   const current: ClassStage | null = phase.kind === "stage" ? stages[phase.index] : null;
   const progress = phase.kind === "done" ? 100 : phase.kind === "stage" ? Math.round((phase.index / stages.length) * 100) : 0;
@@ -313,9 +312,12 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
                     {current.childLine}
                   </p>
                 </div>
-                {character ? (
-                  <Image src={character.src} alt="" width={character.width} height={character.height} sizes="200px" className="absolute bottom-0 left-4 w-[24%] max-w-[190px] animate-float-slow sm:left-8" />
-                ) : null}
+                {/* 주차 주제 그림 — 큰 장면. 아이들이 오늘의 이야기를 한눈에 알아본다 */}
+                <div aria-hidden="true" className="pointer-events-none absolute -right-12 bottom-[-8%] -z-10 h-[52%] opacity-70 sm:right-[1%] sm:h-[58%]">
+                  <div className="absolute inset-[8%] rounded-full bg-white/70" />
+                  <Motif motif={week.body.motif} color={week.themeColor} className="relative h-full w-auto" />
+                </div>
+                <Buddy character={week.body.character} sizes="200px" className="absolute bottom-2 left-4 w-[22%] max-w-[170px] animate-float-slow sm:left-8" />
                 <Sticker kind="star" color={STAGE_TONE[current.key].color} float className="absolute right-8 top-8 h-12 w-12 sm:h-16 sm:w-16" />
                 <Sticker kind="sparkle" color="#ffc928" float delay={700} className="absolute bottom-10 right-10 h-10 w-10" />
               </section>
@@ -455,6 +457,21 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
   );
 }
 
+function Fold({ title, badge, children, defaultOpen = false }: { title: string; badge?: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  return (
+    <details open={defaultOpen} className="group rounded-2xl bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4 text-[15px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
+        <span className="flex items-center gap-2">
+          {title}
+          {badge ? <span className="rounded-full bg-pop-pink-soft px-2 py-0.5 text-[12px] font-extrabold text-pop-pink-deep">{badge}</span> : null}
+        </span>
+        <span aria-hidden="true" className="text-[18px] text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
+      </summary>
+      <div className="px-4 pb-4">{children}</div>
+    </details>
+  );
+}
+
 function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
     story: [{ label: "그림책 활동", text: week.body.story }],
@@ -463,6 +480,10 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
     make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (공식 결과물 정리 중)` }],
     share: [{ label: "가정연계", text: week.body.homeConnection }],
   };
+  const details = extra[stage.key].filter((x) => x.text !== stage.guide);
+  // ★ 수업 중에는 꼭 필요한 것만 먼저 — 활동 안내 · 발문 · 시간. 나머지는 펼쳐 본다.
+  //   관찰 포인트는 만들기 · 나누기 단계에서 기본으로 펼친다 (기록할 순간이 그때 생긴다).
+  const observeOpen = stage.key === "make" || stage.key === "share";
   return (
     <section aria-label="교사 화면" className="animate-stage-in rounded-[36px] bg-white p-6 shadow-pop-lg sm:p-7">
       <div className="flex items-center justify-between gap-3">
@@ -472,34 +493,32 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
       <p className="mt-4 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
       <div className="mt-5 rounded-3xl bg-pop-sky-soft p-5">
         <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
-        <p className="mt-1 text-[19px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
+        <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
-      <dl className="mt-5 grid gap-4">
-        {extra[stage.key].filter((x) => x.text !== stage.guide).map((x) => (
-          <div key={x.label}>
-            <dt className="text-[13px] font-bold text-pop-ink-muted">{x.label}</dt>
-            <dd className="mt-1 text-[16px] leading-relaxed text-pop-ink">{x.text}</dd>
-          </div>
-        ))}
-        {stage.key === "make" || stage.key === "share" ? (
-          <div>
-            <dt className="text-[13px] font-bold text-pop-ink-muted">관찰 포인트</dt>
-            <dd>
-              <ul className="mt-1 grid gap-1 text-[15px] leading-relaxed text-pop-ink">
-                {week.body.observationPoints.map((o) => <li key={o}>· {o}</li>)}
-              </ul>
-            </dd>
-          </div>
+      <div className="mt-4 grid gap-2">
+        {details.length ? (
+          <Fold title="세부 활동">
+            <dl className="grid gap-3">
+              {details.map((x) => (
+                <div key={x.label}>
+                  <dt className="text-[13px] font-bold text-pop-ink-muted">{x.label}</dt>
+                  <dd className="mt-1 text-[16px] leading-relaxed text-pop-ink">{x.text}</dd>
+                </div>
+              ))}
+            </dl>
+          </Fold>
         ) : null}
-        <div className="rounded-2xl bg-pop-pink-soft p-4">
-          <dt className="text-[13px] font-bold text-pop-pink-deep">안전 안내</dt>
-          <dd>
-            <ul className="mt-1 grid gap-1 text-[14px] leading-relaxed text-pop-ink">
-              {week.body.safety.map((s) => <li key={s}>· {s}</li>)}
-            </ul>
-          </dd>
-        </div>
-      </dl>
+        <Fold title="관찰 포인트" defaultOpen={observeOpen}>
+          <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
+            {week.body.observationPoints.map((o) => <li key={o}>· {o}</li>)}
+          </ul>
+        </Fold>
+        <Fold title="안전 안내" badge={`${week.body.safety.length}`}>
+          <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
+            {week.body.safety.map((x) => <li key={x}>· {x}</li>)}
+          </ul>
+        </Fold>
+      </div>
     </section>
   );
 }
