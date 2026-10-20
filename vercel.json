@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "feat/classroom-redesign-20261020": false
+    }
+  },
+  "buildCommand": "node scripts/preview-env-guard.mjs && npm run build"
+}
