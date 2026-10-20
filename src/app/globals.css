@@ -8,6 +8,8 @@
  */
 
 :root {
+  /* 본문 글꼴 — layout.tsx 가 Pretendard dynamic subset CSS 를 싣는다 */
+  --font-pretendard: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --background: #fbf8f1;
   --foreground: #152e4f;
 
@@ -821,12 +823,12 @@ h4 {
  *   그대로다. 이 값은 홈과 /experience 의 `.play` 범위에서만 쓴다.
  * ★ 색은 SOYES KIDS 워드마크의 다섯 색(핑크 · 노랑 · 초록 · 파랑 · 보라)에서 왔다.
  *   밝은 색은 면 · 장식에만, 글자는 *-deep (흰 바탕 4.5:1 이상) 또는 pop-ink 를 쓴다.
- *   측정값 (흰 바탕 / cream 바탕):
- *     pop-ink 14.98 / 14.39 · ink-muted 7.34 / 7.05 · pink-deep 5.54 / 5.32 ·
- *     sky-deep 6.03 / 5.80 · mint-deep 5.21 / 5.01 · lilac-deep 6.51 / 6.26 ·
- *     orange-deep 5.08 / 4.88 · leaf-deep 4.98 / 4.78
+ *   측정값 (흰 바탕 / cream 바탕 / 같은 색 soft 바탕) — 2026-10-20 Lighthouse 대비 지적 후 조정:
+ *     pop-ink 14.98 / 14.39 · ink-muted 7.34 / 7.05 ·
+ *     pink-deep 5.82 / – / 4.77 · mint-deep 5.49 / – / 4.81 · sky-deep 6.03 / 5.80 / 5.17 ·
+ *     lilac-deep 6.51 / 6.26 / 5.46 · orange-deep 5.62 / – / 4.75 · leaf-deep 5.38 / – / 4.78
  *   노랑(9.73) · 핑크(4.81) · 민트(6.80) 바탕 위 글자는 pop-ink.
- *   흰 글자는 pink-deep(5.54) 이상에서만 — 밝은 핑크(3.11) · 민트(2.20) 위 흰 글자 금지.
+ *   흰 글자는 pink-deep(5.82) 이상에서만 — 밝은 핑크(3.11) · 민트(2.20) 위 흰 글자 금지.
  */
 @theme {
   --color-pop-ink: #1b2547;
@@ -837,10 +839,10 @@ h4 {
   --color-pop-yellow: #ffc928;
   --color-pop-yellow-soft: #fff1c2;
   --color-pop-pink: #ff4f8b;
-  --color-pop-pink-deep: #c81e5b;
+  --color-pop-pink-deep: #c21d58;
   --color-pop-pink-soft: #ffe1ec;
   --color-pop-mint: #22c3b5;
-  --color-pop-mint-deep: #0b7a70;
+  --color-pop-mint-deep: #0b766d;
   --color-pop-mint-soft: #d9f6f2;
   --color-pop-sky: #4da3ff;
   --color-pop-sky-deep: #1b5fc4;
@@ -849,10 +851,10 @@ h4 {
   --color-pop-lilac-deep: #6440d4;
   --color-pop-lilac-soft: #eee8ff;
   --color-pop-orange: #ff8a3d;
-  --color-pop-orange-deep: #b65000;
+  --color-pop-orange-deep: #ab4b00;
   --color-pop-orange-soft: #ffe8d6;
   --color-pop-leaf: #45c25a;
-  --color-pop-leaf-deep: #23803a;
+  --color-pop-leaf-deep: #217a37;
   --color-pop-leaf-soft: #e2f7e4;
 
   --font-display: var(--font-jua), var(--font-pretendard), "Pretendard Variable", sans-serif;

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { Jua, Noto_Serif_KR } from "next/font/google";
 import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
+/*
+ * 본문 글꼴 Pretendard — dynamic subset (글자 묶음 92조각, unicode-range).
+ *
+ * ★ 예전에는 한글 전체가 든 가변 글꼴 한 파일(약 2MB)을 next/font/local 로 미리 받았다.
+ *   느린 모바일에서는 그 2MB 가 첫 화면 그림보다 먼저 대역폭을 차지해
+ *   Lighthouse 모바일 LCP 가 14~17초까지 늘었다 (2026-10-20 측정).
+ * ★ 이제 페이지에 실제로 쓰인 글자의 조각만 받는다. 글꼴 이름 · 굵기 범위 · swap 은 같다.
+ *   --font-pretendard 변수 이름도 그대로라 화면 스타일은 바뀌지 않는다 (globals.css).
+ */
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
-
-const pretendard = localFont({
-  src: "../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
-  variable: "--font-pretendard",
-  weight: "45 920",
-  display: "swap",
-});
 
 /**
  * 제목·이야기용 명조.
@@ -93,7 +95,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${serifKr.variable} ${jua.variable} h-full antialiased`}
+      className={`${serifKr.variable} ${jua.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

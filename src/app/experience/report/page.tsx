@@ -31,12 +31,15 @@ export default function ExperienceReportPage() {
       <section aria-labelledby="report-title" className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#eee8ff_0%,#fffaf0_85%)]">
         <div aria-hidden="true" className="dots absolute inset-0 -z-10 opacity-50" />
         <div className="mx-auto max-w-[1100px] px-4 pb-12 pt-10 sm:px-6 sm:pt-14">
-          <div className="flex flex-wrap items-center gap-3">
+          {/* 모바일은 항상 두 줄 — 글꼴이 늦게 와도 줄 수가 바뀌지 않아 아래가 밀리지 않는다 (CLS) */}
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <span className="rounded-full bg-pop-orange px-4 py-2 text-[15px] font-extrabold text-pop-ink">가상 예시</span>
             <DemoNotice />
           </div>
-          <h1 id="report-title" className="mt-6 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]">
-            성장 리포트 <span className="text-pop-lilac-deep">미리 보기</span>
+          {/* 두 줄 고정 — 제목 글꼴(Jua)이 늦게 와도 줄 수가 같아 아래 리포트가 밀리지 않는다 (CLS) */}
+          <h1 id="report-title" className="mt-6 font-display text-[40px] leading-[1.2] text-pop-ink sm:text-[56px]">
+            <span className="block">성장 리포트</span>
+            <span className="block text-pop-lilac-deep">미리 보기</span>
           </h1>
           <p className="mt-4 max-w-[46ch] text-[18px] font-medium leading-relaxed text-pop-ink-muted">
             실제 아이가 아닌 지어낸 사례입니다. 점수나 순위 대신, 아이가 시도한 순간과 스스로 한 말을 다섯 가지 관점으로 기록합니다.
