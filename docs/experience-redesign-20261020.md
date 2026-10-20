@@ -27,9 +27,27 @@
 ## 이미지
 
 - 사진 · 그림: 이미 사이트에서 쓰던 `public/images/site/**` 만 사용
-- 캐릭터: 제공된 디자인 참고 자료(SOYE KIDS 캐릭터 렌더)의 배경을 지워 `public/images/characters/*.webp` 로 만듦 (`scripts/cutout-characters.mjs`)
-  - **사용권 최종 확인 필요.** `src/data/experience/characters.ts` 의 `CHARACTERS_ENABLED = false` 한 줄로 전체에서 뺄 수 있다.
-  - 이름이 확인되지 않은 고양이 캐릭터는 이름을 쓰지 않았다.
+- 캐릭터: **꺼져 있다** (`src/data/experience/characters.ts` · `CHARACTERS_ENABLED = false`, 2026-10-20 사용자 지시).
+  - 사용권 확인 전이라 공개 Preview · 저장소(공개 GitHub)에 캐릭터 그림을 싣지 않는다. 배경을 지운 파일은
+    git 에서 제외된 `design-references/characters-cutout/` 에만 있고, `public/` 에는 없다 (테스트로 고정).
+  - 자리마다 자체 제작 소품 일러스트(`src/components/play/Doodles.tsx` — 물감 팔레트 · 무지개 · 크레용 ·
+    새싹 화분 · 별 연 · 작은 북 · 풍선 행렬)가 대신 들어간다. 캐릭터 모양을 흉내 내지 않는다.
+  - 사용권이 확인되면: `node scripts/cutout-characters.mjs <참고폴더> public/images/characters` → 플래그 true.
+  - 캐릭터가 들어갈 자리
+
+    | 화면 | 자리 | 캐릭터 키 | 대체 그림 |
+    |---|---|---|---|
+    | 홈 히어로 | 큰 그림 왼쪽 아래 (단체) | 전체 | 풍선 행렬 |
+    | 홈 히어로 | 큰 그림 오른쪽 위 | cat | 새싹 화분 |
+    | 홈 24주 지도 | PART 1 · 2 · 3 카드 사진 오른쪽 아래 | pupu · bukgeuki · ella | 팔레트 · 연 · 무지개 |
+    | 홈 교실 플레이어 미리보기 | 화면 왼쪽 아래 | cat | 새싹 화분 |
+    | 홈 마무리 | 왼쪽 · 오른쪽 아래 | ubi · maru | 북 · 크레용 |
+    | 체험 입구 | 대표 그림 오른쪽 아래 (단체) | 전체 | 풍선 행렬 |
+    | 24주 탐색 | 상단 사진 오른쪽 아래 | ella | 무지개 |
+    | 주차 표지(큰 그림) | 왼쪽 아래 | 주차별 (demo-lessons.ts) | 주차별 소품 |
+    | 주차 카드(작은 그림) | 왼쪽 아래 | 주차별 | 없음 — 주제 그림을 가운데 크게 |
+    | 교실 플레이어 | 교실 화면 왼쪽 아래 | 주차별 | 주차별 소품 + 주제 그림 |
+    | 가상 리포트 | 머리 오른쪽 | pupu | 팔레트 |
 - 주차 전용 사진이 없는 21주는 주차 색 + 자체 SVG 주제 그림(`src/components/play/Motif.tsx`) + 캐릭터로 표지를 그린다.
 - 참고 폴더의 VOD 장면 캡처(제목 로고가 박힌 화면)는 사이트에 넣지 않았다.
 
@@ -54,14 +72,24 @@
 | `public/images/activities/week-19-drum.webp` | 원통 상자 북과 나무 스틱으로 함께 연주하는 아이들 |
 | `public/images/activities/week-21-balloon.webp` | 큰 종이 열기구 공동 작품을 올려다보는 아이들 |
 | `public/images/activities/week-24-globe.webp` | 지구 모양 큰 종이에 세계 어린이 그림 카드를 붙이는 장면 |
-| `public/images/hero/hero-play-wide.webp` (2400×1200) | 그림책 · 몸짓 · 미술이 한 화면에 이어지는 넓은 교실 일러스트, 캐릭터 6종이 함께 |
+| `public/images/hero/hero-play-wide.webp` (2400×1200) | 그림책 · 몸짓 · 미술이 한 화면에 이어지는 넓은 교실 일러스트 (캐릭터 없이 — 사용권 확인 후 별도 합성) |
+| `public/images/hero/hero-play-mobile.webp` (1200×1500) | 위 장면의 세로 구도 — 모바일 히어로용, 아이들 손과 재료가 화면 아래 절반에 |
 
 ## 되돌리기
 
 - 홈만: `git restore --source backup/platform-before-redesign-20261020 -- src/app/page.tsx` (이전 홈 섹션 컴포넌트는 `src/components/home` 에 그대로 있다)
 - 전부: 이 브랜치를 쓰지 않고 `feat/platform-finish-20261012` 에서 계속한다.
 
-## Preview 배포 전 확인 (중요)
+## Preview 배포 순서 (Production DB 차단)
 
-이 브랜치 이름에는 Vercel 의 branch 전용 Preview 환경변수가 없어, push 하면 **공통 Preview 값(Production Supabase `vpppx…`)** 으로 빌드된다.
-push 전에 `feat/classroom-redesign-20261020` 전용 Preview 환경변수(Staging URL · 공개 키 · `CONTENT_SOURCE` · `SUPABASE_PRODUCTION_PROJECT_REF` · `BLOCK_WRITES_ON_PRODUCTION_DATA=1` · `PORTAL_THROTTLE_SALT`)를 먼저 설정한다.
+이 브랜치에는 Vercel 브랜치 전용 Preview 환경변수가 없어, 그대로 push 하면 **공통 Preview 값
+(Production Supabase `vpppx…` · 공통 비밀키)** 으로 빌드된다. 그리고 Vercel 은 GitHub 에 아직 없는
+브랜치에는 전용 환경변수를 만들 수 없다 (`branch_not_found`).
+
+1. `vercel.json` 에 `git.deploymentEnabled: { "feat/classroom-redesign-20261020": false }` 를 넣은 커밋으로
+   첫 push → 브랜치만 생기고 배포는 일어나지 않는다.
+2. 브랜치 전용 Preview 환경변수 등록 (Production · 공통 Preview · 다른 브랜치는 그대로):
+   `NEXT_PUBLIC_SUPABASE_URL`(Staging) · `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`(Staging) · `CONTENT_SOURCE=database` ·
+   `SUPABASE_PRODUCTION_PROJECT_REF=vpppxuhodwauaclhybtg` · `BLOCK_WRITES_ON_PRODUCTION_DATA=1` ·
+   `PORTAL_THROTTLE_SALT`(새 값) · 상속 차단용 빈 값 `SUPABASE_SECRET_KEY` · `OPENAI_API_KEY`
+3. `vercel env pull --git-branch` 로 URL 이 Staging 인지 확인 → 배포를 켜는 커밋 push → Preview 번들의 Supabase ref 확인.
