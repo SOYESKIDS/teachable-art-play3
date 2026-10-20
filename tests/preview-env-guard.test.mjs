@@ -65,8 +65,10 @@ test("공개 키가 Production 에서도 열리면(운영 키) 막는다 · 네�
   assert.equal(await quiet(() => run(good, async () => { throw new Error("offline"); })), false);
 });
 
-test("vercel.json 은 이 브랜치만 자동 배포를 끄고, 빌드 앞에 보호장치를 둔다", () => {
+test("vercel.json 은 빌드 앞에 보호장치를 두고, 다른 브랜치 배포 설정을 건드리지 않는다", () => {
   const cfg = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
-  assert.deepEqual(Object.keys(cfg.git.deploymentEnabled), [GUARDED_BRANCH]);
+  // 첫 push 때만 이 브랜치 자동 배포를 껐다 (브랜치 전용 Staging 환경변수 등록 전). 등록 뒤에는 켠다.
+  const dep = cfg.git?.deploymentEnabled;
+  assert.ok(dep === undefined || (typeof dep === "object" && Object.keys(dep).every((k) => k === GUARDED_BRANCH)));
   assert.match(cfg.buildCommand, /^node scripts\/preview-env-guard\.mjs && npm run build$/);
 });
