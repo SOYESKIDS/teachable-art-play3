@@ -61,3 +61,6 @@ next-env.d.ts
 /supabase/.temp/
 # Supabase CLI local branch 상태 (_current_branch) — 기계별 메타데이터
 /supabase/.branches/
+
+# 디자인 참고 자료 — 사용권 확인 전 원본. 커밋하지 않는다 (사이트 자산은 public/images 에만)
+/design-references/

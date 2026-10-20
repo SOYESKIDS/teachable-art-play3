@@ -813,3 +813,152 @@ h4 {
     text-transform: uppercase;
   }
 }
+
+/*
+ * ══ PLAYFUL PREMIUM EDUCATION — 2026 공개 체험 디자인 시스템 ═══════════════════
+ *
+ * ★ 새 이름(pop-*)으로만 더한다. 기존 토큰 · 업무 화면(teacher · director · admin)은
+ *   그대로다. 이 값은 홈과 /experience 의 `.play` 범위에서만 쓴다.
+ * ★ 색은 SOYES KIDS 워드마크의 다섯 색(핑크 · 노랑 · 초록 · 파랑 · 보라)에서 왔다.
+ *   밝은 색은 면 · 장식에만, 글자는 *-deep (흰 바탕 4.5:1 이상) 또는 pop-ink 를 쓴다.
+ *   측정값 (흰 바탕 / cream 바탕):
+ *     pop-ink 14.98 / 14.39 · ink-muted 7.34 / 7.05 · pink-deep 5.54 / 5.32 ·
+ *     sky-deep 6.03 / 5.80 · mint-deep 5.21 / 5.01 · lilac-deep 6.51 / 6.26 ·
+ *     orange-deep 5.08 / 4.88 · leaf-deep 4.98 / 4.78
+ *   노랑(9.73) · 핑크(4.81) · 민트(6.80) 바탕 위 글자는 pop-ink.
+ *   흰 글자는 pink-deep(5.54) 이상에서만 — 밝은 핑크(3.11) · 민트(2.20) 위 흰 글자 금지.
+ */
+@theme {
+  --color-pop-ink: #1b2547;
+  --color-pop-ink-muted: #4a5578;
+  --color-pop-cream: #fffaf0;
+  --color-pop-paper: #fff6e6;
+
+  --color-pop-yellow: #ffc928;
+  --color-pop-yellow-soft: #fff1c2;
+  --color-pop-pink: #ff4f8b;
+  --color-pop-pink-deep: #c81e5b;
+  --color-pop-pink-soft: #ffe1ec;
+  --color-pop-mint: #22c3b5;
+  --color-pop-mint-deep: #0b7a70;
+  --color-pop-mint-soft: #d9f6f2;
+  --color-pop-sky: #4da3ff;
+  --color-pop-sky-deep: #1b5fc4;
+  --color-pop-sky-soft: #e1efff;
+  --color-pop-lilac: #9b7bff;
+  --color-pop-lilac-deep: #6440d4;
+  --color-pop-lilac-soft: #eee8ff;
+  --color-pop-orange: #ff8a3d;
+  --color-pop-orange-deep: #b65000;
+  --color-pop-orange-soft: #ffe8d6;
+  --color-pop-leaf: #45c25a;
+  --color-pop-leaf-deep: #23803a;
+  --color-pop-leaf-soft: #e2f7e4;
+
+  --font-display: var(--font-jua), var(--font-pretendard), "Pretendard Variable", sans-serif;
+
+  --shadow-pop: 0 2px 0 rgba(27, 37, 71, 0.08), 0 14px 32px -12px rgba(27, 37, 71, 0.28);
+  --shadow-pop-lg: 0 3px 0 rgba(27, 37, 71, 0.08), 0 28px 60px -20px rgba(27, 37, 71, 0.35);
+  --shadow-sticker: 0 4px 0 rgba(27, 37, 71, 0.12);
+
+  --animate-float: pop-float 6s ease-in-out infinite;
+  --animate-float-slow: pop-float 9s ease-in-out infinite;
+  --animate-wiggle: pop-wiggle 4.5s ease-in-out infinite;
+  --animate-pop-in: pop-in 520ms cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  --animate-rise: pop-rise 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-stage-in: pop-stage-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-confetti: pop-confetti 1.6s ease-out both;
+}
+
+@keyframes pop-float {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--tilt, 0deg)); }
+}
+
+@keyframes pop-wiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+/* 첫 화면 등장 — 숨기지 않는다: 시작 투명도 0.4 (애니메이션이 멈춰도 읽힌다) */
+@keyframes pop-rise {
+  from { opacity: 0.4; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop-stage-in {
+  from { opacity: 0.3; transform: translateX(24px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop-confetti {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.4); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx, 0px), var(--dy, -160px)) rotate(var(--rot, 220deg)) scale(1); }
+}
+
+.play {
+  --background: #fffaf0;
+  --foreground: #1b2547;
+  background: var(--color-pop-cream);
+  color: var(--color-pop-ink);
+}
+
+.play :is(h1, h2, h3) {
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.play p {
+  text-wrap: pretty;
+}
+
+.play :focus-visible {
+  outline: 3px solid var(--color-pop-sky-deep);
+  outline-offset: 3px;
+}
+
+.play ::selection {
+  background: rgba(255, 201, 40, 0.45);
+  color: var(--color-pop-ink);
+}
+
+/* 곡선 섹션 경계 — 위 · 아래 가장자리를 물결로 깎는다 */
+@utility wave-top {
+  clip-path: polygon(0 4%, 6% 2%, 14% 0.6%, 24% 0%, 34% 0.8%, 44% 2.2%, 54% 2.6%, 64% 1.6%, 74% 0.4%, 84% 0.2%, 92% 1.2%, 100% 2.8%, 100% 100%, 0 100%);
+}
+
+/* 스티커 테두리 — 흰 외곽선 + 바닥 그림자 */
+@utility sticker {
+  border: 3px solid #fff;
+  box-shadow: var(--shadow-sticker);
+}
+
+/* 점 무늬 바탕 */
+@utility dots {
+  background-image: radial-gradient(rgba(27, 37, 71, 0.08) 1.5px, transparent 1.6px);
+  background-size: 22px 22px;
+}
+
+/* 큰 화면 수업 — 전체 화면일 때 배경을 채운다 */
+.classroom-player:fullscreen {
+  background: var(--color-pop-cream);
+  overflow-y: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play [class*="animate-"] {
+    animation: none !important;
+  }
+}
+
+@media print {
+  .play [class*="animate-"] {
+    animation: none !important;
+  }
+}

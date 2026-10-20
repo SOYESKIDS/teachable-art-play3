@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Noto_Serif_KR } from "next/font/google";
+import { Jua, Noto_Serif_KR } from "next/font/google";
 import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -30,6 +30,21 @@ const serifKr = Noto_Serif_KR({
   display: "swap",
   preload: false,
   fallback: ["Noto Serif KR", "Nanum Myeongjo", "Batang", "AppleMyungjo", "serif"],
+});
+
+/**
+ * 공개 체험 · 홈 제목용 둥근 글꼴 (PLAYFUL PREMIUM EDUCATION).
+ *
+ * ★ 큰 제목 · 배지에만 쓴다 (font-display). 본문 · 업무 화면은 Pretendard 그대로다.
+ * ★ 늦게 와도 제목이 Pretendard 로 먼저 보이도록 swap · preload 끔.
+ */
+const jua = Jua({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-jua",
+  display: "swap",
+  preload: false,
+  fallback: ["Pretendard Variable", "sans-serif"],
 });
 
 /**
@@ -78,7 +93,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${serifKr.variable} h-full antialiased`}
+      className={`${pretendard.variable} ${serifKr.variable} ${jua.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
