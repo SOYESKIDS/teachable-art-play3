@@ -56,6 +56,7 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
                   <li key={w.weekNo}>
                     <Link
                       href={`/experience/weeks/${w.weekNo}`}
+                      prefetch={false}
                       title={`${w.weekNo}주차 ${w.title}`}
                       aria-label={`${w.weekNo}주차 ${w.title}`}
                       className="flex h-11 min-w-11 w-full items-center justify-center rounded-full font-display text-[17px] text-white transition-transform hover:scale-105 focus-visible:scale-105"
@@ -113,7 +114,7 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
             <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {list.map((w, i) => (
                 <li key={w.weekNo} className="animate-rise" style={{ animationDelay: `${Math.min(i, 7) * 40}ms` }}>
-                  <WeekCard week={w} priority={p.partNo === 1 && i < 2} />
+                  <WeekCard week={w} />
                 </li>
               ))}
             </ul>

@@ -34,7 +34,9 @@ export function WeekArt({
           src={week.image.src}
           alt={week.image.alt}
           fill
-          priority={priority}
+          // 첫 화면 큰 그림(LCP) — 미리 받고 다른 그림보다 먼저 받는다 (Next 16: priority → preload)
+          preload={priority}
+          fetchPriority={priority ? "high" : undefined}
           sizes={hero ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 100vw"}
           className="object-cover"
         />

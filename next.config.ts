@@ -35,6 +35,13 @@ const nextConfig: NextConfig = {
   // 서버 스택 정보(X-Powered-By: Next.js) 노출 제거.
   poweredByHeader: false,
 
+  // 그림은 AVIF 를 먼저, 지원하지 않는 브라우저는 WebP.
+  // 모바일 첫 화면이 받는 그림 용량을 줄인다 (2026-10-20 Lighthouse — 그림이 첫 화면 바이트의 ⅓).
+  // 형식마다 변환 결과를 따로 캐시하므로 변환 횟수 · 캐시 용량이 조금 늘어난다.
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
+
   // Metadata images read these fonts with fs at runtime. Include them in each
   // server bundle so dynamic pages do not fail after a successful build.
   outputFileTracingIncludes: {

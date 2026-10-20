@@ -32,7 +32,8 @@ export function PlayHero() {
             <br className="sm:hidden" /> 이어집니다.
           </h1>
           <p className="mt-6 max-w-[34ch] text-[18px] font-medium leading-relaxed text-pop-ink-muted sm:text-[20px]">
-            그림책 · 신체표현 · 미술활동으로 만나는 <strong className="font-bold text-pop-ink">24주 통합예술교육</strong>
+            그림책 · 신체표현 · 미술활동으로 만나는 <strong className="font-bold text-pop-ink">24주 통합예술교육</strong>.
+            외부 강사 없이 <strong className="font-bold text-pop-ink">담임선생님이</strong> 교실 플레이어로 진행해요.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <PopLink href="/experience/weeks" tone="yellow" size="xl">
@@ -52,7 +53,8 @@ export function PlayHero() {
               src={MEDIA.heroMusic.src}
               alt={MEDIA.heroMusic.alt}
               fill
-              priority
+              preload
+              fetchPriority="high"
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-cover"
             />

@@ -30,10 +30,11 @@
    *
    * ★ Tailwind 기본 `font-serif` 는 라틴 전용 스택이라 한글이 기기 기본
    *   명조로 떨어진다. 여기서 한글 명조를 앞에 세워 화면마다 다르게 보이는
-   *   것을 막는다. 글꼴 파일은 layout.tsx 가 싣는다.
+   *   것을 막는다. 글꼴 파일은 명조를 쓰는 구역 layout 이 싣는다
+   *   (src/fonts/serif.tsx → 아래 .serif-scope 가 실린 글꼴을 맨 앞에 세운다).
    */
   --font-serif:
-    var(--font-serif-kr), "Noto Serif KR", "Nanum Myeongjo", Batang, AppleMyungjo,
+    "Noto Serif KR", "Nanum Myeongjo", Batang, AppleMyungjo,
     serif;
 
   --color-forest: #173a2c;        /* 숲 잉크 — 제목·본문·주 버튼 */
@@ -857,7 +858,8 @@ h4 {
   --color-pop-leaf-deep: #217a37;
   --color-pop-leaf-soft: #e2f7e4;
 
-  --font-display: var(--font-jua), var(--font-pretendard), "Pretendard Variable", sans-serif;
+  /* 실제 값은 .play 에서 정한다 (공개 체험 전용 서브셋 글꼴). 바깥에서는 본문 글꼴 */
+  --font-display: var(--font-pretendard);
 
   --shadow-pop: 0 2px 0 rgba(27, 37, 71, 0.08), 0 14px 32px -12px rgba(27, 37, 71, 0.28);
   --shadow-pop-lg: 0 3px 0 rgba(27, 37, 71, 0.08), 0 28px 60px -20px rgba(27, 37, 71, 0.35);
@@ -907,8 +909,20 @@ h4 {
 .play {
   --background: #fffaf0;
   --foreground: #1b2547;
+  /*
+   * 글꼴 — PlayShell 이 싣는 서브셋(src/fonts/play)을 맨 앞에, 원래 Pretendard 를 뒤에 둔다.
+   * 서브셋에 없는 글자(상담 폼에 입력한 글자 등)는 글자 단위로 Pretendard 가 그린다 → 모양이 같다.
+   */
+  --font-sans: var(--font-play-sans), var(--font-pretendard);
+  --font-display: var(--font-play-display), var(--font-play-sans), var(--font-pretendard);
   background: var(--color-pop-cream);
   color: var(--color-pop-ink);
+  font-family: var(--font-sans);
+}
+
+/* @theme inline 의 font-sans 는 Pretendard 를 바로 가리킨다 → .play 안에서는 서브셋 스택으로 */
+.play .font-sans {
+  font-family: var(--font-sans);
 }
 
 .play :is(h1, h2, h3) {
@@ -945,6 +959,31 @@ h4 {
 @utility dots {
   background-image: radial-gradient(rgba(27, 37, 71, 0.08) 1.5px, transparent 1.6px);
   background-size: 22px 22px;
+}
+
+/*
+ * 교실 플레이어 진행 화면 높이 = 화면 높이 − 플레이어 도구(위 도구 막대 · 진행률 · 아래 조작 막대).
+ * 플레이어 머리를 화면 위에 맞추면 그림과 조작 막대가 한 화면에 들어오고 서로 가리지 않는다.
+ * 값은 360 · 390 · 768 · 1024 · 1440 폭에서 실제 도구 높이를 재어 정했다.
+ */
+.classroom-player {
+  --player-chrome: 400px;
+  --player-chrome-fs: 280px;
+}
+@media (min-width: 640px) {
+  .classroom-player {
+    --player-chrome: 315px;
+  }
+}
+@media (min-width: 1024px) {
+  .classroom-player {
+    --player-chrome: 260px;
+  }
+}
+
+/* 명조를 쓰는 구역 (src/fonts/serif.tsx · SerifFontScope) */
+.serif-scope {
+  --font-serif: var(--font-serif-kr), "Noto Serif KR", "Nanum Myeongjo", Batang, AppleMyungjo, serif;
 }
 
 /* 큰 화면 수업 — 전체 화면일 때 배경을 채운다 */

@@ -17,7 +17,7 @@ export default function ExperienceWeeksPage() {
     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
       <section aria-labelledby="weeks-title" className="relative isolate overflow-hidden">
         <div className="relative h-[300px] sm:h-[380px] lg:h-[440px]">
-          <Image src={MEDIA.classroom.src} alt={MEDIA.classroom.alt} fill priority sizes="100vw" className="object-cover" />
+          <Image src={MEDIA.classroom.src} alt={MEDIA.classroom.alt} fill preload fetchPriority="high" sizes="100vw" className="object-cover" />
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(27,37,71,0.78)_0%,rgba(27,37,71,0.35)_55%,rgba(27,37,71,0)_100%)]" />
           <div className="absolute inset-0">
             <div className="mx-auto flex h-full max-w-[1320px] flex-col justify-center px-4 sm:px-6">

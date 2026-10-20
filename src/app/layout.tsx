@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Jua, Noto_Serif_KR } from "next/font/google";
 import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
 /*
  * 본문 글꼴 Pretendard — dynamic subset (글자 묶음 92조각, unicode-range).
@@ -13,41 +12,13 @@ import { searchVerification, seoCopy, siteUrl } from "@/lib/seo/site";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 
-/**
- * 제목·이야기용 명조.
- *
- * ★ 왜 추가하는가 — `font-serif` 는 Tailwind 기본값이 라틴 세리프 스택
- *   (ui-serif, Georgia, Times …)이라 **한글에는 아무 글꼴도 지정하지 않는
- *   것과 같다.** 기기 기본 명조(Windows 바탕 · macOS 애플명조)로 떨어져
- *   화면마다 다르게 보인다. 그래서 글꼴을 직접 싣는다.
- *
- * ★ 굵기 2종만 — 제목 700, 큰 인용 500. 본문에는 쓰지 않으므로 더 받지 않는다.
- * ★ 본문은 Pretendard 그대로라 이 글꼴이 늦게 와도 본문 읽기는 영향이 없다.
- *   그래서 preload 를 끄고 display: swap 으로 둔다.
+/*
+ * 제목용 글꼴 위치
+ * - 명조(Noto Serif KR): 명조를 쓰는 구역 layout 에서만 싣는다 → src/fonts/serif.tsx
+ * - 공개 체험의 둥근 제목 글꼴 · 본문 서브셋: PlayShell 에서만 싣는다 → src/fonts/play
+ * 루트에서 싣지 않는 이유: 쓰지 않는 페이지도 수백 개의 글꼴 조각 선언(렌더링을 막는 CSS)을
+ * 먼저 받아야 했다 (2026-10-20 모바일 Lighthouse 측정).
  */
-const serifKr = Noto_Serif_KR({
-  weight: ["500", "700"],
-  subsets: ["latin"],
-  variable: "--font-serif-kr",
-  display: "swap",
-  preload: false,
-  fallback: ["Noto Serif KR", "Nanum Myeongjo", "Batang", "AppleMyungjo", "serif"],
-});
-
-/**
- * 공개 체험 · 홈 제목용 둥근 글꼴 (PLAYFUL PREMIUM EDUCATION).
- *
- * ★ 큰 제목 · 배지에만 쓴다 (font-display). 본문 · 업무 화면은 Pretendard 그대로다.
- * ★ 늦게 와도 제목이 Pretendard 로 먼저 보이도록 swap · preload 끔.
- */
-const jua = Jua({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-jua",
-  display: "swap",
-  preload: false,
-  fallback: ["Pretendard Variable", "sans-serif"],
-});
 
 /**
  * 사이트 공통 메타데이터.
@@ -95,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${serifKr.variable} ${jua.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -14,6 +14,8 @@ export function WeekCard({ week, priority = false }: { week: ExperienceWeek; pri
   return (
     <Link
       href={`/experience/weeks/${week.weekNo}`}
+      // 24장이 한 화면에 모여 있어 미리 받기를 끈다 — 모바일 첫 화면이 24주치 데이터를 함께 받지 않게 (2026-10-20 Lighthouse)
+      prefetch={false}
       className={cx(
         "group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-pop ring-1 ring-pop-ink/5",
         "transition-[transform,box-shadow] duration-200 hover:-translate-y-1.5 hover:shadow-pop-lg focus-visible:-translate-y-1.5",
