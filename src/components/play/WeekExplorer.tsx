@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cx } from "@/components/ui/cx";
 import type { ExperiencePart, ExperienceWeek } from "@/data/experience/types";
+import { Motif } from "./Motif";
 import { WeekCard } from "./WeekCard";
 
 /**
@@ -95,7 +96,8 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
         const hidden = part !== 0 && part !== p.partNo;
         return (
           <section key={p.partNo} id={`part-${p.partNo}`} aria-labelledby={`part-${p.partNo}-title`} hidden={hidden} className={cx("mt-10 scroll-mt-40 rounded-[40px] p-5 sm:p-8", BAND[p.tone].bg)}>
-            <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
               <div className="flex items-center gap-4">
                 <span className={cx("flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-3xl text-pop-ink sticker", BAND[p.tone].chip)}>
                   <span className="text-[11px] font-extrabold leading-none">PART</span>
@@ -109,7 +111,23 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
                   </h2>
                 </div>
               </div>
-              <p className="max-w-[44ch] text-[15px] text-pop-ink-muted">{p.description}</p>
+              <p className="mt-4 max-w-[46ch] text-[16px] leading-relaxed text-pop-ink-muted">{p.description}</p>
+              </div>
+              {/* PART 포스터 — 이 PART 여덟 주의 주제 그림. 장식이다 (아래 카드가 같은 내용을 글로 준다) */}
+              <div aria-hidden="true" className="grid grid-cols-8 gap-1.5 rounded-[32px] bg-white/70 p-3 shadow-pop sm:gap-3 sm:p-5 lg:grid-cols-4">
+                {list.map((w, i) => (
+                  <div
+                    key={w.weekNo}
+                    className={cx("relative flex aspect-square items-center justify-center rounded-full ring-2 ring-white", i % 2 ? "lg:translate-y-3" : "lg:-translate-y-1")}
+                    style={{ background: `radial-gradient(circle at 35% 30%, #fff 0%, ${w.themeColor}33 70%)` }}
+                  >
+                    <Motif motif={w.body.motif} color={w.themeColor} className="h-[62%] w-auto" />
+                    <span className="absolute -bottom-1 right-0 hidden rounded-full px-1.5 text-[11px] font-extrabold text-white sm:block" style={{ backgroundColor: w.themeColor }}>
+                      {w.weekNo}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
             <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {list.map((w, i) => (

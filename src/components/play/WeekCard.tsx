@@ -32,7 +32,8 @@ export function WeekCard({ week, priority = false }: { week: ExperienceWeek; pri
         </span>
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <span className="inline-flex w-fit items-center rounded-full bg-pop-yellow-soft px-3 py-1 text-[13px] font-bold text-pop-ink">
+        {/* 키워드 칩은 주차 색을 옅게 — 24장이 같은 노랑 칩으로 반복되지 않게 (글자는 늘 잉크색 · 대비 유지) */}
+        <span className="inline-flex w-fit items-center rounded-full px-3 py-1 text-[13px] font-bold text-pop-ink" style={{ backgroundColor: `${week.themeColor}24` }}>
           #{week.growthKeyword}
         </span>
         <h3 className="font-display text-[22px] leading-snug text-pop-ink">{week.title}</h3>
