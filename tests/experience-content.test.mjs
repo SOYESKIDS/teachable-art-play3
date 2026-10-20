@@ -120,3 +120,30 @@ test("캐릭터 사용권 확인 전(CHARACTERS_ENABLED=false)에는 화면에�
   // public/ 은 그대로 배포된다 — 꺼 둔 동안에는 파일 자체가 없어야 공개 URL 로 새지 않는다
   for (const c of [...Object.values(CHARACTERS), CHARACTER_GROUP]) assert.ok(!existsSync(publicFile(c.src)), `배포 폴더에 남아 있다: ${c.src}`);
 });
+
+test("2026-10-20 공식 가이드 대조 — 24주 모두 가이드 기반(adapted), 2 · 17주 핵심 교정 유지", () => {
+  for (const l of DEMO_LESSONS) assert.equal(l.status, "adapted", `${l.weekNo}주`);
+  const w2 = DEMO_LESSONS.find((l) => l.weekNo === 2);
+  assert.match(w2.movement, /젓가락/);
+  assert.doesNotMatch(JSON.stringify(w2), /콩주머니|선 따라 걷기/);
+  const w17 = DEMO_LESSONS.find((l) => l.weekNo === 17);
+  // 가이드: 색 섞임을 예측 · 정답으로 묻지 않는다 — 보이는 대로 관찰한다
+  assert.doesNotMatch(JSON.stringify(w17), /무슨 색이 될|만나면 무슨 색/);
+  // 성별을 고정한 가족 표현을 공개 체험에 쓰지 않는다
+  for (const l of DEMO_LESSONS) assert.doesNotMatch(JSON.stringify(l), /아빠/, `${l.weekNo}주`);
+});
+
+test("캐릭터가 꺼져 있으면 캐릭터가 그려진 그림도 공개 체험 화면에 쓰지 않는다", async () => {
+  const { CHARACTER_BEARING_MEDIA } = await import("../src/data/experience/media.ts");
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const { join } = await import("node:path");
+  if (CHARACTERS_ENABLED) return;
+  for (const w of EXPERIENCE_WEEKS) assert.ok(!CHARACTER_BEARING_MEDIA.includes(w.image?.src), `${w.weekNo}주 그림`);
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const files = ["src/components/play", "src/app/experience"].flatMap((d) => readdirSync(join(root, d), { recursive: true }).filter((f) => /\.tsx$/.test(f)).map((f) => join(root, d, f)));
+  files.push(join(root, "src/app/page.tsx"));
+  for (const f of files) {
+    const src = readFileSync(f, "utf8");
+    assert.doesNotMatch(src, /MEDIA\.(seedKit|storybook)\b|seed-creative-kit|seed-storybook-ebook/, f);
+  }
+});
