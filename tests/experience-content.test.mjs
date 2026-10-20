@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { EXPERIENCE_WEEKS, EXPERIENCE_PARTS, parseDurationMinutes, splitMinutes, STAGE_ORDER } from "../src/data/experience/weeks.ts";
 import { DEMO_LESSONS } from "../src/data/experience/demo-lessons.ts";
 import { DEMO_REPORT } from "../src/data/experience/report.ts";
-import { CHARACTERS, CHARACTER_GROUP } from "../src/data/experience/characters.ts";
+import { CHARACTERS, CHARACTER_GROUP, CHARACTERS_ENABLED, characterImage, characterGroupImage } from "../src/data/experience/characters.ts";
 import { MEDIA, WEEK_MEDIA } from "../src/data/experience/media.ts";
 import { WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
 import { NURI_AREA_LABEL, APPROVED_SOYE_CORE_EXPERIENCES, GROWTH_METRIC_LABEL } from "../src/lib/curriculum/taxonomies.ts";
@@ -94,7 +94,7 @@ test("수업 다섯 단계 · 시간 합이 공식 수업 시간 가운데 값�
 });
 
 test("이미지 · 캐릭터 파일이 실제로 있다 (깨진 그림 없음)", () => {
-  for (const c of [...Object.values(CHARACTERS), CHARACTER_GROUP]) assert.ok(existsSync(publicFile(c.src)), c.src);
+  if (CHARACTERS_ENABLED) for (const c of [...Object.values(CHARACTERS), CHARACTER_GROUP]) assert.ok(existsSync(publicFile(c.src)), c.src);
   for (const m of Object.values(MEDIA)) assert.ok(existsSync(publicFile(m.src)), m.src);
   for (const m of Object.values(WEEK_MEDIA)) assert.ok(existsSync(publicFile(m.src)), m.src);
   for (const p of EXPERIENCE_PARTS) assert.ok(existsSync(publicFile(p.image.src)), p.image.src);
@@ -111,4 +111,12 @@ test("가상 리포트는 다섯 관점을 모두 쓰고 점수 · 순위 · 등
   const text = JSON.stringify(DEMO_REPORT);
   assert.ok(!/\d+\s*점|점수|순위|등급|진단|상위|하위\s*\d/.test(text));
   assert.match(DEMO_REPORT.childLabel, /가상/);
+});
+
+test("캐릭터 사용권 확인 전(CHARACTERS_ENABLED=false)에는 화면에도 배포 파일에도 캐릭터가 없다", () => {
+  if (CHARACTERS_ENABLED) return;
+  for (const k of Object.keys(CHARACTERS)) assert.equal(characterImage(k), null, k);
+  assert.equal(characterGroupImage(), null);
+  // public/ 은 그대로 배포된다 — 꺼 둔 동안에는 파일 자체가 없어야 공개 URL 로 새지 않는다
+  for (const c of [...Object.values(CHARACTERS), CHARACTER_GROUP]) assert.ok(!existsSync(publicFile(c.src)), `배포 폴더에 남아 있다: ${c.src}`);
 });

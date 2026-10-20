@@ -1,10 +1,9 @@
-import Image from "next/image";
+import { Buddy } from "@/components/play/Doodles";
 import Link from "next/link";
 import { DemoNotice } from "@/components/play/Badges";
 import { ArrowRight, PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
 import { WeekArt } from "@/components/play/WeekArt";
-import { characterGroupImage } from "@/data/experience/characters";
 import { EXPERIENCE_WEEKS, experienceWeek, FEATURED_WEEK_NO } from "@/data/experience/weeks";
 
 export const metadata = {
@@ -15,7 +14,6 @@ export const metadata = {
 /** 공개 체험 입구 — 무엇을 해 볼 수 있는지 세 갈래로 고른다. */
 export default function ExperienceHome() {
   const featured = experienceWeek(FEATURED_WEEK_NO)!;
-  const friends = characterGroupImage();
   const picks = [1, 4, 11, 17, 21, 24].map((n) => experienceWeek(n)!).filter(Boolean);
 
   return (
@@ -45,9 +43,7 @@ export default function ExperienceHome() {
           </div>
           <div className="relative">
             <WeekArt week={featured} size="hero" priority className="aspect-[4/3] w-full rounded-[44px] shadow-pop-lg ring-8 ring-white" />
-            {friends ? (
-              <Image src={friends.src} alt="" width={friends.width} height={friends.height} sizes="300px" className="absolute -bottom-8 -right-2 w-[44%] max-w-[300px] drop-shadow-[0_12px_14px_rgba(27,37,71,0.25)]" />
-            ) : null}
+            <Buddy group character="pupu" sizes="300px" className="absolute -bottom-8 -right-2 w-[40%] max-w-[280px]" />
             <Sticker kind="star" color="#ffc928" float className="absolute -left-4 -top-6 h-14 w-14" />
           </div>
         </div>

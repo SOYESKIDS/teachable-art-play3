@@ -1,8 +1,8 @@
 import Image from "next/image";
+import { Buddy } from "@/components/play/Doodles";
 import { DemoNotice } from "@/components/play/Badges";
 import { Sticker } from "@/components/play/Stickers";
 import { WeekExplorer } from "@/components/play/WeekExplorer";
-import { characterImage } from "@/data/experience/characters";
 import { MEDIA } from "@/data/experience/media";
 import { EXPERIENCE_PARTS, EXPERIENCE_WEEKS } from "@/data/experience/weeks";
 
@@ -13,7 +13,6 @@ export const metadata = {
 };
 
 export default function ExperienceWeeksPage() {
-  const ella = characterImage("ella");
   return (
     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
       <section aria-labelledby="weeks-title" className="relative isolate overflow-hidden">
@@ -31,7 +30,7 @@ export default function ExperienceWeeksPage() {
               <p className="mt-3 max-w-[34ch] text-[17px] font-medium text-white/90 sm:text-[19px]">PART를 골라 주차를 둘러보고, 마음에 드는 수업을 바로 체험해 보세요.</p>
             </div>
           </div>
-          {ella ? <Image src={ella.src} alt="" width={ella.width} height={ella.height} sizes="220px" className="absolute -bottom-4 right-4 hidden w-[200px] drop-shadow-[0_12px_14px_rgba(27,37,71,0.3)] md:block lg:right-16" /> : null}
+          <Buddy character="ella" sizes="220px" className="absolute -bottom-2 right-4 hidden w-[190px] md:block lg:right-16" />
           <Sticker kind="star" color="#ffc928" float className="absolute right-[28%] top-10 hidden h-12 w-12 md:block" />
         </div>
       </section>

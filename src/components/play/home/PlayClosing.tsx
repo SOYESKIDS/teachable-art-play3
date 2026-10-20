@@ -1,7 +1,6 @@
-import Image from "next/image";
+import { Buddy } from "@/components/play/Doodles";
 import Link from "next/link";
 import { GROWTH_METRIC_LABEL } from "@/lib/curriculum/taxonomies";
-import { characterImage } from "@/data/experience/characters";
 import { DEMO_REPORT } from "@/data/experience/report";
 import { ConsultButton } from "../ConsultButton";
 import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
@@ -101,8 +100,6 @@ export function AdoptionTimeline() {
 
 /* ── 8. 마무리 ──────────────────────────────────────────────── */
 export function PlayFinalCta() {
-  const ubi = characterImage("ubi");
-  const maru = characterImage("maru");
   return (
     <section id="contact" aria-labelledby="contact-title" className="relative scroll-mt-24 overflow-hidden bg-pop-pink-deep py-20 text-white sm:py-24">
       <div aria-hidden="true" className="dots absolute inset-0 opacity-20" />
@@ -122,8 +119,8 @@ export function PlayFinalCta() {
           <ConsultButton tone="white" size="xl">도입 문의하기</ConsultButton>
         </div>
       </div>
-      {ubi ? <Image src={ubi.src} alt="" width={ubi.width} height={ubi.height} sizes="180px" className="absolute -bottom-6 left-2 hidden w-[150px] lg:block xl:left-12" /> : null}
-      {maru ? <Image src={maru.src} alt="" width={maru.width} height={maru.height} sizes="160px" className="absolute -bottom-6 right-2 hidden w-[130px] lg:block xl:right-12" /> : null}
+      <Buddy character="ubi" sizes="180px" className="absolute -bottom-4 left-2 hidden w-[150px] lg:block xl:left-12" />
+      <Buddy character="maru" sizes="160px" className="absolute -bottom-4 right-2 hidden w-[140px] lg:block xl:right-12" />
     </section>
   );
 }

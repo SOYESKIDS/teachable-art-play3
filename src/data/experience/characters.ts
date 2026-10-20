@@ -9,7 +9,9 @@ import type { CharacterKey, ExperienceImage } from "./types";
  *   사이트 전체에서 캐릭터가 빠지고 도형 장식만 남는다 (한 줄로 되돌릴 수 있다).
  * ★ 이름은 제공 자료에 적힌 것만 쓴다. 이름이 확인되지 않은 고양이는 이름을 붙이지 않는다.
  */
-export const CHARACTERS_ENABLED = true;
+// ★ 2026-10-20 사용자 지시: 사용권 확인 전 공개 Preview 에서는 끈다.
+//   자리마다 자체 제작 소품 일러스트(Doodles.tsx)가 대신 들어간다.
+export const CHARACTERS_ENABLED = false;
 
 export interface CharacterAsset extends ExperienceImage {
   name: string | null;

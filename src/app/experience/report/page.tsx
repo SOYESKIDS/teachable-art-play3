@@ -1,9 +1,8 @@
-import Image from "next/image";
+import { Buddy } from "@/components/play/Doodles";
 import Link from "next/link";
 import { DemoNotice } from "@/components/play/Badges";
 import { PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
-import { characterImage } from "@/data/experience/characters";
 import { DEMO_REPORT } from "@/data/experience/report";
 import { experienceWeek } from "@/data/experience/weeks";
 import { GROWTH_METRIC_GUIDE, GROWTH_METRIC_LABEL } from "@/lib/curriculum/taxonomies";
@@ -27,7 +26,6 @@ const TONES = [
  * ★ 점수 · 그래프 · 순위를 그리지 않는다. 관찰 관점별 한 장면을 문장으로 보여 준다.
  */
 export default function ExperienceReportPage() {
-  const pupu = characterImage("pupu");
   return (
     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
       <section aria-labelledby="report-title" className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#eee8ff_0%,#fffaf0_85%)]">
@@ -53,7 +51,7 @@ export default function ExperienceReportPage() {
               <p className="text-[14px] font-bold text-pop-yellow">{DEMO_REPORT.classLabel} · {DEMO_REPORT.period}</p>
               <p className="mt-2 font-display text-[32px] sm:text-[40px]">{DEMO_REPORT.childLabel}</p>
             </div>
-            {pupu ? <Image src={pupu.src} alt="" width={pupu.width} height={pupu.height} sizes="140px" className="-mb-8 w-[110px] sm:w-[130px]" /> : null}
+            <Buddy character="pupu" sizes="140px" className="-mb-6 w-[100px] sm:w-[120px]" />
           </header>
 
           <div className="grid gap-8 p-6 sm:p-10">

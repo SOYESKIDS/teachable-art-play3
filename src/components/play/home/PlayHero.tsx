@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { characterGroupImage, characterImage } from "@/data/experience/characters";
+import { Buddy } from "@/components/play/Doodles";
 import { MEDIA } from "@/data/experience/media";
 import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
 import { Sticker } from "../Stickers";
@@ -13,9 +13,6 @@ import { Sticker } from "../Stickers";
  * ★ 수치는 공식 지도의 사실만 쓴다 (24주 · PART 3 · 그림책 · 신체표현 · 미술).
  */
 export function PlayHero() {
-  const friends = characterGroupImage();
-  const cat = characterImage("cat");
-
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#fff1c2_0%,#fffaf0_72%)]">
       <div aria-hidden="true" className="absolute -left-24 top-24 -z-10 h-72 w-72 rounded-full bg-pop-pink/20 blur-2xl" />
@@ -74,26 +71,8 @@ export function PlayHero() {
               className="object-cover"
             />
           </div>
-          {friends ? (
-            <Image
-              src={friends.src}
-              alt=""
-              width={friends.width}
-              height={friends.height}
-              sizes="(min-width: 1024px) 320px, 46vw"
-              className="absolute -bottom-10 -left-3 w-[46%] max-w-[340px] drop-shadow-[0_14px_16px_rgba(27,37,71,0.25)] sm:-left-6 lg:-bottom-12 lg:-left-14"
-            />
-          ) : null}
-          {cat ? (
-            <Image
-              src={cat.src}
-              alt=""
-              width={cat.width}
-              height={cat.height}
-              sizes="140px"
-              className="absolute -right-2 -top-10 hidden w-[120px] animate-float-slow drop-shadow-[0_12px_14px_rgba(27,37,71,0.22)] sm:block lg:-right-6"
-            />
-          ) : null}
+          <Buddy group character="pupu" sizes="(min-width: 1024px) 320px, 46vw" className="absolute -bottom-10 -left-3 w-[42%] max-w-[300px] sm:-left-6 lg:-bottom-12 lg:-left-14" />
+          <Buddy character="cat" sizes="140px" className="absolute -right-2 -top-10 hidden w-[110px] animate-float-slow sm:block lg:-right-6" />
           <Sticker kind="star" color="#ffc928" float tilt={-10} className="absolute -top-6 left-[18%] h-14 w-14" />
           <Sticker kind="flower" color="#ff4f8b" float delay={600} className="absolute bottom-[18%] -right-4 h-16 w-16 sm:-right-8" />
           <Sticker kind="cloud" color="#e1efff" float delay={1200} className="absolute right-[30%] -top-8 hidden h-16 w-24 sm:block" />
