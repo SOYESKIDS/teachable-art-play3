@@ -298,7 +298,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
               <section
                 key={`c-${phase.index}`}
                 aria-label="교실 화면"
-                className={cx("relative isolate flex min-h-[420px] animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg sm:min-h-[520px]", STAGE_TONE[current.key].soft, isFullscreen && "min-h-[70vh]")}
+                className={cx("relative isolate flex animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg", STAGE_TONE[current.key].soft, isFullscreen ? "min-h-[calc(100dvh-220px)]" : "min-h-[420px] sm:min-h-[520px]")}
               >
                 <div aria-hidden="true" className="dots absolute inset-0 -z-10 opacity-50" />
                 <div className="flex items-center gap-3 p-6 sm:p-8">
@@ -308,7 +308,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
                   </p>
                 </div>
                 <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10">
-                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : "text-[44px] sm:text-[64px] lg:text-[76px]")}>
+                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px]")}>
                     {current.childLine}
                   </p>
                 </div>
@@ -447,7 +447,7 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
             ))}
           </ul>
         </div>
-        <button type="button" onClick={onStart} className={popButtonClass("pink", "xl", "w-full sm:w-fit")} autoFocus>
+        <button type="button" onClick={onStart} className={popButtonClass("pink", "xl", "w-full sm:w-fit")}>
           <PlayIcon />
           수업 시작
         </button>
@@ -490,7 +490,8 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <p className={cx("font-display text-[22px]", STAGE_TONE[stage.key].text)}>{stage.title}</p>
         <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
-      <p className="mt-4 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
+      <p className="mt-4 text-[13px] font-bold text-pop-ink-muted">활동 안내</p>
+      <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
       <div className="mt-5 rounded-3xl bg-pop-sky-soft p-5">
         <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>

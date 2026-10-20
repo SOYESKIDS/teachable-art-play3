@@ -51,14 +51,14 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
               <p className={cx("text-[14px] font-extrabold", BAND[p.tone].text)}>
                 PART {p.partNo} · {p.title}{p.nameProvisional ? " (가칭)" : ""}
               </p>
-              <ul className="mt-3 grid grid-cols-8 gap-1.5">
+              <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8 lg:grid-cols-4">
                 {weeks.filter((w) => w.partNo === p.partNo).map((w) => (
                   <li key={w.weekNo}>
                     <Link
                       href={`/experience/weeks/${w.weekNo}`}
                       title={`${w.weekNo}주차 ${w.title}`}
                       aria-label={`${w.weekNo}주차 ${w.title}`}
-                      className="flex aspect-square min-h-9 w-full items-center justify-center rounded-full font-display text-[15px] text-white transition-transform hover:scale-110 focus-visible:scale-110"
+                      className="flex h-11 min-w-11 w-full items-center justify-center rounded-full font-display text-[17px] text-white transition-transform hover:scale-105 focus-visible:scale-105"
                       style={{ backgroundColor: w.themeColor }}
                     >
                       {w.weekNo}

@@ -44,20 +44,6 @@ export function PlayHero() {
               수업 직접 체험하기
             </PopLink>
           </div>
-          <ul className="mt-9 flex flex-wrap gap-2" aria-label="교육과정 한눈에">
-            {[
-              ["24주", "#ff4f8b"],
-              ["PART 3", "#22c3b5"],
-              ["그림책", "#4da3ff"],
-              ["신체표현", "#9b7bff"],
-              ["미술활동", "#ff8a3d"],
-            ].map(([label, color]) => (
-              <li key={label} className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-2 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/5">
-                <span aria-hidden="true" className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
-                {label}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="relative">
