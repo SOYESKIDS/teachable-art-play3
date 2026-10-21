@@ -148,6 +148,21 @@ test("캐릭터가 꺼져 있으면 캐릭터가 그려진 그림도 공개 체�
   }
 });
 
+test("사용권 · 촬영 동의 증빙이 없는 그림은 외부 시연 화면에 쓰지 않는다 (2026-10-21)", async () => {
+  const { EXCLUDED_PUBLIC_MEDIA } = await import("../src/data/experience/media.ts");
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const { join } = await import("node:path");
+  for (const w of EXPERIENCE_WEEKS) assert.ok(!EXCLUDED_PUBLIC_MEDIA.includes(w.image?.src), `${w.weekNo}주 그림`);
+  for (const p of EXPERIENCE_PARTS) assert.ok(!EXCLUDED_PUBLIC_MEDIA.includes(p.image?.src), `PART ${p.partNo} 그림`);
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const files = ["src/components/play", "src/app/experience"].flatMap((d) => readdirSync(join(root, d), { recursive: true }).filter((f) => /\.tsx$/.test(f)).map((f) => join(root, d, f)));
+  files.push(join(root, "src/app/page.tsx"));
+  for (const f of files) {
+    const src = readFileSync(f, "utf8");
+    assert.doesNotMatch(src, /MEDIA\.(heroMusic|movementPhoto)\b|music-and-movement|hero-class-movement/, f);
+  }
+});
+
 test("성장 리포트 예시는 교정된 주차 활동과 맞는다 (지난 임시 활동 이름을 쓰지 않는다)", () => {
   const text = JSON.stringify(DEMO_REPORT);
   for (const old of ["콩주머니", "선 따라 걷기", "좁쌀"]) assert.ok(!text.includes(old), old);

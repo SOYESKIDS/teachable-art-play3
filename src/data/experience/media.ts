@@ -64,6 +64,14 @@ export const MEDIA = {
  */
 export const CHARACTER_BEARING_MEDIA = [MEDIA.seedKit.src, MEDIA.storybook.src] as const;
 
+/**
+ * 외부 시연 화면에서 빼는 그림 전체 (2026-10-21) — 사용권 · 촬영 동의 증빙이 없는 것.
+ * - heroMusic: 마라카스 병에 보라 곰 · 곰 · 병아리 스티커 (위 캐릭터 그림과 같은 스티커)
+ * - movementPhoto: 실제 촬영처럼 보이는 사진, 출처 · 촬영 동의 기록 없음 (docs/homepage-image-integration.md)
+ * 증빙이 확인되면 이 목록에서 빼고 다시 쓸 수 있다. 파일은 지우지 않는다.
+ */
+export const EXCLUDED_PUBLIC_MEDIA = [...CHARACTER_BEARING_MEDIA, MEDIA.heroMusic.src, MEDIA.movementPhoto.src] as const;
+
 /** 주차 전용 이미지 — 확보된 주차만 (4주차 키트 그림은 캐릭터 스티커가 있어 빼고 주제 그림으로 대신한다) */
 export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = {
   1: MEDIA.classroom,

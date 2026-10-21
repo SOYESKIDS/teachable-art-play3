@@ -98,7 +98,7 @@ export function AdventureMap() {
 /* ── 3. 수업은 이렇게 진행됩니다 ─────────────────────────────── */
 const FLOW = [
   { title: "그림책", body: "이야기 속 주인공을 만나며 오늘의 질문을 품어요.", color: "#4da3ff", soft: "bg-pop-sky-soft", icon: "book", image: null as ExperienceImage | null }, // 그림책 그림은 캐릭터 사용권 확인 전이라 아이콘으로 (media.ts CHARACTER_BEARING_MEDIA)
-  { title: "움직임", body: "몸과 리듬으로 이야기를 표현하며 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", icon: "move", image: MEDIA.movementPhoto as ExperienceImage | null },
+  { title: "움직임", body: "몸과 리듬으로 이야기를 표현하며 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", icon: "move", image: null as ExperienceImage | null }, // 촬영 · 사용권 기록이 없는 사진은 빼고 아이콘으로 (media.ts EXCLUDED_PUBLIC_MEDIA)
   { title: "만들기", body: "재료를 탐색하고 나만의 작품으로 생각을 담아요.", color: "#ffc928", soft: "bg-pop-yellow-soft", icon: "make", image: MEDIA.artPlay as ExperienceImage | null },
   { title: "관찰", body: "선생님은 아이가 시도한 순간을 기록으로 남겨요.", color: "#22c3b5", soft: "bg-pop-mint-soft", icon: "eye", image: null as ExperienceImage | null },
 ];

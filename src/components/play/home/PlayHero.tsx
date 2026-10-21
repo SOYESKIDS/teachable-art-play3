@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { Buddy } from "@/components/play/Doodles";
-import { MEDIA } from "@/data/experience/media";
 import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
 import { Sticker } from "../Stickers";
+import { HeroScene } from "./HeroScene";
 
 /**
  * 홈 첫 화면 — 큰 그림이 먼저 보인다.
@@ -51,15 +50,8 @@ export function PlayHero() {
 
         <div className="relative">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[44px] bg-pop-sky-soft shadow-pop-lg ring-8 ring-white lg:rotate-[1.5deg]">
-            <Image
-              src={MEDIA.heroMusic.src}
-              alt={MEDIA.heroMusic.alt}
-              fill
-              preload
-              fetchPriority="high"
-              sizes="(min-width: 1024px) 58vw, 100vw"
-              className="object-cover"
-            />
+            {/* 자체 제작 일러스트 — 사용권 미확인 캐릭터 스티커가 있던 사진을 대신한다 (HeroScene.tsx) */}
+            <HeroScene />
           </div>
           <Buddy group character="pupu" sizes="(min-width: 1024px) 320px, 46vw" className="absolute -bottom-10 -left-3 w-[42%] max-w-[300px] sm:-left-6 lg:-bottom-12 lg:-left-14" />
           <Buddy character="cat" sizes="140px" className="absolute -right-2 -top-10 hidden w-[110px] animate-float-slow sm:block lg:-right-6" />

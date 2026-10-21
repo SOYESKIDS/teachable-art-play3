@@ -125,7 +125,7 @@ const PART_COPY: Record<1 | 2 | 3, Omit<ExperiencePart, "partNo" | "title" | "na
     description: "봄 꽃비부터 겨울 영상편지까지, 사계절의 색과 마음을 몸으로 느끼는 여덟 번의 여행.",
     tone: "sky",
     character: "bukgeuki",
-    image: MEDIA.heroMusic,
+    image: MEDIA.artPlay, // 예전 heroMusic 은 사용권 미확인 스티커가 있어 공개 화면에서 뺐다
   },
   3: {
     tagline: "세상과 어울려요",
